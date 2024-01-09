@@ -1,10 +1,6 @@
-package com.drinkit.infra
+package com.drinkit.cellar
 
-import com.drinkit.domain.cellar.Cellar
-import com.drinkit.domain.cellar.CellarId
-import com.drinkit.domain.cellar.CellarReadRepository
-import com.drinkit.domain.cellar.CellarWriteRepository
-import com.drinkit.domain.user.UserId
+import com.drinkit.user.UserId
 import org.springframework.stereotype.Repository
 
 @Repository

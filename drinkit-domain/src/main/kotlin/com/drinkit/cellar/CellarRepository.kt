@@ -1,6 +1,6 @@
-package com.drinkit.domain.cellar
+package com.drinkit.cellar
 
-import com.drinkit.domain.user.UserId
+import com.drinkit.user.UserId
 
 interface CellarWriteRepository {
     fun create(cellar: Cellar): CellarId

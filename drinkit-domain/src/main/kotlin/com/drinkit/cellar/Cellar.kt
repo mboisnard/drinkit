@@ -1,7 +1,7 @@
-package com.drinkit.domain.cellar
+package com.drinkit.cellar
 
-import com.drinkit.domain.common.CityLocation
-import com.drinkit.domain.user.UserId
+import com.drinkit.common.CityLocation
+import com.drinkit.user.UserId
 import org.bson.types.ObjectId
 
 data class CellarId(

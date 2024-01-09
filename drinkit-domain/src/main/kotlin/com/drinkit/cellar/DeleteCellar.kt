@@ -1,6 +1,6 @@
-package com.drinkit.domain.cellar
+package com.drinkit.cellar
 
-import com.drinkit.domain.user.User
+import com.drinkit.user.User
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 

@@ -1,10 +1,10 @@
-package com.drinkit.domain.common
+package com.drinkit.common
 
-import com.drinkit.domain.common.Constants.COUNTRY_CODE_LENGTH
-import com.drinkit.domain.common.Constants.MAX_LATITUDE
-import com.drinkit.domain.common.Constants.MAX_LONGITUDE
-import com.drinkit.domain.common.Constants.MIN_LATITUDE
-import com.drinkit.domain.common.Constants.MIN_LONGITUDE
+import com.drinkit.common.Constants.COUNTRY_CODE_LENGTH
+import com.drinkit.common.Constants.MAX_LATITUDE
+import com.drinkit.common.Constants.MAX_LONGITUDE
+import com.drinkit.common.Constants.MIN_LATITUDE
+import com.drinkit.common.Constants.MIN_LONGITUDE
 
 data class Point(
     val latitude: Double,

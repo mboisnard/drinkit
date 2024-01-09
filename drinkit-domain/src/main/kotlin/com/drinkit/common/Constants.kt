@@ -1,4 +1,4 @@
-package com.drinkit.domain.common
+package com.drinkit.common
 
 import java.time.LocalDate
 

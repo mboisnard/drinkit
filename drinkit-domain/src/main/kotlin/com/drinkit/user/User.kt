@@ -1,13 +1,13 @@
-package com.drinkit.domain.user
+package com.drinkit.user
 
-import com.drinkit.domain.common.Constants.INVISIBLE_CHARS_REGEX
-import com.drinkit.domain.common.Constants.MAX_EMAIL_LENGTH
-import com.drinkit.domain.common.Constants.MAX_FIRSTNAME_LENGTH
-import com.drinkit.domain.common.Constants.MAX_LASTNAME_LENGTH
-import com.drinkit.domain.common.Constants.MIN_BIRTH_DATE
-import com.drinkit.domain.common.Constants.MIN_FIRSTNAME_LENGTH
-import com.drinkit.domain.common.Constants.MIN_LASTNAME_LENGTH
-import com.drinkit.domain.common.Constants.VALID_EMAIL_REGEX
+import com.drinkit.common.Constants.INVISIBLE_CHARS_REGEX
+import com.drinkit.common.Constants.MAX_EMAIL_LENGTH
+import com.drinkit.common.Constants.MAX_FIRSTNAME_LENGTH
+import com.drinkit.common.Constants.MAX_LASTNAME_LENGTH
+import com.drinkit.common.Constants.MIN_BIRTH_DATE
+import com.drinkit.common.Constants.MIN_FIRSTNAME_LENGTH
+import com.drinkit.common.Constants.MIN_LASTNAME_LENGTH
+import com.drinkit.common.Constants.VALID_EMAIL_REGEX
 import org.bson.types.ObjectId
 import java.time.*
 
