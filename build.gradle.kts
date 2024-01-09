@@ -1,11 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "3.2.1"
-	id("io.spring.dependency-management") version "1.1.4"
-	id("com.gorylenko.gradle-git-properties") version "2.4.1"
-	kotlin("plugin.spring") version "1.9.21"
-	kotlin("jvm") version "1.9.21"
+	id("org.springframework.boot")
+	id("io.spring.dependency-management")
+	id("com.gorylenko.gradle-git-properties")
+	kotlin("plugin.spring")
+	kotlin("jvm")
 }
 
 group = "com.drinkit"
