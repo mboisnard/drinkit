@@ -11,9 +11,9 @@ data class CreateCellarCommand(
     val owner: User,
 )
 
-//@Service
+@Service
 class CreateCellar(
-    private val cellarRepository: CellarRepository,
+    private val cellarRepository: CellarWriteRepository,
 ) {
     private val logger = KotlinLogging.logger { }
 
@@ -31,8 +31,6 @@ class CreateCellar(
             )
         }
 
-        cellarRepository.create(cellar)
-
-        return cellarId
+        return cellarRepository.create(cellar)
     }
 }

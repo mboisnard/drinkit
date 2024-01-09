@@ -2,9 +2,15 @@ package com.drinkit.domain.cellar
 
 import com.drinkit.domain.user.UserId
 
-interface CellarRepository {
+interface CellarWriteRepository {
+    fun create(cellar: Cellar): CellarId
 
-    fun create(cellar: Cellar)
+    fun delete(cellarId: CellarId)
+}
+
+interface CellarReadRepository {
+
+    fun findById(cellarId: CellarId): Cellar?
 
     fun findAllByOwnerId(owner: UserId): Sequence<Cellar>
 }

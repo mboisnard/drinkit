@@ -1,11 +1,17 @@
 package com.drinkit.domain.common
 
+import com.drinkit.domain.common.Constants.COUNTRY_CODE_LENGTH
+import com.drinkit.domain.common.Constants.MAX_LATITUDE
+import com.drinkit.domain.common.Constants.MAX_LONGITUDE
+import com.drinkit.domain.common.Constants.MIN_LATITUDE
+import com.drinkit.domain.common.Constants.MIN_LONGITUDE
+
 data class Point(
     val latitude: Double,
     val longitude: Double,
 ) {
     init {
-        require(latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180)
+        require(latitude in MIN_LATITUDE.. MAX_LATITUDE && longitude in MIN_LONGITUDE..MAX_LONGITUDE)
     }
 }
 
@@ -14,7 +20,7 @@ data class Country(
     val name: String,
 ) {
     init {
-        require(code.length == 2)
+        require(code.length == COUNTRY_CODE_LENGTH)
     }
 }
 
