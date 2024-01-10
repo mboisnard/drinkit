@@ -1,22 +1,28 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  title: Drink it API
-  description: Optional multiline or single-line description in [CommonMark](http://commonmark.org/help/) or HTML.
+  title: Drink It API
+  description: Drink It Apis for frontend/backend communication
   version: 1.0.0
 servers:
-  - url: http://localhost:8080
+  - url: http://127.0.0.1:8080
     description: Dev server
+tags:
+  - name: cellars
+    description: Operations on cellars
+
 paths:
-  /api/users:
+  /drinkit/api/cellars:
     get:
-      summary: Returns a list of users.
-      description: Optional extended description in CommonMark or HTML.
+      operationId: getCellars
+      tags:
+        - cellars
+      summary: Get cellars
+      description: |
+        Returns all cellars you allow to see (owner or allowed from other users)
       responses:
-        '200':    # status code
-          description: A JSON array of user names
+        '200':
+          description: Success
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: string
+                $ref: 'cellarsResponse.yaml#/components/schemas/CellarsResponse'

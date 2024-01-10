@@ -14,4 +14,15 @@ dependencies {
 openApiGenerate {
     apiPackage.set("com.drinkit.api.generated.api")
     modelPackage.set("com.drinkit.api.generated.model")
+
+    typeMappings.set(
+        typeMappings.get() + mapOf(
+            "string+cellar-id" to "CellarId"
+        )
+    )
+    importMappings.set(
+        importMappings.get() + mapOf(
+            "CellarId" to "com.drinkit.cellar.CellarId"
+        )
+    )
 }

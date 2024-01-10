@@ -1,0 +1,32 @@
+openapi: 3.0.3
+info:
+  title: common components for cellar api
+  version: 1.0.0
+  x-fragment: true
+paths: {}
+components:
+  schemas:
+    CellarsResponse:
+      type: object
+      required:
+        - cellars
+      properties:
+        cellars:
+          type: array
+          minItems: 0
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/CellarResponse'
+
+    CellarResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: cellar-id
+          minLength: 24
+          maxLength: 24
+          pattern: '[\da-fA-F]{24}'
+          example: aa
