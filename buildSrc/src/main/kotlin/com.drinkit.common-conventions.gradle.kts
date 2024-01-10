@@ -19,6 +19,7 @@ dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:6.0.1")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    testImplementation("io.kotest:kotest-assertions-core:5.8.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:junit-jupiter")

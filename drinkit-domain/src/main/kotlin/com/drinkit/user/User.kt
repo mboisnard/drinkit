@@ -92,7 +92,7 @@ data class User(
 }
 
 val ANONYMOUS_USER = User(
-    id = UserId.create(),
+    id = UserId.from("659ee3164b1d53340c4f7608"),
     firstname = FirstName("Anonymous"),
     lastName = LastName("Anonymous"),
     birthDate = null,

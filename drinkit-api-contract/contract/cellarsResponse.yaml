@@ -22,6 +22,8 @@ components:
       type: object
       required:
         - id
+        - name
+        - location
       properties:
         id:
           type: string
@@ -29,4 +31,56 @@ components:
           minLength: 24
           maxLength: 24
           pattern: '[\da-fA-F]{24}'
-          example: aa
+          example: 659ee3164b1d53340c4f7608
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "My cellar in Paris"
+        location:
+          $ref: '#/components/schemas/CityLocationResponse'
+
+    CityLocationResponse:
+      type: object
+      required:
+        - city
+        - country
+        - point
+      properties:
+        city:
+          type: string
+          example: Paris
+        country:
+          $ref: '#/components/schemas/CountryResponse'
+        point:
+          $ref: '#/components/schemas/PointResponse'
+
+    CountryResponse:
+      type: object
+      required:
+        - name
+        - code
+      properties:
+        name:
+          type: string
+          example: France
+        code:
+          type: string
+          minLength: 2
+          maxLength: 2
+          example: FR
+
+    PointResponse:
+      type: object
+      required:
+        - longitude
+        - latitude
+      properties:
+        longitude:
+          type: number
+          minimum: -180.0
+          maximum: 180.0
+        latitude:
+          type: number
+          minimum: -90.0
+          maximum: 90.0

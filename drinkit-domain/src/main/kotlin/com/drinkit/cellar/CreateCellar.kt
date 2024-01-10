@@ -6,7 +6,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 
 data class CreateCellarCommand(
-    val name: String,
+    val name: CellarName,
     val location: CityLocation,
     val owner: User,
 )

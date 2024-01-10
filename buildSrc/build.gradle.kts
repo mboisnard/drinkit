@@ -14,4 +14,6 @@ dependencies {
     implementation(pluginLibs.gradle.kotlin.plugin)
     implementation(pluginLibs.openapi.generator.plugin)
     implementation(pluginLibs.spring.boot.gradle.plugin)
+
+    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }

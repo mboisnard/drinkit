@@ -23,4 +23,6 @@ object Constants {
     const val MAX_LONGITUDE = 180.0
 
     const val COUNTRY_CODE_LENGTH = 2
+
+    const val MAX_CELLAR_NAME_LENGTH = 100
 }
