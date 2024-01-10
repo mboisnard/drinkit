@@ -46,10 +46,9 @@ openApiGenerate {
         )
     )
 
-    // Disable enum stripping on generated code
     additionalProperties.set(
         mapOf(
-            "removeEnumValuePrefix" to false
+            "removeEnumValuePrefix" to "false" // Disable enum stripping on generated code
         )
     )
 }
@@ -59,8 +58,8 @@ tasks.openApiGenerate {
         inputSpec.set("${openApiInput.singleFile.path}/api-definition.yaml")
     }
 
-    inputs.files(openApiCommonTemplates)
     inputs.files(openApiInput)
+    inputs.files(openApiCommonTemplates)
 }
 
 kotlin {
