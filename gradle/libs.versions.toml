@@ -2,8 +2,10 @@
 bson = "4.11.1"
 kotest = "5.8.0"
 kotlin-logging = "6.0.1"
+springdoc-openapi = "2.3.0"
 
 [libraries]
 bson = { module = "org.mongodb:bson", version.ref = "bson" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
+springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi"}
