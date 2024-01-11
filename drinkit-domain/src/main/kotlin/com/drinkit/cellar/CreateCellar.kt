@@ -1,6 +1,7 @@
 package com.drinkit.cellar
 
 import com.drinkit.common.CityLocation
+import com.drinkit.common.IdGenerator
 import com.drinkit.user.User
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
@@ -14,11 +15,12 @@ data class CreateCellarCommand(
 @Service
 class CreateCellar(
     private val cellarRepository: CellarWriteRepository,
+    private val idGenerator: IdGenerator,
 ) {
     private val logger = KotlinLogging.logger { }
 
     operator fun invoke(command: CreateCellarCommand): CellarId {
-        val cellarId = CellarId.create()
+        val cellarId = CellarId.create(idGenerator)
 
         logger.debug { "Creating cellar with id $cellarId from command $command" }
 

@@ -9,7 +9,6 @@ internal class CellarsApiTest {
 
     @Test
     fun `should be true`() {
-        val cellarId = CellarId.create()
         true shouldBe true
     }
 }

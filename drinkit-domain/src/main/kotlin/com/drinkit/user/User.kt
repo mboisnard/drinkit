@@ -8,16 +8,14 @@ import com.drinkit.common.Constants.MIN_BIRTH_DATE
 import com.drinkit.common.Constants.MIN_FIRSTNAME_LENGTH
 import com.drinkit.common.Constants.MIN_LASTNAME_LENGTH
 import com.drinkit.common.Constants.VALID_EMAIL_REGEX
-import org.bson.types.ObjectId
+import com.drinkit.common.IdGenerator
 import java.time.*
 
 data class UserId(
-    val value: ObjectId,
+    val value: String,
 ) {
     companion object {
-        fun create() = UserId(value = ObjectId())
-
-        fun from(value: String) = UserId(value = ObjectId(value))
+        fun create(generator: IdGenerator) = UserId(value = generator.createNewId())
     }
 }
 
@@ -86,13 +84,11 @@ data class User(
     val roles: Roles,
     val enabled: Boolean,
 ) {
-    val createdAt: LocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(id.value.timestamp.toLong()), ZoneId.systemDefault())
-
     val isAdmin = roles.values.contains(Roles.Role.ROLE_ADMIN)
 }
 
 val ANONYMOUS_USER = User(
-    id = UserId.from("659ee3164b1d53340c4f7608"),
+    id = UserId("659ee3164b1d53340c4f7608"),
     firstname = FirstName("Anonymous"),
     lastName = LastName("Anonymous"),
     birthDate = null,

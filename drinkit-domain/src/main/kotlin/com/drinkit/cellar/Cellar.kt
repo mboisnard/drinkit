@@ -2,16 +2,14 @@ package com.drinkit.cellar
 
 import com.drinkit.common.CityLocation
 import com.drinkit.common.Constants.MAX_CELLAR_NAME_LENGTH
+import com.drinkit.common.IdGenerator
 import com.drinkit.user.UserId
-import org.bson.types.ObjectId
 
 data class CellarId(
-    val value: ObjectId,
+    val value: String,
 ) {
     companion object {
-        fun create() = CellarId(value = ObjectId())
-
-        fun from(value: String) = CellarId(value = ObjectId(value))
+        fun create(generator: IdGenerator) = CellarId(value = generator.createNewId())
     }
 }
 

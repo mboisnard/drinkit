@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     implementation(project(":drinkit-domain"))
+    implementation(libs.bson)
 }

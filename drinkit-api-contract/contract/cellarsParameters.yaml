@@ -1,0 +1,29 @@
+openapi: 3.0.3
+info:
+  title: common components for cellar api
+  version: 1.0.0
+  x-fragment: true
+paths: {}
+components:
+  parameters:
+    cellarId:
+      name: cellarId
+      in: path
+      required: true
+      schema:
+        $ref: 'common.yaml#/components/schemas/CellarId'
+
+  schemas:
+    CreateCellarRequest:
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "My Cellar in Paris"
+        location:
+          $ref: 'common.yaml#/components/schemas/CityLocation'

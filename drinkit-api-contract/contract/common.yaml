@@ -1,0 +1,59 @@
+openapi: 3.0.3
+info:
+  title: common components for all apis
+  version: 1.0.0
+  x-fragment: true
+paths: {}
+components:
+  schemas:
+    CityLocation:
+      type: object
+      required:
+        - city
+        - country
+        - point
+      properties:
+        city:
+          type: string
+          example: Paris
+        country:
+          $ref: '#/components/schemas/Country'
+        point:
+          $ref: '#/components/schemas/Point'
+
+    Country:
+      type: object
+      required:
+        - name
+        - code
+      properties:
+        name:
+          type: string
+          example: France
+        code:
+          type: string
+          minLength: 2
+          maxLength: 2
+          example: FR
+
+    Point:
+      type: object
+      required:
+        - longitude
+        - latitude
+      properties:
+        longitude:
+          type: number
+          minimum: -180.0
+          maximum: 180.0
+          example: 2.3488
+        latitude:
+          type: number
+          minimum: -90.0
+          maximum: 90.0
+          example: 48.853
+
+    CellarId:
+      type: string
+      format: cellar-id
+      example: 659ee3164b1d53340c4f7608

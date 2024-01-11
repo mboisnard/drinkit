@@ -13,16 +13,57 @@ tags:
 paths:
   /drinkit/api/cellars:
     get:
-      operationId: getCellars
+      operationId: findCellars
       tags:
         - cellars
-      summary: Get cellars
+      summary: Find cellars
       description: |
         Returns all cellars you allow to see (owner or allowed from other users)
       responses:
+        '401':
+          description: Unauthorized
         '200':
           description: Success
           content:
             application/json:
               schema:
                 $ref: 'cellarsResponse.yaml#/components/schemas/CellarsResponse'
+    post:
+      operationId: createCellar
+      tags:
+        - cellars
+      summary: Create a new cellar
+      description: |
+        Create a new cellar for the connected user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'cellarsParameters.yaml#/components/schemas/CreateCellarRequest'
+      responses:
+        '401':
+          description: Unauthorized
+        '400':
+          description: Bad Request (maybe wrong object validation)
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/CellarId'
+  /drinkit/api/cellars/{cellarId}:
+    delete:
+      operationId: deleteCellar
+      tags:
+        - cellars
+      summary: Delete cellar by Id
+      description: |
+        Delete a cellar that you are the owner
+      parameters:
+        - $ref: 'cellarsParameters.yaml#/components/parameters/cellarId'
+      responses:
+        '401':
+          description: Unauthorized
+        '204':
+          description: Cellar Deleted
