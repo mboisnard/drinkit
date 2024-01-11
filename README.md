@@ -6,7 +6,7 @@
 * Node 20.11.0
 * Gradle
 * Spring Boot 3.2.1 + Kotlin
-* Nuxt 3
+* Nuxt 3 + Vue3 + PrimeVue Components Library
 * OpenApi to generate frontend files and Backend Apis
 
 ## How to run the app
