@@ -4,6 +4,7 @@ import java.time.LocalDate
 
 object Constants {
 
+    val ID_REGEX = Regex("[\\da-fA-F]{24}")
     val INVISIBLE_CHARS_REGEX = Regex("[\\u0000-\\u001f]")
 
     const val MIN_FIRSTNAME_LENGTH = 2
