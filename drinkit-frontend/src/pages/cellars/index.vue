@@ -9,7 +9,7 @@
   </div>
 </template>
 <script setup lang="ts">
-  import {CellarResponse, CellarsApi} from "~/openapi";
+  import {type CellarResponse, CellarsApi} from "~/openapi";
   import {ref, useAsyncData} from "#imports";
 
   const api = new CellarsApi();
