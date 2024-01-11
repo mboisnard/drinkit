@@ -17,9 +17,9 @@
 ./gradlew :drinkit-backend:bootRun #To start Spring Boot Application 
 ```
 
-Api available on: `http://localhost:8080/drinkit/api/cellars`
-OpenApi Documentation available on: `http://localhost:8080/swagger-ui/index.html`
-Actuator Endpoints available on: `http://localhost:8080/actuator`
+* Api available on: `http://localhost:8080/drinkit/api/cellars`
+* OpenApi Documentation available on: `http://localhost:8080/swagger-ui/index.html`
+* Actuator Endpoints available on: `http://localhost:8080/actuator`
 
 ### Frontend
 
@@ -34,5 +34,5 @@ npm run generate:client-api
 npm run dev
 ```
 
-Frontend application available on: `http://localhost:3000/cellars`
+* Frontend application available on: `http://localhost:3000/cellars`
 
