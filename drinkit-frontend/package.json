@@ -6,12 +6,18 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "generate:client-api": "openapi-generator-cli generate -i ../drinkit-api-contract/contract/api-definition.yaml -g typescript-fetch -o ./src/openapi/ --config=./openapi-config.yml",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.7.0",
     "nuxt": "^3.9.0",
+    "nuxt-primevue": "^0.2.2",
     "vue": "^3.4.6",
     "vue-router": "^4.2.5"
+  },
+  "dependencies": {
+    "primevue": "^3.46.0"
   }
 }

@@ -1,0 +1,3 @@
+additionalProperties:
+  legacyDiscriminatorBehavior: false
+  stringEnums: false
