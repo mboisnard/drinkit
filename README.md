@@ -1,5 +1,14 @@
 # DrinkIt
 
+## Technologies
+
+* Java 21
+* Node 20.11.0
+* Gradle
+* Spring Boot 3.2.1 + Kotlin
+* Nuxt 3
+* OpenApi to generate frontend files and Backend Apis
+
 ## How to run the app
 
 ### Backend
@@ -9,6 +18,8 @@
 ```
 
 Api available on: `http://localhost:8080/drinkit/api/cellars`
+OpenApi Documentation available on: `http://localhost:8080/swagger-ui/index.html`
+Actuator Endpoints available on: `http://localhost:8080/actuator`
 
 ### Frontend
 
