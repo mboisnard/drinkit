@@ -35,5 +35,6 @@
   },*/
   css: [
       'primevue/resources/themes/lara-light-blue/theme.css',
+      'primeicons/primeicons.css',
   ]
 });

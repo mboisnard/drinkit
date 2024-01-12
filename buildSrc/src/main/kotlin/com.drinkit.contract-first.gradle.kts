@@ -31,7 +31,7 @@ openApiGenerate {
             "useTags" to "true", // Use the defined tags in the yaml file to create interfaces and class names
             "useSpringBoot3" to "true", // Use jakarta annotations in generated code, jakarta libraries are imported by spring boot dependencies
             "sourceFolder" to "",
-            "enumPropertyNaming" to "UPPERCASE"
+            "enumPropertyNaming" to "UPPERCASE",
         )
     )
 
@@ -48,7 +48,7 @@ openApiGenerate {
 
     additionalProperties.set(
         mapOf(
-            "removeEnumValuePrefix" to "false" // Disable enum stripping on generated code
+            "removeEnumValuePrefix" to "false", // Disable enum stripping on generated code
         )
     )
 }
