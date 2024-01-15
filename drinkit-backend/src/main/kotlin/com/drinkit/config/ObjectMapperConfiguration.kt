@@ -8,6 +8,8 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+
 
 @Configuration
 class ObjectMapperConfiguration {
@@ -18,14 +20,21 @@ class ObjectMapperConfiguration {
         val mapper = ObjectMapper()
 
         mapper.registerModules(
+            AbstractIdJacksonModule(),
             JavaTimeModule(),
             Jdk8Module(),
             KotlinModule.Builder()
                 .configure(KotlinFeature.NullIsSameAsDefault, true)
                 .build(),
-            AbstractIdJacksonModule(),
         )
 
         return mapper
+    }
+
+    // Can be removed when deleting WebConfig
+    @Bean
+    @Primary
+    fun mappingJackson2HttpMessageConverter(objectMapper: ObjectMapper): MappingJackson2HttpMessageConverter {
+        return MappingJackson2HttpMessageConverter(objectMapper)
     }
 }

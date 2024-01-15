@@ -39,8 +39,8 @@
     }
   }
 
-  async function deleteCellar(cellarId: any) {
-    await api.deleteCellar({ cellarId: cellarId.value });
+  async function deleteCellar(cellarId: string) {
+    await api.deleteCellar({ cellarId: cellarId });
     await findCellars();
   }
 </script>
