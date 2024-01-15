@@ -4,14 +4,14 @@ info:
   description: Drink It Apis for frontend/backend communication
   version: 1.0.0
 servers:
-  - url: http://127.0.0.1:8080
+  - url: http://127.0.0.1:8080/drinkit/
     description: Dev server
 tags:
   - name: cellars
     description: Operations on cellars
 
 paths:
-  /drinkit/api/cellars:
+  /api/cellars:
     get:
       operationId: findCellars
       tags:
@@ -52,7 +52,7 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/CellarId'
-  /drinkit/api/cellars/{cellarId}:
+  /api/cellars/{cellarId}:
     delete:
       operationId: deleteCellar
       tags:

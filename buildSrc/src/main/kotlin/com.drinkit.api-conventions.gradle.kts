@@ -15,6 +15,6 @@ springBoot {
 }
 
 gitProperties {
-    gitPropertiesName = "app-revision.properties"
+    gitPropertiesName = "git.properties"
     keys = listOf("git.branch", "git.commit.id", "git.commit.time", "git.commit.message.short")
 }

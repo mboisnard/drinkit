@@ -3,24 +3,17 @@ package com.drinkit.cellars.api
 import com.drinkit.api.generated.api.CellarsApiDelegate
 import com.drinkit.api.generated.model.*
 import com.drinkit.cellar.*
-import com.drinkit.common.toOptional
 import com.drinkit.user.ANONYMOUS_USER
-import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.context.request.NativeWebRequest
-import org.springframework.web.context.request.ServletWebRequest
-import java.util.*
 
 @Service
 internal class CellarsApi(
-    private val request: HttpServletRequest?,
     private val createCellar: CreateCellar,
     private val deleteCellar: DeleteCellar,
     private val findCellars: FindCellars,
 ): CellarsApiDelegate {
-    override fun getRequest(): Optional<NativeWebRequest> = request?.let { ServletWebRequest(it) }.toOptional()
 
     override fun createCellar(createCellarRequest: CreateCellarRequest): ResponseEntity<CellarId> {
         val command = createCellarRequest.toCommand()

@@ -10,6 +10,7 @@ class DeleteCellar(
     private val cellarReadRepository: CellarReadRepository,
 ) {
     private val logger = KotlinLogging.logger { }
+
     operator fun invoke(cellarId: CellarId, connectedUser: User) {
         val cellar = cellarReadRepository.findById(cellarId) ?: throw IllegalStateException("Cellar not found")
 

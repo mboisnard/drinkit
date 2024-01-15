@@ -7,6 +7,8 @@ dependencies {
     implementation(project(":drinkit-domain"))
     implementation(project(":drinkit-infra"))
 
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
     openApiInput(project(":drinkit-api-contract", "openApi"))
 }
 

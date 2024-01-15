@@ -36,6 +36,12 @@ npm run dev
 
 * Frontend application available on: `http://localhost:3000/cellars`
 
+## Wine & Spirit Application Examples
+
+* https://www.akiani.fr/realisations/application-de-gestion-de-caves-a-vins-et-spiritueux/
+* Vivino
+* Wine Searcher
+* Ploc
 
 ## Api for wine/spirits scrapper
 

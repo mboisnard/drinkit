@@ -1,1 +1,30 @@
 spring.application.name: drinkit
+
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /drinkit
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+  info:
+    git:
+      enabled: true
+      mode: full
+    build:
+      enabled: true
+    java:
+      enabled: true
+
+springdoc:
+  api-docs:
+    path: /openapi/api-docs
+  swagger-ui:
+    path: /openapi/swagger-ui.html
+  show-actuator: true
