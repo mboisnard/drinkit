@@ -36,3 +36,33 @@ npm run dev
 
 * Frontend application available on: `http://localhost:3000/cellars`
 
+
+## Api for wine/spirits scrapper
+
+* https://github.com/DrinkDistiller/api-docs/wiki/Spirits
+* https://www.openwinedata.fr/catalog
+* https://rapidapi.com/blog/best-beer-wine-alcohol-api/
+* https://rapidapi.com/thecocktaildb/api/the-cocktail-db
+
+
+## Wine Bottle Size
+
+https://en.wikipedia.org/wiki/Wine_bottle#Sizes
+
+* Flacon - 0.1L
+* Piccolo - 0.2L
+* Chopine - 0.25L
+* Demi-bouteille - 0.375L
+* Pot - 0.5L
+* Clavelin - 0.62L
+* Bouteille - 0.75L
+* Magnum - 1.5L
+* Marie-Jeanne - 2.25L
+* Double Magnum - 3.0L
+* Réhoboam - 4.5L
+* Jéroboam - 5.25L
+* Impériale - 6.0L
+* Salmanazar - 9.0L
+* Balthazar - 12.0L
+* Nabuchodonosor - 15.0L
+* Melchior - 18.0L
