@@ -24,12 +24,13 @@ class SecurityConfiguration {
                 it.requestMatchers("/admin/**").hasRole("ADMIN")
                     .requestMatchers("/api/**").hasAnyRole("USER")
                     .requestMatchers("/login/**").permitAll()
-                    .requestMatchers("/actuator/**").hasRole("ADMIN")
+                    .requestMatchers("/actuator/**").hasRole("USER")
                     .requestMatchers("/openapi/**").hasRole("USER")
                     .anyRequest().authenticated()
             }
             .httpBasic(Customizer.withDefaults())
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.ALWAYS) }
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.ALWAYS).maximumSessions(1) }
+            .formLogin(Customizer.withDefaults())
 
         return http.build()
     }

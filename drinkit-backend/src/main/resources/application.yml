@@ -1,4 +1,7 @@
-spring.application.name: drinkit
+spring:
+  application.name: drinkit
+  profiles:
+    active: dev
 
 server:
   port: ${PORT:8080}
@@ -22,10 +25,11 @@ management:
     java:
       enabled: true
 
-
 springdoc:
   api-docs:
     path: /openapi/api-docs
+    enabled: false
   swagger-ui:
     path: /openapi/ui
+    enabled: false
   show-actuator: true
