@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
@@ -20,13 +19,13 @@ class SecurityConfiguration {
     @Bean
     @Throws(Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http.csrf { obj: CsrfConfigurer<HttpSecurity> -> obj.disable() }
+        http.csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers("/admin/**").hasRole("ADMIN")
                     .requestMatchers("/api/**").hasAnyRole("USER")
                     .requestMatchers("/login/**").permitAll()
                     .requestMatchers("/actuator/**").hasRole("ADMIN")
-                    .requestMatchers("/openapi/**").permitAll()
+                    .requestMatchers("/openapi/**").hasRole("USER")
                     .anyRequest().authenticated()
             }
             .httpBasic(Customizer.withDefaults())

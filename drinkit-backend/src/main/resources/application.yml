@@ -22,9 +22,10 @@ management:
     java:
       enabled: true
 
+
 springdoc:
   api-docs:
     path: /openapi/api-docs
   swagger-ui:
-    path: /openapi/swagger-ui.html
+    path: /openapi/ui
   show-actuator: true

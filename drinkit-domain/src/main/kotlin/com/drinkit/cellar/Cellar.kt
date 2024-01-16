@@ -6,6 +6,7 @@ import com.drinkit.common.Constants
 import com.drinkit.common.Constants.ID_REGEX
 import com.drinkit.common.Constants.MAX_CELLAR_NAME_LENGTH
 import com.drinkit.common.IdGenerator
+import com.drinkit.user.User
 import com.drinkit.user.UserId
 
 data class CellarId(
@@ -37,4 +38,8 @@ data class Cellar(
     val name: CellarName,
     val location: CityLocation,
     val owner: UserId,
-)
+) {
+
+    fun canBeSeenBy(user: User): Boolean =
+        user.id == owner || user.isAdmin
+}

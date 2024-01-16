@@ -14,13 +14,11 @@ class DeleteCellar(
     operator fun invoke(cellarId: CellarId, connectedUser: User) {
         val cellar = cellarReadRepository.findById(cellarId) ?: throw IllegalStateException("Cellar not found")
 
-        if (connectedUser.isCellarOwner(cellar) || connectedUser.isAdmin) {
+        if (cellar.canBeSeenBy(connectedUser)) {
             logger.info { "Removing cellar $cellarId, author: ${connectedUser.id}" }
             cellarWriteRepository.delete(cellarId)
         } else {
             throw IllegalStateException("Not authorized to delete cellar $cellarId")
         }
     }
-
-    private fun User.isCellarOwner(cellar: Cellar): Boolean = id == cellar.owner
 }
