@@ -36,6 +36,10 @@ npm run dev
 
 * Frontend application available on: `http://localhost:3000/cellars`
 
+## Global view of this project
+
+<img src="./docs/DrinkIt.png" alt="DrinkIt Global View" width="1000" height="1000">
+
 ## Wine & Spirit Application Examples
 
 * https://www.akiani.fr/realisations/application-de-gestion-de-caves-a-vins-et-spiritueux/
