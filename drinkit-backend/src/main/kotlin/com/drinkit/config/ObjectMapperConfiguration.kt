@@ -30,11 +30,4 @@ class ObjectMapperConfiguration {
 
         return mapper
     }
-
-    // Can be removed when deleting WebConfig
-    @Bean
-    @Primary
-    fun mappingJackson2HttpMessageConverter(objectMapper: ObjectMapper): MappingJackson2HttpMessageConverter {
-        return MappingJackson2HttpMessageConverter(objectMapper)
-    }
 }

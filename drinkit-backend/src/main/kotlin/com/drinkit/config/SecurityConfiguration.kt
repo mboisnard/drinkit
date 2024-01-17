@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 
 @Configuration
@@ -20,6 +22,16 @@ class SecurityConfiguration {
     @Throws(Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { it.disable() }
+            .cors {
+                val configuration = CorsConfiguration()
+                configuration.allowedOrigins = listOf("*")
+                configuration.allowedMethods = listOf("GET", "POST", "DELETE", "HEAD", "PUT")
+
+                val source = UrlBasedCorsConfigurationSource()
+                source.registerCorsConfiguration("/**", configuration)
+
+                it.configurationSource(source)
+            }
             .authorizeHttpRequests {
                 it.requestMatchers("/admin/**").hasRole("ADMIN")
                     .requestMatchers("/api/**").hasAnyRole("USER")
