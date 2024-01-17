@@ -12,7 +12,8 @@ server:
         http-only: true
         secure: true
         name: SESSIONID
-        same-site: strict
+        same-site: none
+        path: /
       tracking-modes: cookie
       timeout: 15m
 
