@@ -6,3 +6,6 @@ include("drinkit-api-contract")
 include("drinkit-backend")
 include("drinkit-domain")
 include("drinkit-infra")
+
+include("upgrader")
+project(":upgrader").projectDir = file("deployment/upgrader")
