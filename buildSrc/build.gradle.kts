@@ -12,6 +12,7 @@ dependencies {
     implementation(pluginLibs.all.open.plugin)
     implementation(pluginLibs.gradle.git.properties.plugin)
     implementation(pluginLibs.gradle.kotlin.plugin)
+    implementation(pluginLibs.jooq.codegen.gradle.plugin)
     implementation(pluginLibs.openapi.generator.plugin)
     implementation(pluginLibs.spring.boot.gradle.plugin)
 }
