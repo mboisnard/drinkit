@@ -5,9 +5,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/drinkit
     username: drinkit
     password: admin
-  sql:
-    init:
-      platform:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yml
