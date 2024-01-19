@@ -11,5 +11,6 @@ services:
     volumes:
       - postgresql-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: "drinkit"
-      POSTGRES_PASSWORD: "drinkit"
+      POSTGRES_DB: drinkit
+      POSTGRES_USER: drinkit
+      POSTGRES_PASSWORD: admin

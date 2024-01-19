@@ -1,6 +1,6 @@
 [versions]
 gradle-git-properties = "2.4.1"
-kotlin = "1.9.21"
+kotlin = "1.9.22"
 openapi-generator = "7.0.1"
 spring-boot = "3.2.1"
 jooq = "3.19.2"

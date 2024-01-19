@@ -1,11 +1,11 @@
-package com.drinkit.upgrader
+package com.drinkit.updater
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class UpgraderApplication
+class UpdaterApplication
 
 fun main(args: Array<String>) {
-    runApplication<UpgraderApplication>(*args)
+    runApplication<UpdaterApplication>(*args)
 }
