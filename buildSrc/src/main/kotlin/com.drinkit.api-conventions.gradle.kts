@@ -1,5 +1,6 @@
 plugins {
     id("com.drinkit.common-conventions")
+    id("org.springframework.boot")
 
     id("com.gorylenko.gradle-git-properties")
 }

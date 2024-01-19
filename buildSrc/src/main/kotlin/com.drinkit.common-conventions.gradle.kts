@@ -1,3 +1,4 @@
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -7,8 +8,16 @@ plugins {
     kotlin("plugin.spring") // Use allopen plugin to open Kotlin Spring Beans https://kotlinlang.org/docs/all-open-plugin.html
     id("idea")
 
-    id("org.springframework.boot")
     id("io.spring.dependency-management")
+}
+
+// Use the Spring Dependency Management BOM without importing the spring-boot plugin
+// We don't want to use the spring-boot plugin in this common convention used ether by libraries and applications
+// https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/htmlsingle/#managing-dependencies.dependency-management-plugin.using-in-isolation
+the<DependencyManagementExtension>().apply {
+    imports {
+        mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    }
 }
 
 group = "com.drinkit"
