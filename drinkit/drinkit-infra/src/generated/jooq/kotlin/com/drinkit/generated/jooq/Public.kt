@@ -5,6 +5,7 @@ package com.drinkit.generated.jooq
 
 
 import com.drinkit.generated.jooq.tables.Cellar
+import com.drinkit.generated.jooq.tables.User
 
 import kotlin.collections.List
 
@@ -31,9 +32,15 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
      */
     val CELLAR: Cellar get() = Cellar.CELLAR
 
+    /**
+     * The table <code>public.user</code>.
+     */
+    val USER: User get() = User.USER
+
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
-        Cellar.CELLAR
+        Cellar.CELLAR,
+        User.USER
     )
 }

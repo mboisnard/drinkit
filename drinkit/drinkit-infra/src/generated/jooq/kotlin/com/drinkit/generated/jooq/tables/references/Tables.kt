@@ -5,6 +5,7 @@ package com.drinkit.generated.jooq.tables.references
 
 
 import com.drinkit.generated.jooq.tables.Cellar
+import com.drinkit.generated.jooq.tables.User
 
 
 
@@ -12,3 +13,8 @@ import com.drinkit.generated.jooq.tables.Cellar
  * The table <code>public.cellar</code>.
  */
 val CELLAR: Cellar = Cellar.CELLAR
+
+/**
+ * The table <code>public.user</code>.
+ */
+val USER: User = User.USER
