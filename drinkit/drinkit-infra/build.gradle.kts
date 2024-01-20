@@ -28,7 +28,7 @@ jooq {
             }
             database {
                 name = "org.jooq.meta.postgres.PostgresDatabase"
-                includes = "cellar | user"
+                includes = "cellar | user | role"
                 inputSchema = "public"
             }
             target {

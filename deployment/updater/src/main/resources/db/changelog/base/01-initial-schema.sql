@@ -32,3 +32,17 @@ CREATE TABLE IF NOT EXISTS public.user(
     enabled BOOLEAN NOT NULL DEFAULT FALSE,
     modified TIMESTAMP NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS user_email_idx
+    ON public.user (email);
+
+-- Role
+
+CREATE TABLE IF NOT EXISTS public.role(
+    user_id VARCHAR(24) NOT NULL,
+    authority VARCHAR(50) NOT NULL,
+    CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES public.user(id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS user_id_authority_idx
+    ON public.role (user_id, authority);
