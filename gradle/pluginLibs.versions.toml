@@ -4,7 +4,7 @@ jooq = "3.19.2"
 kotlin = "1.9.22"
 openapi-generator = "7.0.1"
 spring-dependency-management = "1.1.4"
-spring-boot = "3.2.1"
+spring-boot = "3.2.2"
 
 [libraries]
 all-open-plugin = { module = "org.jetbrains.kotlin.plugin.allopen:org.jetbrains.kotlin.plugin.allopen.gradle.plugin", version.ref = "kotlin" }
