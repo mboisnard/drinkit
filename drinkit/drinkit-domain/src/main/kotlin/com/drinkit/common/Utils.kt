@@ -6,6 +6,8 @@ import java.util.Optional
 fun <T : Any> T?.toOptional(): Optional<T> =
     Optional.ofNullable(this)
 
+fun <T> Optional<T>.orNull(): T? = this.orElse(null)
+
 fun BigDecimal.isBetween(min: Double, max: Double): Boolean =
     this.isBetween(BigDecimal.valueOf(min), BigDecimal.valueOf(max))
 
