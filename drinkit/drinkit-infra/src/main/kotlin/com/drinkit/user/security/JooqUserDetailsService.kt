@@ -17,11 +17,11 @@ internal class JooqUserDetailsService(
             .fetchOne(USER, USER.EMAIL.eq(username))
             ?.let {
                 SecurityUser(
-                    id = UserId(it.id!!),
-                    username = it.email!!,
-                    password = it.password!!,
-                    authorities = emptySet(),
-                    enabled = it.enabled!!,
+                    id = UserId(it.id),
+                    username = it.email,
+                    password = it.password,
+                    authorities = setOf(ROLE_USER),
+                    enabled = it.enabled,
                 )
             } ?: throw UsernameNotFoundException(username)
     }

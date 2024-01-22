@@ -27,9 +27,9 @@ CREATE TABLE IF NOT EXISTS public.user(
     lastname VARCHAR(100) NOT NULL,
     birthdate DATE NOT NULL,
     email VARCHAR(255) NOT NULL,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(100) NOT NULL,
     lastConnection TIMESTAMP,
-    enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    enabled BOOLEAN NOT NULL,
     modified TIMESTAMP NOT NULL
 );
 

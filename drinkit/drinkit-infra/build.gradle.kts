@@ -37,7 +37,9 @@ jooq {
                 inputSchema = "public"
             }
             generate {
-                isKotlinNotNullPojoAttributes = true
+                isKotlinNotNullPojoAttributes = true // Generate non-nullable types on POJO attributes, where column is not null
+                isKotlinNotNullRecordAttributes = true // Generate non-nullable types on Record attributes, where column is not null
+                isKotlinNotNullInterfaceAttributes = true // Generate non-nullable types on interface attributes, where column is not null
                 isPojosAsKotlinDataClasses = true
             }
             target {

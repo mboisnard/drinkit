@@ -6,8 +6,6 @@ package com.drinkit.generated.jooq.tables
 
 import com.drinkit.generated.jooq.Public
 import com.drinkit.generated.jooq.indexes.USER_ID_AUTHORITY_IDX
-import com.drinkit.generated.jooq.keys.ROLE__FK_USER
-import com.drinkit.generated.jooq.tables.User.UserPath
 import com.drinkit.generated.jooq.tables.records.RoleRecord
 
 import kotlin.collections.Collection
@@ -19,7 +17,6 @@ import org.jooq.ForeignKey
 import org.jooq.Index
 import org.jooq.InverseForeignKey
 import org.jooq.Name
-import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
@@ -31,7 +28,6 @@ import org.jooq.Table
 import org.jooq.TableField
 import org.jooq.TableOptions
 import org.jooq.impl.DSL
-import org.jooq.impl.Internal
 import org.jooq.impl.SQLDataType
 import org.jooq.impl.TableImpl
 
@@ -101,37 +97,8 @@ open class Role(
      * Create a <code>public.role</code> table reference
      */
     constructor(): this(DSL.name("role"), null)
-
-    constructor(path: Table<out Record>, childPath: ForeignKey<out Record, RoleRecord>?, parentPath: InverseForeignKey<out Record, RoleRecord>?): this(Internal.createPathAlias(path, childPath, parentPath), path, childPath, parentPath, ROLE, null, null)
-
-    /**
-     * A subtype implementing {@link Path} for simplified path-based joins.
-     */
-    open class RolePath : Role, Path<RoleRecord> {
-        constructor(path: Table<out Record>, childPath: ForeignKey<out Record, RoleRecord>?, parentPath: InverseForeignKey<out Record, RoleRecord>?): super(path, childPath, parentPath)
-        private constructor(alias: Name, aliased: Table<RoleRecord>): super(alias, aliased)
-        override fun `as`(alias: String): RolePath = RolePath(DSL.name(alias), this)
-        override fun `as`(alias: Name): RolePath = RolePath(alias, this)
-        override fun `as`(alias: Table<*>): RolePath = RolePath(alias.qualifiedName, this)
-    }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
     override fun getIndexes(): List<Index> = listOf(USER_ID_AUTHORITY_IDX)
-    override fun getReferences(): List<ForeignKey<RoleRecord, *>> = listOf(ROLE__FK_USER)
-
-    private lateinit var _user: UserPath
-
-    /**
-     * Get the implicit join path to the <code>public.user</code> table.
-     */
-    fun user(): UserPath {
-        if (!this::_user.isInitialized)
-            _user = UserPath(this, ROLE__FK_USER, null)
-
-        return _user;
-    }
-
-    val user: UserPath
-        get(): UserPath = user()
     override fun `as`(alias: String): Role = Role(DSL.name(alias), this)
     override fun `as`(alias: Name): Role = Role(alias, this)
     override fun `as`(alias: Table<*>): Role = Role(alias.qualifiedName, this)

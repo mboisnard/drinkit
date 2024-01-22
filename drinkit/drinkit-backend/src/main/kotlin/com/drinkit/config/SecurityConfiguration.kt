@@ -1,6 +1,5 @@
 package com.drinkit.config
 
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
@@ -13,17 +12,17 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler
+import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter
+import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter.Directive.COOKIES
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfiguration(
-    @Value("\${server.servlet.session.cookie.name}")
-    private val sessionCookieName: String
-) {
+class SecurityConfiguration {
 
     @Bean
     @Throws(Exception::class)
@@ -54,7 +53,7 @@ class SecurityConfiguration(
                 it.logoutUrl("/api/logout")
                     .permitAll()
                     .logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-                    .deleteCookies(sessionCookieName)
+                    .addLogoutHandler(HeaderWriterLogoutHandler(ClearSiteDataHeaderWriter(COOKIES)))
             }
 
         return http.build()
