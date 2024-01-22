@@ -4,11 +4,13 @@ info:
   description: Drink It Apis for frontend/backend communication
   version: 1.0.0
 servers:
-  - url: http://127.0.0.1:8080/drinkit/
+  - url: http://127.0.0.1:8080/
     description: Dev server
 tags:
   - name: cellars
     description: Operations on cellars
+  - name: auth
+    description: Authentication operations
 
 paths:
   /api/cellars:
@@ -52,6 +54,7 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/CellarId'
+
   /api/cellars/{cellarId}:
     delete:
       operationId: deleteCellar
@@ -67,3 +70,23 @@ paths:
           description: Unauthorized
         '204':
           description: Cellar Deleted
+
+  /api/auth/login:
+    post:
+      operationId: authenticateUser
+      tags:
+        - auth
+      summary: Authenticate a user
+      description: |
+        Authenticate user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'authParameters.yaml#/components/schemas/SignInRequest'
+      responses:
+        '401':
+          description: Unauthorized
+        '200':
+          description: User signed in

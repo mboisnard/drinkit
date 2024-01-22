@@ -1,0 +1,20 @@
+openapi: 3.0.3
+info:
+  title: common components for auth api
+  version: 1.0.0
+  x-fragment: true
+paths: {}
+components:
+  schemas:
+    SignInRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 2
+        password:
+          type: string
+          minLength: 2

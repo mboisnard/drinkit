@@ -2,11 +2,7 @@ package com.drinkit.user.security
 
 import com.drinkit.user.UserId
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-
-val ROLE_ADMIN = SimpleGrantedAuthority("ROLE_ADMIN")
-val ROLE_USER = SimpleGrantedAuthority("ROLE_USER")
 
 data class SecurityUser(
     val id: UserId,

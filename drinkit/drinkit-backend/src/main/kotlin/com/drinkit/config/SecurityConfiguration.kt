@@ -2,10 +2,12 @@ package com.drinkit.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
-import org.springframework.security.config.Customizer
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -16,8 +18,6 @@ import org.springframework.security.web.authentication.logout.HeaderWriterLogout
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter.Directive.COOKIES
-import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 
 @Configuration
@@ -28,29 +28,18 @@ class SecurityConfiguration {
     @Throws(Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { it.disable() }
-            .cors {
-                val configuration = CorsConfiguration()
-                configuration.allowedOrigins = listOf("*")
-                configuration.allowedMethods = listOf("GET", "POST", "DELETE", "HEAD", "PUT")
-
-                val source = UrlBasedCorsConfigurationSource()
-                source.registerCorsConfiguration("/**", configuration)
-
-                it.configurationSource(source)
-            }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/**").hasAnyRole("USER")
-                    .requestMatchers("/login/**").permitAll()
+                it
+                    .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                    .requestMatchers("/api/**").hasAnyRole("USER")
                     .requestMatchers("/actuator/**").hasRole("USER")
                     .requestMatchers("/openapi/**").hasRole("USER")
                     .anyRequest().denyAll()
             }
-            .httpBasic(Customizer.withDefaults())
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.ALWAYS).maximumSessions(1) }
             //.headers { it.frameOptions { it.sameOrigin() } }
-            .formLogin(Customizer.withDefaults())
             .logout {
-                it.logoutUrl("/api/logout")
+                it.logoutUrl("/api/auth/logout")
                     .permitAll()
                     .logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
                     .addLogoutHandler(HeaderWriterLogoutHandler(ClearSiteDataHeaderWriter(COOKIES)))
@@ -72,4 +61,10 @@ class SecurityConfiguration {
 
         return provider
     }
+
+    @Bean
+    @Throws(java.lang.Exception::class)
+    fun authenticationManager(
+        configuration: AuthenticationConfiguration
+    ): AuthenticationManager = configuration.authenticationManager
 }
