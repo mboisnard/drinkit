@@ -2,6 +2,7 @@ spring:
   application.name: drinkit
   profiles:
     active: dev
+  sql.init.mode: never
 
 server:
   port: ${PORT:8080}
@@ -42,3 +43,8 @@ springdoc:
     path: /openapi/ui
     enabled: false
   show-actuator: true
+
+# Remove Jooq logo & tip of the day log
+logging:
+  level:
+    org.jooq.Constants: off

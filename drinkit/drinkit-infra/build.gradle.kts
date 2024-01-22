@@ -7,12 +7,17 @@ plugins {
 dependencies {
     implementation(project(":drinkit-domain"))
 
+    // Database dependencies
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.postgresql:postgresql")
-    implementation(libs.jooq)
+    implementation("org.jooq:jooq:3.19.2") //Fix version with plaform module with constraints
     implementation(libs.bson)
 
     jooqCodegen("org.postgresql:postgresql")
+
+    // Spring Security dependencies
+    implementation("org.springframework.security:spring-security-core")
+    implementation("org.springframework.security:spring-security-crypto")
 }
 
 jooq {
@@ -31,10 +36,26 @@ jooq {
                 includes = "cellar | user | role"
                 inputSchema = "public"
             }
+            generate {
+                isKotlinNotNullPojoAttributes = true
+                isPojosAsKotlinDataClasses = true
+            }
             target {
                 packageName = "com.drinkit.generated.jooq"
                 directory = "src/generated/jooq/kotlin"
             }
+
+            strategy {
+                name = "org.jooq.codegen.DefaultGeneratorStrategy"
+            }
+        }
+    }
+}
+
+kotlin {
+    sourceSets {
+        main {
+            kotlin.srcDir(tasks.jooqCodegen)
         }
     }
 }
