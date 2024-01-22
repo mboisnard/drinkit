@@ -1,23 +1,29 @@
 package com.drinkit.config
 
-import com.drinkit.user.security.JooqUserDetailsService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfiguration {
+class SecurityConfiguration(
+    @Value("\${server.servlet.session.cookie.name}")
+    private val sessionCookieName: String
+) {
 
     @Bean
     @Throws(Exception::class)
@@ -34,26 +40,37 @@ class SecurityConfiguration {
                 it.configurationSource(source)
             }
             .authorizeHttpRequests {
-                it.requestMatchers("/admin/**").hasRole("ADMIN")
-                    .requestMatchers("/api/**").hasAnyRole("USER")
+                it.requestMatchers("/api/**").hasAnyRole("USER")
                     .requestMatchers("/login/**").permitAll()
                     .requestMatchers("/actuator/**").hasRole("USER")
                     .requestMatchers("/openapi/**").hasRole("USER")
-                    .anyRequest().authenticated()
+                    .anyRequest().denyAll()
             }
             .httpBasic(Customizer.withDefaults())
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.ALWAYS).maximumSessions(1) }
             //.headers { it.frameOptions { it.sameOrigin() } }
             .formLogin(Customizer.withDefaults())
+            .logout {
+                it.logoutUrl("/api/logout")
+                    .permitAll()
+                    .logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
+                    .deleteCookies(sessionCookieName)
+            }
 
         return http.build()
     }
 
     @Bean
-    fun authenticationProvider(jooqUserDetailsService: JooqUserDetailsService): AuthenticationProvider {
+    fun authenticationProvider(
+        userDetailsService: UserDetailsService,
+        passwordEncoder: PasswordEncoder,
+    ): AuthenticationProvider {
+
         val provider = DaoAuthenticationProvider()
-        provider.setUserDetailsService(jooqUserDetailsService)
-        provider.setPasswordEncoder(BCryptPasswordEncoder())
+
+        provider.setUserDetailsService(userDetailsService)
+        provider.setPasswordEncoder(passwordEncoder)
+
         return provider
     }
 }

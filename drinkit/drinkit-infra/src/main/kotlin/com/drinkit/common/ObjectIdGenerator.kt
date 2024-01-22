@@ -1,9 +1,9 @@
 package com.drinkit.common
 
 import org.bson.types.ObjectId
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 
-@Service
+@Component
 internal class ObjectIdGenerator: IdGenerator {
 
     override fun createNewId(): String = ObjectId().toHexString()

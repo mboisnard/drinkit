@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
-class JooqUserDetailsService(
+internal class JooqUserDetailsService(
     private val dslContext: DSLContext,
 ): UserDetailsService {
     override fun loadUserByUsername(username: String): UserDetails {
