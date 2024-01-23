@@ -3,7 +3,8 @@ package com.drinkit.cellars.api
 import com.drinkit.api.generated.api.CellarsApiDelegate
 import com.drinkit.api.generated.model.*
 import com.drinkit.cellar.*
-import com.drinkit.user.ANONYMOUS_USER
+import com.drinkit.config.ConnectedUser
+import com.drinkit.config.ConnectedUserException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -13,7 +14,10 @@ internal class CellarsApi(
     private val createCellar: CreateCellar,
     private val deleteCellar: DeleteCellar,
     private val findCellars: FindCellars,
+    private val connectedUser: ConnectedUser?,
 ): CellarsApiDelegate {
+
+    fun connectedUser() = connectedUser?.getOrFail() ?: throw ConnectedUserException("No connected user bean")
 
     override fun createCellar(createCellarRequest: CreateCellarRequest): ResponseEntity<CellarId> {
         val command = createCellarRequest.toCommand()
@@ -25,12 +29,12 @@ internal class CellarsApi(
     }
 
     override fun deleteCellar(cellarId: CellarId): ResponseEntity<Unit> {
-        deleteCellar(cellarId, ANONYMOUS_USER)
+        deleteCellar(cellarId, connectedUser())
         return ResponseEntity.noContent().build()
     }
 
     override fun findCellars(): ResponseEntity<CellarsResponse> {
-        val cellars = findCellars.byOwnerId(ANONYMOUS_USER.id)
+        val cellars = findCellars.byOwnerId(connectedUser().id)
             .map { it.toResponse() }
             .toList()
 
@@ -41,7 +45,7 @@ internal class CellarsApi(
         CreateCellarCommand(
             name = CellarName(name),
             location = location.toDomain(),
-            owner = ANONYMOUS_USER,
+            owner = connectedUser(),
         )
 
     private fun CityLocation.toDomain() =

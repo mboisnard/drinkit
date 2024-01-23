@@ -3,7 +3,7 @@ package com.drinkit.security.userdetails
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
-data class User(
+data class InternalUserDetails(
     val id: String,
     @get:JvmName("_username")
     val username: String,

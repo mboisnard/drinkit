@@ -96,14 +96,3 @@ data class User(
 ) {
     val isAdmin = roles.values.contains(Roles.Role.ROLE_ADMIN)
 }
-
-val ANONYMOUS_USER = User(
-    id = UserId("659ee3164b1d53340c4f7608"),
-    firstname = FirstName("Anonymous"),
-    lastName = LastName("Anonymous"),
-    birthDate = null,
-    email = Email("anonymous@gmail.com"),
-    lastConnection = null,
-    roles = Roles(setOf(Roles.Role.ROLE_USER)),
-    enabled = true,
-)

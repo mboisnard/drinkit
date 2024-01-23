@@ -14,3 +14,9 @@ server:
         path: /
       tracking-modes: cookie
       timeout: 15m
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

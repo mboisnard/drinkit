@@ -21,8 +21,8 @@ internal class JooqUserWithRolesView(
     val roles: List<RoleRecord>,
 ) : Record by user {
 
-    fun toSecurityUser(): User =
-        User(
+    fun toSecurityUser(): InternalUserDetails =
+        InternalUserDetails(
             id = user.id,
             username = user.email,
             password = user.password,
@@ -32,7 +32,7 @@ internal class JooqUserWithRolesView(
 }
 
 internal fun interface UserDetailsRepository {
-    fun findByEmail(email: String): User?
+    fun findByEmail(email: String): InternalUserDetails?
 }
 
 @Repository
@@ -47,7 +47,7 @@ internal class JooqUserDetailsRepository(
         )
     }
 
-    override fun findByEmail(email: String): User? {
+    override fun findByEmail(email: String): InternalUserDetails? {
         val query = dslContext.select(
             allFields(USER),
             multiset(
