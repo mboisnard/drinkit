@@ -1,9 +1,9 @@
-package com.drinkit.security
+package com.drinkit.security.userdetails
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
-data class SecurityUser(
+data class User(
     val id: String,
     @get:JvmName("_username")
     val username: String,

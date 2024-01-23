@@ -2,8 +2,7 @@ spring:
   application.name: drinkit
   profiles:
     active: dev
-    include: security
-  sql.init.mode: never
+    include: security,postgresql
 
 server:
   port: ${PORT:8080}
@@ -35,8 +34,3 @@ springdoc:
     path: /openapi/ui
     enabled: false
   show-actuator: true
-
-# Remove Jooq logo & tip of the day log
-logging:
-  level:
-    org.jooq.Constants: off

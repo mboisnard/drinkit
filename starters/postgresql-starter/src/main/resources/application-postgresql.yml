@@ -1,0 +1,12 @@
+spring:
+  sql.init.mode: never
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/drinkit
+    username: drinkit
+    password: admin
+
+# Remove Jooq logo & tip of the day log
+logging:
+  level:
+    org.jooq.Constants: off

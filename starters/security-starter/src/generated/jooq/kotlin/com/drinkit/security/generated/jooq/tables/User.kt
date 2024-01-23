@@ -6,7 +6,9 @@ package com.drinkit.security.generated.jooq.tables
 
 import com.drinkit.security.generated.jooq.Public
 import com.drinkit.security.generated.jooq.indexes.USER_EMAIL_IDX
+import com.drinkit.security.generated.jooq.keys.ROLE__FK_USER
 import com.drinkit.security.generated.jooq.keys.USER_PKEY
+import com.drinkit.security.generated.jooq.tables.Role.RolePath
 import com.drinkit.security.generated.jooq.tables.records.UserRecord
 
 import java.time.LocalDate
@@ -21,6 +23,7 @@ import org.jooq.ForeignKey
 import org.jooq.Index
 import org.jooq.InverseForeignKey
 import org.jooq.Name
+import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
@@ -33,6 +36,7 @@ import org.jooq.TableField
 import org.jooq.TableOptions
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
+import org.jooq.impl.Internal
 import org.jooq.impl.SQLDataType
 import org.jooq.impl.TableImpl
 
@@ -82,17 +86,17 @@ open class User(
     /**
      * The column <code>public.user.firstname</code>.
      */
-    val FIRSTNAME: TableField<UserRecord, String?> = createField(DSL.name("firstname"), SQLDataType.VARCHAR(100).nullable(false), this, "")
+    val FIRSTNAME: TableField<UserRecord, String?> = createField(DSL.name("firstname"), SQLDataType.VARCHAR(100), this, "")
 
     /**
      * The column <code>public.user.lastname</code>.
      */
-    val LASTNAME: TableField<UserRecord, String?> = createField(DSL.name("lastname"), SQLDataType.VARCHAR(100).nullable(false), this, "")
+    val LASTNAME: TableField<UserRecord, String?> = createField(DSL.name("lastname"), SQLDataType.VARCHAR(100), this, "")
 
     /**
      * The column <code>public.user.birthdate</code>.
      */
-    val BIRTHDATE: TableField<UserRecord, LocalDate?> = createField(DSL.name("birthdate"), SQLDataType.LOCALDATE.nullable(false), this, "")
+    val BIRTHDATE: TableField<UserRecord, LocalDate?> = createField(DSL.name("birthdate"), SQLDataType.LOCALDATE, this, "")
 
     /**
      * The column <code>public.user.email</code>.
@@ -137,9 +141,37 @@ open class User(
      * Create a <code>public.user</code> table reference
      */
     constructor(): this(DSL.name("user"), null)
+
+    constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UserRecord>?, parentPath: InverseForeignKey<out Record, UserRecord>?): this(Internal.createPathAlias(path, childPath, parentPath), path, childPath, parentPath, USER, null, null)
+
+    /**
+     * A subtype implementing {@link Path} for simplified path-based joins.
+     */
+    open class UserPath : User, Path<UserRecord> {
+        constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UserRecord>?, parentPath: InverseForeignKey<out Record, UserRecord>?): super(path, childPath, parentPath)
+        private constructor(alias: Name, aliased: Table<UserRecord>): super(alias, aliased)
+        override fun `as`(alias: String): UserPath = UserPath(DSL.name(alias), this)
+        override fun `as`(alias: Name): UserPath = UserPath(alias, this)
+        override fun `as`(alias: Table<*>): UserPath = UserPath(alias.qualifiedName, this)
+    }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
     override fun getIndexes(): List<Index> = listOf(USER_EMAIL_IDX)
     override fun getPrimaryKey(): UniqueKey<UserRecord> = USER_PKEY
+
+    private lateinit var _role: RolePath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.role</code> table
+     */
+    fun role(): RolePath {
+        if (!this::_role.isInitialized)
+            _role = RolePath(this, null, ROLE__FK_USER.inverseKey)
+
+        return _role;
+    }
+
+    val role: RolePath
+        get(): RolePath = role()
     override fun `as`(alias: String): User = User(DSL.name(alias), this)
     override fun `as`(alias: Name): User = User(alias, this)
     override fun `as`(alias: Table<*>): User = User(alias.qualifiedName, this)

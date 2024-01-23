@@ -1,11 +1,11 @@
-package com.drinkit.security
+package com.drinkit.security.password.encoder
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 
 @Component
-internal class UserPasswordEncoder: PasswordEncoder {
+internal class InternalUserPasswordEncoder: PasswordEncoder {
 
     private val bCryptPasswordEncoder = BCryptPasswordEncoder()
 

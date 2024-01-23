@@ -25,9 +25,9 @@ CREATE INDEX IF NOT EXISTS cellar_owner_id_idx
 CREATE TABLE IF NOT EXISTS public.user
 (
     id             VARCHAR(24)  NOT NULL PRIMARY KEY,
-    firstname      VARCHAR(100) NOT NULL,
-    lastname       VARCHAR(100) NOT NULL,
-    birthdate      DATE         NOT NULL,
+    firstname      VARCHAR(100),
+    lastname       VARCHAR(100),
+    birthdate      DATE,
     email          VARCHAR(255) NOT NULL,
     password       VARCHAR(100) NOT NULL,
     lastConnection TIMESTAMP,

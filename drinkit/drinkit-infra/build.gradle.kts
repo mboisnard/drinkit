@@ -8,7 +8,7 @@ dependencies {
     implementation(project(":drinkit-domain"))
 
     // Database dependencies
-    implementation(project(":jooq-starter"))
+    implementation(project(":postgresql-starter"))
     implementation("org.jooq:jooq:3.19.2")
     implementation(libs.bson)
 

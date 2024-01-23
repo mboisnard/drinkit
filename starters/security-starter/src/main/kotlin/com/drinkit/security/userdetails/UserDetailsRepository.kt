@@ -1,4 +1,4 @@
-package com.drinkit.security
+package com.drinkit.security.userdetails
 
 
 import com.drinkit.jooq.allFields
@@ -21,8 +21,8 @@ internal class JooqUserWithRolesView(
     val roles: List<RoleRecord>,
 ) : Record by user {
 
-    fun toSecurityUser(): SecurityUser =
-        SecurityUser(
+    fun toSecurityUser(): User =
+        User(
             id = user.id,
             username = user.email,
             password = user.password,
@@ -31,14 +31,14 @@ internal class JooqUserWithRolesView(
         )
 }
 
-fun interface SecurityUserRepository {
-    fun findByEmail(email: String): SecurityUser?
+internal fun interface UserDetailsRepository {
+    fun findByEmail(email: String): User?
 }
 
 @Repository
-internal class JooqSecurityUserRepository(
+internal class JooqUserDetailsRepository(
     private val dslContext: DSLContext,
-) : SecurityUserRepository {
+) : UserDetailsRepository {
 
     private val mapper = RecordMapper<Record2<UserRecord, List<RoleRecord>>, JooqUserWithRolesView> {
         JooqUserWithRolesView(
@@ -47,7 +47,7 @@ internal class JooqSecurityUserRepository(
         )
     }
 
-    override fun findByEmail(email: String): SecurityUser? {
+    override fun findByEmail(email: String): User? {
         val query = dslContext.select(
             allFields(USER),
             multiset(

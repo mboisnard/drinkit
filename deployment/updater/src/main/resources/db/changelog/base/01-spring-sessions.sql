@@ -1,7 +1,7 @@
 --liquibase formatted sql
 --changeset mboisnard:01-spring-sessions logicalFilePath:fixed splitStatements:false runInTransaction:false runOnChange:true
 
-CREATE TABLE IF NOT EXISTS public.SPRING_SESSION
+CREATE TABLE IF NOT EXISTS public.spring_session
 (
     primary_id            CHAR(36) NOT NULL PRIMARY KEY,
     session_id            CHAR(36) NOT NULL,
