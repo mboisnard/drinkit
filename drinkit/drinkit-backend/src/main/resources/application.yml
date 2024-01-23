@@ -2,24 +2,13 @@ spring:
   application.name: drinkit
   profiles:
     active: dev
+    include: security
   sql.init.mode: never
-  session:
-    jdbc:
-      initialize-schema: never
 
 server:
   port: ${PORT:8080}
   servlet:
     context-path: /drinkit
-    session:
-      cookie:
-        http-only: true
-        secure: true
-        name: SESSIONID
-        same-site: none
-        path: /
-      tracking-modes: cookie
-      timeout: 15m
 
 management:
   endpoints:

@@ -1,4 +1,4 @@
-package com.drinkit.user.security
+package com.drinkit.security
 
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService

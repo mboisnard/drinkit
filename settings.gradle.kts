@@ -29,5 +29,6 @@ fun includeModules(folder: File, depth: Int) {
         ?.forEach { includeModules(it, depth + 1) }
 }
 
+includeModules(file("starters"), 1)
 includeModules(file("drinkit"), 1)
 includeModules(file("deployment/updater"), 2)

@@ -1,0 +1,16 @@
+spring:
+  session:
+    jdbc:
+      initialize-schema: never
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: true
+        name: SESSIONID
+        same-site: none
+        path: /
+      tracking-modes: cookie
+      timeout: 15m

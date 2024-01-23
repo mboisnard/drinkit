@@ -1,4 +1,4 @@
-package com.drinkit.user.security
+package com.drinkit.security
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder

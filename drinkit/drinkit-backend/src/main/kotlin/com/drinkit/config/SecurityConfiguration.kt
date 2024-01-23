@@ -1,5 +1,6 @@
 package com.drinkit.config
 
+import com.drinkit.security.configureFromStarter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -29,7 +30,7 @@ class SecurityConfiguration {
     @Bean
     @Throws(Exception::class)
     fun filterChain(http: HttpSecurity, securityContextRepository: SecurityContextRepository): SecurityFilterChain {
-        http.csrf { it.disable() }
+        http.configureFromStarter(securityContextRepository)
             .authorizeHttpRequests {
                 it
                     .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
@@ -38,41 +39,7 @@ class SecurityConfiguration {
                     .requestMatchers("/openapi/**").hasRole("USER")
                     .anyRequest().denyAll()
             }
-            .securityContext {
-                it.securityContextRepository(securityContextRepository)
-            }
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.ALWAYS).maximumSessions(1) }
-            //.headers { it.frameOptions { it.sameOrigin() } }
-            .logout {
-                it.logoutUrl("/api/auth/logout")
-                    .permitAll()
-                    .logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-                    .addLogoutHandler(HeaderWriterLogoutHandler(ClearSiteDataHeaderWriter(COOKIES)))
-            }
 
         return http.build()
     }
-
-    @Bean
-    fun authenticationProvider(
-        userDetailsService: UserDetailsService,
-        passwordEncoder: PasswordEncoder,
-    ): AuthenticationProvider {
-
-        val provider = DaoAuthenticationProvider()
-
-        provider.setUserDetailsService(userDetailsService)
-        provider.setPasswordEncoder(passwordEncoder)
-
-        return provider
-    }
-
-    @Bean
-    @Throws(java.lang.Exception::class)
-    fun authenticationManager(
-        configuration: AuthenticationConfiguration
-    ): AuthenticationManager = configuration.authenticationManager
-
-    @Bean
-    fun sessionContextRepository(): SecurityContextRepository = HttpSessionSecurityContextRepository()
 }

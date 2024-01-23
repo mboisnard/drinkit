@@ -1,12 +1,13 @@
-package com.drinkit.user.security
+package com.drinkit.security
 
-import com.drinkit.common.JooqUtils.allFields
-import com.drinkit.common.JooqUtils.fetchSequence
-import com.drinkit.generated.jooq.tables.records.RoleRecord
-import com.drinkit.generated.jooq.tables.records.UserRecord
-import com.drinkit.generated.jooq.tables.references.ROLE
-import com.drinkit.generated.jooq.tables.references.USER
-import com.drinkit.user.UserId
+
+import com.drinkit.jooq.allFields
+import com.drinkit.jooq.fetchSequence
+import com.drinkit.security.generated.jooq.tables.Role.Companion.ROLE
+import com.drinkit.security.generated.jooq.tables.User.Companion.USER
+import com.drinkit.security.generated.jooq.tables.records.RoleRecord
+import com.drinkit.security.generated.jooq.tables.records.UserRecord
+
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.Record2

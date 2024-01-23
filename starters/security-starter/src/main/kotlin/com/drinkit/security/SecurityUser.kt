@@ -1,6 +1,5 @@
-package com.drinkit.user.security
+package com.drinkit.security
 
-import com.drinkit.user.UserId
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
