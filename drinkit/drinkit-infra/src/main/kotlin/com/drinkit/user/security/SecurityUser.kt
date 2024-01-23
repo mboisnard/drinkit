@@ -5,7 +5,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 data class SecurityUser(
-    val id: UserId,
+    val id: String,
     @get:JvmName("_username")
     val username: String,
     @get:JvmName("_password")

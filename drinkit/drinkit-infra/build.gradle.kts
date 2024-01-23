@@ -18,6 +18,7 @@ dependencies {
     // Spring Security dependencies
     implementation("org.springframework.security:spring-security-core")
     implementation("org.springframework.security:spring-security-crypto")
+    implementation("org.springframework.session:spring-session-jdbc")
 }
 
 jooq {

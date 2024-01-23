@@ -22,7 +22,7 @@ internal class JooqUserWithRolesView(
 
     fun toSecurityUser(): SecurityUser =
         SecurityUser(
-            id = UserId(user.id),
+            id = user.id,
             username = user.email,
             password = user.password,
             authorities = roles.map { role -> SimpleGrantedAuthority(role.authority) }.toSet(),

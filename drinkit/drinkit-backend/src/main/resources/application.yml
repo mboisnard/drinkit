@@ -3,6 +3,9 @@ spring:
   profiles:
     active: dev
   sql.init.mode: never
+  session:
+    jdbc:
+      initialize-schema: never
 
 server:
   port: ${PORT:8080}
