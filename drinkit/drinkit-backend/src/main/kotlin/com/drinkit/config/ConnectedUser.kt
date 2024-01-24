@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component
 class ConnectedUserException(message: String): RuntimeException(message)
 
 @Component
-@Scope("session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+//@Scope("session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 class ConnectedUser(
     private val userRepository: UserRepository,
 ) {
-    private var user: User? = null
+    //private var user: User? = null
 
     fun getOrFail(): User {
         val authentication = SecurityContextHolder.getContext().authentication
@@ -29,9 +29,9 @@ class ConnectedUser(
             else -> throw ConnectedUserException("Can't find userId from authentication principal")
         }
 
-        if (user == null)
-            user = userRepository.findById(userId)
+        //if (user == null)
+        //    user = userRepository.findById(userId)
 
-        return user ?: throw ConnectedUserException("User not found from id $userId")
+        return userRepository.findById(userId) ?: throw ConnectedUserException("User not found from id $userId")
     }
 }
