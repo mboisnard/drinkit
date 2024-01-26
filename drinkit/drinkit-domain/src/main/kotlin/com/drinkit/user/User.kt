@@ -32,7 +32,8 @@ data class FirstName(
         require(value.isNotBlank()
                 && !value.containsInvisibleCharacters()
                 && value.hasLengthBetween(MIN_FIRSTNAME_LENGTH, MAX_FIRSTNAME_LENGTH)) {
-            "Invalid FirstName format (should not be blank, should not contains invisible characters, should have size between $MIN_FIRSTNAME_LENGTH and $MAX_FIRSTNAME_LENGTH"
+            "Invalid FirstName format (should not be blank, should not contains invisible characters, " +
+                    "should have size between $MIN_FIRSTNAME_LENGTH and $MAX_FIRSTNAME_LENGTH. Given value: $value"
         }
     }
 }
@@ -44,7 +45,8 @@ data class LastName(
         require(value.isNotBlank()
                 && !value.containsInvisibleCharacters()
                 && value.hasLengthBetween(MIN_LASTNAME_LENGTH, MAX_LASTNAME_LENGTH)) {
-            "Invalid LastName format (should not be blank, should not contains invisible characters, should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH"
+            "Invalid LastName format (should not be blank, should not contains invisible characters, " +
+                    "should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH. Given value: $value"
         }
     }
 }
@@ -54,16 +56,18 @@ data class Email(
 ) {
     init {
         require(value.isNotBlank() && VALID_EMAIL_REGEX.matches(value) && value.length <= MAX_EMAIL_LENGTH) {
-            "Email should be valid and have less than $MAX_EMAIL_LENGTH characters"
+            "Email should be valid and have less than $MAX_EMAIL_LENGTH characters. Given value: $value"
         }
     }
 }
 
-data class EncodedPassword(
+class EncodedPassword private constructor(
     val value: String,
 ) {
     init {
-        require(value.isNotBlank() && !value.containsInvisibleCharacters())
+        require(value.isNotBlank() && !value.containsInvisibleCharacters()) {
+            "Encoded password should not be blank or contains invisible characters. Given value: $value"
+        }
     }
 
     companion object {
@@ -91,7 +95,9 @@ data class BirthDate(
     val value: LocalDate,
 ) {
     init {
-        require(value.isBetween(MIN_BIRTH_DATE, LocalDate.now(Clock.systemUTC())))
+        require(value.isBetween(MIN_BIRTH_DATE, LocalDate.now(Clock.systemUTC()))) {
+            "Birthdate should be between $MIN_BIRTH_DATE and now. Given value: $value"
+        }
     }
 }
 

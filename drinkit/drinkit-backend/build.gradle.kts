@@ -21,12 +21,14 @@ openApiGenerate {
 
     typeMappings.set(
         typeMappings.get() + mapOf(
-            "string+cellar-id" to "CellarId"
+            "string+cellar-id" to "CellarId",
+            "string+user-id" to "UserId",
         )
     )
     importMappings.set(
         importMappings.get() + mapOf(
-            "CellarId" to "com.drinkit.cellar.CellarId"
+            "CellarId" to "com.drinkit.cellar.CellarId",
+            "UserId" to "com.drinkit.user.UserId",
         )
     )
 }

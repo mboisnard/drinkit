@@ -21,7 +21,9 @@ class SecurityConfiguration {
             .authorizeHttpRequests {
                 it
                     .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                    .requestMatchers("/api/**").hasAnyRole("USER")
+                    .requestMatchers(HttpMethod.POST, "/api/registration/new").permitAll()
+                    .requestMatchers("/api/registration/**").authenticated()
+                    .requestMatchers("/api/**").hasRole("USER")
                     .requestMatchers("/actuator/**").hasRole("USER")
                     .requestMatchers("/openapi/**").hasRole("USER")
                     .anyRequest().denyAll()

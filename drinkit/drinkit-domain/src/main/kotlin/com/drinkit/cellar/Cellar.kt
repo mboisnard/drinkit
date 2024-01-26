@@ -24,7 +24,8 @@ data class CellarName(
         require(value.isNotBlank()
                 && !value.containsInvisibleCharacters()
                 && value.hasMinLength(MAX_CELLAR_NAME_LENGTH)) {
-            "Cellar name should not be blank, contains invisible chars or have less than $MAX_CELLAR_NAME_LENGTH characters"
+            "Cellar name should not be blank, contains invisible chars or have less " +
+                    "than $MAX_CELLAR_NAME_LENGTH characters. Given value: $value"
         }
     }
 }

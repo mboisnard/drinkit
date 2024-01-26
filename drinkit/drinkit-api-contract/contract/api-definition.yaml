@@ -112,6 +112,10 @@ paths:
           description: Bad request
         '201':
           description: User created
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/UserId'
 
   /api/registration/email/confirmation:
     post:

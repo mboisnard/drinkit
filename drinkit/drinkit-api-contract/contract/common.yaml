@@ -57,3 +57,8 @@ components:
       type: string
       format: cellar-id
       example: 659ee3164b1d53340c4f7608
+
+    UserId:
+      type: string
+      format: user-id
+      example: 659ee3164b1d53340c4f7608

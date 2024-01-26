@@ -12,7 +12,9 @@ data class Point(
     val longitude: BigDecimal,
 ) {
     init {
-        require(latitude.isBetween(MIN_LATITUDE, MAX_LATITUDE) && longitude.isBetween(MIN_LONGITUDE, MAX_LONGITUDE))
+        require(latitude.isBetween(MIN_LATITUDE, MAX_LATITUDE) && longitude.isBetween(MIN_LONGITUDE, MAX_LONGITUDE)) {
+            "Invalid latitude or longitude. Given values: lat=$latitude, lon=$longitude"
+        }
     }
 }
 
@@ -21,7 +23,9 @@ data class Country(
     val name: String,
 ) {
     init {
-        require(code.length == COUNTRY_CODE_LENGTH)
+        require(code.length == COUNTRY_CODE_LENGTH) {
+            "Country code must have $COUNTRY_CODE_LENGTH characters. Given value: $name"
+        }
     }
 }
 
