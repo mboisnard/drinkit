@@ -21,7 +21,7 @@ import org.springframework.util.ClassUtils
 
 
 @Component
-class EventHandlerPostProcessor : ApplicationContextAware, SmartInitializingSingleton, BeanFactoryPostProcessor {
+internal class EventHandlerPostProcessor : ApplicationContextAware, SmartInitializingSingleton, BeanFactoryPostProcessor {
 
     private lateinit var applicationContext: ConfigurableApplicationContext
     private lateinit var beanFactory: ConfigurableListableBeanFactory

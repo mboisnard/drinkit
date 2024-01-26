@@ -1,16 +1,14 @@
 package com.drinkit.user
 
-import com.drinkit.common.AbstractId
-import com.drinkit.common.Constants.ID_REGEX
-import com.drinkit.common.Constants.INVISIBLE_CHARS_REGEX
+import com.drinkit.common.*
 import com.drinkit.common.Constants.MAX_EMAIL_LENGTH
 import com.drinkit.common.Constants.MAX_FIRSTNAME_LENGTH
 import com.drinkit.common.Constants.MAX_LASTNAME_LENGTH
 import com.drinkit.common.Constants.MIN_BIRTH_DATE
 import com.drinkit.common.Constants.MIN_FIRSTNAME_LENGTH
 import com.drinkit.common.Constants.MIN_LASTNAME_LENGTH
+import com.drinkit.common.Constants.MIN_PASSWORD_LENGTH
 import com.drinkit.common.Constants.VALID_EMAIL_REGEX
-import com.drinkit.common.IdGenerator
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -19,7 +17,7 @@ data class UserId(
     override val value: String,
 ): AbstractId(value) {
     init {
-        require(ID_REGEX.matches(value))
+        require(value.isId())
     }
 
     companion object {
@@ -32,8 +30,8 @@ data class FirstName(
 ) {
     init {
         require(value.isNotBlank()
-                && !INVISIBLE_CHARS_REGEX.containsMatchIn(value)
-                && value.length in MIN_FIRSTNAME_LENGTH..MAX_FIRSTNAME_LENGTH) {
+                && !value.containsInvisibleCharacters()
+                && value.hasLengthBetween(MIN_FIRSTNAME_LENGTH, MAX_FIRSTNAME_LENGTH)) {
             "Invalid FirstName format (should not be blank, should not contains invisible characters, should have size between $MIN_FIRSTNAME_LENGTH and $MAX_FIRSTNAME_LENGTH"
         }
     }
@@ -44,8 +42,8 @@ data class LastName(
 ) {
     init {
         require(value.isNotBlank()
-                && !INVISIBLE_CHARS_REGEX.containsMatchIn(value)
-                && value.length in MIN_LASTNAME_LENGTH..MAX_LASTNAME_LENGTH) {
+                && !value.containsInvisibleCharacters()
+                && value.hasLengthBetween(MIN_LASTNAME_LENGTH, MAX_LASTNAME_LENGTH)) {
             "Invalid LastName format (should not be blank, should not contains invisible characters, should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH"
         }
     }
@@ -61,11 +59,39 @@ data class Email(
     }
 }
 
+data class EncodedPassword(
+    val value: String,
+) {
+    init {
+        require(value.isNotBlank() && !value.containsInvisibleCharacters())
+    }
+
+    companion object {
+        fun from(password: Password, encoder: (String) -> String): EncodedPassword {
+            return EncodedPassword(encoder(password.value))
+        }
+    }
+}
+
+data class Password(
+    val value: String,
+) {
+    init {
+        require(value.isNotBlank()
+                && value.hasMinLength(MIN_PASSWORD_LENGTH)
+                && !value.containsInvisibleCharacters()
+                && value.containsACapitalLetter()
+                && value.containsANumber()
+                && value.containsSpecialCharacter()
+        )
+    }
+}
+
 data class BirthDate(
     val value: LocalDate,
 ) {
     init {
-        require(value.isAfter(MIN_BIRTH_DATE) && value.isBefore(LocalDate.now(Clock.systemUTC())))
+        require(value.isBetween(MIN_BIRTH_DATE, LocalDate.now(Clock.systemUTC())))
     }
 }
 

@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: common components for registration api
+  version: 1.0.0
+  x-fragment: true
+paths: {}
+components:
+  schemas:
+    CreateUserRequest:
+      type: object
+      required:
+        - email
+        - password
+        - confirmedPassword
+      properties:
+        email:
+          $ref: '#/components/schemas/Email'
+        password:
+          $ref: '#/components/schemas/Password'
+        confirmedPassword:
+          $ref: '#/components/schemas/Password'
+
+    ConfirmEmailRequest:
+      type: object
+      required:
+        - validationCode
+      properties:
+        validationCode:
+          type: string
+          minLength: 6
+          maxLength: 6
+          pattern: '^[A-Z0-9]{6}$'
+          example: L5G9B1
+
+    CompleteUserInformationRequest:
+      type: object
+      required:
+        - firstname
+        - lastname
+        - birthdate
+      properties:
+        firstname:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: John
+        lastname:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Doe
+        birthdate:
+          type: string
+          format: date
+          example: '1990-12-01'
+
+    Email:
+      type: string
+      maxLength: 100
+      pattern: '[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+'
+      example: john.doe@gmail.com
+
+    Password:
+      type: string
+      minLength: 10
+      pattern: '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{10,}$' # https://ihateregex.io/expr/password
+      example: thisIsAV@l1dP@ssword

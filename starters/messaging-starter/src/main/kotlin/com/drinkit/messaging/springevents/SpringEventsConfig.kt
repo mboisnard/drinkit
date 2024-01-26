@@ -11,7 +11,7 @@ import org.springframework.scheduling.support.TaskUtils
 
 @EnableAsync
 @Configuration
-class SpringEventsConfig {
+internal class SpringEventsConfig {
 
     @Bean(name = ["applicationEventMulticaster"])
     fun applicationEventMulticaster(): ApplicationEventMulticaster {
