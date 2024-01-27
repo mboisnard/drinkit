@@ -13,7 +13,6 @@ import java.time.LocalDateTime
 import java.util.Locale
 
 @Service
-@Transactional
 class ValidateEmail(
     private val userRegistrationRepository: UserRegistrationRepository,
     private val generateVerificationToken: GenerateVerificationToken,
@@ -24,6 +23,7 @@ class ValidateEmail(
 
     private val logger = KotlinLogging.logger { }
 
+    @Transactional
     fun sendVerificationTokenToUser(userId: UserId, locale: Locale) {
         logger.debug { "Sending verification token to $userId" }
 
@@ -46,6 +46,7 @@ class ValidateEmail(
         logger.info { "Verification token sent to user: ${notCompletedUser.id}, email: ${notCompletedUser.email}" }
     }
 
+    @Transactional
     fun validateVerificationToken(userId: UserId, token: String) {
 
         val notCompletedUser = userRegistrationRepository.findById(userId)

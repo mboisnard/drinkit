@@ -3,6 +3,7 @@ package com.drinkit.user.registration
 import com.drinkit.user.*
 import com.drinkit.user.Roles.Role.*
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 data class CompleteUserInformationCommand(
     val userId: UserId,
@@ -16,6 +17,7 @@ class CompleteUserInformation(
     private val userRegistrationRepository: UserRegistrationRepository,
 ): RegistrationStep {
 
+    @Transactional
     operator fun invoke(command: CompleteUserInformationCommand) = with(command) {
 
         val notCompletedUser = userRegistrationRepository.findById(userId)
