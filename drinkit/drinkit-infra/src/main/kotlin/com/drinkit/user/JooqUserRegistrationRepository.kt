@@ -64,7 +64,7 @@ internal class JooqUserRegistrationRepository(
     }
 
     override fun update(user: NotCompletedUser) {
-        val query = dslContext.update(USER)
+        val userUpdateQuery = dslContext.update(USER)
             .set(USER.FIRSTNAME, user.firstname?.value)
             .set(USER.LASTNAME, user.lastName?.value)
             .set(USER.BIRTHDATE, user.birthDate?.value)
@@ -76,7 +76,20 @@ internal class JooqUserRegistrationRepository(
                     .and(USER.ENABLED.eq(true))
             )
 
-        query.execute()
+        val rolesQueries = listOf(
+            dslContext.deleteFrom(ROLE)
+                .where(ROLE.USER_ID.eq(user.id.value))
+        ).union(
+            user.roles?.values?.map {
+                dslContext.insertInto(ROLE)
+                    .set(ROLE.USER_ID, user.id.value)
+                    .set(ROLE.AUTHORITY, it.name)
+            } ?: emptyList()
+        )
+
+        dslContext.batch(
+            listOf(userUpdateQuery).union(rolesQueries)
+        ).execute()
     }
 
     private fun JooqUserWithRolesView.toNotCompletedUser(): NotCompletedUser =

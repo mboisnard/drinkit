@@ -6,10 +6,7 @@ import com.drinkit.api.generated.model.ConfirmEmailRequest
 import com.drinkit.api.generated.model.CreateUserRequest
 import com.drinkit.config.AbstractApi
 import com.drinkit.security.AuthenticationService
-import com.drinkit.user.Email
-import com.drinkit.user.EncodedPassword
-import com.drinkit.user.Password
-import com.drinkit.user.UserId
+import com.drinkit.user.*
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -21,9 +18,10 @@ internal class RegistrationApi(
     private val request: HttpServletRequest?,
     private val createANotCompletedUser: CreateANotCompletedUser,
     private val validateEmail: ValidateEmail,
+    private val completeUserInformation: CompleteUserInformation,
     private val passwordEncoder: PasswordEncoder,
     private val authenticationService: AuthenticationService,
-): RegistrationApiDelegate, AbstractApi() {
+) : RegistrationApiDelegate, AbstractApi() {
 
     override fun createNewUser(createUserRequest: CreateUserRequest): ResponseEntity<UserId> {
         val email = Email(createUserRequest.email)
@@ -57,7 +55,25 @@ internal class RegistrationApi(
         return ResponseEntity.ok().build()
     }
 
-    override fun completeUserInformation(completeUserInformationRequest: CompleteUserInformationRequest): ResponseEntity<Unit> {
-        return super.completeUserInformation(completeUserInformationRequest)
+    override fun resendValidationToken(): ResponseEntity<Unit> {
+        return super.resendValidationToken()
+    }
+
+    override fun completeUserInformation(
+        completeUserInformationRequest: CompleteUserInformationRequest
+    ): ResponseEntity<Unit> {
+        val command = with(completeUserInformationRequest) {
+            CompleteUserInformationCommand(
+                userId = connectedUserIdOrFail(),
+                firstName = FirstName(firstname),
+                lastName = LastName(lastname),
+                birthDate = BirthDate(birthdate),
+            )
+        }
+
+        completeUserInformation(command)
+        authenticationService.refreshContext()
+
+        return ResponseEntity.ok().build()
     }
 }

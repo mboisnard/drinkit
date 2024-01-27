@@ -139,6 +139,22 @@ paths:
         '200':
           description: Email confirmed
 
+  /api/registration/email/resend/validation:
+    post:
+      operationId: resendValidationToken
+      tags:
+        - registration
+      summary: Resend validation token
+      description: |
+        Resend validation token for connected user
+      responses:
+        '401':
+          description: Unauthorized
+        '400':
+          description: Bad request
+        '200':
+          description: Validation token resent
+
   /api/registration/user/information:
     post:
       operationId: completeUserInformation
