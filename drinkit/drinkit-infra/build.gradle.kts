@@ -11,7 +11,7 @@ dependencies {
 
     // Database dependencies
     implementation(project(":postgresql-starter"))
-    implementation("org.jooq:jooq:3.19.3")
+    implementation(libs.jooq)
     implementation(libs.bson)
 
     jooqCodegen("org.postgresql:postgresql")

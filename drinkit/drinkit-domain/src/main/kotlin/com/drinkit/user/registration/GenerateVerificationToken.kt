@@ -18,7 +18,7 @@ class GenerateVerificationToken(
     private val random: Random = Random.Default,
 ) {
     companion object {
-        private const val TOKEN_VALIDITY_IN_HOURS = 24L
+        private const val TOKEN_VALIDITY_IN_HOURS = 24
     }
 
     operator fun invoke(userId: UserId): VerificationToken {
@@ -38,5 +38,5 @@ class GenerateVerificationToken(
     }
 
     private fun calculateExpirationFromNow(): LocalDateTime =
-        LocalDateTime.now(clock).plusHours(TOKEN_VALIDITY_IN_HOURS)
+        LocalDateTime.now(clock).plusHours(TOKEN_VALIDITY_IN_HOURS.toLong())
 }

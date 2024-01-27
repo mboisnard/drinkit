@@ -8,7 +8,7 @@ class ConnectedUserException(message: String): RuntimeException(message)
 
 abstract class AbstractApi {
 
-    fun connectedUserId(): UserId? {
+    fun maybeConnectedUserId(): UserId? {
         val authentication = SecurityContextHolder.getContext().authentication
 
         if (!authentication.isAuthenticated)

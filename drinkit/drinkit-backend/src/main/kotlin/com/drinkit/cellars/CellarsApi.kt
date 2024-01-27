@@ -1,4 +1,4 @@
-package com.drinkit.cellars.api
+package com.drinkit.cellars
 
 import com.drinkit.api.generated.api.CellarsApiDelegate
 import com.drinkit.api.generated.model.*
