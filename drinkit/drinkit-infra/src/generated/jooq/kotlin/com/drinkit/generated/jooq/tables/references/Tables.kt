@@ -7,6 +7,7 @@ package com.drinkit.generated.jooq.tables.references
 import com.drinkit.generated.jooq.tables.Cellar
 import com.drinkit.generated.jooq.tables.Role
 import com.drinkit.generated.jooq.tables.User
+import com.drinkit.generated.jooq.tables.VerificationToken
 
 
 
@@ -24,3 +25,8 @@ val ROLE: Role = Role.ROLE
  * The table <code>public.user</code>.
  */
 val USER: User = User.USER
+
+/**
+ * The table <code>public.verification_token</code>.
+ */
+val VERIFICATION_TOKEN: VerificationToken = VerificationToken.VERIFICATION_TOKEN

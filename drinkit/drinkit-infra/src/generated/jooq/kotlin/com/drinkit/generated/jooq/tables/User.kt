@@ -10,7 +10,9 @@ import com.drinkit.generated.jooq.indexes.USER_EMAIL_IDX
 import com.drinkit.generated.jooq.indexes.USER_ENABLED_IDX
 import com.drinkit.generated.jooq.keys.ROLE__FK_USER
 import com.drinkit.generated.jooq.keys.USER_PKEY
+import com.drinkit.generated.jooq.keys.VERIFICATION_TOKEN__FK_USER
 import com.drinkit.generated.jooq.tables.Role.RolePath
+import com.drinkit.generated.jooq.tables.VerificationToken.VerificationTokenPath
 import com.drinkit.generated.jooq.tables.records.UserRecord
 
 import java.time.LocalDate
@@ -179,6 +181,22 @@ open class User(
 
     val role: RolePath
         get(): RolePath = role()
+
+    private lateinit var _verificationToken: VerificationTokenPath
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>public.verification_token</code> table
+     */
+    fun verificationToken(): VerificationTokenPath {
+        if (!this::_verificationToken.isInitialized)
+            _verificationToken = VerificationTokenPath(this, null, VERIFICATION_TOKEN__FK_USER.inverseKey)
+
+        return _verificationToken;
+    }
+
+    val verificationToken: VerificationTokenPath
+        get(): VerificationTokenPath = verificationToken()
     override fun `as`(alias: String): User = User(DSL.name(alias), this)
     override fun `as`(alias: Name): User = User(alias, this)
     override fun `as`(alias: Table<*>): User = User(alias.qualifiedName, this)

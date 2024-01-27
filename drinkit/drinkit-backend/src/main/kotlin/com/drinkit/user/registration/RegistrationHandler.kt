@@ -10,6 +10,9 @@ class RegistrationHandler(
 
     @EventHandler
     fun sendVerificationTokenToTheCreatedUser(event: UserCreated) {
-        validateEmail.sendVerificationTokenToUser(event.userId)
+        validateEmail.sendVerificationTokenToUser(
+            userId = event.userId,
+            locale = event.locale
+        )
     }
 }

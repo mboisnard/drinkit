@@ -11,6 +11,7 @@ import com.drinkit.user.Password
 import com.drinkit.user.UserId
 import com.drinkit.user.registration.CreateANotCompletedUser
 import com.drinkit.user.registration.CreateUserCommand
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service
 
 @Service
 internal class RegistrationApi(
+    private val request: HttpServletRequest?,
     private val createANotCompletedUser: CreateANotCompletedUser,
     private val passwordEncoder: PasswordEncoder,
     private val authenticationService: AuthenticationService,
@@ -36,6 +38,7 @@ internal class RegistrationApi(
             CreateUserCommand(
                 email = email,
                 password = EncodedPassword.from(password, passwordEncoder::encode),
+                locale = request!!.locale
             )
         )
 

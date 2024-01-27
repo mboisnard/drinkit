@@ -2,6 +2,7 @@ package com.drinkit.user
 
 import com.drinkit.generated.jooq.tables.Role.Companion.ROLE
 import com.drinkit.generated.jooq.tables.User.Companion.USER
+import com.drinkit.generated.jooq.tables.records.RoleRecord
 import com.drinkit.jooq.allFields
 import com.drinkit.jooq.fetchSequence
 import com.drinkit.user.registration.NotCompletedUser
@@ -74,14 +75,21 @@ internal class JooqUserRegistrationRepository(
             lastName = user.lastname?.let { LastName(it) },
             birthDate = user.birthdate?.let { BirthDate(it) },
             lastConnection = user.lastconnection,
-            roles = Roles(roles.map {
-                when (it.authority) {
-                    Roles.Role.ROLE_USER.name -> Roles.Role.ROLE_USER
-                    Roles.Role.ROLE_ADMIN.name -> Roles.Role.ROLE_ADMIN
-                    else -> throw IllegalStateException("Not eligible role $it")
-                }
-            }.toSet()),
+            roles = roles.toDomain(),
             completed = user.completed,
             enabled = user.enabled,
         )
+
+    private fun List<RoleRecord>.toDomain(): Roles? {
+        if (this.isEmpty())
+            return null
+
+        return Roles(this.map {
+            when (it.authority) {
+                Roles.Role.ROLE_USER.name -> Roles.Role.ROLE_USER
+                Roles.Role.ROLE_ADMIN.name -> Roles.Role.ROLE_ADMIN
+                else -> throw IllegalStateException("Not eligible role $it")
+            }
+        }.toSet())
+    }
 }

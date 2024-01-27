@@ -56,3 +56,19 @@ CREATE TABLE IF NOT EXISTS public.role
 
 CREATE UNIQUE INDEX IF NOT EXISTS user_id_authority_idx
     ON public.role (user_id, authority);
+
+-- Verification Token
+
+CREATE TABLE IF NOT EXISTS public.verification_token
+(
+    user_id VARCHAR(24) NOT NULL,
+    token VARCHAR(100) NOT NULL,
+    expiry_date TIMESTAMP NOT NULL,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.user (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS verification_token_user_id_idx
+    ON public.verification_token (user_id);
+
+CREATE INDEX IF NOT EXISTS verification_token_user_id_token_expiry_date_idx
+    ON public.verification_token (user_id, token, expiry_date);

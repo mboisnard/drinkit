@@ -9,14 +9,17 @@ import com.drinkit.user.UserId
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 data class CreateUserCommand(
     val email: Email,
     val password: EncodedPassword,
+    val locale: Locale,
 )
 
 data class UserCreated(
     val userId: UserId,
+    val locale: Locale,
 ) : Event<UserCreated>
 
 @Service
@@ -48,7 +51,12 @@ class CreateANotCompletedUser(
         val userId = userRegistrationRepository.create(user)
             ?: throw IllegalStateException("User not created $user")
 
-        eventPublisher.publish(UserCreated(userId))
+        eventPublisher.publish(UserCreated(
+            userId = userId,
+            locale = locale
+        ))
+
+        logger.info { "User $userId created" }
 
         return userId
     }

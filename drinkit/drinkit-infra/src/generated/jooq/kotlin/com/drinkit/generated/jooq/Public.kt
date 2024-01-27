@@ -7,6 +7,7 @@ package com.drinkit.generated.jooq
 import com.drinkit.generated.jooq.tables.Cellar
 import com.drinkit.generated.jooq.tables.Role
 import com.drinkit.generated.jooq.tables.User
+import com.drinkit.generated.jooq.tables.VerificationToken
 
 import kotlin.collections.List
 
@@ -43,11 +44,17 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
      */
     val USER: User get() = User.USER
 
+    /**
+     * The table <code>public.verification_token</code>.
+     */
+    val VERIFICATION_TOKEN: VerificationToken get() = VerificationToken.VERIFICATION_TOKEN
+
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
         Cellar.CELLAR,
         Role.ROLE,
-        User.USER
+        User.USER,
+        VerificationToken.VERIFICATION_TOKEN
     )
 }
