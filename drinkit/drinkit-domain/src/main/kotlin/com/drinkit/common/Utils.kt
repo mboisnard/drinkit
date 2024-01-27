@@ -3,9 +3,10 @@ package com.drinkit.common
 import com.drinkit.common.Constants.ID_REGEX
 import com.drinkit.common.Constants.INVISIBLE_CHARS_REGEX
 import com.drinkit.common.Constants.SPECIAL_CHAR_REGEX
+import com.drinkit.common.Constants.VALID_EMAIL_REGEX
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.Optional
+import java.util.*
 
 fun <T : Any> T?.toOptional(): Optional<T> =
     Optional.ofNullable(this)
@@ -38,6 +39,9 @@ fun String.containsASpecialCharacter(): Boolean =
 
 fun String.isId(): Boolean =
     ID_REGEX.matches(this)
+
+fun String.isEmail(): Boolean =
+    VALID_EMAIL_REGEX.matches(this)
 
 fun LocalDate.isBetween(min: LocalDate, max: LocalDate): Boolean =
     this.isAfter(min) && this.isBefore(max)

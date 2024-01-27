@@ -55,7 +55,10 @@ data class Email(
     val value: String,
 ) {
     init {
-        require(value.isNotBlank() && VALID_EMAIL_REGEX.matches(value) && value.length <= MAX_EMAIL_LENGTH) {
+        require(value.isNotBlank()
+                && value.isEmail()
+                && value.length <= MAX_EMAIL_LENGTH
+        ) {
             "Email should be valid and have less than $MAX_EMAIL_LENGTH characters. Given value: $value"
         }
     }
