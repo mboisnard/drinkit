@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 data class NotCompletedUser(
     val id: UserId,
     val email: Email,
-    val password: EncodedPassword,
+    val password: EncodedPassword?,
 
     val firstname: FirstName? = null,
     val lastName: LastName? = null,
@@ -14,5 +14,6 @@ data class NotCompletedUser(
 
     val lastConnection: LocalDateTime? = null,
     val roles: Roles? = null,
+    val completed: Boolean,
     val enabled: Boolean,
 )

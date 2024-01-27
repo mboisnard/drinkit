@@ -39,6 +39,7 @@ class CreateANotCompletedUser(
             id = UserId.create(generator),
             email = email,
             password = password,
+            completed = false,
             enabled = true,
         )
 

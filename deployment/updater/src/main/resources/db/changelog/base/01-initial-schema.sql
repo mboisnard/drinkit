@@ -31,12 +31,19 @@ CREATE TABLE IF NOT EXISTS public.user
     email          VARCHAR(255) NOT NULL,
     password       VARCHAR(100) NOT NULL,
     lastConnection TIMESTAMP,
+    completed      BOOLEAN      NOT NULL,
     enabled        BOOLEAN      NOT NULL,
     modified       TIMESTAMP    NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS user_email_idx
     ON public.user (email);
+
+CREATE INDEX IF NOT EXISTS user_completed_idx
+    ON public.user (completed);
+
+CREATE INDEX IF NOT EXISTS user_enabled_idx
+    ON public.user (enabled);
 
 -- Role
 

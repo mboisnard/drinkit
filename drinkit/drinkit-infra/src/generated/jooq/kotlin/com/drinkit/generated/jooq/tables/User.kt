@@ -5,7 +5,9 @@ package com.drinkit.generated.jooq.tables
 
 
 import com.drinkit.generated.jooq.Public
+import com.drinkit.generated.jooq.indexes.USER_COMPLETED_IDX
 import com.drinkit.generated.jooq.indexes.USER_EMAIL_IDX
+import com.drinkit.generated.jooq.indexes.USER_ENABLED_IDX
 import com.drinkit.generated.jooq.keys.ROLE__FK_USER
 import com.drinkit.generated.jooq.keys.USER_PKEY
 import com.drinkit.generated.jooq.tables.Role.RolePath
@@ -114,6 +116,11 @@ open class User(
     val LASTCONNECTION: TableField<UserRecord, LocalDateTime?> = createField(DSL.name("lastconnection"), SQLDataType.LOCALDATETIME(6), this, "")
 
     /**
+     * The column <code>public.user.completed</code>.
+     */
+    val COMPLETED: TableField<UserRecord, Boolean?> = createField(DSL.name("completed"), SQLDataType.BOOLEAN.nullable(false), this, "")
+
+    /**
      * The column <code>public.user.enabled</code>.
      */
     val ENABLED: TableField<UserRecord, Boolean?> = createField(DSL.name("enabled"), SQLDataType.BOOLEAN.nullable(false), this, "")
@@ -155,7 +162,7 @@ open class User(
         override fun `as`(alias: Table<*>): UserPath = UserPath(alias.qualifiedName, this)
     }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
-    override fun getIndexes(): List<Index> = listOf(USER_EMAIL_IDX)
+    override fun getIndexes(): List<Index> = listOf(USER_COMPLETED_IDX, USER_EMAIL_IDX, USER_ENABLED_IDX)
     override fun getPrimaryKey(): UniqueKey<UserRecord> = USER_PKEY
 
     private lateinit var _role: RolePath
