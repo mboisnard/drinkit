@@ -64,7 +64,19 @@ internal class JooqUserRegistrationRepository(
     }
 
     override fun update(user: NotCompletedUser) {
-        TODO("Not yet implemented")
+        val query = dslContext.update(USER)
+            .set(USER.FIRSTNAME, user.firstname?.value)
+            .set(USER.LASTNAME, user.lastName?.value)
+            .set(USER.BIRTHDATE, user.birthDate?.value)
+            .set(USER.STATUS, user.status)
+            .set(USER.COMPLETED, user.completed)
+            .where(
+                USER.ID.eq(user.id.value)
+                    .and(USER.COMPLETED.eq(false))
+                    .and(USER.ENABLED.eq(true))
+            )
+
+        query.execute()
     }
 
     private fun JooqUserWithRolesView.toNotCompletedUser(): NotCompletedUser =

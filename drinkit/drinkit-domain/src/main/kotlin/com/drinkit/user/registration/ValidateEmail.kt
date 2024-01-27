@@ -8,6 +8,8 @@ import com.drinkit.user.UserId
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Clock
+import java.time.LocalDateTime
 import java.util.Locale
 
 @Service
@@ -17,6 +19,7 @@ class ValidateEmail(
     private val generateVerificationToken: GenerateVerificationToken,
     private val verificationTokenRepository: VerificationTokenRepository,
     private val messageSender: MessageSender,
+    private val clock: Clock,
 ): RegistrationStep {
 
     private val logger = KotlinLogging.logger { }
@@ -41,6 +44,27 @@ class ValidateEmail(
         ))
 
         logger.info { "Verification token sent to user: ${notCompletedUser.id}, email: ${notCompletedUser.email}" }
+    }
+
+    fun validateVerificationToken(userId: UserId, token: String) {
+
+        val notCompletedUser = userRegistrationRepository.findById(userId)
+            ?: throw IllegalArgumentException("User not found")
+
+        val verificationToken = verificationTokenRepository.findBy(notCompletedUser.id, token)
+            ?: throw IllegalArgumentException("Token not found")
+
+        val tokenIsValid = verificationToken.expiryDate.isAfter(LocalDateTime.now(clock))
+
+        if (tokenIsValid) {
+            userRegistrationRepository.update(
+                notCompletedUser.copy(
+                    status = status()
+                )
+            )
+        }
+
+        verificationTokenRepository.deleteBy(notCompletedUser.id)
     }
 
     override fun status(): String = "EMAIL_VERIFIED"

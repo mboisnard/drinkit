@@ -23,9 +23,9 @@ components:
     ConfirmEmailRequest:
       type: object
       required:
-        - validationCode
+        - validationToken
       properties:
-        validationCode:
+        validationToken:
           type: string
           minLength: 6
           maxLength: 6

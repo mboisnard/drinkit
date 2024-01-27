@@ -4,13 +4,12 @@ import com.drinkit.api.generated.api.RegistrationApiDelegate
 import com.drinkit.api.generated.model.CompleteUserInformationRequest
 import com.drinkit.api.generated.model.ConfirmEmailRequest
 import com.drinkit.api.generated.model.CreateUserRequest
+import com.drinkit.config.AbstractApi
 import com.drinkit.security.AuthenticationService
 import com.drinkit.user.Email
 import com.drinkit.user.EncodedPassword
 import com.drinkit.user.Password
 import com.drinkit.user.UserId
-import com.drinkit.user.registration.CreateANotCompletedUser
-import com.drinkit.user.registration.CreateUserCommand
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -21,9 +20,10 @@ import org.springframework.stereotype.Service
 internal class RegistrationApi(
     private val request: HttpServletRequest?,
     private val createANotCompletedUser: CreateANotCompletedUser,
+    private val validateEmail: ValidateEmail,
     private val passwordEncoder: PasswordEncoder,
     private val authenticationService: AuthenticationService,
-): RegistrationApiDelegate {
+): RegistrationApiDelegate, AbstractApi() {
 
     override fun createNewUser(createUserRequest: CreateUserRequest): ResponseEntity<UserId> {
         val email = Email(createUserRequest.email)
@@ -48,7 +48,13 @@ internal class RegistrationApi(
     }
 
     override fun confirmUserEmail(confirmEmailRequest: ConfirmEmailRequest): ResponseEntity<Unit> {
-        return super.confirmUserEmail(confirmEmailRequest)
+
+        validateEmail.validateVerificationToken(
+            userId = connectedUserIdOrFail(),
+            token = confirmEmailRequest.validationToken
+        )
+
+        return ResponseEntity.ok().build()
     }
 
     override fun completeUserInformation(completeUserInformationRequest: CompleteUserInformationRequest): ResponseEntity<Unit> {

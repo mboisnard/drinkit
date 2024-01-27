@@ -4,12 +4,9 @@ import com.drinkit.security.userdetails.InternalUserDetails
 import com.drinkit.user.User
 import com.drinkit.user.UserId
 import com.drinkit.user.UserRepository
-import org.springframework.context.annotation.Scope
-import org.springframework.context.annotation.ScopedProxyMode
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 
-class ConnectedUserException(message: String): RuntimeException(message)
 
 @Component
 //@Scope("session", proxyMode = ScopedProxyMode.TARGET_CLASS)
