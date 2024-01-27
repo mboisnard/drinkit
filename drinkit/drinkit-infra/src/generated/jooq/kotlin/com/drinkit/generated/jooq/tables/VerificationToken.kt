@@ -5,8 +5,7 @@ package com.drinkit.generated.jooq.tables
 
 
 import com.drinkit.generated.jooq.Public
-import com.drinkit.generated.jooq.indexes.VERIFICATION_TOKEN_USER_ID_IDX
-import com.drinkit.generated.jooq.indexes.VERIFICATION_TOKEN_USER_ID_TOKEN_EXPIRY_DATE_IDX
+import com.drinkit.generated.jooq.keys.VERIFICATION_TOKEN_PKEY
 import com.drinkit.generated.jooq.keys.VERIFICATION_TOKEN__FK_USER
 import com.drinkit.generated.jooq.tables.User.UserPath
 import com.drinkit.generated.jooq.tables.records.VerificationTokenRecord
@@ -19,7 +18,6 @@ import kotlin.collections.List
 import org.jooq.Condition
 import org.jooq.Field
 import org.jooq.ForeignKey
-import org.jooq.Index
 import org.jooq.InverseForeignKey
 import org.jooq.Name
 import org.jooq.Path
@@ -33,6 +31,7 @@ import org.jooq.Stringly
 import org.jooq.Table
 import org.jooq.TableField
 import org.jooq.TableOptions
+import org.jooq.UniqueKey
 import org.jooq.impl.DSL
 import org.jooq.impl.Internal
 import org.jooq.impl.SQLDataType
@@ -123,7 +122,7 @@ open class VerificationToken(
         override fun `as`(alias: Table<*>): VerificationTokenPath = VerificationTokenPath(alias.qualifiedName, this)
     }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
-    override fun getIndexes(): List<Index> = listOf(VERIFICATION_TOKEN_USER_ID_IDX, VERIFICATION_TOKEN_USER_ID_TOKEN_EXPIRY_DATE_IDX)
+    override fun getPrimaryKey(): UniqueKey<VerificationTokenRecord> = VERIFICATION_TOKEN_PKEY
     override fun getReferences(): List<ForeignKey<VerificationTokenRecord, *>> = listOf(VERIFICATION_TOKEN__FK_USER)
 
     private lateinit var _user: UserPath

@@ -27,7 +27,7 @@ class CreateANotCompletedUser(
     private val generator: IdGenerator,
     private val userRegistrationRepository: UserRegistrationRepository,
     private val eventPublisher: EventPublisher,
-) {
+): RegistrationStep {
     private val logger = KotlinLogging.logger { }
 
     @Transactional
@@ -42,6 +42,7 @@ class CreateANotCompletedUser(
             id = UserId.create(generator),
             email = email,
             password = password,
+            status = status(),
             completed = false,
             enabled = true,
         )
@@ -60,4 +61,6 @@ class CreateANotCompletedUser(
 
         return userId
     }
+
+    override fun status(): String = "USER_CREATED"
 }

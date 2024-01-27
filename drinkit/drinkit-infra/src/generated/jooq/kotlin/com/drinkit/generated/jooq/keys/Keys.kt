@@ -26,6 +26,7 @@ import org.jooq.impl.Internal
 
 val CELLAR_PKEY: UniqueKey<CellarRecord> = Internal.createUniqueKey(Cellar.CELLAR, DSL.name("cellar_pkey"), arrayOf(Cellar.CELLAR.ID), true)
 val USER_PKEY: UniqueKey<UserRecord> = Internal.createUniqueKey(User.USER, DSL.name("user_pkey"), arrayOf(User.USER.ID), true)
+val VERIFICATION_TOKEN_PKEY: UniqueKey<VerificationTokenRecord> = Internal.createUniqueKey(VerificationToken.VERIFICATION_TOKEN, DSL.name("verification_token_pkey"), arrayOf(VerificationToken.VERIFICATION_TOKEN.USER_ID), true)
 
 // -------------------------------------------------------------------------
 // FOREIGN KEY definitions

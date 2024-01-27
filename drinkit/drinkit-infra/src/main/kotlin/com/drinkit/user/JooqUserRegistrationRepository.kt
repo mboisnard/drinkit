@@ -51,6 +51,7 @@ internal class JooqUserRegistrationRepository(
             .set(USER.ID, user.id.value)
             .set(USER.EMAIL, user.email.value)
             .set(USER.PASSWORD, user.password!!.value)
+            .set(USER.STATUS, user.status)
             .set(USER.COMPLETED, false)
             .set(USER.ENABLED, user.enabled)
             .set(USER.MODIFIED, LocalDateTime.now(clock))
@@ -76,6 +77,7 @@ internal class JooqUserRegistrationRepository(
             birthDate = user.birthdate?.let { BirthDate(it) },
             lastConnection = user.lastconnection,
             roles = roles.toDomain(),
+            status = user.status,
             completed = user.completed,
             enabled = user.enabled,
         )

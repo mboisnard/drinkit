@@ -118,6 +118,11 @@ open class User(
     val LASTCONNECTION: TableField<UserRecord, LocalDateTime?> = createField(DSL.name("lastconnection"), SQLDataType.LOCALDATETIME(6), this, "")
 
     /**
+     * The column <code>public.user.status</code>.
+     */
+    val STATUS: TableField<UserRecord, String?> = createField(DSL.name("status"), SQLDataType.VARCHAR(50).nullable(false), this, "")
+
+    /**
      * The column <code>public.user.completed</code>.
      */
     val COMPLETED: TableField<UserRecord, Boolean?> = createField(DSL.name("completed"), SQLDataType.BOOLEAN.nullable(false), this, "")

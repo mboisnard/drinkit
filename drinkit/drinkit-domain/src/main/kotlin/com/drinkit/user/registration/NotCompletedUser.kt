@@ -14,6 +14,7 @@ data class NotCompletedUser(
 
     val lastConnection: LocalDateTime? = null,
     val roles: Roles? = null,
+    val status: String,
     val completed: Boolean,
     val enabled: Boolean,
 )

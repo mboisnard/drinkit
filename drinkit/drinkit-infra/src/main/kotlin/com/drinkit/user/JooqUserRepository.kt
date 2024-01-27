@@ -23,7 +23,11 @@ internal class JooqUserRepository(
             ).convertFrom { result -> result.map { it.value1() } }.`as`("roles")
         )
             .from(USER)
-            .where(USER.ID.eq(userId.value))
+            .where(
+                USER.ID.eq(userId.value)
+                    .and(USER.COMPLETED.eq(true))
+                    .and(USER.ENABLED.eq(true))
+            )
 
         return query
             .fetchSequence(userWithRolesRecordMapper)

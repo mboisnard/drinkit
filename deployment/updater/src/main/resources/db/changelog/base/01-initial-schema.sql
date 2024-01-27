@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS public.user
     email          VARCHAR(255) NOT NULL,
     password       VARCHAR(100) NOT NULL,
     lastConnection TIMESTAMP,
+    status         VARCHAR(50)  NOT NULL,
     completed      BOOLEAN      NOT NULL,
     enabled        BOOLEAN      NOT NULL,
     modified       TIMESTAMP    NOT NULL
@@ -61,14 +62,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS user_id_authority_idx
 
 CREATE TABLE IF NOT EXISTS public.verification_token
 (
-    user_id VARCHAR(24) NOT NULL,
-    token VARCHAR(100) NOT NULL,
-    expiry_date TIMESTAMP NOT NULL,
+    user_id     VARCHAR(24)  NOT NULL PRIMARY KEY,
+    token       VARCHAR(100) NOT NULL,
+    expiry_date TIMESTAMP    NOT NULL,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.user (id) ON DELETE CASCADE
 );
-
-CREATE UNIQUE INDEX IF NOT EXISTS verification_token_user_id_idx
-    ON public.verification_token (user_id);
 
 CREATE INDEX IF NOT EXISTS verification_token_user_id_token_expiry_date_idx
     ON public.verification_token (user_id, token, expiry_date);
