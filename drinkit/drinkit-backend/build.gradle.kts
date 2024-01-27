@@ -8,7 +8,7 @@ dependencies {
     implementation(project(":drinkit-infra"))
 
     implementation(project(":security-starter"))
-    implementation("org.jooq:jooq:3.19.2") // Remove this dependency here (fix version using platform & constraints)
+    implementation("org.jooq:jooq:3.19.3") // Remove this dependency here (fix version using platform & constraints)
     implementation(project(":messaging-starter"))
 
     openApiInput(project(":drinkit-api-contract", "openApi"))

@@ -1,6 +1,6 @@
 [versions]
 bson = "4.11.1"
-jooq = "3.19.2"
+jooq = "3.19.3"
 kotest = "5.8.0"
 kotlin-logging = "6.0.1"
 springdoc-openapi = "2.3.0"

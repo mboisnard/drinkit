@@ -11,7 +11,7 @@ dependencies {
     compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0")
     api("org.springframework.boot:spring-boot-starter-security")
     api("org.springframework.session:spring-session-jdbc")
-    api("org.jooq:jooq:3.19.2")
+    api(libs.jooq)
 
     jooqCodegen("org.postgresql:postgresql")
 }

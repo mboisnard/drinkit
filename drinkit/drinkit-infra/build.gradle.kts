@@ -1,5 +1,4 @@
 import org.jooq.codegen.gradle.CodegenTask
-import org.openapitools.codegen.CodegenType
 
 plugins {
     id("com.drinkit.library-conventions")
@@ -12,7 +11,7 @@ dependencies {
 
     // Database dependencies
     implementation(project(":postgresql-starter"))
-    implementation("org.jooq:jooq:3.19.2")
+    implementation("org.jooq:jooq:3.19.3")
     implementation(libs.bson)
 
     jooqCodegen("org.postgresql:postgresql")
