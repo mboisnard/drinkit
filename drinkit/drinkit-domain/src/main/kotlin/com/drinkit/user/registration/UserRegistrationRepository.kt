@@ -7,6 +7,8 @@ interface UserRegistrationRepository {
 
     fun emailExists(email: Email): Boolean
 
+    fun findById(userId: UserId): NotCompletedUser?
+
     fun create(user: NotCompletedUser): UserId?
 
     fun update(user: NotCompletedUser)

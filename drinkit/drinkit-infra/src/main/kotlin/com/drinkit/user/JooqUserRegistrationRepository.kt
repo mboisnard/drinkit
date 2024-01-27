@@ -19,6 +19,10 @@ internal class JooqUserRegistrationRepository(
         return count != 0
     }
 
+    override fun findById(userId: UserId): NotCompletedUser? {
+        TODO("Not yet implemented")
+    }
+
     override fun create(user: NotCompletedUser): UserId? {
         val query = dslContext.insertInto(USER)
             .set(USER.ID, user.id.value)

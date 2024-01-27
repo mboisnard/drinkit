@@ -22,7 +22,7 @@ data class CellarName(
 ) {
     init {
         require(value.isNotBlank()
-                && !value.containsInvisibleCharacters()
+                && value.doesntContainsInvisibleCharacters()
                 && value.hasMinLength(MAX_CELLAR_NAME_LENGTH)) {
             "Cellar name should not be blank, contains invisible chars or have less " +
                     "than $MAX_CELLAR_NAME_LENGTH characters. Given value: $value"

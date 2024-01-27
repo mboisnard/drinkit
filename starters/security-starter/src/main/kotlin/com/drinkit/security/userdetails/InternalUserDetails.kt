@@ -22,7 +22,7 @@ data class InternalUserDetails(
 
     override fun isAccountNonExpired(): Boolean = true
 
-    override fun isAccountNonLocked(): Boolean = true
+    override fun isAccountNonLocked(): Boolean = false
 
     override fun isCredentialsNonExpired(): Boolean = true
 

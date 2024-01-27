@@ -1,4 +1,4 @@
-package com.drinkit.user.registration.api
+package com.drinkit.user.registration
 
 import com.drinkit.api.generated.api.RegistrationApiDelegate
 import com.drinkit.api.generated.model.CompleteUserInformationRequest

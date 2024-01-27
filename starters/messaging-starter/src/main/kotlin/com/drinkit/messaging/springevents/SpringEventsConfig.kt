@@ -13,7 +13,7 @@ import org.springframework.scheduling.support.TaskUtils
 @Configuration
 internal class SpringEventsConfig {
 
-    @Bean(name = ["applicationEventMulticaster"])
+    @Bean
     fun applicationEventMulticaster(): ApplicationEventMulticaster {
         val eventMulticaster = SimpleApplicationEventMulticaster()
         eventMulticaster.setTaskExecutor(SimpleAsyncTaskExecutor())

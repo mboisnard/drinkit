@@ -30,7 +30,7 @@ data class FirstName(
 ) {
     init {
         require(value.isNotBlank()
-                && !value.containsInvisibleCharacters()
+                && value.doesntContainsInvisibleCharacters()
                 && value.hasLengthBetween(MIN_FIRSTNAME_LENGTH, MAX_FIRSTNAME_LENGTH)) {
             "Invalid FirstName format (should not be blank, should not contains invisible characters, " +
                     "should have size between $MIN_FIRSTNAME_LENGTH and $MAX_FIRSTNAME_LENGTH. Given value: $value"
@@ -43,7 +43,7 @@ data class LastName(
 ) {
     init {
         require(value.isNotBlank()
-                && !value.containsInvisibleCharacters()
+                && value.doesntContainsInvisibleCharacters()
                 && value.hasLengthBetween(MIN_LASTNAME_LENGTH, MAX_LASTNAME_LENGTH)) {
             "Invalid LastName format (should not be blank, should not contains invisible characters, " +
                     "should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH. Given value: $value"
@@ -65,7 +65,7 @@ class EncodedPassword private constructor(
     val value: String,
 ) {
     init {
-        require(value.isNotBlank() && !value.containsInvisibleCharacters()) {
+        require(value.isNotBlank() && value.doesntContainsInvisibleCharacters()) {
             "Encoded password should not be blank or contains invisible characters. Given value: $value"
         }
     }
@@ -83,10 +83,10 @@ data class Password(
     init {
         require(value.isNotBlank()
                 && value.hasMinLength(MIN_PASSWORD_LENGTH)
-                && !value.containsInvisibleCharacters()
+                && value.doesntContainsInvisibleCharacters()
                 && value.containsACapitalLetter()
                 && value.containsANumber()
-                && value.containsSpecialCharacter()
+                && value.containsASpecialCharacter()
         )
     }
 }
