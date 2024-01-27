@@ -1,6 +1,6 @@
 plugins {
-    id("org.openapi.generator")
     id("com.drinkit.common-conventions")
+    id("org.openapi.generator")
 }
 
 dependencies {

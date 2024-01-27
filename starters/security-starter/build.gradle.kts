@@ -1,3 +1,5 @@
+import org.jooq.codegen.gradle.CodegenTask
+
 plugins {
     id("com.drinkit.library-conventions")
     id("org.jooq.jooq-codegen-gradle")
@@ -54,4 +56,8 @@ kotlin {
             kotlin.srcDir(tasks.jooqCodegen)
         }
     }
+}
+
+tasks.withType<CodegenTask> {
+    onlyIf { gradle.startParameter.taskNames.contains("jooqCodegen") }
 }
