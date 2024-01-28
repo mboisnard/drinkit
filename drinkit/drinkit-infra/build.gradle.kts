@@ -11,7 +11,7 @@ dependencies {
 
     // Database dependencies
     implementation(project(":postgresql-starter"))
-    implementation(libs.jooq)
+    implementation(libs.jooq) // TODO remove after adding platform version constraint
     implementation(libs.bson)
 
     jooqCodegen("org.postgresql:postgresql")
