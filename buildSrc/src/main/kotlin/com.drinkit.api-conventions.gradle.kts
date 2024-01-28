@@ -23,8 +23,3 @@ gitProperties {
     gitPropertiesName = "git.properties"
     keys = listOf("git.branch", "git.commit.id", "git.commit.time", "git.commit.message.short")
 }
-
-// Avoid information leaks from spring profiles files in generated fat Jar
-/*tasks.withType<Jar> {
-    exclude("application-*.yml")
-}*/

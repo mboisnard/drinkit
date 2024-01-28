@@ -70,6 +70,7 @@ internal class JooqUserRegistrationRepository(
             .set(USER.BIRTHDATE, user.birthDate?.value)
             .set(USER.STATUS, user.status)
             .set(USER.COMPLETED, user.completed)
+            .set(USER.MODIFIED, LocalDateTime.now(clock))
             .where(
                 USER.ID.eq(user.id.value)
                     .and(USER.COMPLETED.eq(false))
