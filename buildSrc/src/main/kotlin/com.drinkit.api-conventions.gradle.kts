@@ -10,7 +10,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    testImplementation("io.rest-assured:rest-assured:5.4.0")
+    testImplementation(project(":test-starter"))
 }
 
 // Create a `build-info.properties` file in resource folder, info available in Actuator

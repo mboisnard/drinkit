@@ -1,6 +1,6 @@
 plugins {
     id("com.drinkit.library-conventions")
-    id("java-test-fixtures")
+    id("com.drinkit.test-fixtures-conventions")
 }
 
 dependencies {

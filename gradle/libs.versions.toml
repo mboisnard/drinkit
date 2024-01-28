@@ -1,13 +1,19 @@
 [versions]
+approvaltests = "22.3.2"
 bson = "4.11.1"
 jooq = "3.19.3"
+io-rest-assured = "5.4.0"
 kotest = "5.8.0"
+kotlin-faker = "1.15.0"
 kotlin-logging = "6.0.1"
 springdoc-openapi = "2.3.0"
 
 [libraries]
+approvaltests = { module = "com.approvaltests:approvaltests", version.ref = "approvaltests" }
 bson = { module = "org.mongodb:bson", version.ref = "bson" }
+io-rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "io-rest-assured" }
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotlin-faker = { module = "io.github.serpro69:kotlin-faker", version.ref = "kotlin-faker" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi"}

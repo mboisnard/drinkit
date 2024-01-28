@@ -27,13 +27,6 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:6.0.1")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-
-    testImplementation("io.github.serpro69:kotlin-faker:1.15.0")
-    testImplementation("io.kotest:kotest-assertions-core:5.8.0")
-    testImplementation("com.approvaltests:approvaltests:22.3.2")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("org.testcontainers:junit-jupiter")
 }
 
 java {
