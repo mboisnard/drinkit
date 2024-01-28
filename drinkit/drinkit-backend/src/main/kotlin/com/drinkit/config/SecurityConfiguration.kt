@@ -23,9 +23,10 @@ class SecurityConfiguration {
                     .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/registration/new").permitAll()
                     .requestMatchers("/api/registration/**").authenticated()
+                    .requestMatchers("/api/user/me").authenticated()
                     .requestMatchers("/api/**").hasRole("USER")
-                    .requestMatchers("/actuator/**").hasRole("USER")
-                    .requestMatchers("/openapi/**").hasRole("USER")
+                    .requestMatchers("/actuator/**").hasRole("ADMIN")
+                    .requestMatchers("/openapi/**").hasRole("ADMIN")
                     .anyRequest().denyAll()
             }
 

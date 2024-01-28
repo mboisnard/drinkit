@@ -13,6 +13,8 @@ tags:
     description: Authentication operations
   - name: registration
     description: User Registration operations
+  - name: user
+    description: User operations
 
 paths:
   /api/cellars:
@@ -176,3 +178,21 @@ paths:
           description: Bad request
         '200':
           description: User information completed
+
+  /api/user/me:
+    get:
+      operationId: getConnectedUserInfo
+      tags:
+        - user
+      summary: Get connected user information
+      description: |
+        Get user information (roles, webpreferences, ...)
+      responses:
+        '401':
+          description: Unauthorized
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: 'usersResponse.yaml#/components/schemas/ConnectedUserInformation'

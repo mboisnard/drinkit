@@ -1,0 +1,31 @@
+openapi: 3.0.3
+info:
+  title: common components for user api
+  version: 1.0.0
+  x-fragment: true
+paths: {}
+components:
+  schemas:
+    ConnectedUserInformation:
+      type: object
+      required:
+        - roles
+      properties:
+        firstname:
+          type: string
+        lastname:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        roles:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Role'
+
+    Role:
+      type: string
+      enum:
+        - ROLE_ADMIN
+        - ROLE_USER
