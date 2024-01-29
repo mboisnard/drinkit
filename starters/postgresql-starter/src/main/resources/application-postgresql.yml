@@ -5,6 +5,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/drinkit
     username: drinkit
     password: admin
+    hikari:
+      auto-commit: false
 
 # Remove Jooq logo & tip of the day log
 logging:

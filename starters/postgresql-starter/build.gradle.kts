@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api("org.springframework.boot:spring-boot-starter-jdbc")
+    api("org.springframework.boot:spring-boot-starter-jooq")
     api("org.postgresql:postgresql")
     api(libs.jooq)
 }
