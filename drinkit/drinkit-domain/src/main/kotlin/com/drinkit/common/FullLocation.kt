@@ -5,6 +5,7 @@ import com.drinkit.common.Constants.MAX_LATITUDE
 import com.drinkit.common.Constants.MAX_LONGITUDE
 import com.drinkit.common.Constants.MIN_LATITUDE
 import com.drinkit.common.Constants.MIN_LONGITUDE
+import com.drinkit.utils.isBetween
 import java.math.BigDecimal
 
 data class Point(
@@ -12,7 +13,8 @@ data class Point(
     val longitude: BigDecimal,
 ) {
     init {
-        require(latitude.isBetween(MIN_LATITUDE, MAX_LATITUDE) && longitude.isBetween(MIN_LONGITUDE, MAX_LONGITUDE)) {
+        require(latitude.isBetween(MIN_LATITUDE, MAX_LATITUDE)
+                && longitude.isBetween(MIN_LONGITUDE, MAX_LONGITUDE)) {
             "Invalid latitude or longitude. Given values: lat=$latitude, lon=$longitude"
         }
     }

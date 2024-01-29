@@ -23,12 +23,6 @@ the<DependencyManagementExtension>().apply {
 group = "com.drinkit"
 version = "0.0.1-SNAPSHOT"
 
-// Here we can't use the version catalog directly because of this issue: https://github.com/gradle/gradle/issues/15383
-dependencies {
-    implementation("io.github.oshai:kotlin-logging-jvm:6.0.1")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-}
-
 java {
     sourceCompatibility = JavaVersion.VERSION_21
 }

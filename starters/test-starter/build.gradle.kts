@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":kotlin-starter"))
+
     api(libs.approvaltests)
     api(libs.kotest.assertions.core)
     api(libs.kotlin.faker)

@@ -4,6 +4,8 @@ import com.drinkit.common.*
 import com.drinkit.common.Constants.MAX_CELLAR_NAME_LENGTH
 import com.drinkit.user.User
 import com.drinkit.user.UserId
+import com.drinkit.utils.doesntContainsInvisibleCharacters
+import com.drinkit.utils.hasMinLength
 
 data class CellarId(
     override val value: String,

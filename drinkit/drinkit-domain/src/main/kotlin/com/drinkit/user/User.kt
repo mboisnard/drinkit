@@ -8,7 +8,7 @@ import com.drinkit.common.Constants.MIN_BIRTH_DATE
 import com.drinkit.common.Constants.MIN_FIRSTNAME_LENGTH
 import com.drinkit.common.Constants.MIN_LASTNAME_LENGTH
 import com.drinkit.common.Constants.MIN_PASSWORD_LENGTH
-import com.drinkit.common.Constants.VALID_EMAIL_REGEX
+import com.drinkit.utils.*
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
