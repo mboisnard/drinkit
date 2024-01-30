@@ -44,7 +44,7 @@ internal class UserApi(
 
         return notCompletedUserInformation
             ?.let { ResponseEntity.ok(notCompletedUserInformation) }
-            ?: ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+            ?: ResponseEntity.status(HttpStatus.FORBIDDEN).build()
     }
 
     private fun Roles.toRoleResponse() = this.values.map { role ->

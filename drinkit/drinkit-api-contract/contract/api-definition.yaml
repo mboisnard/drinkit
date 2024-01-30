@@ -26,8 +26,8 @@ paths:
       description: |
         Returns all cellars you allow to see (owner or allowed from other users)
       responses:
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
         '200':
           description: Success
           content:
@@ -48,8 +48,8 @@ paths:
             schema:
               $ref: 'cellarsParameters.yaml#/components/schemas/CreateCellarRequest'
       responses:
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
         '400':
           description: Bad Request (maybe wrong object validation)
         '201':
@@ -70,8 +70,8 @@ paths:
       parameters:
         - $ref: 'cellarsParameters.yaml#/components/parameters/cellarId'
       responses:
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
         '204':
           description: Cellar Deleted
 
@@ -92,6 +92,8 @@ paths:
       responses:
         '401':
           description: Unauthorized
+        '400':
+          description: Bad request
         '200':
           description: User signed in
 
@@ -134,8 +136,8 @@ paths:
             schema:
               $ref: 'registrationParameters.yaml#/components/schemas/ConfirmEmailRequest'
       responses:
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
         '400':
           description: Bad request
         '200':
@@ -150,8 +152,8 @@ paths:
       description: |
         Resend validation token for connected user
       responses:
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
         '400':
           description: Bad request
         '200':
@@ -172,8 +174,8 @@ paths:
             schema:
               $ref: 'registrationParameters.yaml#/components/schemas/CompleteUserInformationRequest'
       responses:
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
         '400':
           description: Bad request
         '200':
@@ -188,8 +190,8 @@ paths:
       description: |
         Get user information (roles, webpreferences, ...)
       responses:
-        '401':
-          description: Unauthorized
+        '403':
+          description: Forbidden
         '200':
           description: Success
           content:
