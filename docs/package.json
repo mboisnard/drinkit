@@ -1,0 +1,19 @@
+{
+  "name": "drinkit",
+  "version": "0.0.1",
+  "description": "Drink It Manage your cellar",
+  "main": "index.js",
+  "authors": {
+    "name": "Mathieu Boisnard",
+    "email": "mathieu.boisnard.pro@gmail.com"
+  },
+  "repository": "/drinkit",
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.9.10"
+  }
+}

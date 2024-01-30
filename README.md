@@ -38,7 +38,7 @@ npm run dev
 
 ## Global view of this project
 
-<img src="./docs/DrinkIt.png" alt="DrinkIt Global View" width="1000" height="1000">
+<img src="docs/files/DrinkIt.png" alt="DrinkIt Global View" width="1000" height="1000">
 
 ## Wine & Spirit Application Examples
 
