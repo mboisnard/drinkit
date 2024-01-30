@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.AuthenticationException
-import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.context.SecurityContextHolderStrategy
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.security.web.context.SecurityContextRepository
 import org.springframework.stereotype.Service
@@ -29,6 +29,7 @@ internal class InternalAuthenticationService(
     private val authenticationManager: AuthenticationManager,
     private val securityContextRepository: SecurityContextRepository,
     private val userDetailsService: InternalUserDetailsService,
+    private val securityContextHolderStrategy: SecurityContextHolderStrategy,
 ): AuthenticationService {
 
     private val logger = KotlinLogging.logger { }
@@ -40,9 +41,10 @@ internal class InternalAuthenticationService(
                 UsernamePasswordAuthenticationToken(username, password)
             )
 
-            val securityContext = SecurityContextHolder.getContext()
+            val securityContext = securityContextHolderStrategy.createEmptyContext()
             securityContext.authentication = authentication
 
+            securityContextHolderStrategy.context = securityContext
             securityContextRepository.saveContext(securityContext, request!!, response!!)
         } catch (ex: AuthenticationException) {
             logger.debug(ex) { "Authentication failed for user $username" }
@@ -52,17 +54,18 @@ internal class InternalAuthenticationService(
     }
 
     override fun refreshContext() {
-        val securityContext = SecurityContextHolder.getContext()
+        val oldAuthentication = securityContextHolderStrategy.context.authentication
 
-        val oldAuthentication = securityContext.authentication
         val recentlyUpdatedUser = userDetailsService.loadUserByUsername(oldAuthentication.name)
 
+        val securityContext = securityContextHolderStrategy.createEmptyContext()
         securityContext.authentication = PreAuthenticatedAuthenticationToken(
             oldAuthentication.principal,
             oldAuthentication.credentials,
             recentlyUpdatedUser.authorities
         )
 
+        securityContextHolderStrategy.context = securityContext
         securityContextRepository.saveContext(securityContext, request!!, response!!)
     }
 }
