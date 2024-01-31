@@ -1,8 +1,8 @@
-spring.docker.compose:
-  life-cycle-management: start-only
-  file: "deployment/local/docker-compose.yml"
-  skip.in-tests: true
-  enabled: true
+#spring.docker.compose:
+#  life-cycle-management: start-only
+#  file: "deployment/local/docker-compose.yml"
+#  skip.in-tests: true
+#  enabled: true
 
 springdoc:
   api-docs:
