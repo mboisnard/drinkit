@@ -1,15 +1,18 @@
 ---
-home: true
-title: Home
-heroImage: https://vuejs.press/images/hero.png
-actions:
-  - text: Get Started
-    link: /guide/get-started.html
-    type: primary
-    
-  - text: Introduction
-    link: https://vuejs.press/guide/introduction.html
-    type: secondary
+# https://vitepress.dev/reference/default-theme-home-page
+layout: home
+
+hero:
+  name: "Drink It"
+  text: "Cellar management for beers/wines/spirits"
+  tagline: My great project tagline
+  actions:
+    - theme: brand
+      text: Features
+      link: /guide/get-started
+    - theme: alt
+      text: Tech
+      link: /tech/
 
 features:
   - title: Add your cellars
@@ -25,9 +28,6 @@ features:
   - title: Share your activity
     details: Share your new acquisition or an event where you drank a bottle with other members
 
-footer: MIT Licensed | Copyright © 2018-present | Made by Mathieu Boisnard with 🍺🥃🍷
+#footer: MIT Licensed | Copyright © 2018-present | Made by Mathieu Boisnard with 🍺🥃🍷
 ---
 
-This is the content of home page. Check [Home Page Docs][default-theme-home] for more details.
-
-[default-theme-home]: https://vuejs.press/reference/default-theme/frontmatter.html#home-page
