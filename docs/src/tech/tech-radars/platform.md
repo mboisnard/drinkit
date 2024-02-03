@@ -4,4 +4,4 @@
 
 # Platform Tech Radar
 
-<TechRadar></TechRadar>
+<TechRadar title="Platform Tech Radar"></TechRadar>

@@ -4,8 +4,7 @@ layout: home
 
 hero:
   name: "Drink It"
-  text: "Cellar management for beers/wines/spirits"
-  tagline: My great project tagline
+  text: "Cellar management"
   actions:
     - theme: brand
       text: Features
@@ -27,7 +26,5 @@ features:
     details: Add other members to the platform
   - title: Share your activity
     details: Share your new acquisition or an event where you drank a bottle with other members
-
-#footer: MIT Licensed | Copyright © 2018-present | Made by Mathieu Boisnard with 🍺🥃🍷
 ---
 

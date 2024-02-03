@@ -1,9 +1,32 @@
 <template>
   <div>
-    coucou
+    <svg id="radar"></svg>
   </div>
 </template>
 <script setup lang="ts">
+  import { onMounted } from 'vue';
+
+  interface TechRadarEntry {
+    quadrant: Number,
+    ring: Number,
+    label: String,
+    active: Boolean,
+    moved: Number,
+  }
+
+  const width = 1000;
+  const height = 1000;
+
+  const props = defineProps({
+    title: String,
+    //entries: TechRadarEntry,
+  })
+
+  onMounted(() => {
+    const techRadarScript = document.createElement('script');
+    techRadarScript.setAttribute('src', 'https://opensource.zalando.com/tech-radar/radar.js');
+    document.head.appendChild(techRadarScript)
+  })
 
 </script>
 <style>
