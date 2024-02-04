@@ -18,11 +18,4 @@ aside: false
     ]'
 />
 
-<style>
-    .VPContent div .container {
-        margin: 0 !important;
-        display: block !important;
-    }
-</style>
-
 [index]: what-is-it
