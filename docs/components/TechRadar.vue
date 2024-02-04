@@ -8,10 +8,10 @@
   import * as d3 from 'd3';
 
   const rings = {
-    ADOPT: { name: "ADOPT", color: "#5ba300", index: 0 },
-    TRIAL: { name: "TRIAL", color: "#009eb0", index: 1 },
-    ASSESS: { name: "ASSESS", color: "#c7ba00", index: 2 },
-    HOLD: { name: "HOLD", color: "#e09b96", index: 3 },
+    ADOPT: { name: 'ADOPT', color: '#5ba300', index: 0 },
+    TRIAL: { name: 'TRIAL', color: '#009eb0', index: 1 },
+    ASSESS: { name: 'ASSESS', color: '#c7ba00', index: 2 },
+    HOLD: { name: 'HOLD', color: '#e09b96', index: 3 },
   };
   type Ring = keyof typeof rings;
 
@@ -21,12 +21,12 @@
   };
 
   const colors = {
-    background: "#fff",
+    background: '#fff',
     grid: '#dddde0',
-    inactive: "#ddd"
+    inactive: '#ddd',
   };
 
-  const svgId = "techRadar";
+  const svgId = 'techRadar';
 
   interface TechRadarEntry {
     quadrant: string, //TechRadarProps['quadrants'][number],

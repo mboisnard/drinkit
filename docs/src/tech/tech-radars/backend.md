@@ -1,5 +1,6 @@
 ---
 sidebar: false
+aside: false
 ---
 
 <script setup>
@@ -17,10 +18,10 @@ sidebar: false
     ]'
 />
 
-
 <style>
-    div .container {
+    .VPContent div .container {
         margin: 0 !important;
+        display: block !important;
     }
 </style>
 
