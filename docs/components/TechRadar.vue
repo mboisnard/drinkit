@@ -1,58 +1,85 @@
 <template>
   <div>
-    <svg id="radar"></svg>
+    <svg :id="svgId"></svg>
   </div>
 </template>
 <script setup lang="ts">
   import { onMounted } from 'vue';
   import * as d3 from 'd3';
 
+  const rings = {
+    ADOPT: { name: "ADOPT", color: "#5ba300", index: 0 },
+    TRIAL: { name: "TRIAL", color: "#009eb0", index: 1 },
+    ASSESS: { name: "ASSESS", color: "#c7ba00", index: 2 },
+    HOLD: { name: "HOLD", color: "#e09b96", index: 3 },
+  };
+  type Ring = keyof typeof rings;
+
+  const size = {
+    width: 1450,
+    height: 1000,
+  };
+
+  const colors = {
+    background: "#fff",
+    grid: '#dddde0',
+    inactive: "#ddd"
+  };
+
+  const svgId = "techRadar";
+
   interface TechRadarEntry {
-    quadrant: number,
-    ring: number,
+    quadrant: string, //TechRadarProps['quadrants'][number],
+    ring: Ring,
     label: string,
-    active: boolean,
+    description: string,
+    link: string,
     moved: number,
   }
 
   interface TechRadarProps {
     title: string,
-    //entries: TechRadarEntry[],
+    quadrants: string[],
+    entries: TechRadarEntry[],
   }
 
-  const width = 1450;
-  const height = 1000;
+  const props = defineProps<TechRadarProps>();
 
-  const props = defineProps<TechRadarProps>()
+  const ringsList = Object.keys(rings).map(key => rings[key]);
+  const quadrantsWithIndex = props.quadrants.map((quadrant, index) => {
+    return {
+      name: quadrant,
+      index: index,
+    };
+  });
+  const radarEntries = props.entries.map((entry) => {
+    return {
+      quadrant: quadrantsWithIndex.find((quadrant) => quadrant.name === entry.quadrant).index,
+      ring: ringsList.find((ring) => ring.name === entry.ring).index,
+      label: entry.label,
+      active: true,
+      moved: entry.moved || 0,
+      link: entry.link,
+      description: entry.description,
+    };
+  });
 
   onMounted(() => {
     radar_visualization({
-      svg_id: "radar",
-      width: width,
-      height: height,
-      colors: {
-        background: "#fff",
-        grid: '#dddde0',
-        inactive: "#ddd"
-      },
+      svg_id: svgId,
+      width: size.width,
+      height: size.height,
+      colors: colors,
       title: props.title,
-      quadrants: [
-        { name: "Languages" },
-        { name: "Infrastructure" },
-        { name: "Datastores" },
-        { name: "Data Management" },
-      ],
-      rings: [
-        { name: "ADOPT", color: "#5ba300" },
-        { name: "TRIAL", color: "#009eb0" },
-        { name: "ASSESS", color: "#c7ba00" },
-        { name: "HOLD", color: "#e09b96" }
-      ],
+      quadrants: props.quadrants.map(quadrant => {
+        return { name: quadrant }
+      }),
+      rings: ringsList,
       print_layout: true,
       links_in_new_tabs: true,
-      entries: []
+      entries: radarEntries,
     });
-  })
+  });
 
   function radar_visualization(config) {
 

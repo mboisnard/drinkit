@@ -8,7 +8,14 @@ sidebar: false
 
 [Back to index][index]
 
-<TechRadar title="Frontend Tech Radar" />
+<TechRadar 
+    title="Frontend Tech Radar"
+    :quadrants="['Languages & Frameworks', 'Tools', 'Databases', 'Techniques']"
+    :entries='[
+    { "quadrant": "Techniques", "ring": "ADOPT", "label": "Contract first Apis" },
+    { "quadrant": "Techniques", "ring": "ADOPT", "label": "Contract first approach" },
+    ]'
+/>
 
 <style>
     div .container {
