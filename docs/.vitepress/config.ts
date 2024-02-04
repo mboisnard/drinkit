@@ -57,6 +57,7 @@ export default defineConfig({
                   {text: 'SOLID', link: 'solid'},
                   {text: 'Strong Type', link: 'strong-type'},
                   {text: 'Scout Rule', link: 'scout-rule'},
+                  {text: 'Developer Experience', link: 'dev-exp'},
                 ],
               },
               {
@@ -72,13 +73,12 @@ export default defineConfig({
             ],
           },
 
-
           {
             text: 'Tech Radars',
             base: '/tech/tech-radars/',
             collapsed: true,
             items: [
-              { text: 'What is it', link: 'index' },
+              { text: 'What is it', link: 'what-is-it' },
               { text: 'Frontend Tech Radar', link: 'frontend' },
               { text: 'Backend Tech Radar', link: 'backend' },
               { text: 'Platform Tech Radar', link: 'platform' },

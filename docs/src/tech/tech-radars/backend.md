@@ -1,1 +1,19 @@
-# Backend Tech Radar
+---
+sidebar: false
+---
+
+<script setup>
+    import TechRadar from '../../../components/TechRadar.vue'
+</script>
+
+[Back to index][index]
+
+<TechRadar title="Backend Tech Radar" />
+
+<style>
+    div .container {
+        margin: 0 !important;
+    }
+</style>
+
+[index]: what-is-it
