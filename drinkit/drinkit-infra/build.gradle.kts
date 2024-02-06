@@ -15,6 +15,8 @@ dependencies {
     implementation(libs.bson)
 
     jooqCodegen("org.postgresql:postgresql")
+
+    testImplementation(testFixtures(project(":postgresql-starter")))
 }
 
 jooq {

@@ -1,5 +1,6 @@
 package com.drinkit.jooq
 
+import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.conf.Settings
 import org.jooq.impl.DataSourceConnectionProvider
@@ -15,7 +16,7 @@ import javax.sql.DataSource
 internal class JooqConfiguration {
 
     @Bean
-    fun dslContext(dataSource: DataSource): DefaultDSLContext {
+    fun dslContext(dataSource: DataSource): DSLContext {
         val provider = DataSourceConnectionProvider(TransactionAwareDataSourceProxy(dataSource))
 
         val jooqConfiguration = DefaultConfiguration()
