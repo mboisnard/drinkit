@@ -1,8 +1,10 @@
 package com.drinkit.jooq
 
+import com.drinkit.utils.orNull
 import org.jooq.DDLExportConfiguration
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
+import org.jooq.Schema
 import org.jooq.conf.Settings
 import org.jooq.impl.DefaultConfiguration
 import org.jooq.impl.DefaultDSLContext
@@ -15,6 +17,9 @@ import org.testcontainers.utility.TestcontainersConfiguration
 import java.sql.Connection
 import java.sql.DriverManager
 import java.util.*
+import kotlin.reflect.KProperty
+import kotlin.reflect.KVisibility
+import kotlin.reflect.full.memberProperties
 
 
 private const val PG_IMAGE_NAME = "postgres:16.1"
@@ -45,11 +50,13 @@ class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResol
         if (!container.isRunning)
             Startables.deepStart(container).join()
 
-        dbName = createARandomDbName()
+        dbName = createARandomDbNameForTestClass()
         createADedicatedDatabaseForTestClass()
 
         connection = createConnection()
         dslContext = createJooqDslContext()
+
+        createSchemasWithJooq(ec)
     }
 
     override fun afterAll(ex: ExtensionContext) {
@@ -74,7 +81,7 @@ class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResol
             .updateUserConfig("testcontainers.reuse.enable", "true")
     }
 
-    private fun createARandomDbName(): String = "db-${UUID.randomUUID()}"
+    private fun createARandomDbNameForTestClass(): String = "db-${UUID.randomUUID()}"
 
     private fun createADedicatedDatabaseForTestClass() {
         container.createConnection("").use {
@@ -114,6 +121,25 @@ class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResol
                 "DROP DATABASE \"$dbName\""
             )
         }
+    }
+
+    private fun createSchemasWithJooq(ec: ExtensionContext) {
+        val annotationClass = ec.testClass
+            .map { it.getAnnotation(JooqIntegrationTest::class.java) }
+            .filter { Objects.nonNull(it) }
+            .filter { it.schemas.isNotEmpty() }
+            .orNull() ?: return
+
+        val queries = annotationClass.schemas
+            .asSequence()
+            .flatMap { it.memberProperties }
+            .filter { it.visibility == KVisibility.PUBLIC }
+            .filterIsInstance<KProperty<Schema>>()
+            //.map { it.call() }
+            //.map { dslContext.ddl(it, ddlConfiguration) }
+            .toList()
+
+        println(annotationClass)
     }
 
     private fun containerJdbcUpdatedName() = container.jdbcUrl.replaceFirst(DB_NAME, dbName)
