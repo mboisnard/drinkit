@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 
 @Service
 internal class UserApi(
-    private val userRepository: UserRepository,
+    private val users: Users,
     private val userRegistrationRepository: UserRegistrationRepository,
 ) : UserApiDelegate, AbstractApi() {
 
@@ -19,7 +19,7 @@ internal class UserApi(
     override fun getConnectedUserInfo(): ResponseEntity<ConnectedUserInformation> {
         val connectedUserId = connectedUserIdOrFail()
 
-        val completedUserInformation = userRepository.findById(connectedUserId)
+        val completedUserInformation = users.findById(connectedUserId)
             ?.let {
                 ConnectedUserInformation(
                     firstname = it.firstname.value,

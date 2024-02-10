@@ -9,9 +9,9 @@ import org.jooq.impl.DSL.multiset
 import org.springframework.stereotype.Repository
 
 @Repository
-internal class JooqUserRepository(
+internal class JooqUsers(
     private val dslContext: DSLContext,
-) : UserRepository {
+) : Users {
 
     override fun findById(userId: UserId): User? {
         val query = dslContext.select(

@@ -16,7 +16,7 @@ import java.util.Locale
 class ValidateEmail(
     private val userRegistrationRepository: UserRegistrationRepository,
     private val generateVerificationToken: GenerateVerificationToken,
-    private val verificationTokenRepository: VerificationTokenRepository,
+    private val verificationTokens: VerificationTokens,
     private val messageSender: MessageSender,
     private val clock: Clock,
 ): RegistrationStep {
@@ -32,7 +32,7 @@ class ValidateEmail(
 
         val token = generateVerificationToken(notCompletedUser.id)
 
-        verificationTokenRepository.createOrUpdate(token)
+        verificationTokens.createOrUpdate(token)
 
         messageSender.send(SendMessageCommand(
             content = MessageContent(
@@ -52,7 +52,7 @@ class ValidateEmail(
         val notCompletedUser = userRegistrationRepository.findById(userId)
             ?: throw IllegalArgumentException("User not found")
 
-        val verificationToken = verificationTokenRepository.findBy(notCompletedUser.id, token)
+        val verificationToken = verificationTokens.findBy(notCompletedUser.id, token)
             ?: throw IllegalArgumentException("Token not found")
 
         val tokenIsValid = verificationToken.expiryDate.isAfter(LocalDateTime.now(clock))
@@ -65,7 +65,7 @@ class ValidateEmail(
             )
         }
 
-        verificationTokenRepository.deleteBy(notCompletedUser.id)
+        verificationTokens.deleteBy(notCompletedUser.id)
     }
 
     override fun status(): String = "EMAIL_VERIFIED"

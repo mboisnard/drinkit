@@ -7,7 +7,7 @@ import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
 
 @JooqIntegrationTest(schemas = [Public::class])
-internal class UserRepositoryIntegrationTest {
+internal class UsersIntegrationTest {
 
     @Test
     fun `should start postgresql`(dslContext: DSLContext) {

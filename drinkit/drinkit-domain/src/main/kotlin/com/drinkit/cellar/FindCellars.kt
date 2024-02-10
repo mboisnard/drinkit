@@ -6,12 +6,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class FindCellars(
-    private val cellarRepository: CellarReadRepository,
+    private val cellars: ReadCellars,
 ) {
     private val logger = KotlinLogging.logger { }
 
     fun byOwnerId(owner: UserId): Sequence<Cellar> {
         logger.debug { "Finding cellars for userId $owner" }
-        return cellarRepository.findAllByOwnerId(owner)
+        return cellars.findAllByOwnerId(owner)
     }
 }

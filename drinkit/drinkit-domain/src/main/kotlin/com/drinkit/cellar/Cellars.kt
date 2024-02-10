@@ -2,13 +2,13 @@ package com.drinkit.cellar
 
 import com.drinkit.user.UserId
 
-interface CellarWriteRepository {
+interface WriteCellars {
     fun create(cellar: Cellar): CellarId
 
     fun delete(cellarId: CellarId)
 }
 
-interface CellarReadRepository {
+interface ReadCellars {
 
     fun findById(cellarId: CellarId): Cellar?
 

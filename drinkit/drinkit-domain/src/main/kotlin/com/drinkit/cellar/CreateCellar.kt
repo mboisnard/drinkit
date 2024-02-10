@@ -14,7 +14,7 @@ data class CreateCellarCommand(
 
 @Service
 class CreateCellar(
-    private val cellarRepository: CellarWriteRepository,
+    private val cellars: WriteCellars,
     private val idGenerator: IdGenerator,
 ) {
     private val logger = KotlinLogging.logger { }
@@ -33,6 +33,6 @@ class CreateCellar(
             )
         }
 
-        return cellarRepository.create(cellar)
+        return cellars.create(cellar)
     }
 }

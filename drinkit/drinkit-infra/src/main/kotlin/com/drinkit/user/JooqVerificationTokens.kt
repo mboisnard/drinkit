@@ -4,14 +4,14 @@ import com.drinkit.generated.jooq.tables.records.VerificationTokenRecord
 import com.drinkit.generated.jooq.tables.references.VERIFICATION_TOKEN
 import com.drinkit.jooq.allFields
 import com.drinkit.user.registration.VerificationToken
-import com.drinkit.user.registration.VerificationTokenRepository
+import com.drinkit.user.registration.VerificationTokens
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 
 @Repository
-internal class JooqVerificationTokenRepository(
+internal class JooqVerificationTokens(
     private val dslContext: DSLContext,
-): VerificationTokenRepository {
+): VerificationTokens {
 
     override fun createOrUpdate(verificationToken: VerificationToken): VerificationToken? {
         val query = dslContext.insertInto(VERIFICATION_TOKEN)

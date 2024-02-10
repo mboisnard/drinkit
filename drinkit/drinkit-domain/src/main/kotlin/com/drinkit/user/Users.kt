@@ -1,6 +1,6 @@
 package com.drinkit.user
 
-interface UserRepository {
+interface Users {
 
     fun findById(userId: UserId): User?
 }

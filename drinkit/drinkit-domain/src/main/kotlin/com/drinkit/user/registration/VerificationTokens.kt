@@ -2,7 +2,7 @@ package com.drinkit.user.registration
 
 import com.drinkit.user.UserId
 
-interface VerificationTokenRepository {
+interface VerificationTokens {
 
     fun createOrUpdate(verificationToken: VerificationToken): VerificationToken?
 

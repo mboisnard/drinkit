@@ -4,7 +4,7 @@ import com.drinkit.user.UserId
 import org.springframework.stereotype.Repository
 
 @Repository
-internal class InMemoryCellarRepository: CellarReadRepository, CellarWriteRepository {
+internal class InMemoryCellars: ReadCellars, WriteCellars {
 
     private var cellars: MutableMap<CellarId, Cellar> = mutableMapOf()
     override fun create(cellar: Cellar): CellarId {

@@ -3,7 +3,7 @@ package com.drinkit.config
 import com.drinkit.security.userdetails.InternalUserDetails
 import com.drinkit.user.User
 import com.drinkit.user.UserId
-import com.drinkit.user.UserRepository
+import com.drinkit.user.Users
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 @Component
 //@Scope("session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 class ConnectedUser(
-    private val userRepository: UserRepository,
+    private val users: Users,
 ) {
     //private var user: User? = null
 
@@ -29,6 +29,6 @@ class ConnectedUser(
         //if (user == null)
         //    user = userRepository.findById(userId)
 
-        return userRepository.findById(userId) ?: throw ConnectedUserException("User not found from id $userId")
+        return users.findById(userId) ?: throw ConnectedUserException("User not found from id $userId")
     }
 }
