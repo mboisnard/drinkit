@@ -1,11 +1,11 @@
 [versions]
-approvaltests = "22.3.2"
+approvaltests = "22.3.3"
 bson = "4.11.1"
-jooq = "3.19.3"
+jooq = "3.19.4"
 io-rest-assured = "5.4.0"
 kotest = "5.8.0"
-kotlin-faker = "1.15.0"
-kotlin-logging = "6.0.1"
+kotlin-faker = "1.16.0"
+kotlin-logging = "6.0.3"
 springdoc-openapi = "2.3.0"
 
 [libraries]
