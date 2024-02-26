@@ -1,6 +1,7 @@
 package com.drinkit.jooq
 
 import com.drinkit.utils.orNull
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jooq.DDLExportConfiguration
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
@@ -9,16 +10,16 @@ import org.jooq.conf.Settings
 import org.jooq.impl.DefaultConfiguration
 import org.jooq.impl.DefaultDSLContext
 import org.junit.jupiter.api.extension.*
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.lifecycle.Startables
 import org.testcontainers.utility.TestcontainersConfiguration
 import java.sql.Connection
 import java.sql.DriverManager
 import java.util.*
-import kotlin.reflect.KProperty
 import kotlin.reflect.KVisibility
+import kotlin.reflect.full.companionObjectInstance
+import kotlin.reflect.full.createType
+import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 
 
@@ -26,6 +27,8 @@ private const val PG_IMAGE_NAME = "postgres:16.1"
 private const val DB_NAME = "TEST_DB"
 
 class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResolver {
+
+    private val logger = KotlinLogging.logger {  }
 
     private lateinit var dbName: String
     private lateinit var connection: Connection
@@ -44,8 +47,9 @@ class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResol
         .createSequenceIfNotExists(true)
         .createMaterializedViewIfNotExists(true)
 
-    override fun beforeAll(ec: ExtensionContext) {
+    override fun beforeAll(extensionContext: ExtensionContext) {
         setReuseGlobalConfiguration()
+        disableJooqNotRelevantLogs()
 
         if (!container.isRunning)
             Startables.deepStart(container).join()
@@ -56,10 +60,10 @@ class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResol
         connection = createConnection()
         dslContext = createJooqDslContext()
 
-        createSchemasWithJooq(ec)
+        createSchemasWithJooq(extensionContext)
     }
 
-    override fun afterAll(ex: ExtensionContext) {
+    override fun afterAll(extensionContext: ExtensionContext) {
         if (!container.isRunning)
             return
 
@@ -79,6 +83,11 @@ class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResol
     private fun setReuseGlobalConfiguration() {
         TestcontainersConfiguration.getInstance()
             .updateUserConfig("testcontainers.reuse.enable", "true")
+    }
+
+    private fun disableJooqNotRelevantLogs() {
+        System.setProperty("org.jooq.no-logo", "true")
+        System.setProperty("org.jooq.no-tips", "true")
     }
 
     private fun createARandomDbNameForTestClass(): String = "db-${UUID.randomUUID()}"
@@ -132,22 +141,30 @@ class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResol
 
         val queries = annotationClass.schemas
             .asSequence()
-            .flatMap { it.memberProperties }
-            .filter { it.visibility == KVisibility.PUBLIC }
-            .filterIsInstance<KProperty<Schema>>()
-            //.map { it.call() }
-            //.map { dslContext.ddl(it, ddlConfiguration) }
+            .mapNotNull { it.companionObjectInstance }
+            .map {
+                val schemas = it.javaClass.kotlin.memberProperties
+                    .filter { property -> property.visibility == KVisibility.PUBLIC}
+                    .filter { property -> property.returnType.isSubtypeOf(Schema::class.createType()) }
+
+                it to schemas
+            }
+            .flatMap { pair -> pair.second.map { it.call(pair.first) as Schema } }
+            .map { dslContext.ddl(it, ddlConfiguration) }
             .toList()
 
-        println(annotationClass)
+        queries.flatMap { it.queries().toList() }.forEach {
+            logger.debug { "Execute query: $it" }
+            dslContext.execute(it)
+        }
     }
 
     private fun containerJdbcUpdatedName() = container.jdbcUrl.replaceFirst(DB_NAME, dbName)
 
-    @DynamicPropertySource
+    /*@DynamicPropertySource
     fun registerPostgresqlProperties(registry: DynamicPropertyRegistry) {
         registry.add("spring.datasource.url") { containerJdbcUpdatedName() }
         registry.add("spring.datasource.username") { container.username }
         registry.add("spring.datasource.password") { container.password }
-    }
+    }*/
 }

@@ -16,6 +16,7 @@ dependencies {
 
     jooqCodegen("org.postgresql:postgresql")
 
+    testImplementation(testFixtures(project(":drinkit-domain")))
     testImplementation(testFixtures(project(":postgresql-starter")))
 }
 
