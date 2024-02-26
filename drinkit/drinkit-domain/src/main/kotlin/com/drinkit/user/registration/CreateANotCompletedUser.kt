@@ -5,6 +5,7 @@ import com.drinkit.messaging.Event
 import com.drinkit.messaging.EventPublisher
 import com.drinkit.user.Email
 import com.drinkit.user.EncodedPassword
+import com.drinkit.user.NotCompletedUser
 import com.drinkit.user.UserId
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
@@ -25,16 +26,17 @@ data class UserCreated(
 @Service
 class CreateANotCompletedUser(
     private val generator: IdGenerator,
-    private val userRegistrationRepository: UserRegistrationRepository,
+    private val notCompletedUsers: NotCompletedUsers,
     private val eventPublisher: EventPublisher,
 ): RegistrationStep {
+
     private val logger = KotlinLogging.logger { }
 
     @Transactional
     operator fun invoke(command: CreateUserCommand): UserId = with(command) {
         logger.debug { "Creating a new user with command $this" }
 
-        require(!userRegistrationRepository.emailExists(email)) {
+        require(!notCompletedUsers.emailExists(email)) {
             "A user already exists with email $email"
         }
 
@@ -49,7 +51,7 @@ class CreateANotCompletedUser(
 
         logger.debug { "Creating user $user" }
 
-        val userId = userRegistrationRepository.create(user)
+        val userId = notCompletedUsers.create(user)
             ?: throw IllegalStateException("User not created $user")
 
         eventPublisher.publish(UserCreated(

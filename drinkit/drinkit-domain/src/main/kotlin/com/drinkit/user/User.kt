@@ -13,9 +13,44 @@ import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+sealed class User(
+    open val id: UserId,
+    open val email: Email,
+)
+
+data class NotCompletedUser(
+    override val id: UserId,
+    override val email: Email,
+    val password: EncodedPassword?,
+
+    val firstname: FirstName? = null,
+    val lastName: LastName? = null,
+    val birthDate: BirthDate? = null,
+
+    val lastConnection: LocalDateTime? = null,
+    val roles: Roles? = null,
+    val status: String,
+    val completed: Boolean,
+    val enabled: Boolean,
+) : User(id, email)
+
+data class CompletedUser(
+    override val id: UserId,
+    override val email: Email,
+    val firstname: FirstName,
+    val lastName: LastName,
+    val birthDate: BirthDate?,
+
+    val lastConnection: LocalDateTime?,
+    val roles: Roles,
+    val enabled: Boolean,
+) : User(id, email) {
+    val isAdmin = roles.values.contains(Roles.Role.ROLE_ADMIN)
+}
+
 data class UserId(
     override val value: String,
-): AbstractId(value) {
+) : AbstractId(value) {
     init {
         require(value.isId())
     }
@@ -29,9 +64,11 @@ data class FirstName(
     val value: String,
 ) {
     init {
-        require(value.isNotBlank()
-                && value.doesntContainsInvisibleCharacters()
-                && value.hasLengthBetween(MIN_FIRSTNAME_LENGTH, MAX_FIRSTNAME_LENGTH)) {
+        require(
+            value.isNotBlank()
+                    && value.doesntContainsInvisibleCharacters()
+                    && value.hasLengthBetween(MIN_FIRSTNAME_LENGTH, MAX_FIRSTNAME_LENGTH)
+        ) {
             "Invalid FirstName format (should not be blank, should not contains invisible characters, " +
                     "should have size between $MIN_FIRSTNAME_LENGTH and $MAX_FIRSTNAME_LENGTH. Given value: $value"
         }
@@ -42,9 +79,11 @@ data class LastName(
     val value: String,
 ) {
     init {
-        require(value.isNotBlank()
-                && value.doesntContainsInvisibleCharacters()
-                && value.hasLengthBetween(MIN_LASTNAME_LENGTH, MAX_LASTNAME_LENGTH)) {
+        require(
+            value.isNotBlank()
+                    && value.doesntContainsInvisibleCharacters()
+                    && value.hasLengthBetween(MIN_LASTNAME_LENGTH, MAX_LASTNAME_LENGTH)
+        ) {
             "Invalid LastName format (should not be blank, should not contains invisible characters, " +
                     "should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH. Given value: $value"
         }
@@ -55,9 +94,10 @@ data class Email(
     val value: String,
 ) {
     init {
-        require(value.isNotBlank()
-                && value.isEmail()
-                && value.length <= MAX_EMAIL_LENGTH
+        require(
+            value.isNotBlank()
+                    && value.isEmail()
+                    && value.length <= MAX_EMAIL_LENGTH
         ) {
             "Email should be valid and have less than $MAX_EMAIL_LENGTH characters. Given value: $value"
         }
@@ -84,12 +124,13 @@ data class Password(
     val value: String,
 ) {
     init {
-        require(value.isNotBlank()
-                && value.hasMinLength(MIN_PASSWORD_LENGTH)
-                && value.doesntContainsInvisibleCharacters()
-                && value.containsACapitalLetter()
-                && value.containsANumber()
-                && value.containsASpecialCharacter()
+        require(
+            value.isNotBlank()
+                    && value.hasMinLength(MIN_PASSWORD_LENGTH)
+                    && value.doesntContainsInvisibleCharacters()
+                    && value.containsACapitalLetter()
+                    && value.containsANumber()
+                    && value.containsASpecialCharacter()
         )
     }
 }
@@ -116,18 +157,4 @@ data class Roles(
             "A role is required here"
         }
     }
-}
-
-data class User(
-    val id: UserId,
-    val firstname: FirstName,
-    val lastName: LastName,
-    val birthDate: BirthDate?,
-    val email: Email,
-
-    val lastConnection: LocalDateTime?,
-    val roles: Roles,
-    val enabled: Boolean,
-) {
-    val isAdmin = roles.values.contains(Roles.Role.ROLE_ADMIN)
 }

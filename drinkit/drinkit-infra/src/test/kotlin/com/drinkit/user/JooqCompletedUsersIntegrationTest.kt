@@ -1,4 +1,4 @@
-package com.drinkit.infra
+package com.drinkit.user
 
 import com.drinkit.generated.jooq.Public
 import com.drinkit.jooq.JooqIntegrationTest
@@ -7,7 +7,7 @@ import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
 
 @JooqIntegrationTest(schemas = [Public::class])
-internal class UsersIntegrationTest {
+internal class JooqCompletedUsersIntegrationTest {
 
     @Test
     fun `should start postgresql`(dslContext: DSLContext) {

@@ -14,7 +14,7 @@ import java.util.Locale
 
 @Service
 class ValidateEmail(
-    private val userRegistrationRepository: UserRegistrationRepository,
+    private val notCompletedUsers: NotCompletedUsers,
     private val generateVerificationToken: GenerateVerificationToken,
     private val verificationTokens: VerificationTokens,
     private val messageSender: MessageSender,
@@ -27,7 +27,7 @@ class ValidateEmail(
     fun sendVerificationTokenToUser(userId: UserId, locale: Locale) {
         logger.debug { "Sending verification token to $userId" }
 
-        val notCompletedUser = userRegistrationRepository.findById(userId)
+        val notCompletedUser = notCompletedUsers.findById(userId)
             ?: throw IllegalArgumentException("User not found")
 
         val token = generateVerificationToken(notCompletedUser.id)
@@ -49,7 +49,7 @@ class ValidateEmail(
     @Transactional
     fun validateVerificationToken(userId: UserId, token: String) {
 
-        val notCompletedUser = userRegistrationRepository.findById(userId)
+        val notCompletedUser = notCompletedUsers.findById(userId)
             ?: throw IllegalArgumentException("User not found")
 
         val verificationToken = verificationTokens.findBy(notCompletedUser.id, token)
@@ -58,7 +58,7 @@ class ValidateEmail(
         val tokenIsValid = verificationToken.expiryDate.isAfter(LocalDateTime.now(clock))
 
         if (tokenIsValid) {
-            userRegistrationRepository.update(
+            notCompletedUsers.update(
                 notCompletedUser.copy(
                     status = status()
                 )

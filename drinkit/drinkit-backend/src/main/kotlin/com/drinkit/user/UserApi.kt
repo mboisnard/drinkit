@@ -4,22 +4,22 @@ import com.drinkit.api.generated.api.UserApiDelegate
 import com.drinkit.api.generated.model.ConnectedUserInformation
 import com.drinkit.api.generated.model.Role
 import com.drinkit.config.AbstractApi
-import com.drinkit.user.registration.UserRegistrationRepository
+import com.drinkit.user.registration.NotCompletedUsers
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
 internal class UserApi(
-    private val users: Users,
-    private val userRegistrationRepository: UserRegistrationRepository,
+    private val completedUsers: CompletedUsers,
+    private val notCompletedUsers: NotCompletedUsers,
 ) : UserApiDelegate, AbstractApi() {
 
     // TODO Should be cleaned and simplified
     override fun getConnectedUserInfo(): ResponseEntity<ConnectedUserInformation> {
         val connectedUserId = connectedUserIdOrFail()
 
-        val completedUserInformation = users.findById(connectedUserId)
+        val completedUserInformation = completedUsers.findById(connectedUserId)
             ?.let {
                 ConnectedUserInformation(
                     firstname = it.firstname.value,
@@ -32,7 +32,7 @@ internal class UserApi(
         if (completedUserInformation != null)
             return ResponseEntity.ok(completedUserInformation)
 
-        val notCompletedUserInformation = userRegistrationRepository.findById(connectedUserId)
+        val notCompletedUserInformation = notCompletedUsers.findById(connectedUserId)
             ?.let {
                 ConnectedUserInformation(
                     firstname = it.firstname?.value,

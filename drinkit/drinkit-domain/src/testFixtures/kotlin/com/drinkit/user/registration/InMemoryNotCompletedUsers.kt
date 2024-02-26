@@ -1,9 +1,10 @@
 package com.drinkit.user.registration
 
 import com.drinkit.user.Email
+import com.drinkit.user.NotCompletedUser
 import com.drinkit.user.UserId
 
-class InMemoryUserRegistrationRepository: UserRegistrationRepository {
+class InMemoryNotCompletedUsers: NotCompletedUsers {
 
     private val users: MutableMap<UserId, NotCompletedUser> = mutableMapOf()
 

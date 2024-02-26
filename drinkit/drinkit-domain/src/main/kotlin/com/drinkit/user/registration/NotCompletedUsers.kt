@@ -1,9 +1,10 @@
 package com.drinkit.user.registration
 
 import com.drinkit.user.Email
+import com.drinkit.user.NotCompletedUser
 import com.drinkit.user.UserId
 
-interface UserRegistrationRepository {
+interface NotCompletedUsers {
 
     fun emailExists(email: Email): Boolean
 

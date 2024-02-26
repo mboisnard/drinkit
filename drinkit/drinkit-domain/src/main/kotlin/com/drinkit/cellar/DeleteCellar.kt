@@ -1,6 +1,6 @@
 package com.drinkit.cellar
 
-import com.drinkit.user.User
+import com.drinkit.user.CompletedUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 
@@ -11,7 +11,7 @@ class DeleteCellar(
 ) {
     private val logger = KotlinLogging.logger { }
 
-    operator fun invoke(cellarId: CellarId, connectedUser: User) {
+    operator fun invoke(cellarId: CellarId, connectedUser: CompletedUser) {
         val cellar = readCellars.findById(cellarId) ?: throw IllegalStateException("Cellar not found")
 
         if (cellar.canBeSeenBy(connectedUser)) {

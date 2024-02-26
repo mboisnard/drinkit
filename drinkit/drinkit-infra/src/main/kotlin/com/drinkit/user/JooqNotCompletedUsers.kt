@@ -5,8 +5,8 @@ import com.drinkit.generated.jooq.tables.User.Companion.USER
 import com.drinkit.generated.jooq.tables.records.RoleRecord
 import com.drinkit.jooq.allFields
 import com.drinkit.jooq.fetchSequence
-import com.drinkit.user.registration.NotCompletedUser
-import com.drinkit.user.registration.UserRegistrationRepository
+import com.drinkit.user.NotCompletedUser
+import com.drinkit.user.registration.NotCompletedUsers
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.multiset
 import org.springframework.stereotype.Repository
@@ -14,10 +14,10 @@ import java.time.Clock
 import java.time.LocalDateTime
 
 @Repository
-internal class JooqUserRegistrationRepository(
+internal class JooqNotCompletedUsers(
     private val dslContext: DSLContext,
     private val clock: Clock,
-) : UserRegistrationRepository {
+) : NotCompletedUsers {
 
     override fun emailExists(email: Email): Boolean {
         val count = dslContext.fetchCount(USER, USER.EMAIL.eq(email.value))

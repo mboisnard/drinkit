@@ -14,16 +14,16 @@ data class CompleteUserInformationCommand(
 
 @Service
 class CompleteUserInformation(
-    private val userRegistrationRepository: UserRegistrationRepository,
+    private val notCompletedUsers: NotCompletedUsers,
 ): RegistrationStep {
 
     @Transactional
     operator fun invoke(command: CompleteUserInformationCommand) = with(command) {
 
-        val notCompletedUser = userRegistrationRepository.findById(userId)
+        val notCompletedUser = notCompletedUsers.findById(userId)
             ?: throw IllegalArgumentException("User not found")
 
-        userRegistrationRepository.update(
+        notCompletedUsers.update(
             notCompletedUser.copy(
                 firstname = firstName,
                 lastName = lastName,

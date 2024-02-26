@@ -1,13 +1,9 @@
-package com.drinkit.user.registration
+package com.drinkit.user
 
 import com.drinkit.faker
-import com.drinkit.user.Email
-import com.drinkit.user.EncodedPassword
-import com.drinkit.user.Password
-import com.drinkit.user.UserId
 import java.time.LocalDate
 
-object UserUtils {
+object UserFixtures {
 
     fun givenANotCompletedUser(
         id: UserId? = null,

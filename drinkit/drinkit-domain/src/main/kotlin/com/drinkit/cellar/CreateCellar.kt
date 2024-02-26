@@ -2,14 +2,14 @@ package com.drinkit.cellar
 
 import com.drinkit.common.CityLocation
 import com.drinkit.common.IdGenerator
-import com.drinkit.user.User
+import com.drinkit.user.CompletedUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 
 data class CreateCellarCommand(
     val name: CellarName,
     val location: CityLocation,
-    val owner: User,
+    val owner: CompletedUser,
 )
 
 @Service

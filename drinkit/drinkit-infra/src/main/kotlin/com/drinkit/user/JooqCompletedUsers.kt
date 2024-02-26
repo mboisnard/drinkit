@@ -9,11 +9,11 @@ import org.jooq.impl.DSL.multiset
 import org.springframework.stereotype.Repository
 
 @Repository
-internal class JooqUsers(
+internal class JooqCompletedUsers(
     private val dslContext: DSLContext,
-) : Users {
+) : CompletedUsers {
 
-    override fun findById(userId: UserId): User? {
+    override fun findById(userId: UserId): CompletedUser? {
         val query = dslContext.select(
             allFields(USER),
             multiset(
@@ -35,8 +35,8 @@ internal class JooqUsers(
             ?.toUser()
     }
 
-    private fun JooqUserWithRolesView.toUser(): User =
-        User(
+    private fun JooqUserWithRolesView.toUser(): CompletedUser =
+        CompletedUser(
             id = UserId(user.id),
             firstname = FirstName(user.firstname!!),
             lastName = LastName(user.lastname!!),
