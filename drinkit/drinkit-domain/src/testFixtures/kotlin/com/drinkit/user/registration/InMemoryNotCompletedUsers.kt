@@ -18,7 +18,16 @@ class InMemoryNotCompletedUsers: NotCompletedUsers {
         if (users.containsKey(user.id))
             return null
 
-        users[user.id] = user
+        // Reset some fields here to have the same behavior as the production code
+        // The `create` method only save mandatory information
+        val sanitizedUserToCreate = user.copy(
+            firstname = null,
+            lastName = null,
+            birthDate = null,
+            lastConnection = null,
+            roles = null,
+        )
+        users[user.id] = sanitizedUserToCreate
 
         return user.id
     }
