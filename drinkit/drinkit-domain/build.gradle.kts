@@ -5,4 +5,5 @@ plugins {
 
 dependencies {
     implementation(project(":messaging-starter"))
+    testFixturesApi(testFixtures(project(":messaging-starter")))
 }
