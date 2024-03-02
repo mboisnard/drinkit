@@ -10,25 +10,38 @@ val excludedFolders = setOf(
     "out",
     "buildSrc",
 )
-val registeredProjectFolders = mutableSetOf<File>()
-fun includeModules(folder: File, depth: Int) {
-    if (depth > 2 || folder in registeredProjectFolders) {
+
+fun addGradleProject(folder: File) {
+    include(folder.name)
+    project(":${folder.name}").projectDir = folder.absoluteFile
+}
+
+fun containsAGradleFile(folder: File): Boolean {
+    if (!folder.isDirectory) {
+        return false
+    }
+
+    return folder.listFiles()
+        ?.any { it.name.equals("build.gradle.kts") } == true
+}
+
+fun includeModules(folder: File)  {
+    if (!folder.isDirectory || folder.isHidden) {
         return
     }
 
-    val children = folder.listFiles()
-
-    if (children?.any { it.name.equals("build.gradle.kts") } == true) {
-        include(folder.name)
-        project(":${folder.name}").projectDir = folder.absoluteFile
-        registeredProjectFolders.add(folder)
+    if (containsAGradleFile(folder)) {
+        addGradleProject(folder)
+        return
     }
 
-    children?.filter { it.isDirectory && !it.isHidden }
+    folder.listFiles()
+        ?.filter { it.isDirectory && !it.isHidden }
         ?.filter { !excludedFolders.contains(it.name) }
-        ?.forEach { includeModules(it, depth + 1) }
+        ?.filter { containsAGradleFile(it) }
+        ?.forEach { addGradleProject(it) }
 }
 
-includeModules(file("starters"), 1)
-includeModules(file("drinkit"), 1)
-includeModules(file("deployment/updater"), 2)
+includeModules(file("starters"))
+includeModules(file("drinkit"))
+includeModules(file("deployment/updater"))
