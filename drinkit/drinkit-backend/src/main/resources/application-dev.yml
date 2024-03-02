@@ -7,10 +7,18 @@
 email.sender.enabled: false
 
 springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
+  api-docs.enabled: true
+  swagger-ui.enabled: true
+
+meilisearch:
+  url: http://localhost:7700
+  apiKey: masterKey
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/drinkit
+    username: drinkit
+    password: admin
 
 logging:
   level:

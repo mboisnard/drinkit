@@ -1,0 +1,3 @@
+meilisearch:
+  url: ${DRINKIT_MEILI_SEARCH_URL:}
+  apiKey: ${DRINKIT_MEILI_SEARCH_API_KEY:}

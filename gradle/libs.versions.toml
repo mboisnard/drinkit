@@ -6,6 +6,7 @@ io-rest-assured = "5.4.0"
 kotest = "5.8.0"
 kotlin-faker = "1.16.0"
 kotlin-logging = "6.0.3"
+meilisearch = "0.11.7"
 springdoc-openapi = "2.3.0"
 
 [libraries]
@@ -16,4 +17,5 @@ jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotlin-faker = { module = "io.github.serpro69:kotlin-faker", version.ref = "kotlin-faker" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
+meilisearch-java-client = { module = "com.meilisearch.sdk:meilisearch-java", version.ref = "meilisearch" }
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi"}

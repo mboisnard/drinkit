@@ -2,10 +2,10 @@ email.sender.enabled: true
 
 spring:
   mail:
-    host: ${EMAIL_HOST:smtp.gmail.com}
-    port: ${EMAIL_PORT:587}
-    username: ${EMAIL_USERNAME:}
-    password: ${EMAIL_PASSWORD:}
+    host: ${DRINKIT_EMAIL_HOST:smtp.gmail.com}
+    port: ${DRINKIT_EMAIL_PORT:587}
+    username: ${DRINKIT_EMAIL_USERNAME:}
+    password: ${DRINKIT_EMAIL_PASSWORD:}
     properties:
       mail:
         smtp:

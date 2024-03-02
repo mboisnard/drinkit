@@ -2,9 +2,9 @@ spring:
   sql.init.mode: never
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/drinkit
-    username: drinkit
-    password: admin
+    url: ${DRINKIT_POSTGRES_URL:}
+    username: ${DRINKIT_POSTGRES_USERNAME:}
+    password: ${DRINKIT_POSTGRES_PASSWORD:}
     hikari:
       auto-commit: false
 
