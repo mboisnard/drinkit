@@ -4,6 +4,8 @@
 #  skip.in-tests: true
 #  enabled: true
 
+email.sender.enabled: false
+
 springdoc:
   api-docs:
     enabled: true

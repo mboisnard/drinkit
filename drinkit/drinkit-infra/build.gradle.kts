@@ -14,6 +14,8 @@ dependencies {
     implementation(libs.jooq) // TODO remove after adding platform version constraint
     implementation(libs.bson)
 
+    implementation(project(":mail-starter"))
+
     jooqCodegen("org.postgresql:postgresql")
 
     testImplementation(testFixtures(project(":drinkit-domain")))
