@@ -15,9 +15,3 @@ server:
       tracking-modes: cookie
       timeout: 15m
   forward-headers-strategy: framework
-
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
