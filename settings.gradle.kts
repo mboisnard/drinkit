@@ -42,6 +42,6 @@ fun includeModules(folder: File)  {
         ?.forEach { addGradleProject(it) }
 }
 
-includeModules(file("starters"))
+includeModules(file("tech-starters/backend"))
 includeModules(file("drinkit"))
 includeModules(file("deployment/updater"))
