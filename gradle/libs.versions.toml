@@ -8,6 +8,7 @@ kotlin-faker = "1.16.0"
 kotlin-logging = "6.0.3"
 meilisearch = "0.11.7"
 springdoc-openapi = "2.3.0"
+testcontainers-meilisearch = "1.0.5"
 
 [libraries]
 approvaltests = { module = "com.approvaltests:approvaltests", version.ref = "approvaltests" }
@@ -18,4 +19,5 @@ kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.
 kotlin-faker = { module = "io.github.serpro69:kotlin-faker", version.ref = "kotlin-faker" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 meilisearch-java-client = { module = "com.meilisearch.sdk:meilisearch-java", version.ref = "meilisearch" }
-springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi"}
+springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
+testcontainers-meilisearch = { module = "io.vanslog:testcontainers-meilisearch", version.ref = "testcontainers-meilisearch" }
