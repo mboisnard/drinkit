@@ -26,7 +26,7 @@ import kotlin.reflect.full.memberProperties
 private const val PG_IMAGE_NAME = "postgres:16.1"
 private const val DB_NAME = "TEST_DB"
 
-class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResolver {
+class JooqPostgresExtension: BeforeAllCallback, AfterEachCallback, AfterAllCallback, ParameterResolver {
 
     private val logger = KotlinLogging.logger {  }
 
@@ -61,6 +61,10 @@ class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResol
         dslContext = createJooqDslContext()
 
         createSchemasWithJooq(extensionContext)
+    }
+
+    override fun afterEach(extensionContext: ExtensionContext) {
+        connection.rollback()
     }
 
     override fun afterAll(extensionContext: ExtensionContext) {
@@ -100,11 +104,15 @@ class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResol
         }
     }
 
-    private fun createConnection(): Connection = DriverManager.getConnection(
-        containerJdbcUpdatedName(),
-        container.username,
-        container.password
-    )
+    private fun createConnection(): Connection {
+        val connection = DriverManager.getConnection(
+            containerJdbcUpdatedName(),
+            container.username,
+            container.password
+        )
+        connection.autoCommit = false
+        return connection
+    }
 
     private fun createJooqDslContext(): DSLContext {
         val jooqConfiguration = DefaultConfiguration()
@@ -156,9 +164,9 @@ class JooqPostgresExtension: BeforeAllCallback, AfterAllCallback, ParameterResol
         queries.flatMap { it.queries().toList() }.forEach {
             logger.debug { "Execute query: $it" }
             dslContext.execute(it)
+            connection.commit()
         }
     }
-
     private fun containerJdbcUpdatedName() = container.jdbcUrl.replaceFirst(DB_NAME, dbName)
 
     /*@DynamicPropertySource
