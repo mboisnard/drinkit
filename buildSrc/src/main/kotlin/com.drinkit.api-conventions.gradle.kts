@@ -6,11 +6,11 @@ plugins {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     implementation(project(":kotlin-starter"))
+    implementation(project(":monitoring-starter"))
 
     testImplementation(project(":test-starter"))
 }

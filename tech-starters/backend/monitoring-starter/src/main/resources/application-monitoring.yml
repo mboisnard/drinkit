@@ -1,0 +1,16 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+  info:
+    git:
+      enabled: true
+      mode: full
+    build:
+      enabled: true
+    java:
+      enabled: true
