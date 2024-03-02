@@ -2,6 +2,7 @@ package com.drinkit.search.engine
 
 import com.meilisearch.sdk.Client
 import com.meilisearch.sdk.Config
+import com.meilisearch.sdk.json.JacksonJsonHandler
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,7 +17,7 @@ class MeilisearchConfig(
 
     @Bean
     fun meilisearchClient(): Client {
-        val config = Config(url, apiKey)
+        val config = Config(url, apiKey, JacksonJsonHandler())
         return Client(config)
     }
 }
