@@ -8,6 +8,7 @@ kotlin-faker = "1.16.0"
 kotlin-logging = "6.0.3"
 meilisearch = "0.11.7"
 springdoc-openapi = "2.3.0"
+tess4j = "5.10.0"
 testcontainers-meilisearch = "1.0.5"
 
 [libraries]
@@ -20,4 +21,5 @@ kotlin-faker = { module = "io.github.serpro69:kotlin-faker", version.ref = "kotl
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 meilisearch-java-client = { module = "com.meilisearch.sdk:meilisearch-java", version.ref = "meilisearch" }
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
+tess4j = { module = "net.sourceforge.tess4j:tess4j", version.ref = "tess4j" }
 testcontainers-meilisearch = { module = "io.vanslog:testcontainers-meilisearch", version.ref = "testcontainers-meilisearch" }
