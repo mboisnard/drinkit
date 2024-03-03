@@ -1,6 +1,6 @@
 package com.drinkit.user.registration
 
-internal class InMemoryNotCompletedCompletedUsersTest: NotCompletedCompletedUsersContract() {
+internal class InMemoryNotCompletedUsersTest : NotCompletedCompletedUsersTestContract() {
 
     override fun fetchRepository(): NotCompletedUsers =
         InMemoryNotCompletedUsers()

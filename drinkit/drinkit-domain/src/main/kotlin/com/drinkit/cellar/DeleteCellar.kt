@@ -6,13 +6,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class DeleteCellar(
-    private val cellars: WriteCellars,
-    private val readCellars: ReadCellars,
+    private val cellars: Cellars,
 ) {
     private val logger = KotlinLogging.logger { }
 
     operator fun invoke(cellarId: CellarId, connectedUser: CompletedUser) {
-        val cellar = readCellars.findById(cellarId) ?: throw IllegalStateException("Cellar not found")
+        val cellar = cellars.findById(cellarId) ?: throw IllegalStateException("Cellar not found")
 
         if (cellar.canBeSeenBy(connectedUser)) {
             logger.info { "Removing cellar $cellarId, author: ${connectedUser.id}" }

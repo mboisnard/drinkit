@@ -4,7 +4,7 @@ import com.drinkit.user.UserFixtures
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
-abstract class NotCompletedCompletedUsersContract {
+abstract class NotCompletedCompletedUsersTestContract {
 
     private val repository: NotCompletedUsers by lazy {
         fetchRepository()

@@ -21,7 +21,6 @@ class CellarFixtures {
 
     val deleteCellar = DeleteCellar(
         cellars = cellars,
-        readCellars = cellars,
     )
 
     val findCellars = FindCellars(

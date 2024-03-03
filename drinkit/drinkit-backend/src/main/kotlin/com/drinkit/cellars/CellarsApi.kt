@@ -69,8 +69,8 @@ internal class CellarsApi(
                 code = country.code,
             ),
             point = Point(
-                latitude = point!!.latitude,
-                longitude = point!!.longitude
+                latitude = point.latitude,
+                longitude = point.longitude
             )
         )
 

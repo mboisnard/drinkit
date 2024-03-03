@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class FindCellars(
-    private val cellars: ReadCellars,
+    private val cellars: Cellars,
 ) {
     private val logger = KotlinLogging.logger { }
 

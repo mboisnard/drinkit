@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 internal class JooqCellars(
     private val dslContext: DSLContext,
     private val clock: Clock,
-) : ReadCellars, WriteCellars {
+) : Cellars {
 
     override fun create(cellar: Cellar): CellarId? {
         val query = dslContext.insertInto(CELLAR)
