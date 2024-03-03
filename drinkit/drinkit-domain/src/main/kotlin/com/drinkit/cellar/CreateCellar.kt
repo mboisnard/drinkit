@@ -19,7 +19,7 @@ class CreateCellar(
 ) {
     private val logger = KotlinLogging.logger { }
 
-    operator fun invoke(command: CreateCellarCommand): CellarId {
+    operator fun invoke(command: CreateCellarCommand): CellarId? {
         val cellarId = CellarId.create(idGenerator)
 
         logger.debug { "Creating cellar with id $cellarId from command $command" }

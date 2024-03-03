@@ -36,7 +36,7 @@ data class Country(
 data class CityLocation(
     val city: String,
     val country: Country,
-    val point: Point?,
+    val point: Point,
 )
 
 data class FullLocation(

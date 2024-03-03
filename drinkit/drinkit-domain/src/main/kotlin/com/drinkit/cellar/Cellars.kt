@@ -3,9 +3,9 @@ package com.drinkit.cellar
 import com.drinkit.user.UserId
 
 interface WriteCellars {
-    fun create(cellar: Cellar): CellarId
+    fun create(cellar: Cellar): CellarId?
 
-    fun delete(cellarId: CellarId)
+    fun delete(cellarId: CellarId): Int
 }
 
 interface ReadCellars {

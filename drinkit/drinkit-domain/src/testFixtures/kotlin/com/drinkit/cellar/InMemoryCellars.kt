@@ -1,20 +1,22 @@
 package com.drinkit.cellar
 
 import com.drinkit.user.UserId
+
 class InMemoryCellars: ReadCellars, WriteCellars {
 
     private var cellars: MutableMap<CellarId, Cellar> = mutableMapOf()
-    override fun create(cellar: Cellar): CellarId {
-        if (!cellars.containsKey(cellar.id)) {
-            cellars[cellar.id] = cellar
-            return cellar.id
+
+    override fun create(cellar: Cellar): CellarId? {
+        if (cellars.containsKey(cellar.id)) {
+            return null
         }
 
-        throw IllegalStateException("Cellar already exists")
+        cellars[cellar.id] = cellar
+        return cellar.id
     }
 
-    override fun delete(cellarId: CellarId) {
-        cellars.remove(cellarId)
+    override fun delete(cellarId: CellarId): Int {
+        return if (cellars.remove(cellarId) != null) 1 else 0
     }
 
     override fun findById(cellarId: CellarId): Cellar? = cellars[cellarId]
