@@ -28,6 +28,7 @@ internal class JooqCellars(
             .set(CELLAR.LOCATION_COUNTRY, cellar.location.country.name)
             .set(CELLAR.LOCATION_LATITUDE, cellar.location.point.latitude.toDouble())
             .set(CELLAR.LOCATION_LONGITUDE, cellar.location.point.longitude.toDouble())
+            .set(CELLAR.OWNER_ID, cellar.owner.value)
             .set(CELLAR.MODIFIED, LocalDateTime.now(clock))
             .onConflict(CELLAR.ID)
             .doNothing()

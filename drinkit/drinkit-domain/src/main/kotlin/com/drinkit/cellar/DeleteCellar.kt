@@ -3,6 +3,7 @@ package com.drinkit.cellar
 import com.drinkit.user.CompletedUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class DeleteCellar(
@@ -10,6 +11,7 @@ class DeleteCellar(
 ) {
     private val logger = KotlinLogging.logger { }
 
+    @Transactional
     operator fun invoke(cellarId: CellarId, connectedUser: CompletedUser) {
         val cellar = cellars.findById(cellarId) ?: throw IllegalStateException("Cellar not found")
 

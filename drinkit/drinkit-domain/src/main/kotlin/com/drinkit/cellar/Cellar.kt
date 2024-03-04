@@ -1,11 +1,14 @@
 package com.drinkit.cellar
 
-import com.drinkit.common.*
+import com.drinkit.common.AbstractId
+import com.drinkit.common.CityLocation
 import com.drinkit.common.Constants.MAX_CELLAR_NAME_LENGTH
+import com.drinkit.common.IdGenerator
+import com.drinkit.common.isId
 import com.drinkit.user.CompletedUser
 import com.drinkit.user.UserId
 import com.drinkit.utils.doesntContainsInvisibleCharacters
-import com.drinkit.utils.hasMinLength
+import com.drinkit.utils.hasLengthBetween
 
 data class CellarId(
     override val value: String,
@@ -25,8 +28,8 @@ data class CellarName(
     init {
         require(value.isNotBlank()
                 && value.doesntContainsInvisibleCharacters()
-                && value.hasMinLength(MAX_CELLAR_NAME_LENGTH)) {
-            "Cellar name should not be blank, contains invisible chars or have less " +
+                && value.hasLengthBetween(0, MAX_CELLAR_NAME_LENGTH)) {
+            "Cellar name should not be blank, contains invisible chars or have more " +
                     "than $MAX_CELLAR_NAME_LENGTH characters. Given value: $value"
         }
     }

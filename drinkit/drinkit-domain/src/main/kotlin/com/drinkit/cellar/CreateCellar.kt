@@ -5,6 +5,7 @@ import com.drinkit.common.IdGenerator
 import com.drinkit.user.CompletedUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 data class CreateCellarCommand(
     val name: CellarName,
@@ -19,6 +20,7 @@ class CreateCellar(
 ) {
     private val logger = KotlinLogging.logger { }
 
+    @Transactional
     operator fun invoke(command: CreateCellarCommand): CellarId? {
         val cellarId = CellarId.create(idGenerator)
 
