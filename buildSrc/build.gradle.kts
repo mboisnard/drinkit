@@ -4,6 +4,7 @@ plugins {
 
 repositories {
     gradlePluginPortal() // so that external plugins can be resolved in dependencies section
+    maven { url = uri("https://repo.spring.io/milestone") }
 }
 
 dependencies {
