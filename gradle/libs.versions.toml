@@ -1,6 +1,7 @@
 [versions]
 approvaltests = "22.3.3"
 bson = "4.11.1"
+cucumber = "7.15.0"
 jooq = "3.19.4"
 io-rest-assured = "5.4.0"
 kotest = "5.8.0"
@@ -14,6 +15,9 @@ testcontainers-meilisearch = "1.0.5"
 [libraries]
 approvaltests = { module = "com.approvaltests:approvaltests", version.ref = "approvaltests" }
 bson = { module = "org.mongodb:bson", version.ref = "bson" }
+cucumber-java8 = { module = "io.cucumber:cucumber-java8", version.ref = "cucumber" }
+cucumber-junit = { module = "io.cucumber:cucumber-junit", version.ref = "cucumber" }
+cucumber-spring = { module = "io.cucumber:cucumber-spring", version.ref = "cucumber"}
 io-rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "io-rest-assured" }
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
