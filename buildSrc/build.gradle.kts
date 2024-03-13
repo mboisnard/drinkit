@@ -9,7 +9,7 @@ repositories {
 
 dependencies {
     // We need to implement plugin libraries here to be able to use it in `plugins` section in conventions
-    // Use directly alias in plugin section when it will work
+    // https://docs.gradle.org/current/userguide/custom_plugins.html#applying_external_plugins_in_precompiled_script_plugins
     implementation(pluginLibs.all.open.plugin)
     implementation(pluginLibs.gradle.git.properties.plugin)
     implementation(pluginLibs.gradle.kotlin.plugin)
