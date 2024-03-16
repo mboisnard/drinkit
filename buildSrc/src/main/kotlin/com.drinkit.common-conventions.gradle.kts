@@ -10,6 +10,8 @@ plugins {
 
     id("io.spring.dependency-management")
     id("org.graalvm.buildtools.native")
+    //id("com.drinkit.code-analysis-conventions")
+    id("com.drinkit.test-conventions")
 }
 
 // Use the Spring Dependency Management BOM without importing the spring-boot plugin
@@ -33,10 +35,6 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs += "-Xjsr305=strict"
         jvmTarget = "21"
     }
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
 }
 
 repositories {

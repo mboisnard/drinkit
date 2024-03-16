@@ -1,4 +1,5 @@
 [versions]
+detekt = "1.23.5"
 graalvm-buildtools-native = "0.10.1"
 gradle-git-properties = "2.4.1"
 jooq = "3.19.4"
@@ -9,6 +10,7 @@ spring-boot = "3.3.0-M2"
 
 [libraries]
 all-open-plugin = { module = "org.jetbrains.kotlin.plugin.allopen:org.jetbrains.kotlin.plugin.allopen.gradle.plugin", version.ref = "kotlin" }
+detekt-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 graalvm-buildtools-native-plugin = { module = "org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin", version.ref = "graalvm-buildtools-native" }
 gradle-git-properties-plugin = { module = "com.gorylenko.gradle-git-properties:gradle-git-properties", version.ref = "gradle-git-properties" }
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
