@@ -9,6 +9,7 @@ plugins {
     id("idea")
 
     id("io.spring.dependency-management")
+    id("org.graalvm.buildtools.native")
 }
 
 // Use the Spring Dependency Management BOM without importing the spring-boot plugin
