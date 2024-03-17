@@ -2,14 +2,13 @@ package com.drinkit.user
 
 import com.drinkit.generated.jooq.Public
 import com.drinkit.jooq.JooqIntegrationTest
-import com.drinkit.user.registration.NotCompletedUsers
 import com.drinkit.user.registration.NotCompletedCompletedUsersTestContract
+import com.drinkit.user.registration.NotCompletedUsers
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
-import java.time.Clock
 
 @JooqIntegrationTest(schemas = [Public::class])
-internal class JooqNotCompletedCompletedUsersIntegrationTest: NotCompletedCompletedUsersTestContract() {
+internal class JooqNotCompletedCompletedUsersIntegrationTest : NotCompletedCompletedUsersTestContract() {
 
     private lateinit var dslContext: DSLContext
     private lateinit var userFixtures: UserFixtures

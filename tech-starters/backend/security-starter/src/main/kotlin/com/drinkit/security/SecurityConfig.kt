@@ -26,12 +26,14 @@ fun HttpSecurity.configureFromStarter(securityContextRepository: SecurityContext
             it.securityContextRepository(securityContextRepository)
         }
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.ALWAYS).maximumSessions(1) }
-        //.headers { it.frameOptions { it.sameOrigin() } }
+        // .headers { it.frameOptions { it.sameOrigin() } }
         .logout {
             it.logoutUrl("/api/auth/logout")
                 .permitAll()
                 .logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-                .addLogoutHandler(HeaderWriterLogoutHandler(ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.COOKIES)))
+                .addLogoutHandler(
+                    HeaderWriterLogoutHandler(ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.COOKIES))
+                )
         }
 
 @Configuration
@@ -42,7 +44,6 @@ class SecurityConfig {
         userDetailsService: UserDetailsService,
         passwordEncoder: PasswordEncoder,
     ): AuthenticationProvider {
-
         val provider = DaoAuthenticationProvider()
 
         provider.setUserDetailsService(userDetailsService)
@@ -62,5 +63,6 @@ class SecurityConfig {
 
     // Explanation: https://docs.spring.io/spring-security/reference/servlet/authentication/session-management.html#use-securitycontextholderstrategy
     @Bean
-    fun securityContextHolderStrategy(): SecurityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy()
+    fun securityContextHolderStrategy(): SecurityContextHolderStrategy =
+        SecurityContextHolder.getContextHolderStrategy()
 }

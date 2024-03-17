@@ -2,6 +2,7 @@ package com.drinkit.utils
 
 val INVISIBLE_CHARS_REGEX = Regex("[\\u0000-\\u001f]")
 val SPECIAL_CHAR_REGEX = Regex("[!@#\$%&*()_+=|<>?{}\\\\[\\\\]~-]")
+
 // OWASP Email Regex: https://owasp.org/www-community/OWASP_Validation_Regex_Repository
 val VALID_EMAIL_REGEX = Regex("[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}")
 

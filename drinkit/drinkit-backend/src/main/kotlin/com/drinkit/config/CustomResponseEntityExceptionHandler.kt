@@ -4,7 +4,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
 @ControllerAdvice
@@ -13,7 +12,7 @@ internal class CustomResponseEntityExceptionHandler : ResponseEntityExceptionHan
     private val log = KotlinLogging.logger { }
 
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleAccessDeniedException(ex: Exception, request: WebRequest): ResponseEntity<Any> {
+    fun handleAccessDeniedException(ex: Exception): ResponseEntity<Any> {
         log.warn { ex.message }
 
         return ResponseEntity.badRequest().build()

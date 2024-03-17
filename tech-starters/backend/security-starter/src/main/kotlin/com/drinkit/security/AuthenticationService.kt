@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.security.web.context.SecurityContextRepository
 import org.springframework.stereotype.Service
 
-class AuthenticationFailedException: RuntimeException()
+class AuthenticationFailedException : RuntimeException()
 
 interface AuthenticationService {
 
@@ -30,7 +30,7 @@ internal class InternalAuthenticationService(
     private val securityContextRepository: SecurityContextRepository,
     private val userDetailsService: InternalUserDetailsService,
     private val securityContextHolderStrategy: SecurityContextHolderStrategy,
-): AuthenticationService {
+) : AuthenticationService {
 
     private val logger = KotlinLogging.logger { }
 

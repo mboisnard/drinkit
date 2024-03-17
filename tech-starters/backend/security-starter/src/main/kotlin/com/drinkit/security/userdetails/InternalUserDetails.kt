@@ -13,7 +13,7 @@ data class InternalUserDetails(
     val authorities: Set<GrantedAuthority>,
     @get:JvmName("_enabled")
     val enabled: Boolean,
-): UserDetails {
+) : UserDetails {
     override fun getUsername(): String = username
 
     override fun getPassword(): String = password

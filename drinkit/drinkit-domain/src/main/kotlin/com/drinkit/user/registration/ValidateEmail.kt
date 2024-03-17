@@ -19,7 +19,7 @@ class ValidateEmail(
     private val verificationTokens: VerificationTokens,
     private val messageSender: MessageSender,
     private val clock: Clock,
-): RegistrationStep {
+) : RegistrationStep {
 
     private val logger = KotlinLogging.logger { }
 
@@ -34,21 +34,22 @@ class ValidateEmail(
 
         verificationTokens.createOrUpdate(token)
 
-        messageSender.send(SendMessageCommand(
-            content = MessageContent(
-                title = "Verification code",
-                content = token.token,
-            ),
-            locale = locale,
-            recipient = Recipient(notCompletedUser.email.value)
-        ))
+        messageSender.send(
+            SendMessageCommand(
+                content = MessageContent(
+                    title = "Verification code",
+                    content = token.token,
+                ),
+                locale = locale,
+                recipient = Recipient(notCompletedUser.email.value)
+            )
+        )
 
         logger.info { "Verification token sent to user: ${notCompletedUser.id}, email: ${notCompletedUser.email}" }
     }
 
     @Transactional
     fun validateVerificationToken(userId: UserId, token: String) {
-
         val notCompletedUser = notCompletedUsers.findById(userId)
             ?: throw IllegalArgumentException("User not found")
 

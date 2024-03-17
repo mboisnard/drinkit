@@ -11,14 +11,13 @@ import org.springframework.stereotype.Repository
 @Repository
 internal class JooqVerificationTokens(
     private val dslContext: DSLContext,
-): VerificationTokens {
+) : VerificationTokens {
 
     override fun createOrUpdate(verificationToken: VerificationToken): VerificationToken? {
         val query = dslContext.insertInto(VERIFICATION_TOKEN)
             .set(VERIFICATION_TOKEN.USER_ID, verificationToken.userId.value)
             .set(VERIFICATION_TOKEN.TOKEN, verificationToken.token)
             .set(VERIFICATION_TOKEN.EXPIRY_DATE, verificationToken.expiryDate)
-
             .onConflict(VERIFICATION_TOKEN.USER_ID)
             .doUpdate()
             .set(VERIFICATION_TOKEN.TOKEN, verificationToken.token)

@@ -1,6 +1,6 @@
 package com.drinkit.user
 
-import com.drinkit.common.*
+import com.drinkit.common.AbstractId
 import com.drinkit.common.Constants.MAX_EMAIL_LENGTH
 import com.drinkit.common.Constants.MAX_FIRSTNAME_LENGTH
 import com.drinkit.common.Constants.MAX_LASTNAME_LENGTH
@@ -8,7 +8,16 @@ import com.drinkit.common.Constants.MIN_BIRTH_DATE
 import com.drinkit.common.Constants.MIN_FIRSTNAME_LENGTH
 import com.drinkit.common.Constants.MIN_LASTNAME_LENGTH
 import com.drinkit.common.Constants.MIN_PASSWORD_LENGTH
-import com.drinkit.utils.*
+import com.drinkit.common.IdGenerator
+import com.drinkit.common.isId
+import com.drinkit.utils.containsACapitalLetter
+import com.drinkit.utils.containsANumber
+import com.drinkit.utils.containsASpecialCharacter
+import com.drinkit.utils.doesntContainsInvisibleCharacters
+import com.drinkit.utils.hasLengthBetween
+import com.drinkit.utils.hasMinLength
+import com.drinkit.utils.isBetween
+import com.drinkit.utils.isEmail
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -65,12 +74,12 @@ data class FirstName(
 ) {
     init {
         require(
-            value.isNotBlank()
-                    && value.doesntContainsInvisibleCharacters()
-                    && value.hasLengthBetween(MIN_FIRSTNAME_LENGTH, MAX_FIRSTNAME_LENGTH)
+            value.isNotBlank() &&
+                value.doesntContainsInvisibleCharacters() &&
+                value.hasLengthBetween(MIN_FIRSTNAME_LENGTH, MAX_FIRSTNAME_LENGTH)
         ) {
             "Invalid FirstName format (should not be blank, should not contains invisible characters, " +
-                    "should have size between $MIN_FIRSTNAME_LENGTH and $MAX_FIRSTNAME_LENGTH. Given value: $value"
+                "should have size between $MIN_FIRSTNAME_LENGTH and $MAX_FIRSTNAME_LENGTH. Given value: $value"
         }
     }
 }
@@ -80,12 +89,12 @@ data class LastName(
 ) {
     init {
         require(
-            value.isNotBlank()
-                    && value.doesntContainsInvisibleCharacters()
-                    && value.hasLengthBetween(MIN_LASTNAME_LENGTH, MAX_LASTNAME_LENGTH)
+            value.isNotBlank() &&
+                value.doesntContainsInvisibleCharacters() &&
+                value.hasLengthBetween(MIN_LASTNAME_LENGTH, MAX_LASTNAME_LENGTH)
         ) {
             "Invalid LastName format (should not be blank, should not contains invisible characters, " +
-                    "should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH. Given value: $value"
+                "should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH. Given value: $value"
         }
     }
 }
@@ -95,9 +104,9 @@ data class Email(
 ) {
     init {
         require(
-            value.isNotBlank()
-                    && value.isEmail()
-                    && value.length <= MAX_EMAIL_LENGTH
+            value.isNotBlank() &&
+                value.isEmail() &&
+                value.length <= MAX_EMAIL_LENGTH
         ) {
             "Email should be valid and have less than $MAX_EMAIL_LENGTH characters. Given value: $value"
         }
@@ -125,12 +134,12 @@ data class Password(
 ) {
     init {
         require(
-            value.isNotBlank()
-                    && value.hasMinLength(MIN_PASSWORD_LENGTH)
-                    && value.doesntContainsInvisibleCharacters()
-                    && value.containsACapitalLetter()
-                    && value.containsANumber()
-                    && value.containsASpecialCharacter()
+            value.isNotBlank() &&
+                value.hasMinLength(MIN_PASSWORD_LENGTH) &&
+                value.doesntContainsInvisibleCharacters() &&
+                value.containsACapitalLetter() &&
+                value.containsANumber() &&
+                value.containsASpecialCharacter()
         )
     }
 }

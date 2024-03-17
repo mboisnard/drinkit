@@ -14,8 +14,8 @@ data class Point(
 ) {
     init {
         require(
-            latitude.isBetween(MIN_LATITUDE, MAX_LATITUDE)
-                    && longitude.isBetween(MIN_LONGITUDE, MAX_LONGITUDE)
+            latitude.isBetween(MIN_LATITUDE, MAX_LATITUDE) &&
+                longitude.isBetween(MIN_LONGITUDE, MAX_LONGITUDE)
         ) {
             "Invalid latitude or longitude. Given values: lat=$latitude, lon=$longitude"
         }

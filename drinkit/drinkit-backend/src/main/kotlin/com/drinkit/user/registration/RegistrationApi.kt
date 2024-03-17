@@ -6,7 +6,13 @@ import com.drinkit.api.generated.model.ConfirmEmailRequest
 import com.drinkit.api.generated.model.CreateUserRequest
 import com.drinkit.config.AbstractApi
 import com.drinkit.security.AuthenticationService
-import com.drinkit.user.*
+import com.drinkit.user.BirthDate
+import com.drinkit.user.Email
+import com.drinkit.user.EncodedPassword
+import com.drinkit.user.FirstName
+import com.drinkit.user.LastName
+import com.drinkit.user.Password
+import com.drinkit.user.UserId
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -46,7 +52,6 @@ internal class RegistrationApi(
     }
 
     override fun confirmUserEmail(confirmEmailRequest: ConfirmEmailRequest): ResponseEntity<Unit> {
-
         validateEmail.validateVerificationToken(
             userId = connectedUserIdOrFail(),
             token = confirmEmailRequest.validationToken

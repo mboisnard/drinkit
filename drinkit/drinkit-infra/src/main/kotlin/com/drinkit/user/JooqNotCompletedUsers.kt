@@ -5,7 +5,6 @@ import com.drinkit.generated.jooq.tables.User.Companion.USER
 import com.drinkit.generated.jooq.tables.records.RoleRecord
 import com.drinkit.jooq.allFields
 import com.drinkit.jooq.fetchSequence
-import com.drinkit.user.NotCompletedUser
 import com.drinkit.user.registration.NotCompletedUsers
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.multiset
@@ -109,15 +108,18 @@ internal class JooqNotCompletedUsers(
         )
 
     private fun List<RoleRecord>.toDomain(): Roles? {
-        if (this.isEmpty())
+        if (this.isEmpty()) {
             return null
+        }
 
-        return Roles(this.map {
-            when (it.authority) {
-                Roles.Role.ROLE_USER.name -> Roles.Role.ROLE_USER
-                Roles.Role.ROLE_ADMIN.name -> Roles.Role.ROLE_ADMIN
-                else -> throw IllegalStateException("Not eligible role $it")
-            }
-        }.toSet())
+        return Roles(
+            this.map {
+                when (it.authority) {
+                    Roles.Role.ROLE_USER.name -> Roles.Role.ROLE_USER
+                    Roles.Role.ROLE_ADMIN.name -> Roles.Role.ROLE_ADMIN
+                    else -> error("Not eligible role $it")
+                }
+            }.toSet()
+        )
     }
 }

@@ -19,7 +19,6 @@ import org.springframework.expression.spel.support.StandardEvaluationContext
 import org.springframework.stereotype.Component
 import org.springframework.util.ClassUtils
 
-
 @Component
 internal class EventHandlerPostProcessor : ApplicationContextAware, SmartInitializingSingleton, BeanFactoryPostProcessor {
 
@@ -99,6 +98,6 @@ internal class EventHandlerPostProcessor : ApplicationContextAware, SmartInitial
 
     private fun isSpringContainerClass(clazz: Class<*>): Boolean {
         return clazz.name.startsWith("org.springframework.") &&
-                !AnnotatedElementUtils.isAnnotated(ClassUtils.getUserClass(clazz), Component::class.java)
+            !AnnotatedElementUtils.isAnnotated(ClassUtils.getUserClass(clazz), Component::class.java)
     }
 }

@@ -4,15 +4,16 @@ import com.drinkit.security.userdetails.InternalUserDetails
 import com.drinkit.user.UserId
 import org.springframework.security.core.context.SecurityContextHolder
 
-class ConnectedUserException(message: String): RuntimeException(message)
+class ConnectedUserException(message: String) : RuntimeException(message)
 
 abstract class AbstractApi {
 
     fun maybeConnectedUserId(): UserId? {
         val authentication = SecurityContextHolder.getContext().authentication
 
-        if (!authentication.isAuthenticated)
+        if (!authentication.isAuthenticated) {
             return null
+        }
 
         return when (authentication.principal) {
             is InternalUserDetails -> UserId((authentication.principal as InternalUserDetails).id)
@@ -23,8 +24,9 @@ abstract class AbstractApi {
     fun connectedUserIdOrFail(): UserId {
         val authentication = SecurityContextHolder.getContext().authentication
 
-        if (!authentication.isAuthenticated)
+        if (!authentication.isAuthenticated) {
             throw ConnectedUserException("No connected user")
+        }
 
         return when (authentication.principal) {
             is InternalUserDetails -> UserId((authentication.principal as InternalUserDetails).id)

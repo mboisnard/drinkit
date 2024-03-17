@@ -9,10 +9,10 @@ import kotlin.streams.asSequence
 
 const val DEFAULT_FETCH_SIZE = 1000
 
-inline fun <reified R: Record> allFields(table: Table<R>) =
+inline fun <reified R : Record> allFields(table: Table<R>) =
     row(*table.fields()).convertFrom { it.into(R::class.java) }
 
-inline fun <reified R: Record, T: Record> SelectConditionStep<R>.fetchSequence(
+inline fun <reified R : Record, T : Record> SelectConditionStep<R>.fetchSequence(
     mapper: RecordMapper<R, T>,
     fetchSize: Int = DEFAULT_FETCH_SIZE,
 ): Sequence<T> = this.fetchSize(fetchSize)

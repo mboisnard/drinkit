@@ -8,7 +8,6 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.support.TaskUtils
 
-
 @EnableAsync
 @Configuration
 internal class SpringEventsConfig {

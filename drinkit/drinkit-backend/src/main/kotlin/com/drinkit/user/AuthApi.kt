@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 @Service
 internal class AuthApi(
     private val authenticationService: AuthenticationService,
-): AuthApiDelegate {
+) : AuthApiDelegate {
 
     override fun authenticateUser(signInRequest: SignInRequest): ResponseEntity<Unit> {
         try {

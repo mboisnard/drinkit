@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 @Service
 internal class SpringEventsPublisher(
     private val applicationEventPublisher: ApplicationEventPublisher,
-): EventPublisher {
+) : EventPublisher {
 
     private val logger = KotlinLogging.logger { }
 

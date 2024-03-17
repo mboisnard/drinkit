@@ -1,13 +1,11 @@
 package com.drinkit.security.userdetails
 
-
 import com.drinkit.jooq.allFields
 import com.drinkit.jooq.fetchSequence
 import com.drinkit.security.generated.jooq.tables.Role.Companion.ROLE
 import com.drinkit.security.generated.jooq.tables.User.Companion.USER
 import com.drinkit.security.generated.jooq.tables.records.RoleRecord
 import com.drinkit.security.generated.jooq.tables.records.UserRecord
-
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.Record2
@@ -60,8 +58,8 @@ internal class JooqUserDetailsRepository(
             .where(USER.EMAIL.eq(email))
 
         return query
-                .fetchSequence(mapper)
-                .firstOrNull()
-                ?.toSecurityUser()
+            .fetchSequence(mapper)
+            .firstOrNull()
+            ?.toSecurityUser()
     }
 }

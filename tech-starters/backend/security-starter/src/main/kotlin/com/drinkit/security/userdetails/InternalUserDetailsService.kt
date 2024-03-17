@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 internal class InternalUserDetailsService(
     private val userDetailsRepository: UserDetailsRepository,
-): UserDetailsService {
+) : UserDetailsService {
 
     @Transactional(readOnly = true)
     @Throws(UsernameNotFoundException::class)

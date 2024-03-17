@@ -12,7 +12,7 @@ import com.drinkit.utils.hasLengthBetween
 
 data class CellarId(
     override val value: String,
-): AbstractId(value) {
+) : AbstractId(value) {
     init {
         require(value.isId())
     }
@@ -26,11 +26,13 @@ data class CellarName(
     val value: String,
 ) {
     init {
-        require(value.isNotBlank()
-                && value.doesntContainsInvisibleCharacters()
-                && value.hasLengthBetween(0, MAX_CELLAR_NAME_LENGTH)) {
+        require(
+            value.isNotBlank() &&
+                value.doesntContainsInvisibleCharacters() &&
+                value.hasLengthBetween(0, MAX_CELLAR_NAME_LENGTH)
+        ) {
             "Cellar name should not be blank, contains invisible chars or have more " +
-                    "than $MAX_CELLAR_NAME_LENGTH characters. Given value: $value"
+                "than $MAX_CELLAR_NAME_LENGTH characters. Given value: $value"
         }
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import javax.sql.DataSource
 
-
 @Configuration
 internal class JooqConfiguration {
 

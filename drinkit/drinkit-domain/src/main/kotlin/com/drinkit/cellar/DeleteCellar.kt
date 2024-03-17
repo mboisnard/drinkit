@@ -13,13 +13,13 @@ class DeleteCellar(
 
     @Transactional
     operator fun invoke(cellarId: CellarId, connectedUser: CompletedUser) {
-        val cellar = cellars.findById(cellarId) ?: throw IllegalStateException("Cellar not found")
+        val cellar = cellars.findById(cellarId) ?: error("Cellar not found")
 
         if (cellar.canBeSeenBy(connectedUser)) {
             logger.info { "Removing cellar $cellarId, author: ${connectedUser.id}" }
             cellars.delete(cellarId)
         } else {
-            throw IllegalStateException("Not authorized to delete cellar $cellarId")
+            error("Not authorized to delete cellar $cellarId")
         }
     }
 }

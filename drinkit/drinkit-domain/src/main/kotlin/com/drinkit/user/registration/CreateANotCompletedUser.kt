@@ -28,7 +28,7 @@ class CreateANotCompletedUser(
     private val generator: IdGenerator,
     private val notCompletedUsers: NotCompletedUsers,
     private val eventPublisher: EventPublisher,
-): RegistrationStep {
+) : RegistrationStep {
 
     private val logger = KotlinLogging.logger { }
 
@@ -52,12 +52,14 @@ class CreateANotCompletedUser(
         logger.debug { "Creating user $user" }
 
         val userId = notCompletedUsers.create(user)
-            ?: throw IllegalStateException("User not created $user")
+            ?: error("User not created $user")
 
-        eventPublisher.publish(UserCreated(
-            userId = userId,
-            locale = locale
-        ))
+        eventPublisher.publish(
+            UserCreated(
+                userId = userId,
+                locale = locale
+            )
+        )
 
         logger.info { "User $userId created" }
 

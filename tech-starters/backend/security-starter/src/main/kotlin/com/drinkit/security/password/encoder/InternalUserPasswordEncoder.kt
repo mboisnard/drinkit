@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 
 @Component
-internal class InternalUserPasswordEncoder: PasswordEncoder {
+internal class InternalUserPasswordEncoder : PasswordEncoder {
 
     private val bCryptPasswordEncoder = BCryptPasswordEncoder()
 

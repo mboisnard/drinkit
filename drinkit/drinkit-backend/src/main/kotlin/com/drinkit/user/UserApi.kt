@@ -29,8 +29,9 @@ internal class UserApi(
                 )
             }
 
-        if (completedUserInformation != null)
+        if (completedUserInformation != null) {
             return ResponseEntity.ok(completedUserInformation)
+        }
 
         val notCompletedUserInformation = notCompletedUsers.findById(connectedUserId)
             ?.let {

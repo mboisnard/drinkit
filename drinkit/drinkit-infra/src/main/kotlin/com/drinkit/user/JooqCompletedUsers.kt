@@ -43,13 +43,15 @@ internal class JooqCompletedUsers(
             birthDate = BirthDate(user.birthdate!!),
             email = Email(user.email),
             lastConnection = user.lastconnection,
-            roles = Roles(roles.map {
-                when (it.authority) {
-                    Roles.Role.ROLE_USER.name -> Roles.Role.ROLE_USER
-                    Roles.Role.ROLE_ADMIN.name -> Roles.Role.ROLE_ADMIN
-                    else -> throw IllegalStateException("Not eligible role $it")
-                }
-            }.toSet()),
+            roles = Roles(
+                roles.map {
+                    when (it.authority) {
+                        Roles.Role.ROLE_USER.name -> Roles.Role.ROLE_USER
+                        Roles.Role.ROLE_ADMIN.name -> Roles.Role.ROLE_ADMIN
+                        else -> error("Not eligible role $it")
+                    }
+                }.toSet()
+            ),
             enabled = user.enabled,
         )
 }
