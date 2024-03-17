@@ -5,9 +5,16 @@ plugins {
     id("io.gitlab.arturbosch.detekt")
 }
 
+dependencies {
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.5")
+}
+
 detekt {
+    source.setFrom("src/main/kotlin", "src/test/kotlin")
+    parallel = true
     buildUponDefaultConfig = true
-    //baseline = file("$rootDir/config/detekt/baseline.xml")
+    config.setFrom("$rootDir/code-analysis/detekt/detekt.yml")
+    baseline = file("$rootDir/code-analysis/detekt/baseline.xml")
 }
 
 tasks.withType<Detekt>().configureEach {
