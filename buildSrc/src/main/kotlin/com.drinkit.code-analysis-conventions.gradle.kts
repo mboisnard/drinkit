@@ -21,7 +21,8 @@ detekt {
 tasks.withType<Detekt>().configureEach {
     jvmTarget = "1.8"
     reports {
-        html.required.set(true) // observe findings in your browser with structure and code snippets
+        html.required.set(true)
+        sarif.required.set(true)
     }
 }
 
