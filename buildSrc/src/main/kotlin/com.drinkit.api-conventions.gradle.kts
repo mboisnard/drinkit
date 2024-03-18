@@ -3,6 +3,7 @@ plugins {
     id("org.springframework.boot")
 
     id("com.gorylenko.gradle-git-properties")
+    id("org.graalvm.buildtools.native")
 }
 
 dependencies {

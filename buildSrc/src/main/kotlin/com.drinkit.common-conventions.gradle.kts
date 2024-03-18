@@ -9,7 +9,6 @@ plugins {
     id("idea")
 
     id("io.spring.dependency-management")
-    id("org.graalvm.buildtools.native")
     id("com.drinkit.code-analysis-conventions")
     id("com.drinkit.test-conventions")
 }
