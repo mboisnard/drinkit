@@ -1,5 +1,4 @@
 plugins {
-    id("com.drinkit.common-conventions")
     id("java-test-fixtures")
 }
 

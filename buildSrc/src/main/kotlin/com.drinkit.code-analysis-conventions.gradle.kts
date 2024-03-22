@@ -20,10 +20,6 @@ detekt {
 
 tasks.withType<Detekt>().configureEach {
     jvmTarget = "1.8"
-    reports {
-        html.required.set(true)
-        sarif.required.set(true)
-    }
 }
 
 tasks.withType<DetektCreateBaselineTask>().configureEach {
