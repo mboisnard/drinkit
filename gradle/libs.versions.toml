@@ -1,15 +1,15 @@
 [versions]
-approvaltests = "22.3.3"
+approvaltests = "23.0.0"
 bson = "4.11.1"
 cucumber = "7.15.0"
-jooq = "3.19.4"
+jooq = "3.19.6"
 io-rest-assured = "5.4.0"
-kotest = "5.8.0"
+kotest = "5.8.1"
 kotlin-faker = "1.16.0"
 kotlin-logging = "6.0.3"
-meilisearch = "0.11.7"
-springdoc-openapi = "2.3.0"
-tess4j = "5.10.0"
+meilisearch = "0.11.8"
+springdoc-openapi = "2.4.0"
+tess4j = "5.11.0"
 testcontainers-meilisearch = "1.0.5"
 
 [libraries]
