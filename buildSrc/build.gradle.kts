@@ -16,6 +16,7 @@ dependencies {
     implementation(pluginLibs.gradle.git.properties.plugin)
     implementation(pluginLibs.gradle.kotlin.plugin)
     implementation(pluginLibs.jooq.codegen.gradle.plugin)
+    implementation(pluginLibs.jooq.meta)
     implementation(pluginLibs.openapi.generator.plugin)
     implementation(pluginLibs.spring.dependency.management.plugin)
     implementation(pluginLibs.spring.boot.gradle.plugin)
