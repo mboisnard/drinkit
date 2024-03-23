@@ -1,7 +1,7 @@
 [versions]
 approvaltests = "23.0.0"
 bson = "4.11.1"
-cucumber = "7.15.0"
+cucumber = "7.16.1"
 jooq = "3.19.6"
 io-rest-assured = "5.4.0"
 kotest = "5.8.1"
