@@ -1,29 +1,60 @@
+# We can create several versions.toml files to create dedicated versions catalog and separate and isolate dependencies
+# But we mix dependencies here because the Github Dependabot can only discover and update the libs.versions.toml file
+
 [versions]
-approvaltests = "23.0.0"
+# Runtime Versions
 bson = "5.0.0"
-cucumber = "7.16.1"
 jooq = "3.19.6"
-io-rest-assured = "5.4.0"
-kotest = "5.8.1"
-kotlin-faker = "1.16.0"
 kotlin-logging = "6.0.3"
 meilisearch = "0.11.8"
 springdoc-openapi = "2.4.0"
 tess4j = "5.11.0"
+
+# Test Versions
+approvaltests = "23.0.0"
+cucumber = "7.16.1"
+io-rest-assured = "5.4.0"
+kotest = "5.8.1"
+kotlin-faker = "1.16.0"
 testcontainers-meilisearch = "1.0.5"
 
+# Gradle plugin Versions
+detekt = "1.23.5"
+graalvm-buildtools-native = "0.10.1"
+gradle-git-properties = "2.4.1"
+kotlin = "1.9.22"
+openapi-generator = "7.4.0"
+spring-dependency-management = "1.1.4"
+spring-boot = "3.3.0-M2"
+
+
 [libraries]
-approvaltests = { module = "com.approvaltests:approvaltests", version.ref = "approvaltests" }
+# Runtime Dependencies
 bson = { module = "org.mongodb:bson", version.ref = "bson" }
-cucumber-java8 = { module = "io.cucumber:cucumber-java8", version.ref = "cucumber" }
-cucumber-junit = { module = "io.cucumber:cucumber-junit", version.ref = "cucumber" }
-cucumber-spring = { module = "io.cucumber:cucumber-spring", version.ref = "cucumber"}
-io-rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "io-rest-assured" }
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
-kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
-kotlin-faker = { module = "io.github.serpro69:kotlin-faker", version.ref = "kotlin-faker" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 meilisearch-java-client = { module = "com.meilisearch.sdk:meilisearch-java", version.ref = "meilisearch" }
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
 tess4j = { module = "net.sourceforge.tess4j:tess4j", version.ref = "tess4j" }
+
+# Test Dependencies
+approvaltests = { module = "com.approvaltests:approvaltests", version.ref = "approvaltests" }
+cucumber-java8 = { module = "io.cucumber:cucumber-java8", version.ref = "cucumber" }
+cucumber-junit = { module = "io.cucumber:cucumber-junit", version.ref = "cucumber" }
+cucumber-spring = { module = "io.cucumber:cucumber-spring", version.ref = "cucumber"}
+io-rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "io-rest-assured" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotlin-faker = { module = "io.github.serpro69:kotlin-faker", version.ref = "kotlin-faker" }
 testcontainers-meilisearch = { module = "io.vanslog:testcontainers-meilisearch", version.ref = "testcontainers-meilisearch" }
+
+# Gradle plugins Dependencies
+all-open-plugin = { module = "org.jetbrains.kotlin.plugin.allopen:org.jetbrains.kotlin.plugin.allopen.gradle.plugin", version.ref = "kotlin" }
+detekt-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+graalvm-buildtools-native-plugin = { module = "org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin", version.ref = "graalvm-buildtools-native" }
+gradle-git-properties-plugin = { module = "com.gorylenko.gradle-git-properties:gradle-git-properties", version.ref = "gradle-git-properties" }
+gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+jooq-codegen-gradle-plugin = { module = "org.jooq.jooq-codegen-gradle:org.jooq.jooq-codegen-gradle.gradle.plugin", version.ref = "jooq" }
+jooq-meta = { module = "org.jooq:jooq-meta", version.ref = "jooq" }
+openapi-generator-plugin = { module = "org.openapitools:openapi-generator-gradle-plugin", version.ref = "openapi-generator" }
+spring-dependency-management-plugin = { module = "io.spring.dependency-management:io.spring.dependency-management.gradle.plugin", version.ref = "spring-dependency-management" }
+spring-boot-gradle-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot" }

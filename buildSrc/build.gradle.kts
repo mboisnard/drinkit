@@ -10,14 +10,14 @@ repositories {
 dependencies {
     // We need to implement plugin libraries here to be able to use it in `plugins` section in conventions
     // https://docs.gradle.org/current/userguide/custom_plugins.html#applying_external_plugins_in_precompiled_script_plugins
-    implementation(pluginLibs.all.open.plugin)
-    implementation(pluginLibs.detekt.plugin)
-    implementation(pluginLibs.graalvm.buildtools.native.plugin)
-    implementation(pluginLibs.gradle.git.properties.plugin)
-    implementation(pluginLibs.gradle.kotlin.plugin)
-    implementation(pluginLibs.jooq.codegen.gradle.plugin)
-    implementation(pluginLibs.jooq.meta)
-    implementation(pluginLibs.openapi.generator.plugin)
-    implementation(pluginLibs.spring.dependency.management.plugin)
-    implementation(pluginLibs.spring.boot.gradle.plugin)
+    implementation(libs.all.open.plugin)
+    implementation(libs.detekt.plugin)
+    implementation(libs.graalvm.buildtools.native.plugin)
+    implementation(libs.gradle.git.properties.plugin)
+    implementation(libs.gradle.kotlin.plugin)
+    implementation(libs.jooq.codegen.gradle.plugin)
+    implementation(libs.jooq.meta)
+    implementation(libs.openapi.generator.plugin)
+    implementation(libs.spring.dependency.management.plugin)
+    implementation(libs.spring.boot.gradle.plugin)
 }
