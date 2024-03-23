@@ -4,7 +4,7 @@ updates:
   # Github Dependabot will find all gradle dependencies in gradle/libs.versions.toml
   # https://docs.github.com/fr/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#gradle
   - package-ecosystem: 'gradle'
-    directory: ''/'
+    directory: '/'
     schedule:
       interval: 'weekly'
     open-pull-requests-limit: 5
