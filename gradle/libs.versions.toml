@@ -1,5 +1,5 @@
-# We can create several versions.toml files to create dedicated versions catalog and separate and isolate dependencies
-# But we mix dependencies here because the Github Dependabot can only discover and update the libs.versions.toml file
+# We can several version catalogs and separate and isolate dependencies
+# But we mix all dependencies here because the Github Dependabot can only discover and update the libs.versions.toml file
 
 [versions]
 # Runtime Versions
