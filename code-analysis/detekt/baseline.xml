@@ -8,11 +8,11 @@
     <ID>SpreadOperator:JooqUtils.kt$(*table.fields())</ID>
 
     <!-- TODO Fix EventHandlerPostProcessor errors and remove these suppressed rules -->
-    <!--<ID>MaxLineLength:EventHandlerPostProcessor.kt$EventHandlerPostProcessor$internal</ID>
+    <ID>MaxLineLength:EventHandlerPostProcessor.kt$EventHandlerPostProcessor$internal</ID>
     <ID>MaximumLineLength:EventHandlerPostProcessor.kt$EventHandlerPostProcessor$internal</ID>
     <ID>NestedBlockDepth:EventHandlerPostProcessor.kt$EventHandlerPostProcessor$override fun afterSingletonsInstantiated()</ID>
     <ID>SwallowedException:EventHandlerPostProcessor.kt$EventHandlerPostProcessor$ex: Throwable</ID>
-    <ID>TooGenericExceptionCaught:EventHandlerPostProcessor.kt$EventHandlerPostProcessor$ex: Throwable</ID>-->
+    <ID>TooGenericExceptionCaught:EventHandlerPostProcessor.kt$EventHandlerPostProcessor$ex: Throwable</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues>
 
