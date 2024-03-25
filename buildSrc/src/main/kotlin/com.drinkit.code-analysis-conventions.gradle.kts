@@ -24,7 +24,7 @@ detekt {
 // Create a dedicate task to merge all reports from each gradle project
 // https://detekt.dev/docs/introduction/reporting/#merging-reports
 val detektReportMergeSarif by tasks.registering(ReportMergeTask::class) {
-    output = layout.buildDirectory.file("reports/detekt/detekt-all-projects.sarif")
+    output = layout.buildDirectory.file("reports/detekt/merge.sarif")
 }
 
 tasks.withType<Detekt>().configureEach {
