@@ -1,4 +1,6 @@
 # DrinkIt
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmboisnard%2Fdrinkit.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmboisnard%2Fdrinkit?ref=badge_shield)
+
 
 ## Technologies
 
@@ -82,3 +84,6 @@ https://en.wikipedia.org/wiki/Wine_bottle#Sizes
 * https://github.com/gradle/github-dependency-graph-gradle-plugin
 * https://github.com/allure-framework/allure-gradle
 * https://github.com/remal-gradle-plugins/idea-settings
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmboisnard%2Fdrinkit.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmboisnard%2Fdrinkit?ref=badge_large)
