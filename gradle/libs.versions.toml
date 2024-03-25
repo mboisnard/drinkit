@@ -19,7 +19,7 @@ kotlin-faker = "1.16.0"
 testcontainers-meilisearch = "1.0.5"
 
 # Gradle plugin Versions
-detekt = "1.23.5"
+detekt = "1.23.6"
 graalvm-buildtools-native = "0.10.1"
 gradle-git-properties = "2.4.1"
 kotlin = "1.9.22"
