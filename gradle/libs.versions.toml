@@ -1,5 +1,5 @@
-# We can several version catalogs and separate and isolate dependencies
-# But we mix all dependencies here because the Github Dependabot can only discover and update the libs.versions.toml file
+# We can create several version catalogs and isolate dependencies
+# But we mix all dependencies here because Github Dependabot can only discover and update the libs.versions.toml file
 
 [versions]
 # Runtime Versions
@@ -19,13 +19,13 @@ kotlin-faker = "1.16.0"
 testcontainers-meilisearch = "1.0.5"
 
 # Gradle plugin Versions
-detekt = "1.23.5"
+detekt = "1.23.6"
 graalvm-buildtools-native = "0.10.1"
 gradle-git-properties = "2.4.1"
-kotlin = "1.9.22"
+kotlin = "1.9.23"
 openapi-generator = "7.4.0"
 spring-dependency-management = "1.1.4"
-spring-boot = "3.3.0-M2"
+spring-boot = "3.3.0-M3"
 
 
 [libraries]
