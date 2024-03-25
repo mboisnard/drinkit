@@ -8,10 +8,12 @@ on:
 
 permissions:
   contents: read
-  security-events: write  # for github/codeql-action/upload-sarif to upload SARIF results
+  actions: read
+  security-events: write
 
 jobs:
-  code-analysis:
+  detekt-static-code-analysis:
+    name: Detekt - Static Code Analysis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,3 +42,41 @@ jobs:
         with:
           sarif_file: build/reports/detekt/detekt-all-projects.sarif
           category: detekt-code-analysis
+
+  codeql-static-code-analysis:
+    name: CodeQL - Static Code Analysis
+    runs-on: 'ubuntu-latest'
+    timeout-minutes: 360
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java-kotlin', 'javascript-typescript' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      # ℹ️ Command-line programs to run using the OS shell.
+      # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
+
+      #   If the Autobuild fails above, remove it and uncomment the following three lines.
+      #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
+
+      # - run: |
+      #     echo "Run, Build Application using script"
+      #     ./location_of_script_within_repo/buildscript.sh
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
