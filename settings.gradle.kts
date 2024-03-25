@@ -25,7 +25,7 @@ fun containsAGradleFile(folder: File): Boolean {
         ?.any { it.name.equals("build.gradle.kts") } == true
 }
 
-fun includeModules(folder: File)  {
+fun includeModules(folder: File) {
     if (!folder.isDirectory || folder.isHidden) {
         return
     }
