@@ -48,11 +48,6 @@ jobs:
     runs-on: 'ubuntu-latest'
     timeout-minutes: 360
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'java-kotlin', 'javascript-typescript' ]
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -75,7 +70,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: 'java-kotlin'
-          queries: security-extended # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+          queries: security-and-quality # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
 
       - name: Build Application
         run: ./gradlew build -x test -x detekt
@@ -83,4 +78,4 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:java-kotlin"
+          category: codeql-kotlin-analysis
