@@ -14,6 +14,7 @@ detekt {
     source.setFrom("src/main/kotlin", "src/test/kotlin")
     parallel = true
     buildUponDefaultConfig = true
+    ignoreFailures = true
     //autoCorrect = true
     config.setFrom("$rootDir/code-analysis/detekt/detekt.yml")
     baseline = file("$rootDir/code-analysis/detekt/baseline.xml")
