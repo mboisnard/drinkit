@@ -11,9 +11,9 @@ internal class JooqUserWithRolesView(
     val roles: List<RoleRecord>,
 ) : Record by user
 
-internal val userWithRolesRecordMapper = RecordMapper<Record2<UserRecord, List<RoleRecord>>, JooqUserWithRolesView> {
+internal val userWithRolesRecordMapper = RecordMapper<Record2<UserRecord, List<RoleRecord>>, JooqUserWithRolesView> { (user, roles) ->
     JooqUserWithRolesView(
-        user = it.value1(),
-        roles = it.value2()
+        user = user,
+        roles = roles,
     )
 }

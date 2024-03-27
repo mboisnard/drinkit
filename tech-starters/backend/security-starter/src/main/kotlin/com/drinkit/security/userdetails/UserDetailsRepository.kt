@@ -38,10 +38,10 @@ internal class JooqUserDetailsRepository(
     private val dslContext: DSLContext,
 ) : UserDetailsRepository {
 
-    private val mapper = RecordMapper<Record2<UserRecord, List<RoleRecord>>, JooqUserWithRolesView> {
+    private val mapper = RecordMapper<Record2<UserRecord, List<RoleRecord>>, JooqUserWithRolesView> { (user, roles) ->
         JooqUserWithRolesView(
-            user = it.value1(),
-            roles = it.value2()
+            user = user,
+            roles = roles,
         )
     }
 
