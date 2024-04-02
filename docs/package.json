@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "d3": "4.13.0",
-    "vitepress": "^1.0.0-rc.41"
+    "vitepress": "^1.0.1"
   }
 }
