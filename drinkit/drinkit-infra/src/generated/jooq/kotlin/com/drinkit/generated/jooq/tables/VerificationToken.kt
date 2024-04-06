@@ -5,6 +5,7 @@ package com.drinkit.generated.jooq.tables
 
 
 import com.drinkit.generated.jooq.Public
+import com.drinkit.generated.jooq.indexes.VERIFICATION_TOKEN_USER_ID_TOKEN_EXPIRY_DATE_IDX
 import com.drinkit.generated.jooq.keys.VERIFICATION_TOKEN_PKEY
 import com.drinkit.generated.jooq.keys.VERIFICATION_TOKEN__FK_USER
 import com.drinkit.generated.jooq.tables.User.UserPath
@@ -18,6 +19,7 @@ import kotlin.collections.List
 import org.jooq.Condition
 import org.jooq.Field
 import org.jooq.ForeignKey
+import org.jooq.Index
 import org.jooq.InverseForeignKey
 import org.jooq.Name
 import org.jooq.Path
@@ -122,6 +124,7 @@ open class VerificationToken(
         override fun `as`(alias: Table<*>): VerificationTokenPath = VerificationTokenPath(alias.qualifiedName, this)
     }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
+    override fun getIndexes(): List<Index> = listOf(VERIFICATION_TOKEN_USER_ID_TOKEN_EXPIRY_DATE_IDX)
     override fun getPrimaryKey(): UniqueKey<VerificationTokenRecord> = VERIFICATION_TOKEN_PKEY
     override fun getReferences(): List<ForeignKey<VerificationTokenRecord, *>> = listOf(VERIFICATION_TOKEN__FK_USER)
 

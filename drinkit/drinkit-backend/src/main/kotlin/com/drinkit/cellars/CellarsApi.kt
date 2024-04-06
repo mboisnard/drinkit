@@ -15,20 +15,19 @@ import com.drinkit.cellar.CreateCellarCommand
 import com.drinkit.cellar.DeleteCellar
 import com.drinkit.cellar.FindCellars
 import com.drinkit.config.ConnectedUser
-import com.drinkit.config.ConnectedUserException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 
 @Service
+@PreAuthorize("isAuthenticated()")
 internal class CellarsApi(
     private val createCellar: CreateCellar,
     private val deleteCellar: DeleteCellar,
     private val findCellars: FindCellars,
-    private val connectedUser: ConnectedUser?,
+    private val connectedUser: ConnectedUser,
 ) : CellarsApiDelegate {
-
-    fun connectedUser() = connectedUser?.getOrFail() ?: throw ConnectedUserException("No connected user bean")
 
     override fun createCellar(createCellarRequest: CreateCellarRequest): ResponseEntity<CellarId> {
         val command = createCellarRequest.toCommand()
@@ -51,6 +50,8 @@ internal class CellarsApi(
 
         return ResponseEntity.ok(CellarsResponse(cellars))
     }
+
+    private fun connectedUser() = connectedUser.getOrFail()
 
     private fun CreateCellarRequest.toCommand() =
         CreateCellarCommand(

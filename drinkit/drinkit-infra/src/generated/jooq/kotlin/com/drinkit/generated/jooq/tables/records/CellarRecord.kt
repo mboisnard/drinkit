@@ -8,6 +8,7 @@ import com.drinkit.generated.jooq.tables.Cellar
 
 import java.time.LocalDateTime
 
+import org.jooq.JSONB
 import org.jooq.Record1
 import org.jooq.impl.UpdatableRecordImpl
 
@@ -30,29 +31,17 @@ open class CellarRecord private constructor() : UpdatableRecordImpl<CellarRecord
         set(value): Unit = set(2, value)
         get(): String = get(2) as String
 
-    open var locationCity: String
+    open var location: JSONB
         set(value): Unit = set(3, value)
-        get(): String = get(3) as String
+        get(): JSONB = get(3) as JSONB
 
-    open var locationCountry: String
+    open var rooms: JSONB
         set(value): Unit = set(4, value)
-        get(): String = get(4) as String
-
-    open var locationCountryCode: String
-        set(value): Unit = set(5, value)
-        get(): String = get(5) as String
-
-    open var locationLatitude: Double
-        set(value): Unit = set(6, value)
-        get(): Double = get(6) as Double
-
-    open var locationLongitude: Double
-        set(value): Unit = set(7, value)
-        get(): Double = get(7) as Double
+        get(): JSONB = get(4) as JSONB
 
     open var modified: LocalDateTime
-        set(value): Unit = set(8, value)
-        get(): LocalDateTime = get(8) as LocalDateTime
+        set(value): Unit = set(5, value)
+        get(): LocalDateTime = get(5) as LocalDateTime
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -63,15 +52,12 @@ open class CellarRecord private constructor() : UpdatableRecordImpl<CellarRecord
     /**
      * Create a detached, initialised CellarRecord
      */
-    constructor(id: String, ownerId: String, name: String, locationCity: String, locationCountry: String, locationCountryCode: String, locationLatitude: Double, locationLongitude: Double, modified: LocalDateTime): this() {
+    constructor(id: String, ownerId: String, name: String, location: JSONB, rooms: JSONB, modified: LocalDateTime): this() {
         this.id = id
         this.ownerId = ownerId
         this.name = name
-        this.locationCity = locationCity
-        this.locationCountry = locationCountry
-        this.locationCountryCode = locationCountryCode
-        this.locationLatitude = locationLatitude
-        this.locationLongitude = locationLongitude
+        this.location = location
+        this.rooms = rooms
         this.modified = modified
         resetChangedOnNotNull()
     }

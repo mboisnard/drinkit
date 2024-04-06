@@ -31,6 +31,7 @@ class CreateCellar(
                 id = cellarId,
                 name = name,
                 location = location,
+                rooms = CellarRooms.EMPTY,
                 owner = owner.id,
             )
         }

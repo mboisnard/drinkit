@@ -19,6 +19,7 @@ import org.jooq.Field
 import org.jooq.ForeignKey
 import org.jooq.Index
 import org.jooq.InverseForeignKey
+import org.jooq.JSONB
 import org.jooq.Name
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
@@ -89,29 +90,14 @@ open class Cellar(
     val NAME: TableField<CellarRecord, String?> = createField(DSL.name("name"), SQLDataType.VARCHAR(100).nullable(false), this, "")
 
     /**
-     * The column <code>public.cellar.location_city</code>.
+     * The column <code>public.cellar.location</code>.
      */
-    val LOCATION_CITY: TableField<CellarRecord, String?> = createField(DSL.name("location_city"), SQLDataType.VARCHAR(200).nullable(false), this, "")
+    val LOCATION: TableField<CellarRecord, JSONB?> = createField(DSL.name("location"), SQLDataType.JSONB.nullable(false), this, "")
 
     /**
-     * The column <code>public.cellar.location_country</code>.
+     * The column <code>public.cellar.rooms</code>.
      */
-    val LOCATION_COUNTRY: TableField<CellarRecord, String?> = createField(DSL.name("location_country"), SQLDataType.VARCHAR(100).nullable(false), this, "")
-
-    /**
-     * The column <code>public.cellar.location_country_code</code>.
-     */
-    val LOCATION_COUNTRY_CODE: TableField<CellarRecord, String?> = createField(DSL.name("location_country_code"), SQLDataType.VARCHAR(2).nullable(false), this, "")
-
-    /**
-     * The column <code>public.cellar.location_latitude</code>.
-     */
-    val LOCATION_LATITUDE: TableField<CellarRecord, Double?> = createField(DSL.name("location_latitude"), SQLDataType.DOUBLE.nullable(false), this, "")
-
-    /**
-     * The column <code>public.cellar.location_longitude</code>.
-     */
-    val LOCATION_LONGITUDE: TableField<CellarRecord, Double?> = createField(DSL.name("location_longitude"), SQLDataType.DOUBLE.nullable(false), this, "")
+    val ROOMS: TableField<CellarRecord, JSONB?> = createField(DSL.name("rooms"), SQLDataType.JSONB.nullable(false), this, "")
 
     /**
      * The column <code>public.cellar.modified</code>.
