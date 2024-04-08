@@ -1,6 +1,6 @@
 package com.drinkit.common
 
-class SpyMessageSender: MessageSender {
+class SpyMessageSender : MessageSender {
 
     private var sentMessages: List<SendMessageCommand> = mutableListOf()
 

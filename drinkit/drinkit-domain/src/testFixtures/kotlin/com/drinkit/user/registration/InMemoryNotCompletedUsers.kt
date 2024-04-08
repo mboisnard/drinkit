@@ -21,7 +21,7 @@ class InMemoryNotCompletedUsers: NotCompletedUsers {
         // Reset some fields here to have the same behavior as the production code
         // The `create` method only save mandatory information
         val sanitizedUserToCreate = user.copy(
-            firstname = null,
+            firstName = null,
             lastName = null,
             birthDate = null,
             lastConnection = null,

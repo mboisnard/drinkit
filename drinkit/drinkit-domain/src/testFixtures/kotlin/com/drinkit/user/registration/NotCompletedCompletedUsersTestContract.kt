@@ -57,7 +57,7 @@ abstract class NotCompletedCompletedUsersTestContract {
         val notCompletedUser = repository.findById(user.id)
 
         notCompletedUser?.id shouldBe user.id
-        notCompletedUser?.firstname shouldBe null
+        notCompletedUser?.firstName shouldBe null
         notCompletedUser?.lastName shouldBe null
         notCompletedUser?.email shouldBe user.email
         notCompletedUser?.completed shouldBe false
@@ -68,7 +68,7 @@ abstract class NotCompletedCompletedUsersTestContract {
         val updatedNotCompletedUser = repository.findById(user.id)
 
         updatedNotCompletedUser?.id shouldBe user.id
-        updatedNotCompletedUser?.firstname shouldBe user.firstname
+        updatedNotCompletedUser?.firstName shouldBe user.firstName
         updatedNotCompletedUser?.lastName shouldBe user.lastName
     }
 }

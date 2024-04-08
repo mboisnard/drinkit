@@ -28,7 +28,7 @@ class CreateANotCompletedUser(
     private val generator: IdGenerator,
     private val notCompletedUsers: NotCompletedUsers,
     private val eventPublisher: EventPublisher,
-) : RegistrationStep {
+) {
 
     private val logger = KotlinLogging.logger { }
 
@@ -40,13 +40,10 @@ class CreateANotCompletedUser(
             "A user already exists with email $email"
         }
 
-        val user = NotCompletedUser(
+        val user = NotCompletedUser.create(
             id = UserId.create(generator),
             email = email,
             password = password,
-            status = status(),
-            completed = false,
-            enabled = true,
         )
 
         logger.debug { "Creating user $user" }
@@ -65,6 +62,4 @@ class CreateANotCompletedUser(
 
         return userId
     }
-
-    override fun status(): String = "USER_CREATED"
 }

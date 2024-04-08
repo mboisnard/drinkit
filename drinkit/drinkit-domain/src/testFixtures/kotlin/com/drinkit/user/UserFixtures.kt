@@ -63,7 +63,7 @@ class UserFixtures {
                     typeGenerator<String> { faker.internet.safeEmail() }
                 },
                 password = EncodedPassword.from(Password("F@kePa$\$w0rD"), encoder = { it }),
-                firstname = faker.randomProvider.randomClassInstance {
+                firstName = faker.randomProvider.randomClassInstance {
                     typeGenerator<String> { faker.name.firstName() }
                 },
                 lastName = faker.randomProvider.randomClassInstance {

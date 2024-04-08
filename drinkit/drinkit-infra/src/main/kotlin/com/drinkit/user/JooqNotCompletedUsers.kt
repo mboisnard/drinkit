@@ -55,7 +55,7 @@ internal class JooqNotCompletedUsers(
 
     override fun update(user: NotCompletedUser) {
         val userUpdateQuery = dslContext.update(USER)
-            .set(USER.FIRSTNAME, user.firstname?.value)
+            .set(USER.FIRSTNAME, user.firstName?.value)
             .set(USER.LASTNAME, user.lastName?.value)
             .set(USER.BIRTHDATE, user.birthDate?.value)
             .set(USER.STATUS, user.status)
@@ -76,7 +76,7 @@ internal class JooqNotCompletedUsers(
             id = UserId(id),
             email = Email(email),
             password = null,
-            firstname = firstname?.let { FirstName(it) },
+            firstName = firstname?.let { FirstName(it) },
             lastName = lastname?.let { LastName(it) },
             birthDate = birthdate?.let { BirthDate(it) },
             lastConnection = lastconnection,

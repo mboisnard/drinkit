@@ -19,7 +19,7 @@ data class CompleteUserInformationCommand(
 @Service
 class CompleteUserInformation(
     private val notCompletedUsers: NotCompletedUsers,
-) : RegistrationStep {
+) {
 
     @Transactional
     operator fun invoke(command: CompleteUserInformationCommand) = with(command) {
@@ -27,16 +27,12 @@ class CompleteUserInformation(
             ?: throw IllegalArgumentException("User not found")
 
         notCompletedUsers.update(
-            notCompletedUser.copy(
-                firstname = firstName,
+            notCompletedUser.withUserInformation(
+                firstName = firstName,
                 lastName = lastName,
                 birthDate = birthDate,
-                status = status(),
                 roles = Roles(setOf(Role.ROLE_USER, Role.ROLE_ADMIN)),
-                completed = true,
             )
         )
     }
-
-    override fun status(): String = "USER_INFORMATION_COMPLETED"
 }

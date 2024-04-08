@@ -8,7 +8,7 @@ class ControlledClock(
     private val delegate: Clock = systemDefaultZone(),
     var fixedInstant: Instant? = null,
     var zoneId: ZoneId = delegate.zone,
-): Clock() {
+) : Clock() {
 
     override fun instant(): Instant = fixedInstant ?: delegate.instant()
 

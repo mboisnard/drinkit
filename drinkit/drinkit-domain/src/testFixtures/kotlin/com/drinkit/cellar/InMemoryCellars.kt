@@ -2,7 +2,7 @@ package com.drinkit.cellar
 
 import com.drinkit.user.UserId
 
-class InMemoryCellars: Cellars {
+class InMemoryCellars : Cellars {
 
     private var cellars: MutableMap<CellarId, Cellar> = mutableMapOf()
 

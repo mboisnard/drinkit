@@ -36,7 +36,7 @@ internal class UserApi(
         val notCompletedUserInformation = notCompletedUsers.findById(connectedUserId)
             ?.let {
                 ConnectedUserInformation(
-                    firstname = it.firstname?.value,
+                    firstname = it.firstName?.value,
                     lastname = it.lastName?.value,
                     birthdate = it.birthDate?.value,
                     roles = it.roles?.toRoleResponse() ?: emptyList()

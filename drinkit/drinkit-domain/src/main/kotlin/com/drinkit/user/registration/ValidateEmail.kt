@@ -19,7 +19,7 @@ class ValidateEmail(
     private val verificationTokens: VerificationTokens,
     private val messageSender: MessageSender,
     private val clock: Clock,
-) : RegistrationStep {
+) {
 
     private val logger = KotlinLogging.logger { }
 
@@ -60,14 +60,10 @@ class ValidateEmail(
 
         if (tokenIsValid) {
             notCompletedUsers.update(
-                notCompletedUser.copy(
-                    status = status()
-                )
+                notCompletedUser.withEmailVerified()
             )
         }
 
         verificationTokens.deleteBy(notCompletedUser.id)
     }
-
-    override fun status(): String = "EMAIL_VERIFIED"
 }

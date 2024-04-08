@@ -20,42 +20,11 @@ import com.drinkit.utils.isBetween
 import com.drinkit.utils.isEmail
 import java.time.Clock
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 sealed class User(
     open val id: UserId,
     open val email: Email,
 )
-
-data class NotCompletedUser(
-    override val id: UserId,
-    override val email: Email,
-    val password: EncodedPassword?,
-
-    val firstname: FirstName? = null,
-    val lastName: LastName? = null,
-    val birthDate: BirthDate? = null,
-
-    val lastConnection: LocalDateTime? = null,
-    val roles: Roles? = null,
-    val status: String,
-    val completed: Boolean,
-    val enabled: Boolean,
-) : User(id, email)
-
-data class CompletedUser(
-    override val id: UserId,
-    override val email: Email,
-    val firstname: FirstName,
-    val lastName: LastName,
-    val birthDate: BirthDate?,
-
-    val lastConnection: LocalDateTime?,
-    val roles: Roles,
-    val enabled: Boolean,
-) : User(id, email) {
-    val isAdmin = roles.values.contains(Roles.Role.ROLE_ADMIN)
-}
 
 data class UserId(
     override val value: String,

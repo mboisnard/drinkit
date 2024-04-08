@@ -1,6 +1,6 @@
 package com.drinkit.common
 
-class ControlledIdGenerator: IdGenerator {
+class ControlledIdGenerator : IdGenerator {
 
     var idToGenerate: String? = null
 
