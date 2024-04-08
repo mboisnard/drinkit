@@ -39,7 +39,7 @@ tess4j = { module = "net.sourceforge.tess4j:tess4j", version.ref = "tess4j" }
 
 # Test Dependencies
 approvaltests = { module = "com.approvaltests:approvaltests", version.ref = "approvaltests" }
-cucumber-java8 = { module = "io.cucumber:cucumber-java8", version.ref = "cucumber" }
+cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
 cucumber-junit = { module = "io.cucumber:cucumber-junit", version.ref = "cucumber" }
 cucumber-spring = { module = "io.cucumber:cucumber-spring", version.ref = "cucumber"}
 io-rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "io-rest-assured" }

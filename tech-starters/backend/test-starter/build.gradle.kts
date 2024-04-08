@@ -7,7 +7,7 @@ dependencies {
 
     api(libs.approvaltests)
 
-    api(libs.cucumber.java8)
+    api(libs.cucumber.java)
     api(libs.cucumber.junit)
     api(libs.cucumber.spring)
 

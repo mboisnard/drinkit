@@ -22,13 +22,12 @@ import kotlin.reflect.full.createType
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 
-
 private const val PG_IMAGE_NAME = "postgres:16.1"
 private const val DB_NAME = "TEST_DB"
 
-class JooqPostgresExtension: BeforeAllCallback, AfterEachCallback, AfterAllCallback, ParameterResolver {
+class JooqPostgresExtension : BeforeAllCallback, AfterEachCallback, AfterAllCallback, ParameterResolver {
 
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
     private lateinit var dbName: String
     private lateinit var connection: Connection
@@ -51,8 +50,9 @@ class JooqPostgresExtension: BeforeAllCallback, AfterEachCallback, AfterAllCallb
         setReuseGlobalConfiguration()
         disableJooqNotRelevantLogs()
 
-        if (!container.isRunning)
+        if (!container.isRunning) {
             Startables.deepStart(container).join()
+        }
 
         dbName = createARandomDbNameForTestClass()
         createADedicatedDatabaseForTestClass()
@@ -61,6 +61,7 @@ class JooqPostgresExtension: BeforeAllCallback, AfterEachCallback, AfterAllCallb
         dslContext = createJooqDslContext()
 
         createSchemasWithJooq(extensionContext)
+        addSpringProperties()
     }
 
     override fun afterEach(extensionContext: ExtensionContext) {
@@ -68,8 +69,9 @@ class JooqPostgresExtension: BeforeAllCallback, AfterEachCallback, AfterAllCallb
     }
 
     override fun afterAll(extensionContext: ExtensionContext) {
-        if (!container.isRunning)
+        if (!container.isRunning) {
             return
+        }
 
         dropDatabase()
     }
@@ -131,8 +133,8 @@ class JooqPostgresExtension: BeforeAllCallback, AfterEachCallback, AfterAllCallb
             it.createStatement().execute(
                 // Prevent new connections to the database
                 "REVOKE CONNECT ON DATABASE \"$dbName\" FROM public;" +
-                        // Kill existing connections to the database
-                        "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$dbName';"
+                    // Kill existing connections to the database
+                    "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$dbName';"
             )
             it.createStatement().execute(
                 "DROP DATABASE \"$dbName\""
@@ -152,7 +154,7 @@ class JooqPostgresExtension: BeforeAllCallback, AfterEachCallback, AfterAllCallb
             .mapNotNull { it.companionObjectInstance }
             .map {
                 val schemas = it.javaClass.kotlin.memberProperties
-                    .filter { property -> property.visibility == KVisibility.PUBLIC}
+                    .filter { property -> property.visibility == KVisibility.PUBLIC }
                     .filter { property -> property.returnType.isSubtypeOf(Schema::class.createType()) }
 
                 it to schemas
@@ -167,7 +169,14 @@ class JooqPostgresExtension: BeforeAllCallback, AfterEachCallback, AfterAllCallb
             connection.commit()
         }
     }
+
     private fun containerJdbcUpdatedName() = container.jdbcUrl.replaceFirst(DB_NAME, dbName)
+
+    private fun addSpringProperties() {
+        System.setProperty("spring.datasource.url", containerJdbcUpdatedName())
+        System.setProperty("spring.datasource.username", container.username)
+        System.setProperty("spring.datasource.password", container.password)
+    }
 
     /*@DynamicPropertySource
     fun registerPostgresqlProperties(registry: DynamicPropertyRegistry) {
