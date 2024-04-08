@@ -3,7 +3,6 @@ package com.drinkit.user
 import com.drinkit.generated.jooq.tables.User.Companion.USER
 import com.drinkit.generated.jooq.tables.records.UserRecord
 import com.drinkit.jooq.allFields
-import com.drinkit.jooq.fetchSequence
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 
@@ -21,10 +20,7 @@ internal class JooqCompletedUsers(
                     .and(USER.ENABLED.eq(true))
             )
 
-        return query
-            .fetchSequence({ it.value1() })
-            .firstOrNull()
-            ?.toUser()
+        return query.fetchOne { it.value1() }?.toUser()
     }
 
     private fun UserRecord.toUser(): CompletedUser =

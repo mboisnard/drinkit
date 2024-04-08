@@ -3,7 +3,6 @@ package com.drinkit.user
 import com.drinkit.generated.jooq.tables.User.Companion.USER
 import com.drinkit.generated.jooq.tables.records.UserRecord
 import com.drinkit.jooq.allFields
-import com.drinkit.jooq.fetchSequence
 import com.drinkit.user.registration.NotCompletedUsers
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
@@ -30,10 +29,7 @@ internal class JooqNotCompletedUsers(
                     .and(USER.ENABLED.eq(true))
             )
 
-        return query
-            .fetchSequence({ it.value1() })
-            .firstOrNull()
-            ?.toNotCompletedUser()
+        return query.fetchOne { it.value1() }?.toNotCompletedUser()
     }
 
     override fun create(user: NotCompletedUser): UserId? {

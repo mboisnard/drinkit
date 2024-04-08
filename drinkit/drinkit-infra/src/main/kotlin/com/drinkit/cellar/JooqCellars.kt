@@ -49,21 +49,17 @@ internal class JooqCellars(
     }
 
     override fun findById(cellarId: CellarId): Cellar? {
-        val query = dslContext.select(
-            allFields(CELLAR)
-        )
+        val query = dslContext.select(allFields(CELLAR))
             .from(CELLAR)
             .where(
                 CELLAR.ID.eq(cellarId.value)
             )
 
-        return query.fetchOne()?.value1()?.toCellar()
+        return query.fetchOne { it.value1() }?.toCellar()
     }
 
     override fun findAllByOwnerId(owner: UserId): Sequence<Cellar> {
-        val query = dslContext.select(
-            allFields(CELLAR)
-        )
+        val query = dslContext.select(allFields(CELLAR))
             .from(CELLAR)
             .where(
                 CELLAR.OWNER_ID.eq(owner.value)

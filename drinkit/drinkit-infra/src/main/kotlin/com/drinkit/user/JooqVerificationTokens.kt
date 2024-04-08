@@ -29,18 +29,14 @@ internal class JooqVerificationTokens(
     }
 
     override fun findBy(userId: UserId, token: String): VerificationToken? {
-        val query = dslContext.select(
-            allFields(VERIFICATION_TOKEN)
-        )
+        val query = dslContext.select(allFields(VERIFICATION_TOKEN))
             .from(VERIFICATION_TOKEN)
             .where(
                 VERIFICATION_TOKEN.USER_ID.eq(userId.value)
                     .and(VERIFICATION_TOKEN.TOKEN.eq(token))
             )
 
-        return query.fetchOne()
-            ?.value1()
-            ?.toDomain()
+        return query.fetchOne { it.value1() }?.toDomain()
     }
 
     override fun deleteBy(userId: UserId): Int {
