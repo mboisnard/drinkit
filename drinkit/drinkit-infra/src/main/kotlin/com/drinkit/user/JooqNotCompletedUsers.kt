@@ -1,13 +1,11 @@
 package com.drinkit.user
 
-import com.drinkit.generated.jooq.tables.Role.Companion.ROLE
 import com.drinkit.generated.jooq.tables.User.Companion.USER
-import com.drinkit.generated.jooq.tables.records.RoleRecord
+import com.drinkit.generated.jooq.tables.records.UserRecord
 import com.drinkit.jooq.allFields
 import com.drinkit.jooq.fetchSequence
 import com.drinkit.user.registration.NotCompletedUsers
 import org.jooq.DSLContext
-import org.jooq.impl.DSL.multiset
 import org.springframework.stereotype.Repository
 import java.time.Clock
 import java.time.LocalDateTime
@@ -24,14 +22,7 @@ internal class JooqNotCompletedUsers(
     }
 
     override fun findById(userId: UserId): NotCompletedUser? {
-        val query = dslContext.select(
-            allFields(USER),
-            multiset(
-                dslContext.select(allFields(ROLE))
-                    .from(ROLE)
-                    .where(ROLE.USER_ID.eq(USER.ID))
-            ).convertFrom { result -> result.map { it.value1() } }.`as`("roles")
-        )
+        val query = dslContext.select(allFields(USER))
             .from(USER)
             .where(
                 USER.ID.eq(userId.value)
@@ -40,7 +31,7 @@ internal class JooqNotCompletedUsers(
             )
 
         return query
-            .fetchSequence(userWithRolesRecordMapper)
+            .fetchSequence({ it.value1() })
             .firstOrNull()
             ?.toNotCompletedUser()
     }
@@ -69,6 +60,7 @@ internal class JooqNotCompletedUsers(
             .set(USER.BIRTHDATE, user.birthDate?.value)
             .set(USER.STATUS, user.status)
             .set(USER.COMPLETED, user.completed)
+            .set(USER.ROLES, user.roles?.allAsString()?.toTypedArray())
             .set(USER.MODIFIED, LocalDateTime.now(clock))
             .where(
                 USER.ID.eq(user.id.value)
@@ -76,50 +68,33 @@ internal class JooqNotCompletedUsers(
                     .and(USER.ENABLED.eq(true))
             )
 
-        val rolesQueries = listOf(
-            dslContext.deleteFrom(ROLE)
-                .where(ROLE.USER_ID.eq(user.id.value))
-        ).union(
-            user.roles?.values?.map {
-                dslContext.insertInto(ROLE)
-                    .set(ROLE.USER_ID, user.id.value)
-                    .set(ROLE.AUTHORITY, it.name)
-            } ?: emptyList()
-        )
-
-        dslContext.batch(
-            listOf(userUpdateQuery).union(rolesQueries)
-        ).execute()
+        userUpdateQuery.execute()
     }
 
-    private fun JooqUserWithRolesView.toNotCompletedUser(): NotCompletedUser =
+    private fun UserRecord.toNotCompletedUser(): NotCompletedUser =
         NotCompletedUser(
-            id = UserId(user.id),
-            email = Email(user.email),
+            id = UserId(id),
+            email = Email(email),
             password = null,
-            firstname = user.firstname?.let { FirstName(it) },
-            lastName = user.lastname?.let { LastName(it) },
-            birthDate = user.birthdate?.let { BirthDate(it) },
-            lastConnection = user.lastconnection,
-            roles = roles.toDomain(),
-            status = user.status,
-            completed = user.completed,
-            enabled = user.enabled,
+            firstname = firstname?.let { FirstName(it) },
+            lastName = lastname?.let { LastName(it) },
+            birthDate = birthdate?.let { BirthDate(it) },
+            lastConnection = lastconnection,
+            roles = toDomain(roles),
+            status = status,
+            completed = completed,
+            enabled = enabled,
         )
 
-    private fun List<RoleRecord>.toDomain(): Roles? {
-        if (this.isEmpty()) {
-            return null
+    private fun toDomain(rawRoles: Array<String?>?): Roles? {
+        val roles = rawRoles?.mapNotNull {
+            when (it) {
+                Roles.Role.ROLE_USER.name -> Roles.Role.ROLE_USER
+                Roles.Role.ROLE_ADMIN.name -> Roles.Role.ROLE_ADMIN
+                else -> error("Not eligible role $it")
+            }
         }
 
-        return Roles(
-            this.map {
-                when (it.authority) {
-                    Roles.Role.ROLE_USER.name -> Roles.Role.ROLE_USER
-                    Roles.Role.ROLE_ADMIN.name -> Roles.Role.ROLE_ADMIN
-                    else -> error("Not eligible role $it")
-                }
-            }.toSet()
-        )
+        return if (roles != null) Roles(roles.toSet()) else null
     }
 }

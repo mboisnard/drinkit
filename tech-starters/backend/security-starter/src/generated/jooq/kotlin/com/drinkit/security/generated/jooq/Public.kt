@@ -4,7 +4,6 @@
 package com.drinkit.security.generated.jooq
 
 
-import com.drinkit.security.generated.jooq.tables.Role
 import com.drinkit.security.generated.jooq.tables.User
 
 import kotlin.collections.List
@@ -28,11 +27,6 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     }
 
     /**
-     * The table <code>public.role</code>.
-     */
-    val ROLE: Role get() = Role.ROLE
-
-    /**
      * The table <code>public.user</code>.
      */
     val USER: User get() = User.USER
@@ -40,7 +34,6 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
-        Role.ROLE,
         User.USER
     )
 }

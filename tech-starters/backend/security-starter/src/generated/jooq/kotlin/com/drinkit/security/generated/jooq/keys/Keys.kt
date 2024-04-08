@@ -4,12 +4,9 @@
 package com.drinkit.security.generated.jooq.keys
 
 
-import com.drinkit.security.generated.jooq.tables.Role
 import com.drinkit.security.generated.jooq.tables.User
-import com.drinkit.security.generated.jooq.tables.records.RoleRecord
 import com.drinkit.security.generated.jooq.tables.records.UserRecord
 
-import org.jooq.ForeignKey
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
 import org.jooq.impl.Internal
@@ -21,9 +18,3 @@ import org.jooq.impl.Internal
 // -------------------------------------------------------------------------
 
 val USER_PKEY: UniqueKey<UserRecord> = Internal.createUniqueKey(User.USER, DSL.name("user_pkey"), arrayOf(User.USER.ID), true)
-
-// -------------------------------------------------------------------------
-// FOREIGN KEY definitions
-// -------------------------------------------------------------------------
-
-val ROLE__FK_USER: ForeignKey<RoleRecord, UserRecord> = Internal.createForeignKey(Role.ROLE, DSL.name("fk_user"), arrayOf(Role.ROLE.USER_ID), com.drinkit.security.generated.jooq.keys.USER_PKEY, arrayOf(User.USER.ID), true)

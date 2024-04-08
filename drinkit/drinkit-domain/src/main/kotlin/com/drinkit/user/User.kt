@@ -166,4 +166,6 @@ data class Roles(
             "A role is required here"
         }
     }
+
+    fun allAsString() = values.map { it.name }.toSet()
 }

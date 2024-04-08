@@ -1,11 +1,10 @@
 package com.drinkit.user
 
-import com.drinkit.generated.jooq.tables.Role.Companion.ROLE
 import com.drinkit.generated.jooq.tables.User.Companion.USER
+import com.drinkit.generated.jooq.tables.records.UserRecord
 import com.drinkit.jooq.allFields
 import com.drinkit.jooq.fetchSequence
 import org.jooq.DSLContext
-import org.jooq.impl.DSL.multiset
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -14,14 +13,7 @@ internal class JooqCompletedUsers(
 ) : CompletedUsers {
 
     override fun findById(userId: UserId): CompletedUser? {
-        val query = dslContext.select(
-            allFields(USER),
-            multiset(
-                dslContext.select(allFields(ROLE))
-                    .from(ROLE)
-                    .where(ROLE.USER_ID.eq(USER.ID))
-            ).convertFrom { result -> result.map { it.value1() } }.`as`("roles")
-        )
+        val query = dslContext.select(allFields(USER))
             .from(USER)
             .where(
                 USER.ID.eq(userId.value)
@@ -30,28 +22,28 @@ internal class JooqCompletedUsers(
             )
 
         return query
-            .fetchSequence(userWithRolesRecordMapper)
+            .fetchSequence({ it.value1() })
             .firstOrNull()
             ?.toUser()
     }
 
-    private fun JooqUserWithRolesView.toUser(): CompletedUser =
+    private fun UserRecord.toUser(): CompletedUser =
         CompletedUser(
-            id = UserId(user.id),
-            firstname = FirstName(user.firstname!!),
-            lastName = LastName(user.lastname!!),
-            birthDate = BirthDate(user.birthdate!!),
-            email = Email(user.email),
-            lastConnection = user.lastconnection,
+            id = UserId(id),
+            firstname = FirstName(firstname!!),
+            lastName = LastName(lastname!!),
+            birthDate = BirthDate(birthdate!!),
+            email = Email(email),
+            lastConnection = lastconnection,
             roles = Roles(
-                roles.map {
-                    when (it.authority) {
+                roles?.map {
+                    when (it) {
                         Roles.Role.ROLE_USER.name -> Roles.Role.ROLE_USER
                         Roles.Role.ROLE_ADMIN.name -> Roles.Role.ROLE_ADMIN
                         else -> error("Not eligible role $it")
                     }
-                }.toSet()
+                }?.toSet() ?: emptySet()
             ),
-            enabled = user.enabled,
+            enabled = enabled,
         )
 }

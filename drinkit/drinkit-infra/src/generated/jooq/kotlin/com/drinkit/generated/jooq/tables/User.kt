@@ -8,10 +8,8 @@ import com.drinkit.generated.jooq.Public
 import com.drinkit.generated.jooq.indexes.USER_COMPLETED_IDX
 import com.drinkit.generated.jooq.indexes.USER_EMAIL_IDX
 import com.drinkit.generated.jooq.indexes.USER_ENABLED_IDX
-import com.drinkit.generated.jooq.keys.ROLE__FK_USER
 import com.drinkit.generated.jooq.keys.USER_PKEY
 import com.drinkit.generated.jooq.keys.VERIFICATION_TOKEN__FK_USER
-import com.drinkit.generated.jooq.tables.Role.RolePath
 import com.drinkit.generated.jooq.tables.VerificationToken.VerificationTokenPath
 import com.drinkit.generated.jooq.tables.records.UserRecord
 
@@ -21,6 +19,7 @@ import java.time.LocalDateTime
 import kotlin.collections.Collection
 import kotlin.collections.List
 
+import org.jooq.Check
 import org.jooq.Condition
 import org.jooq.Field
 import org.jooq.ForeignKey
@@ -133,6 +132,11 @@ open class User(
     val ENABLED: TableField<UserRecord, Boolean?> = createField(DSL.name("enabled"), SQLDataType.BOOLEAN.nullable(false), this, "")
 
     /**
+     * The column <code>public.user.roles</code>.
+     */
+    val ROLES: TableField<UserRecord, Array<String?>?> = createField(DSL.name("roles"), SQLDataType.VARCHAR(20).array(), this, "")
+
+    /**
      * The column <code>public.user.modified</code>.
      */
     val MODIFIED: TableField<UserRecord, LocalDateTime?> = createField(DSL.name("modified"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "")
@@ -172,21 +176,6 @@ open class User(
     override fun getIndexes(): List<Index> = listOf(USER_COMPLETED_IDX, USER_EMAIL_IDX, USER_ENABLED_IDX)
     override fun getPrimaryKey(): UniqueKey<UserRecord> = USER_PKEY
 
-    private lateinit var _role: RolePath
-
-    /**
-     * Get the implicit to-many join path to the <code>public.role</code> table
-     */
-    fun role(): RolePath {
-        if (!this::_role.isInitialized)
-            _role = RolePath(this, null, ROLE__FK_USER.inverseKey)
-
-        return _role;
-    }
-
-    val role: RolePath
-        get(): RolePath = role()
-
     private lateinit var _verificationToken: VerificationTokenPath
 
     /**
@@ -202,6 +191,9 @@ open class User(
 
     val verificationToken: VerificationTokenPath
         get(): VerificationTokenPath = verificationToken()
+    override fun getChecks(): List<Check<UserRecord>> = listOf(
+        Internal.createCheck(this, DSL.name("roles_check"), "(((roles)::character varying[] && ARRAY['ROLE_ADMIN'::character varying, 'ROLE_USER'::character varying]))", true)
+    )
     override fun `as`(alias: String): User = User(DSL.name(alias), this)
     override fun `as`(alias: Name): User = User(alias, this)
     override fun `as`(alias: Table<*>): User = User(alias.qualifiedName, this)

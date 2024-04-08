@@ -5,11 +5,9 @@ package com.drinkit.generated.jooq.keys
 
 
 import com.drinkit.generated.jooq.tables.Cellar
-import com.drinkit.generated.jooq.tables.Role
 import com.drinkit.generated.jooq.tables.User
 import com.drinkit.generated.jooq.tables.VerificationToken
 import com.drinkit.generated.jooq.tables.records.CellarRecord
-import com.drinkit.generated.jooq.tables.records.RoleRecord
 import com.drinkit.generated.jooq.tables.records.UserRecord
 import com.drinkit.generated.jooq.tables.records.VerificationTokenRecord
 
@@ -32,5 +30,4 @@ val VERIFICATION_TOKEN_PKEY: UniqueKey<VerificationTokenRecord> = Internal.creat
 // FOREIGN KEY definitions
 // -------------------------------------------------------------------------
 
-val ROLE__FK_USER: ForeignKey<RoleRecord, UserRecord> = Internal.createForeignKey(Role.ROLE, DSL.name("fk_user"), arrayOf(Role.ROLE.USER_ID), com.drinkit.generated.jooq.keys.USER_PKEY, arrayOf(User.USER.ID), true)
 val VERIFICATION_TOKEN__FK_USER: ForeignKey<VerificationTokenRecord, UserRecord> = Internal.createForeignKey(VerificationToken.VERIFICATION_TOKEN, DSL.name("fk_user"), arrayOf(VerificationToken.VERIFICATION_TOKEN.USER_ID), com.drinkit.generated.jooq.keys.USER_PKEY, arrayOf(User.USER.ID), true)

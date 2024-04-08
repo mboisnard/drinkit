@@ -31,7 +31,9 @@ CREATE TABLE IF NOT EXISTS public.user
     status         VARCHAR(50)  NOT NULL,
     completed      BOOLEAN      NOT NULL,
     enabled        BOOLEAN      NOT NULL,
-    modified       TIMESTAMP    NOT NULL
+    roles          VARCHAR(20) ARRAY,
+    modified       TIMESTAMP    NOT NULL,
+    CONSTRAINT roles_check CHECK (roles::VARCHAR[] && ARRAY['ROLE_ADMIN'::VARCHAR, 'ROLE_USER'::VARCHAR])
 );
 
 CREATE INDEX IF NOT EXISTS user_email_idx
@@ -42,18 +44,6 @@ CREATE INDEX IF NOT EXISTS user_completed_idx
 
 CREATE INDEX IF NOT EXISTS user_enabled_idx
     ON public.user (enabled);
-
--- Role
-
-CREATE TABLE IF NOT EXISTS public.role
-(
-    user_id   VARCHAR(24) NOT NULL,
-    authority VARCHAR(50) NOT NULL,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.user (id) ON DELETE CASCADE
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS user_id_authority_idx
-    ON public.role (user_id, authority);
 
 -- Verification Token
 

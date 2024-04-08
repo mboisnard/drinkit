@@ -59,9 +59,13 @@ open class UserRecord private constructor() : UpdatableRecordImpl<UserRecord>(Us
         set(value): Unit = set(9, value)
         get(): Boolean = get(9) as Boolean
 
-    open var modified: LocalDateTime
+    open var roles: Array<String?>?
         set(value): Unit = set(10, value)
-        get(): LocalDateTime = get(10) as LocalDateTime
+        get(): Array<String?>? = get(10) as Array<String?>?
+
+    open var modified: LocalDateTime
+        set(value): Unit = set(11, value)
+        get(): LocalDateTime = get(11) as LocalDateTime
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -72,7 +76,7 @@ open class UserRecord private constructor() : UpdatableRecordImpl<UserRecord>(Us
     /**
      * Create a detached, initialised UserRecord
      */
-    constructor(id: String, firstname: String? = null, lastname: String? = null, birthdate: LocalDate? = null, email: String, password: String, lastconnection: LocalDateTime? = null, status: String, completed: Boolean, enabled: Boolean, modified: LocalDateTime): this() {
+    constructor(id: String, firstname: String? = null, lastname: String? = null, birthdate: LocalDate? = null, email: String, password: String, lastconnection: LocalDateTime? = null, status: String, completed: Boolean, enabled: Boolean, roles: Array<String?>? = null, modified: LocalDateTime): this() {
         this.id = id
         this.firstname = firstname
         this.lastname = lastname
@@ -83,6 +87,7 @@ open class UserRecord private constructor() : UpdatableRecordImpl<UserRecord>(Us
         this.status = status
         this.completed = completed
         this.enabled = enabled
+        this.roles = roles
         this.modified = modified
         resetChangedOnNotNull()
     }

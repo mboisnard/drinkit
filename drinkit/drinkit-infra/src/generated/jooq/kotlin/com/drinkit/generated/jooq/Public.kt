@@ -5,7 +5,6 @@ package com.drinkit.generated.jooq
 
 
 import com.drinkit.generated.jooq.tables.Cellar
-import com.drinkit.generated.jooq.tables.Role
 import com.drinkit.generated.jooq.tables.User
 import com.drinkit.generated.jooq.tables.VerificationToken
 
@@ -35,11 +34,6 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     val CELLAR: Cellar get() = Cellar.CELLAR
 
     /**
-     * The table <code>public.role</code>.
-     */
-    val ROLE: Role get() = Role.ROLE
-
-    /**
      * The table <code>public.user</code>.
      */
     val USER: User get() = User.USER
@@ -53,7 +47,6 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
 
     override fun getTables(): List<Table<*>> = listOf(
         Cellar.CELLAR,
-        Role.ROLE,
         User.USER,
         VerificationToken.VERIFICATION_TOKEN
     )
