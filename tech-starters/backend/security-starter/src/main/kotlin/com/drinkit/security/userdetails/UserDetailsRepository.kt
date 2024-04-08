@@ -25,7 +25,7 @@ internal class JooqUserDetailsRepository(
             .where(USER.EMAIL.eq(email))
 
         return query
-            .fetchSequence({ it.value1()})
+            .fetchSequence({ it.value1() })
             .firstOrNull()
             ?.toSecurityUser()
     }
