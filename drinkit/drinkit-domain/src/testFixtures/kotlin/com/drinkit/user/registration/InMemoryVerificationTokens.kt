@@ -2,7 +2,7 @@ package com.drinkit.user.registration
 
 import com.drinkit.user.UserId
 
-class InMemoryVerificationTokens: VerificationTokens {
+class InMemoryVerificationTokens : VerificationTokens {
 
     private val verificationTokens: MutableMap<UserId, VerificationToken> = mutableMapOf()
 

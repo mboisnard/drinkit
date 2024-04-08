@@ -1,5 +1,6 @@
 package com.drinkit.user.registration
 
+import com.drinkit.user.NotCompletedUsers
 import com.drinkit.user.UserFixtures
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test

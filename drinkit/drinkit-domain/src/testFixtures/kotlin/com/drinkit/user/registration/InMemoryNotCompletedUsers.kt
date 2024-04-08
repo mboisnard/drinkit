@@ -2,9 +2,10 @@ package com.drinkit.user.registration
 
 import com.drinkit.user.Email
 import com.drinkit.user.NotCompletedUser
+import com.drinkit.user.NotCompletedUsers
 import com.drinkit.user.UserId
 
-class InMemoryNotCompletedUsers: NotCompletedUsers {
+class InMemoryNotCompletedUsers : NotCompletedUsers {
 
     private val users: MutableMap<UserId, NotCompletedUser> = mutableMapOf()
 
@@ -15,8 +16,9 @@ class InMemoryNotCompletedUsers: NotCompletedUsers {
         users[userId]
 
     override fun create(user: NotCompletedUser): UserId? {
-        if (users.containsKey(user.id))
+        if (users.containsKey(user.id)) {
             return null
+        }
 
         // Reset some fields here to have the same behavior as the production code
         // The `create` method only save mandatory information
@@ -32,10 +34,12 @@ class InMemoryNotCompletedUsers: NotCompletedUsers {
         return user.id
     }
 
-    override fun update(user: NotCompletedUser) {
-        if (!users.containsKey(user.id))
-            return
+    override fun update(user: NotCompletedUser): Int {
+        if (!users.containsKey(user.id)) {
+            return 0
+        }
 
         users[user.id] = user
+        return 1
     }
 }

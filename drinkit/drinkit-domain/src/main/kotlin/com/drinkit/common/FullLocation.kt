@@ -28,7 +28,7 @@ data class Country(
 ) {
     init {
         require(code.length == COUNTRY_CODE_LENGTH) {
-            "Country code must have $COUNTRY_CODE_LENGTH characters. Given value: $name"
+            "Country code must have $COUNTRY_CODE_LENGTH characters. Given value: $code $name"
         }
     }
 }

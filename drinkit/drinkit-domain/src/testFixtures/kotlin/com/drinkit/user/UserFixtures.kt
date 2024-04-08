@@ -1,8 +1,8 @@
 package com.drinkit.user
 
 import com.drinkit.common.ControlledClock
-import com.drinkit.common.ControlledRandom
 import com.drinkit.common.ControlledIdGenerator
+import com.drinkit.common.ControlledRandom
 import com.drinkit.common.SpyMessageSender
 import com.drinkit.faker
 import com.drinkit.messaging.SpyEventPublisher

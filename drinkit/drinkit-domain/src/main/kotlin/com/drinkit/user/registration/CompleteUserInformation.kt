@@ -3,6 +3,7 @@ package com.drinkit.user.registration
 import com.drinkit.user.BirthDate
 import com.drinkit.user.FirstName
 import com.drinkit.user.LastName
+import com.drinkit.user.NotCompletedUsers
 import com.drinkit.user.Roles
 import com.drinkit.user.Roles.Role
 import com.drinkit.user.UserId

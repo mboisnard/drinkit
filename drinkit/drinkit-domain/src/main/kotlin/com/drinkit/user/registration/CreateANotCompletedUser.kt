@@ -6,6 +6,7 @@ import com.drinkit.messaging.EventPublisher
 import com.drinkit.user.Email
 import com.drinkit.user.EncodedPassword
 import com.drinkit.user.NotCompletedUser
+import com.drinkit.user.NotCompletedUsers
 import com.drinkit.user.UserId
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service

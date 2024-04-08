@@ -3,7 +3,6 @@ package com.drinkit.user
 import com.drinkit.generated.jooq.tables.User.Companion.USER
 import com.drinkit.generated.jooq.tables.records.UserRecord
 import com.drinkit.jooq.allFields
-import com.drinkit.user.registration.NotCompletedUsers
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.time.Clock
@@ -49,7 +48,7 @@ internal class JooqNotCompletedUsers(
         return if (insertRowCount != 0) user.id else null
     }
 
-    override fun update(user: NotCompletedUser) {
+    override fun update(user: NotCompletedUser): Int {
         val userUpdateQuery = dslContext.update(USER)
             .set(USER.FIRSTNAME, user.firstName?.value)
             .set(USER.LASTNAME, user.lastName?.value)
@@ -64,7 +63,7 @@ internal class JooqNotCompletedUsers(
                     .and(USER.ENABLED.eq(true))
             )
 
-        userUpdateQuery.execute()
+        return userUpdateQuery.execute()
     }
 
     private fun UserRecord.toNotCompletedUser(): NotCompletedUser =

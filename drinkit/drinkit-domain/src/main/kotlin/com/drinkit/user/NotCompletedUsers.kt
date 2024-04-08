@@ -2,6 +2,17 @@ package com.drinkit.user
 
 import java.time.LocalDateTime
 
+interface NotCompletedUsers {
+
+    fun emailExists(email: Email): Boolean
+
+    fun findById(userId: UserId): NotCompletedUser?
+
+    fun create(user: NotCompletedUser): UserId?
+
+    fun update(user: NotCompletedUser): Int
+}
+
 data class NotCompletedUser(
     override val id: UserId,
     override val email: Email,
