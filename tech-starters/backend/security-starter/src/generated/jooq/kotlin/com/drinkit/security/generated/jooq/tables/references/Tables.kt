@@ -9,6 +9,6 @@ import com.drinkit.security.generated.jooq.tables.User
 
 
 /**
- * The table <code>public.user</code>.
+ * The table <code>drinkit_application.user</code>.
  */
 val USER: User = User.USER

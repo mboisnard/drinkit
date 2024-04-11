@@ -4,7 +4,7 @@
 package com.drinkit.generated.jooq.tables
 
 
-import com.drinkit.generated.jooq.Public
+import com.drinkit.generated.jooq.DrinkitApplication
 import com.drinkit.generated.jooq.indexes.CELLAR_OWNER_ID_IDX
 import com.drinkit.generated.jooq.keys.CELLAR_PKEY
 import com.drinkit.generated.jooq.tables.records.CellarRecord
@@ -51,7 +51,7 @@ open class Cellar(
     where: Condition?
 ): TableImpl<CellarRecord>(
     alias,
-    Public.PUBLIC,
+    DrinkitApplication.DRINKIT_APPLICATION,
     path,
     childPath,
     parentPath,
@@ -64,7 +64,7 @@ open class Cellar(
     companion object {
 
         /**
-         * The reference instance of <code>public.cellar</code>
+         * The reference instance of <code>drinkit_application.cellar</code>
          */
         val CELLAR: Cellar = Cellar()
     }
@@ -75,32 +75,32 @@ open class Cellar(
     override fun getRecordType(): Class<CellarRecord> = CellarRecord::class.java
 
     /**
-     * The column <code>public.cellar.id</code>.
+     * The column <code>drinkit_application.cellar.id</code>.
      */
     val ID: TableField<CellarRecord, String?> = createField(DSL.name("id"), SQLDataType.VARCHAR(24).nullable(false), this, "")
 
     /**
-     * The column <code>public.cellar.owner_id</code>.
+     * The column <code>drinkit_application.cellar.owner_id</code>.
      */
     val OWNER_ID: TableField<CellarRecord, String?> = createField(DSL.name("owner_id"), SQLDataType.VARCHAR(24).nullable(false), this, "")
 
     /**
-     * The column <code>public.cellar.name</code>.
+     * The column <code>drinkit_application.cellar.name</code>.
      */
     val NAME: TableField<CellarRecord, String?> = createField(DSL.name("name"), SQLDataType.VARCHAR(100).nullable(false), this, "")
 
     /**
-     * The column <code>public.cellar.location</code>.
+     * The column <code>drinkit_application.cellar.location</code>.
      */
     val LOCATION: TableField<CellarRecord, JSONB?> = createField(DSL.name("location"), SQLDataType.JSONB.nullable(false), this, "")
 
     /**
-     * The column <code>public.cellar.rooms</code>.
+     * The column <code>drinkit_application.cellar.rooms</code>.
      */
     val ROOMS: TableField<CellarRecord, JSONB?> = createField(DSL.name("rooms"), SQLDataType.JSONB.nullable(false), this, "")
 
     /**
-     * The column <code>public.cellar.modified</code>.
+     * The column <code>drinkit_application.cellar.modified</code>.
      */
     val MODIFIED: TableField<CellarRecord, LocalDateTime?> = createField(DSL.name("modified"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "")
 
@@ -109,20 +109,20 @@ open class Cellar(
     private constructor(alias: Name, aliased: Table<CellarRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>public.cellar</code> table reference
+     * Create an aliased <code>drinkit_application.cellar</code> table reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>public.cellar</code> table reference
+     * Create an aliased <code>drinkit_application.cellar</code> table reference
      */
     constructor(alias: Name): this(alias, null)
 
     /**
-     * Create a <code>public.cellar</code> table reference
+     * Create a <code>drinkit_application.cellar</code> table reference
      */
     constructor(): this(DSL.name("cellar"), null)
-    override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitApplication.DRINKIT_APPLICATION
     override fun getIndexes(): List<Index> = listOf(CELLAR_OWNER_ID_IDX)
     override fun getPrimaryKey(): UniqueKey<CellarRecord> = CELLAR_PKEY
     override fun `as`(alias: String): Cellar = Cellar(DSL.name(alias), this)

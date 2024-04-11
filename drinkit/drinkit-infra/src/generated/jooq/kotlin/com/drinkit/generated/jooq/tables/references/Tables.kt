@@ -11,16 +11,16 @@ import com.drinkit.generated.jooq.tables.VerificationToken
 
 
 /**
- * The table <code>public.cellar</code>.
+ * The table <code>drinkit_application.cellar</code>.
  */
 val CELLAR: Cellar = Cellar.CELLAR
 
 /**
- * The table <code>public.user</code>.
+ * The table <code>drinkit_application.user</code>.
  */
 val USER: User = User.USER
 
 /**
- * The table <code>public.verification_token</code>.
+ * The table <code>drinkit_application.verification_token</code>.
  */
 val VERIFICATION_TOKEN: VerificationToken = VerificationToken.VERIFICATION_TOKEN

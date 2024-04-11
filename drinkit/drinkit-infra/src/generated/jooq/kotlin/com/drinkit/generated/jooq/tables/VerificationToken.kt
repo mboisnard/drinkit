@@ -4,7 +4,7 @@
 package com.drinkit.generated.jooq.tables
 
 
-import com.drinkit.generated.jooq.Public
+import com.drinkit.generated.jooq.DrinkitApplication
 import com.drinkit.generated.jooq.indexes.VERIFICATION_TOKEN_USER_ID_TOKEN_EXPIRY_DATE_IDX
 import com.drinkit.generated.jooq.keys.VERIFICATION_TOKEN_PKEY
 import com.drinkit.generated.jooq.keys.VERIFICATION_TOKEN__FK_USER
@@ -54,7 +54,7 @@ open class VerificationToken(
     where: Condition?
 ): TableImpl<VerificationTokenRecord>(
     alias,
-    Public.PUBLIC,
+    DrinkitApplication.DRINKIT_APPLICATION,
     path,
     childPath,
     parentPath,
@@ -67,7 +67,8 @@ open class VerificationToken(
     companion object {
 
         /**
-         * The reference instance of <code>public.verification_token</code>
+         * The reference instance of
+         * <code>drinkit_application.verification_token</code>
          */
         val VERIFICATION_TOKEN: VerificationToken = VerificationToken()
     }
@@ -78,17 +79,18 @@ open class VerificationToken(
     override fun getRecordType(): Class<VerificationTokenRecord> = VerificationTokenRecord::class.java
 
     /**
-     * The column <code>public.verification_token.user_id</code>.
+     * The column <code>drinkit_application.verification_token.user_id</code>.
      */
     val USER_ID: TableField<VerificationTokenRecord, String?> = createField(DSL.name("user_id"), SQLDataType.VARCHAR(24).nullable(false), this, "")
 
     /**
-     * The column <code>public.verification_token.token</code>.
+     * The column <code>drinkit_application.verification_token.token</code>.
      */
     val TOKEN: TableField<VerificationTokenRecord, String?> = createField(DSL.name("token"), SQLDataType.VARCHAR(100).nullable(false), this, "")
 
     /**
-     * The column <code>public.verification_token.expiry_date</code>.
+     * The column
+     * <code>drinkit_application.verification_token.expiry_date</code>.
      */
     val EXPIRY_DATE: TableField<VerificationTokenRecord, LocalDateTime?> = createField(DSL.name("expiry_date"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "")
 
@@ -97,17 +99,20 @@ open class VerificationToken(
     private constructor(alias: Name, aliased: Table<VerificationTokenRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>public.verification_token</code> table reference
+     * Create an aliased <code>drinkit_application.verification_token</code>
+     * table reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>public.verification_token</code> table reference
+     * Create an aliased <code>drinkit_application.verification_token</code>
+     * table reference
      */
     constructor(alias: Name): this(alias, null)
 
     /**
-     * Create a <code>public.verification_token</code> table reference
+     * Create a <code>drinkit_application.verification_token</code> table
+     * reference
      */
     constructor(): this(DSL.name("verification_token"), null)
 
@@ -123,7 +128,7 @@ open class VerificationToken(
         override fun `as`(alias: Name): VerificationTokenPath = VerificationTokenPath(alias, this)
         override fun `as`(alias: Table<*>): VerificationTokenPath = VerificationTokenPath(alias.qualifiedName, this)
     }
-    override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitApplication.DRINKIT_APPLICATION
     override fun getIndexes(): List<Index> = listOf(VERIFICATION_TOKEN_USER_ID_TOKEN_EXPIRY_DATE_IDX)
     override fun getPrimaryKey(): UniqueKey<VerificationTokenRecord> = VERIFICATION_TOKEN_PKEY
     override fun getReferences(): List<ForeignKey<VerificationTokenRecord, *>> = listOf(VERIFICATION_TOKEN__FK_USER)
@@ -131,7 +136,8 @@ open class VerificationToken(
     private lateinit var _user: UserPath
 
     /**
-     * Get the implicit join path to the <code>public.user</code> table.
+     * Get the implicit join path to the <code>drinkit_application.user</code>
+     * table.
      */
     fun user(): UserPath {
         if (!this::_user.isInitialized)

@@ -2,6 +2,7 @@ spring:
   session:
     jdbc:
       initialize-schema: never
+      table-name: drinkit_session.spring_session # Schema can't be easily provide by another property, so we hack the table name here
 
 server:
   servlet:

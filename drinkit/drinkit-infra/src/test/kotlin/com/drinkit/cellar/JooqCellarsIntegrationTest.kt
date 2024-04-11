@@ -1,12 +1,12 @@
 package com.drinkit.cellar
 
-import com.drinkit.generated.jooq.Public
+import com.drinkit.generated.jooq.DrinkitApplication
 import com.drinkit.jooq.JooqIntegrationTest
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 
-@JooqIntegrationTest(schemas = [Public::class])
+@JooqIntegrationTest(schemas = [DrinkitApplication::class])
 internal class JooqCellarsIntegrationTest : CellarsTestContract() {
 
     private lateinit var dslContext: DSLContext

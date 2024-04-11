@@ -4,7 +4,7 @@
 package com.drinkit.security.generated.jooq.tables
 
 
-import com.drinkit.security.generated.jooq.Public
+import com.drinkit.security.generated.jooq.DrinkitApplication
 import com.drinkit.security.generated.jooq.indexes.USER_COMPLETED_IDX
 import com.drinkit.security.generated.jooq.indexes.USER_EMAIL_IDX
 import com.drinkit.security.generated.jooq.indexes.USER_ENABLED_IDX
@@ -55,7 +55,7 @@ open class User(
     where: Condition?
 ): TableImpl<UserRecord>(
     alias,
-    Public.PUBLIC,
+    DrinkitApplication.DRINKIT_APPLICATION,
     path,
     childPath,
     parentPath,
@@ -68,7 +68,7 @@ open class User(
     companion object {
 
         /**
-         * The reference instance of <code>public.user</code>
+         * The reference instance of <code>drinkit_application.user</code>
          */
         val USER: User = User()
     }
@@ -79,62 +79,62 @@ open class User(
     override fun getRecordType(): Class<UserRecord> = UserRecord::class.java
 
     /**
-     * The column <code>public.user.id</code>.
+     * The column <code>drinkit_application.user.id</code>.
      */
     val ID: TableField<UserRecord, String?> = createField(DSL.name("id"), SQLDataType.VARCHAR(24).nullable(false), this, "")
 
     /**
-     * The column <code>public.user.firstname</code>.
+     * The column <code>drinkit_application.user.firstname</code>.
      */
     val FIRSTNAME: TableField<UserRecord, String?> = createField(DSL.name("firstname"), SQLDataType.VARCHAR(100), this, "")
 
     /**
-     * The column <code>public.user.lastname</code>.
+     * The column <code>drinkit_application.user.lastname</code>.
      */
     val LASTNAME: TableField<UserRecord, String?> = createField(DSL.name("lastname"), SQLDataType.VARCHAR(100), this, "")
 
     /**
-     * The column <code>public.user.birthdate</code>.
+     * The column <code>drinkit_application.user.birthdate</code>.
      */
     val BIRTHDATE: TableField<UserRecord, LocalDate?> = createField(DSL.name("birthdate"), SQLDataType.LOCALDATE, this, "")
 
     /**
-     * The column <code>public.user.email</code>.
+     * The column <code>drinkit_application.user.email</code>.
      */
     val EMAIL: TableField<UserRecord, String?> = createField(DSL.name("email"), SQLDataType.VARCHAR(255).nullable(false), this, "")
 
     /**
-     * The column <code>public.user.password</code>.
+     * The column <code>drinkit_application.user.password</code>.
      */
     val PASSWORD: TableField<UserRecord, String?> = createField(DSL.name("password"), SQLDataType.VARCHAR(100).nullable(false), this, "")
 
     /**
-     * The column <code>public.user.lastconnection</code>.
+     * The column <code>drinkit_application.user.lastconnection</code>.
      */
     val LASTCONNECTION: TableField<UserRecord, LocalDateTime?> = createField(DSL.name("lastconnection"), SQLDataType.LOCALDATETIME(6), this, "")
 
     /**
-     * The column <code>public.user.status</code>.
+     * The column <code>drinkit_application.user.status</code>.
      */
     val STATUS: TableField<UserRecord, String?> = createField(DSL.name("status"), SQLDataType.VARCHAR(50).nullable(false), this, "")
 
     /**
-     * The column <code>public.user.completed</code>.
+     * The column <code>drinkit_application.user.completed</code>.
      */
     val COMPLETED: TableField<UserRecord, Boolean?> = createField(DSL.name("completed"), SQLDataType.BOOLEAN.nullable(false), this, "")
 
     /**
-     * The column <code>public.user.enabled</code>.
+     * The column <code>drinkit_application.user.enabled</code>.
      */
     val ENABLED: TableField<UserRecord, Boolean?> = createField(DSL.name("enabled"), SQLDataType.BOOLEAN.nullable(false), this, "")
 
     /**
-     * The column <code>public.user.roles</code>.
+     * The column <code>drinkit_application.user.roles</code>.
      */
     val ROLES: TableField<UserRecord, Array<String?>?> = createField(DSL.name("roles"), SQLDataType.VARCHAR(20).array(), this, "")
 
     /**
-     * The column <code>public.user.modified</code>.
+     * The column <code>drinkit_application.user.modified</code>.
      */
     val MODIFIED: TableField<UserRecord, LocalDateTime?> = createField(DSL.name("modified"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "")
 
@@ -143,20 +143,20 @@ open class User(
     private constructor(alias: Name, aliased: Table<UserRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>public.user</code> table reference
+     * Create an aliased <code>drinkit_application.user</code> table reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>public.user</code> table reference
+     * Create an aliased <code>drinkit_application.user</code> table reference
      */
     constructor(alias: Name): this(alias, null)
 
     /**
-     * Create a <code>public.user</code> table reference
+     * Create a <code>drinkit_application.user</code> table reference
      */
     constructor(): this(DSL.name("user"), null)
-    override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitApplication.DRINKIT_APPLICATION
     override fun getIndexes(): List<Index> = listOf(USER_COMPLETED_IDX, USER_EMAIL_IDX, USER_ENABLED_IDX)
     override fun getPrimaryKey(): UniqueKey<UserRecord> = USER_PKEY
     override fun getChecks(): List<Check<UserRecord>> = listOf(

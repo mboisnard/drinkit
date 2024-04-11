@@ -24,7 +24,7 @@ jooq {
             database {
                 name = "org.jooq.meta.postgres.PostgresDatabase"
                 includes = "cellar | user | role | verification_token"
-                inputSchema = "public"
+                inputSchema = "drinkit_application"
             }
             generate {
                 isKotlinNotNullPojoAttributes = true // Generate non-nullable types on POJO attributes, where column is not null
