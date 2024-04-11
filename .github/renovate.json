@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "labels": ["dependencies"],
+  "commitMessagePrefix": "[VERSION-UPDATE]",
+  "extends": [
+    "config:recommended",
+    ":assignee(mboisnard)"
+  ],
+  "packageRules": [
+    {
+      "matchCategories": ["gradle"],
+      "addLabels": ["gradle"]
+    },
+    {
+      "matchCategories": ["gradle-wrapper"],
+      "addLabels": ["gradle"]
+    },
+    {
+      "matchCategories": ["npm"],
+      "addLabels": ["javascript"]
+    },
+    {
+      "matchCategories": ["github-action"],
+      "addLabels": ["github-action"]
+    },
+    {
+      "matchCategories": ["docker"],
+      "addLabels": ["docker"]
+    }
+  ]
+}
