@@ -108,7 +108,7 @@ export default defineConfig({
     ],
 
     editLink: {
-      pattern: 'https://github.com/mboisnard/drinkit/edit/master/docs/:path',
+      pattern: 'https://github.com/mboisnard/drinkit/edit/master/docs/src/:path',
       text: 'Edit this page on GitHub'
     },
 
