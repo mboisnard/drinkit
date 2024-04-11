@@ -17,7 +17,7 @@ services:
       POSTGRES_PASSWORD: admin
 
   meilisearch:
-    image: getmeili/meilisearch:v1.7.5
+    image: getmeili/meilisearch:v1.7.6
     ports:
       - "7700:7700"
     volumes:
