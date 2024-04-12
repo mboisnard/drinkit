@@ -8,7 +8,7 @@ import org.testcontainers.lifecycle.Startables
 import org.testcontainers.utility.DockerImageName
 import org.testcontainers.utility.TestcontainersConfiguration
 
-private const val MEILISEARCH_IMAGE_NAME = "getmeili/meilisearch:1.6.2"
+private const val MEILISEARCH_IMAGE_NAME = "getmeili/meilisearch:1.7.6"
 private const val MASTER_KEY = "masterKey"
 
 class MeilisearchExtension : BeforeAllCallback, AfterAllCallback, ParameterResolver {
