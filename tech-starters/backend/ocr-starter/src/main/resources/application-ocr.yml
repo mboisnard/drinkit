@@ -1,0 +1,3 @@
+# Use the below property if using service account credential authentication
+# https://github.com/GoogleCloudPlatform/spring-cloud-gcp/tree/main/spring-cloud-gcp-samples/spring-cloud-gcp-vision-api-sample
+# spring.cloud.gcp.credentials.location=

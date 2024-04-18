@@ -5,4 +5,5 @@ plugins {
 
 dependencies {
     implementation(libs.tess4j)
+    implementation("com.google.cloud:spring-cloud-gcp-starter-vision")
 }
