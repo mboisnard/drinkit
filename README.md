@@ -82,3 +82,6 @@ https://en.wikipedia.org/wiki/Wine_bottle#Sizes
 * https://github.com/gradle/github-dependency-graph-gradle-plugin
 * https://github.com/allure-framework/allure-gradle
 * https://github.com/remal-gradle-plugins/idea-settings
+
+Explore
+jlink / jdeps
