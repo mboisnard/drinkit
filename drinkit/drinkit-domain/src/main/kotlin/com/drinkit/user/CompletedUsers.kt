@@ -17,6 +17,6 @@ data class CompletedUser(
     val lastConnection: LocalDateTime?,
     val roles: Roles,
     val enabled: Boolean,
-) : User(id, email) {
+) : User {
     val isAdmin = roles.values.contains(Roles.Role.ROLE_ADMIN)
 }

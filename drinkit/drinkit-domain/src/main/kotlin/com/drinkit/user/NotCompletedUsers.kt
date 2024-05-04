@@ -27,7 +27,7 @@ data class NotCompletedUser(
     val status: String,
     val completed: Boolean,
     val enabled: Boolean,
-) : User(id, email) {
+) : User {
 
     fun withEmailVerified() =
         copy(status = "EMAIL_VERIFIED")
@@ -43,6 +43,7 @@ data class NotCompletedUser(
         )
 
     companion object {
+
         fun create(id: UserId, email: Email, password: EncodedPassword) =
             NotCompletedUser(
                 id = id,

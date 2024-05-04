@@ -21,10 +21,10 @@ import com.drinkit.utils.isEmail
 import java.time.Clock
 import java.time.LocalDate
 
-sealed class User(
-    open val id: UserId,
-    open val email: Email,
-)
+sealed interface User {
+    val id: UserId
+    val email: Email
+}
 
 data class UserId(
     override val value: String,

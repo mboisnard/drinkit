@@ -18,15 +18,12 @@ internal class SearchApi(
 ) : SearchApiDelegate, AbstractApi() {
 
     override fun searchByPhotoUpload(file: Resource?): ResponseEntity<Unit> {
-        if (!ocrAnalysis.featureAvailable()) {
-            return forbidden().build()
-        }
-
         val ocrResponse = ocrAnalysis.extractText(file!!, locale())
 
         return when (ocrResponse) {
-            is OCRResponse.Error -> ResponseEntity.badRequest().build()
             is OCRResponse.ExtractedText -> ResponseEntity.ok().build()
+            is OCRResponse.Error -> ResponseEntity.badRequest().build()
+            is OCRResponse.FeatureDisabled -> forbidden().build()
         }
     }
 }

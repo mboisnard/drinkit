@@ -8,6 +8,7 @@ import java.util.*
 sealed interface OCRResponse {
     data class ExtractedText(val value: String) : OCRResponse
     data class Error(val reason: String) : OCRResponse
+    data object FeatureDisabled : OCRResponse
 }
 
 interface OCRAnalysis {
@@ -31,7 +32,12 @@ internal class InternalOCRAnalysis(
         .associate { it.key.name to it.value.name }
 
     override fun extractText(resource: Resource, locale: Locale): OCRResponse {
+        if (!featureAvailable()) {
+            return OCRResponse.FeatureDisabled
+        }
+
         val analyzer = ocrAnalyzers.firstRunning()
+
         return analyzer.extractTextFrom(resource, locale)
     }
 }
