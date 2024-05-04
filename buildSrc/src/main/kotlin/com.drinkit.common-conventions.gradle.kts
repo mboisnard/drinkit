@@ -19,7 +19,7 @@ plugins {
 the<DependencyManagementExtension>().apply {
     imports {
         mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
-        mavenBom("com.google.cloud:spring-cloud-gcp-dependencies:5.1.2")
+        mavenBom("com.google.cloud:spring-cloud-gcp-dependencies:5.2.0")
     }
 }
 
