@@ -2,9 +2,8 @@ package com.drinkit.bottles.search
 
 import com.drinkit.api.generated.api.SearchApiDelegate
 import com.drinkit.config.AbstractApi
-import com.drinkit.ocr.Error
-import com.drinkit.ocr.ExtractedText
 import com.drinkit.ocr.OCRAnalysis
+import com.drinkit.ocr.OCRResponse
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.ResponseEntity
@@ -26,8 +25,8 @@ internal class SearchApi(
         val ocrResponse = ocrAnalysis.extractText(file!!, locale())
 
         return when (ocrResponse) {
-            is Error -> ResponseEntity.badRequest().build()
-            is ExtractedText -> ResponseEntity.ok().build()
+            is OCRResponse.Error -> ResponseEntity.badRequest().build()
+            is OCRResponse.ExtractedText -> ResponseEntity.ok().build()
         }
     }
 }
