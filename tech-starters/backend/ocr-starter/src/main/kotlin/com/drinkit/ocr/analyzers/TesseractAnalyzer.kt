@@ -1,15 +1,15 @@
 package com.drinkit.ocr.analyzers
 
-import com.drinkit.ocr.ExtractedText
 import com.drinkit.ocr.OCRResponse
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.sourceforge.tess4j.ITessAPI.TessOcrEngineMode.OEM_DEFAULT
 import net.sourceforge.tess4j.ITessAPI.TessPageSegMode.PSM_SINGLE_COLUMN
 import net.sourceforge.tess4j.Tesseract
+import net.sourceforge.tess4j.TesseractException
 import org.springframework.core.io.Resource
 import java.util.*
 
-enum class SupportedModelLanguage(val modelName: String) {
+internal enum class SupportedModelLanguage(val modelName: String) {
     ENGLISH("eng"),
     FRENCH("fra"),
 }
@@ -21,17 +21,21 @@ internal class TesseractAnalyzer : OCRAnalyzer {
     override fun extractTextFrom(resource: Resource, locale: Locale): OCRResponse {
         val modelLanguage = locale.toModelLanguage()
 
-        val tesseract = Tesseract()
+        try {
+            val tesseract = Tesseract()
 
-        tesseract.setLanguage(modelLanguage.modelName)
+            tesseract.setLanguage(modelLanguage.modelName)
 
-        tesseract.setPageSegMode(PAGE_SEGMENTATION_MODE)
-        tesseract.setOcrEngineMode(OCR_ENGINE_MODE)
-        tesseract.setDatapath(MODELS_PATH)
+            tesseract.setPageSegMode(PAGE_SEGMENTATION_MODE)
+            tesseract.setOcrEngineMode(OCR_ENGINE_MODE)
+            tesseract.setDatapath(MODELS_PATH)
 
-        val text = tesseract.doOCR(resource.file)
+            val text = tesseract.doOCR(resource.file)
 
-        return ExtractedText(text)
+            return OCRResponse.ExtractedText(text)
+        } catch (ex: TesseractException) {
+            return OCRResponse.Error(ex.message!!)
+        }
     }
 
     private fun Locale.toModelLanguage(): SupportedModelLanguage =

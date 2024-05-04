@@ -5,13 +5,10 @@ import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 import java.util.*
 
-sealed interface OCRResponse
-
-data class ExtractedText(
-    val value: String,
-) : OCRResponse
-
-data class Error(val reason: String) : OCRResponse
+sealed interface OCRResponse {
+    data class ExtractedText(val value: String) : OCRResponse
+    data class Error(val reason: String) : OCRResponse
+}
 
 interface OCRAnalysis {
 

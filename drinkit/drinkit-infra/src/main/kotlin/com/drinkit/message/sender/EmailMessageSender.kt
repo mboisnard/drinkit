@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service
 internal class EmailMessageSender(
     private val emailSender: EmailSender,
 ) : MessageSender {
+
     override fun send(command: SendMessageCommand): Boolean = with(command) {
         val email = Email(
             sender = Sender("contact@drinkit.com"),

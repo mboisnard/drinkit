@@ -20,8 +20,5 @@ spring:
     username: drinkit
     password: admin
 
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
+logging.level:
+    org.springframework.security: DEBUG

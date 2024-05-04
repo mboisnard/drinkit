@@ -1,7 +1,5 @@
 package com.drinkit.ocr.analyzers
 
-import com.drinkit.ocr.Error
-import com.drinkit.ocr.ExtractedText
 import com.drinkit.ocr.OCRResponse
 import com.google.api.gax.rpc.ApiException
 import com.google.cloud.spring.vision.CloudVisionException
@@ -19,13 +17,13 @@ internal class GCPCloudVisionAnalyzer(
     override fun extractTextFrom(resource: Resource, locale: Locale): OCRResponse {
         return try {
             val extractedText = cloudVisionTemplate.extractTextFromImage(resource)
-            ExtractedText(extractedText)
+            OCRResponse.ExtractedText(extractedText)
         } catch (ex: CloudVisionException) {
             logger.error(ex) { "Cannot use Google cloud vision API to extract text from image" }
-            Error(ex.message!!)
+            OCRResponse.Error(ex.message!!)
         } catch (ex: ApiException) { // TODO Improve multi catch management
             logger.error(ex) { "Cannot use Google cloud vision API to extract text from image" }
-            Error(ex.message!!)
+            OCRResponse.Error(ex.message!!)
         }
     }
 }

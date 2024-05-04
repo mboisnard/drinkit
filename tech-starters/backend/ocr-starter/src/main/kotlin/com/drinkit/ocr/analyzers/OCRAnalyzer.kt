@@ -5,12 +5,10 @@ import org.springframework.core.env.Environment
 import org.springframework.core.io.Resource
 import java.util.*
 
-enum class AnalyzerStatus {
+internal enum class AnalyzerStatus {
     RUNNING,
     DISABLED,
 }
-
-const val EXECUTION_ORDER_HIGHER_LEVEL = 999
 
 internal fun interface OCRAnalyzer {
 
@@ -26,7 +24,9 @@ internal data class OCRAnalyzers(
     fun firstRunning() = allRunningByExecutionOrder.firstOrNull() ?: error("No OCR analyzer found")
 }
 
-enum class OCRAvailableAnalyzer(
+private const val EXECUTION_ORDER_HIGHER_LEVEL = 999
+
+internal enum class OCRAvailableAnalyzer(
     val computeStatus: (Environment) -> AnalyzerStatus,
     val executionOrder: Int,
 ) {

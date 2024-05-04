@@ -2,7 +2,7 @@ ocr:
   local:
     tesseract.enabled: ${DRINKIT_OCR_TESSERACT_ENABLED:true}
   cloud:
-    google.cloud-vision.enabled: ${DRINKIT_OCR_CLOUD_VISION_ENABLED:true}
+    google.cloud-vision.enabled: ${DRINKIT_OCR_CLOUD_VISION_ENABLED:false}
 
 # This mapping is used to define the spring.cloud.gcp.credentials information at the application level
 # But in this module we only need vision api scope
