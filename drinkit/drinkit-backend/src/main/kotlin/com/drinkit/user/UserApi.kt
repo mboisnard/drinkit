@@ -6,9 +6,9 @@ import com.drinkit.api.generated.model.Role
 import com.drinkit.config.AbstractApi
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 
-@Service
+@Component
 internal class UserApi(
     private val completedUsers: CompletedUsers,
     private val notCompletedUsers: NotCompletedUsers,

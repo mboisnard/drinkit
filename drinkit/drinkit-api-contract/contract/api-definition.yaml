@@ -8,13 +8,15 @@ servers:
     description: Dev server
 tags:
   - name: cellars
-    description: Operations on cellars
+    description: Cellars operation
   - name: auth
     description: Authentication operations
   - name: registration
     description: User Registration operations
   - name: user
     description: User operations
+  - name: search
+    description: Search operations
 
 paths:
   /api/cellars:
@@ -198,3 +200,27 @@ paths:
             application/json:
               schema:
                 $ref: 'usersResponse.yaml#/components/schemas/ConnectedUserInformation'
+
+  /api/search/upload:
+    post:
+      operationId: searchByPhotoUpload
+      tags:
+        - search
+      summary: Search bottle using a photo
+      description: |
+        Search bottle using a photo
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '403':
+          description: Forbidden
+        '200':
+          description: Success

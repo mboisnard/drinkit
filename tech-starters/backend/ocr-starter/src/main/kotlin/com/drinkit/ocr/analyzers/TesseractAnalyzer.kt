@@ -1,11 +1,12 @@
-package com.drinkit.ocr.tesseract
+package com.drinkit.ocr.analyzers
 
 import com.drinkit.ocr.ExtractedText
-import com.drinkit.ocr.OCRDocumentAnalyser
+import com.drinkit.ocr.OCRResponse
 import io.github.oshai.kotlinlogging.KotlinLogging
+import net.sourceforge.tess4j.ITessAPI.TessOcrEngineMode.OEM_DEFAULT
+import net.sourceforge.tess4j.ITessAPI.TessPageSegMode.PSM_SINGLE_COLUMN
 import net.sourceforge.tess4j.Tesseract
-import org.springframework.stereotype.Service
-import java.io.File
+import org.springframework.core.io.Resource
 import java.util.*
 
 enum class SupportedModelLanguage(val modelName: String) {
@@ -13,13 +14,11 @@ enum class SupportedModelLanguage(val modelName: String) {
     FRENCH("fra"),
 }
 
-@Service
-internal class TesseractDocumentAnalyser : OCRDocumentAnalyser {
+internal class TesseractAnalyzer : OCRAnalyzer {
 
     private val logger = KotlinLogging.logger { }
 
-    override fun extractTextFrom(file: File, locale: Locale): ExtractedText {
-
+    override fun extractTextFrom(resource: Resource, locale: Locale): OCRResponse {
         val modelLanguage = locale.toModelLanguage()
 
         val tesseract = Tesseract()
@@ -30,18 +29,9 @@ internal class TesseractDocumentAnalyser : OCRDocumentAnalyser {
         tesseract.setOcrEngineMode(OCR_ENGINE_MODE)
         tesseract.setDatapath(MODELS_PATH)
 
-        val extractedText = tesseract.doOCR(file)
+        val text = tesseract.doOCR(resource.file)
 
-        val sanitizedText = sanitizeOcrExtractedText(extractedText)
-
-        return ExtractedText(extractedText, sanitizedText)
-    }
-
-    private fun sanitizeOcrExtractedText(rawText: String): String {
-        return rawText.lines()
-            .map { line -> line.trim().replace(Regex("[^A-Za-z0-9- ]"), "") }
-            .filter { it.length > 2 }
-            .joinToString("\n")
+        return ExtractedText(text)
     }
 
     private fun Locale.toModelLanguage(): SupportedModelLanguage =
@@ -56,8 +46,8 @@ internal class TesseractDocumentAnalyser : OCRDocumentAnalyser {
 
     companion object {
         // 1, 2, 3, 4, 11
-        private const val PAGE_SEGMENTATION_MODE = 4
+        private const val PAGE_SEGMENTATION_MODE = PSM_SINGLE_COLUMN
         private const val MODELS_PATH = "src/main/resources/tesseract/tessdata"
-        private const val OCR_ENGINE_MODE = 3
+        private const val OCR_ENGINE_MODE = OEM_DEFAULT
     }
 }

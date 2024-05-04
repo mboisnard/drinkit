@@ -22,8 +22,9 @@ class MeilisearchExtension : BeforeAllCallback, AfterAllCallback, ParameterResol
     override fun beforeAll(extensionContext: ExtensionContext) {
         setReuseGlobalConfiguration()
 
-        if (!container.isRunning)
+        if (!container.isRunning) {
             Startables.deepStart(container).join()
+        }
 
         client = createClient()
     }

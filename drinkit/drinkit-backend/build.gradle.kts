@@ -9,6 +9,8 @@ dependencies {
 
     implementation(project(":security-starter"))
     implementation(project(":messaging-starter"))
+    implementation(project(":ocr-starter"))
+
     implementation(libs.jooq) // TODO Remove this dependency here (fix version using platform & constraints)
 
     //developmentOnly("org.springframework.boot:spring-boot-docker-compose")

@@ -1,3 +1,14 @@
-# Use the below property if using service account credential authentication
-# https://github.com/GoogleCloudPlatform/spring-cloud-gcp/tree/main/spring-cloud-gcp-samples/spring-cloud-gcp-vision-api-sample
-# spring.cloud.gcp.credentials.location=
+ocr:
+  local:
+    tesseract.enabled: ${DRINKIT_OCR_TESSERACT_ENABLED:true}
+  cloud:
+    google.cloud-vision.enabled: ${DRINKIT_OCR_CLOUD_VISION_ENABLED:true}
+
+# This mapping is used to define the spring.cloud.gcp.credentials information at the application level
+# But in this module we only need vision api scope
+# So we can reduce the gcp sdk scope by setting up the CloudVisionProperties
+spring.cloud.gcp.vision.credentials:
+  location: ${spring.cloud.gcp.credentials.location}
+  encodedKey: ${spring.cloud.gcp.credentials.encodedKey}
+
+spring.autoconfigure.exclude: com.google.cloud.spring.autoconfigure.vision.CloudVisionAutoConfiguration, com.google.cloud.spring.autoconfigure.core.GcpContextAutoConfiguration

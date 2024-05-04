@@ -37,3 +37,6 @@ out/
 
 ### Frontend ###
 **/node_modules
+
+### GCP ###
+**/service-account.json

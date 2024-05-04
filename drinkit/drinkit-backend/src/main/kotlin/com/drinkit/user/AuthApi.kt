@@ -6,9 +6,9 @@ import com.drinkit.security.AuthenticationFailedException
 import com.drinkit.security.AuthenticationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 
-@Service
+@Component
 internal class AuthApi(
     private val authenticationService: AuthenticationService,
 ) : AuthApiDelegate {

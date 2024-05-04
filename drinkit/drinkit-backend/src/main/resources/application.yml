@@ -2,7 +2,7 @@ spring:
   application.name: drinkit
   profiles:
     active: dev
-    include: security,postgresql,mail,monitoring,search-engine
+    include: security,postgresql,mail,monitoring,search-engine,ocr
   threads.virtual.enabled: true
 
 server:

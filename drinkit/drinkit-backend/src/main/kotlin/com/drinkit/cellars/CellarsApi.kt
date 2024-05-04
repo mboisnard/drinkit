@@ -18,9 +18,9 @@ import com.drinkit.config.ConnectedUser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 
-@Service
+@Component
 @PreAuthorize("isAuthenticated()")
 internal class CellarsApi(
     private val createCellar: CreateCellar,

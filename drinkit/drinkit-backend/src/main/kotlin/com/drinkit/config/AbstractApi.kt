@@ -3,6 +3,7 @@ package com.drinkit.config
 import com.drinkit.security.userdetails.InternalUserDetails
 import com.drinkit.user.UserId
 import org.springframework.security.core.context.SecurityContextHolder
+import java.util.Locale
 
 class ConnectedUserException(message: String) : RuntimeException(message)
 
@@ -33,4 +34,6 @@ abstract class AbstractApi {
             else -> throw ConnectedUserException("Can't find userId from authentication principal")
         }
     }
+
+    fun locale(): Locale = Locale.FRENCH
 }
