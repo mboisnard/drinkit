@@ -2,6 +2,7 @@ import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 
+/*
 plugins {
     id("io.gitlab.arturbosch.detekt")
 }
@@ -44,3 +45,4 @@ tasks.withType<DetektCreateBaselineTask>().configureEach {
 detektReportMergeSarif {
     input.from(tasks.withType<Detekt>().map { it.sarifReportFile })
 }
+ */
