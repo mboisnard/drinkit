@@ -4,10 +4,10 @@ detekt = "1.23.6"
 graalvm-buildtools-native = "0.10.2"
 gradle-git-properties = "2.4.2"
 jooq = "3.19.8"
-kotlin = "1.9.23"
+kotlin = "1.9.24"
 openapi-generator = "7.5.0"
 spring-dependency-management = "1.1.5"
-spring-boot = "3.3.0-RC1"
+spring-boot = "3.3.0"
 
 [libraries]
 
