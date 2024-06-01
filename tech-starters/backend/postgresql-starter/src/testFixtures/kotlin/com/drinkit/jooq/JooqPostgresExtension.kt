@@ -22,7 +22,7 @@ import kotlin.reflect.full.createType
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 
-private const val PG_IMAGE_NAME = "postgres:16.2"
+private const val PG_IMAGE_NAME = "postgres:16.3"
 private const val DB_NAME = "TEST_DB"
 
 class JooqPostgresExtension : BeforeAllCallback, AfterEachCallback, AfterAllCallback, ParameterResolver {
