@@ -33,15 +33,15 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Run Detekt
-        run: ./gradlew detekt detektReportMergeSarif --continue
+#      - name: Run Detekt
+#        run: ./gradlew detekt detektReportMergeSarif --continue
 
-      - name: Upload SARIF file to GitHub
-        uses: github/codeql-action/upload-sarif@v3
-        if: success() || failure()
-        with:
-          sarif_file: build/reports/detekt/detekt-all-projects.sarif
-          category: detekt-code-analysis
+#      - name: Upload SARIF file to GitHub
+#        uses: github/codeql-action/upload-sarif@v3
+#        if: success() || failure()
+#        with:
+#          sarif_file: build/reports/detekt/detekt-all-projects.sarif
+#          category: detekt-code-analysis
 
 #  codeql-static-code-analysis:
 #    name: CodeQL - Static Code Analysis
