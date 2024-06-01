@@ -7,7 +7,7 @@ jooq = "3.19.8"
 kotlin = "1.9.23"
 openapi-generator = "7.5.0"
 spring-dependency-management = "1.1.5"
-spring-boot = "3.3.0-RC1"
+spring-boot = "3.3.0"
 
 [libraries]
 
