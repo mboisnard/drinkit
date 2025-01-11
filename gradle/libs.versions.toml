@@ -9,7 +9,7 @@ tess4j = "5.11.0"
 
 # Test Versions
 approvaltests = "24.2.0"
-cucumber = "7.18.0"
+cucumber = "7.20.1"
 io-rest-assured = "5.4.0"
 kotest = "5.9.1"
 kotlin-faker = "1.16.0"
