@@ -6,7 +6,7 @@ gradle-git-properties = "2.4.2"
 jooq = "3.19.9"
 kotlin = "2.0.0"
 openapi-generator = "7.6.0"
-spring-dependency-management = "1.1.5"
+spring-dependency-management = "1.1.7"
 spring-boot = "3.3.0"
 
 [libraries]
