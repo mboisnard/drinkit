@@ -1,7 +1,7 @@
 [versions]
 
 detekt = "1.23.7"
-graalvm-buildtools-native = "0.10.2"
+graalvm-buildtools-native = "0.10.4"
 gradle-git-properties = "2.4.2"
 jooq = "3.19.9"
 kotlin = "2.0.0"
