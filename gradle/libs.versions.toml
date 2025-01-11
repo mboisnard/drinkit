@@ -2,7 +2,7 @@
 # Runtime Versions
 bson = "5.1.0"
 jooq = "3.19.9"
-kotlin-logging = "6.0.9"
+kotlin-logging = "7.0.3"
 meilisearch = "0.12.0"
 springdoc-openapi = "2.5.0"
 tess4j = "5.13.0"
