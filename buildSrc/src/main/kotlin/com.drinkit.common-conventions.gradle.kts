@@ -1,5 +1,5 @@
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     `java-library` // Expand the 'java' default plugin with dependencies api/implementation concepts https://docs.gradle.org/current/userguide/java_library_plugin.html
@@ -32,12 +32,11 @@ java {
 
 kotlin {
     jvmToolchain(21)
-}
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "21"
+        // Null safety management https://docs.spring.io/spring-boot/docs/3.0.13/reference/htmlsingle/#features.kotlin.null-safety
+        freeCompilerArgs.add("-Xjsr305=strict")
     }
 }
 
