@@ -3,5 +3,6 @@ plugins {
 }
 
 dependencies {
+    testFixturesImplementation(project(":kotlin-starter"))
     testFixturesImplementation(project(":test-starter"))
 }
