@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.HeadersBuilder
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
+import org.springframework.web.multipart.MultipartFile
 
 @Component
 @PreAuthorize("isAuthenticated()")
@@ -17,8 +18,8 @@ internal class SearchApi(
     private val ocrAnalysis: OCRAnalysis,
 ) : SearchApiDelegate, AbstractApi() {
 
-    override fun searchByPhotoUpload(file: Resource?): ResponseEntity<Unit> {
-        val ocrResponse = ocrAnalysis.extractText(file!!, locale())
+    override fun searchByPhotoUpload(file: MultipartFile?): ResponseEntity<Unit> {
+        val ocrResponse = ocrAnalysis.extractText(file!!.resource, locale())
 
         return when (ocrResponse) {
             is OCRResponse.ExtractedText -> ResponseEntity.ok().build()
