@@ -1,6 +1,6 @@
 [versions]
 # Runtime Versions
-bson = "5.3.0"
+bson = "5.3.1"
 jooq = "3.19.18"
 kotlin-logging = "7.0.3"
 meilisearch = "0.14.2"
