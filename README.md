@@ -2,7 +2,7 @@
 
 ## Technologies
 
-* Java 21
+* Java 23
 * Node 20.11.0
 * Gradle
 * Spring Boot 3.2.1 + Kotlin

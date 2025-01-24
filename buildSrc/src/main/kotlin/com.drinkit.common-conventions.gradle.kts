@@ -27,13 +27,13 @@ group = "com.drinkit"
 version = "0.0.1-SNAPSHOT"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_23
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(23)
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
+        jvmTarget.set(JvmTarget.JVM_23)
 
         // Null safety management https://docs.spring.io/spring-boot/docs/3.0.13/reference/htmlsingle/#features.kotlin.null-safety
         freeCompilerArgs.add("-Xjsr305=strict")
