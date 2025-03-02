@@ -5,7 +5,7 @@ jooq = "3.19.18"
 kotlin-logging = "7.0.4"
 meilisearch = "0.14.2"
 springdoc-openapi = "2.8.5"
-tess4j = "5.14.0"
+tess4j = "5.15.0"
 
 # Test Versions
 approvaltests = "24.17.0"
