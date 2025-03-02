@@ -1,6 +1,6 @@
 [versions]
 
-detekt = "1.23.7"
+detekt = "1.23.8"
 graalvm-buildtools-native = "0.10.5"
 gradle-git-properties = "2.4.2"
 jooq = "3.19.18"
