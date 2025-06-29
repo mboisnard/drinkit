@@ -31,7 +31,7 @@ java {
 }
 
 kotlin {
-    jvmToolchain(23)
+    jvmToolchain(24)
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_22)
 
