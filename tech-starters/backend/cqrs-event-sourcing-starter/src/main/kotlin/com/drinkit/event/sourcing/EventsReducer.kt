@@ -3,8 +3,7 @@ package com.drinkit.event.sourcing
 import kotlin.reflect.KClass
 
 /**
- * An event reducer using a non-empty list design to build value
- * object projections.
+ * An event reducer using a non-empty list design to build value object projections.
  *
  * The [factory] is used to handle the initial event, it produces the initial
  * state of the projection. The derived state is used as the seed on which
@@ -41,11 +40,12 @@ class EventsReducer<Projection, Event : Any, InitialEvent : Event>(
     }
 
     /**
-     * Register a handler for the given event type.
+     * Register a handler for the given event type using a method reference.
+     * This allows for simplified syntax like: register<EventType>(Projection::methodName)
      */
     inline fun <reified T : Event> register(
-            noinline handler: (Projection, T) -> Projection,
-    ): EventsReducer<Projection, Event, InitialEvent> = register(T::class, handler)
+        noinline handler: Projection.(T) -> Projection,
+    ): EventsReducer<Projection, Event, InitialEvent> = register(T::class) { projection, event -> projection.handler(event) }
 
     private fun apply(projection: Projection, event: Event): Projection {
         val handler = handlers[event::class] ?: defaultHandler
