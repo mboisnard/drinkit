@@ -1,5 +1,3 @@
-import org.jooq.codegen.gradle.CodegenTask
-
 plugins {
     id("com.drinkit.library-conventions")
     id("com.drinkit.jooq-codegen-conventions")
@@ -19,16 +17,8 @@ dependencies {
     testImplementation(testFixtures(project(":postgresql-starter")))
 }
 
-/*
-tasks.withType<CodegenTask> {
-    jooq {
-        configuration {
-            generator {
-                database {
-                    includes = "cellar | user | role | verification_token"
-                    inputSchema = "public"
-                }
-            }
-        }
-    }
-}*/
+jooqCodegenConfig {
+    tables = "cellar | user | role | verification_token"
+    schema = "drinkit_application"
+    packageName = "com.drinkit.generated.jooq"
+}
