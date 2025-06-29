@@ -5,7 +5,7 @@ import com.drinkit.common.MessageSender
 import com.drinkit.common.Recipient
 import com.drinkit.common.SendMessageCommand
 import com.drinkit.user.NotCompletedUsers
-import com.drinkit.user.UserId
+import com.drinkit.user.core.UserId
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

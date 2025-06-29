@@ -1,6 +1,6 @@
 package com.drinkit.cellar
 
-import com.drinkit.user.UserId
+import com.drinkit.user.core.UserId
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

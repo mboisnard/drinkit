@@ -4,6 +4,7 @@ import com.drinkit.api.generated.api.UserApiDelegate
 import com.drinkit.api.generated.model.ConnectedUserInformation
 import com.drinkit.api.generated.model.Role
 import com.drinkit.config.AbstractApi
+import com.drinkit.user.core.Roles
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -51,6 +52,7 @@ internal class UserApi(
         when (role) {
             Roles.Role.ROLE_USER -> Role.ROLE_USER
             Roles.Role.ROLE_ADMIN -> Role.ROLE_ADMIN
+            Roles.Role.ROLE_REGISTRATION_IN_PROGRESS -> TODO()
         }
     }
 }

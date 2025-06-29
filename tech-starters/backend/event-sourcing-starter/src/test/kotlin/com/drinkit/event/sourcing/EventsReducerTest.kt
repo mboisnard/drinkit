@@ -64,15 +64,16 @@ internal class EventsReducerTest {
             factory = CarProjection::applyInit,
             defaultHandler = { projection, event -> projection.copy(sequenceId = event.sequenceId) }
         )
-            // Can also be written with .register(CarPurchased::class) { projection, event -> projection.apply(event) } or .register<CarPurchased>(CarProjection::apply)
+            // Can also be written with .register(CarPurchased::class) { projection, event -> projection.apply(event) }
+            // or .register<CarPurchased>(CarProjection::apply)
             .register(CarPurchased::class, CarProjection::apply)
 
 
         val initEvent = CarCreated(
-                id = UUID.randomUUID(),
-                sequenceId = SequenceId(),
-                date = OffsetDateTime.now(),
-                name = "Aston Martin DB5"
+            id = UUID.randomUUID(),
+            sequenceId = SequenceId(),
+            date = OffsetDateTime.now(),
+            name = "Aston Martin DB5"
         )
         val events = listOf(
             CarPurchased(
@@ -105,59 +106,4 @@ internal class EventsReducerTest {
         result.maintenanceCount shouldBe 0 // Still 0 because MaintenanceCarriedOut was handled by the default handler
         result.sequenceId shouldBe SequenceId(30)
     }
-}
-
-/**
- * Base interface to represent any event that can be applied to a CarProjection.
- */
-sealed interface CarEvent {
-    val id: CarId
-    val sequenceId: SequenceId
-    val date: OffsetDateTime
-}
-
-/**
- * Initial event that starts the car history
- */
-data class CarCreated(
-    override val id: CarId,
-    override val sequenceId: SequenceId,
-    override val date: OffsetDateTime,
-    val name: String
-) : CarEvent
-
-data class CarPurchased(
-    override val id: CarId,
-    override val sequenceId: SequenceId,
-    override val date: OffsetDateTime,
-    val owner: String
-) : CarEvent
-
-data class MaintenanceCarriedOut(
-    override val id: CarId,
-    override val sequenceId: SequenceId,
-    override val date: OffsetDateTime,
-) : CarEvent
-
-typealias CarId = UUID
-data class CarProjection(
-    val id: CarId,
-    val name: String,
-    val owner: String?,
-    val sequenceId: SequenceId,
-    val maintenanceCount: Int = 0,
-) {
-    companion object {
-        fun applyInit(initEvent: CarCreated): CarProjection =
-            CarProjection(
-                id = initEvent.id,
-                name = initEvent.name,
-                owner = null,
-                sequenceId = initEvent.sequenceId
-            )
-    }
-
-    fun apply(event: CarPurchased) = copy(owner = event.owner, sequenceId = event.sequenceId)
-
-    fun apply(event: MaintenanceCarriedOut) = copy(maintenanceCount = maintenanceCount + 1, sequenceId = event.sequenceId)
 }

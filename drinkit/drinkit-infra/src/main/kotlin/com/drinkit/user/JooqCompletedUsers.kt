@@ -3,6 +3,12 @@ package com.drinkit.user
 import com.drinkit.generated.jooq.tables.User.Companion.USER
 import com.drinkit.generated.jooq.tables.records.UserRecord
 import com.drinkit.jooq.allFields
+import com.drinkit.user.core.BirthDate
+import com.drinkit.user.core.Email
+import com.drinkit.user.core.FirstName
+import com.drinkit.user.core.LastName
+import com.drinkit.user.core.Roles
+import com.drinkit.user.core.UserId
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 

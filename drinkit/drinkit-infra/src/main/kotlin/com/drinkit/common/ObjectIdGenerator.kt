@@ -8,3 +8,4 @@ internal class ObjectIdGenerator : IdGenerator {
 
     override fun createNewId(): String = ObjectId().toHexString()
 }
+

@@ -1,12 +1,12 @@
 package com.drinkit.user.registration
 
-import com.drinkit.user.BirthDate
-import com.drinkit.user.FirstName
-import com.drinkit.user.LastName
+import com.drinkit.user.core.BirthDate
+import com.drinkit.user.core.FirstName
+import com.drinkit.user.core.LastName
 import com.drinkit.user.NotCompletedUsers
-import com.drinkit.user.Roles
-import com.drinkit.user.Roles.Role
-import com.drinkit.user.UserId
+import com.drinkit.user.core.Roles
+import com.drinkit.user.core.Roles.Role
+import com.drinkit.user.core.UserId
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

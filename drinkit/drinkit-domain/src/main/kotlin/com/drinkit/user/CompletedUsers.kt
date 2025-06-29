@@ -1,5 +1,11 @@
 package com.drinkit.user
 
+import com.drinkit.user.core.BirthDate
+import com.drinkit.user.core.Email
+import com.drinkit.user.core.FirstName
+import com.drinkit.user.core.LastName
+import com.drinkit.user.core.Roles
+import com.drinkit.user.core.UserId
 import java.time.LocalDateTime
 
 interface CompletedUsers {

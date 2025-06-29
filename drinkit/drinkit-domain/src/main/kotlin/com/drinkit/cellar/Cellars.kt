@@ -1,6 +1,6 @@
 package com.drinkit.cellar
 
-import com.drinkit.user.UserId
+import com.drinkit.user.core.UserId
 
 interface Cellars {
     fun create(cellar: Cellar): CellarId?

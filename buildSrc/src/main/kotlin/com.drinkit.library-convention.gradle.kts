@@ -7,6 +7,7 @@ dependencies {
     implementation("org.springframework:spring-tx")
 
     implementation(project(":documentation-starter"))
+    implementation(project(":event-sourcing-starter"))
     implementation(project(":kotlin-starter"))
 
     testImplementation(project(":test-starter"))

@@ -3,6 +3,7 @@ package com.drinkit.user
 import com.drinkit.generated.jooq.tables.records.VerificationTokenRecord
 import com.drinkit.generated.jooq.tables.references.VERIFICATION_TOKEN
 import com.drinkit.jooq.allFields
+import com.drinkit.user.core.UserId
 import com.drinkit.user.registration.VerificationToken
 import com.drinkit.user.registration.VerificationTokens
 import org.jooq.DSLContext

@@ -1,53 +1,78 @@
 package com.drinkit.user
 
+import com.drinkit.common.Author
+import com.drinkit.common.Author.Unlogged
 import com.drinkit.common.ControlledClock
-import com.drinkit.common.ControlledIdGenerator
-import com.drinkit.common.ControlledRandom
-import com.drinkit.common.SpyMessageSender
+import com.drinkit.common.CorrelationId
+import com.drinkit.common.MockGenerateId
+import com.drinkit.event.sourcing.SequenceId
 import com.drinkit.faker
 import com.drinkit.messaging.SpyPlatformEventPublisher
-import com.drinkit.user.registration.*
+import com.drinkit.user.core.Email
+import com.drinkit.user.core.ProfileInformation
+import com.drinkit.user.core.Roles
+import com.drinkit.user.core.User
+import com.drinkit.user.core.UserId
+import com.drinkit.user.core.UserInitialized
+import com.drinkit.user.spi.InMemoryUserEventsStore
+import com.drinkit.user.spi.InMemoryUsersRepository
 import java.time.LocalDate
+import java.time.OffsetDateTime
 
-class UserFixtures {
+class UserFixtures(
+    val generateId: MockGenerateId = MockGenerateId(),
+    val controlledClock: ControlledClock = ControlledClock(),
+    val spyEventPublisher: SpyPlatformEventPublisher = SpyPlatformEventPublisher(),
+) {
 
-    val controlledIdGenerator = ControlledIdGenerator()
+    val users = InMemoryUsersRepository()
+    val userEvents = InMemoryUserEventsStore(users)
 
-    val spyEventPublisher = SpyPlatformEventPublisher()
-
-    val controlledClock = ControlledClock()
-
-    val controlledRandom = ControlledRandom.value
-
-    val spyMessageSender = SpyMessageSender()
-
-    val notCompletedUsers = InMemoryNotCompletedUsers()
-
-    val verificationTokens = InMemoryVerificationTokens()
-
-    // Not Completed User Registration Usecases
-    val createANotCompletedUser = CreateANotCompletedUser(
-        generator = controlledIdGenerator,
-        notCompletedUsers = notCompletedUsers,
-        platformEventPublisher = spyEventPublisher,
-    )
-
-    val generateVerificationToken = GenerateVerificationToken(
-        clock = controlledClock,
-        random = controlledRandom,
-    )
-
-    val completeUserInformation = CompleteUserInformation(
-        notCompletedUsers = notCompletedUsers,
-    )
-
-    val validateEmail = ValidateEmail(
-        notCompletedUsers = notCompletedUsers,
-        generateVerificationToken = generateVerificationToken,
-        verificationTokens = verificationTokens,
-        messageSender = spyMessageSender,
+    val createNewUser = CreateNewUser(
+        userEvents = userEvents,
+        users = users,
+        generateId = generateId,
         clock = controlledClock,
     )
+
+    fun givenAUserInitializedEvent(
+        id: UserId = generateId.invoke(UserId::class),
+        author: Author = Unlogged(CorrelationId.create())
+    ) = UserInitialized(
+        userId = id,
+        sequenceId = SequenceId(),
+        date = OffsetDateTime.now(controlledClock),
+        author = author,
+        email = faker.randomProvider.randomClassInstance {
+            typeGenerator<String> { faker.internet.safeEmail() }
+        },
+        password = EncodedPassword.from(Password("F@kePa$\$w0rD")) { it },
+        roles = Roles(setOf(Roles.Role.ROLE_REGISTRATION_IN_PROGRESS)),
+    )
+
+    fun givenAUser(
+        id: UserId = generateId.invoke(UserId::class),
+        roles: Roles = Roles(setOf(Roles.Role.ROLE_USER)),
+    ) = User(
+            id = id,
+            email = faker.randomProvider.randomClassInstance {
+                typeGenerator<String> { faker.internet.safeEmail() }
+            },
+            password = EncodedPassword.from(Password("F@kePa$\$w0rD")) { it },
+            roles = roles,
+            lastConnection = null,
+            profile = ProfileInformation(
+                firstName = faker.randomProvider.randomClassInstance {
+                    typeGenerator<String> { faker.name.firstName() }
+                },
+                lastName = faker.randomProvider.randomClassInstance {
+                    typeGenerator<String> { faker.name.lastName() }
+                },
+                birthDate = faker.randomProvider.randomClassInstance {
+                    typeGenerator<LocalDate> { faker.person.birthDate(faker.random.nextLong(25)) }
+                },
+            ),
+        )
 
     companion object {
         fun givenANotCompletedUser(

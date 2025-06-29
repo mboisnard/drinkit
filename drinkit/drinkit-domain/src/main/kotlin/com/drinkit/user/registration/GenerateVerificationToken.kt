@@ -1,6 +1,6 @@
 package com.drinkit.user.registration
 
-import com.drinkit.user.UserId
+import com.drinkit.user.core.UserId
 import org.springframework.stereotype.Component
 import java.time.Clock
 import java.time.LocalDateTime

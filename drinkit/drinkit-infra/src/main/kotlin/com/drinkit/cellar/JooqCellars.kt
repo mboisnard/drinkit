@@ -7,7 +7,7 @@ import com.drinkit.generated.jooq.tables.references.CELLAR
 import com.drinkit.jooq.JSONBToJacksonConverter
 import com.drinkit.jooq.allFields
 import com.drinkit.jooq.fetchSequence
-import com.drinkit.user.UserId
+import com.drinkit.user.core.UserId
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository

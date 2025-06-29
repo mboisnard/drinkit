@@ -31,7 +31,7 @@ openApiGenerate {
     importMappings.set(
         importMappings.get() + mapOf(
             "CellarId" to "com.drinkit.cellar.CellarId",
-            "UserId" to "com.drinkit.user.UserId",
+            "UserId" to "com.drinkit.user.core.UserId",
         )
     )
 }

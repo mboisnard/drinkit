@@ -7,7 +7,7 @@ import com.drinkit.common.Constants.MAX_CELLAR_ROOM_LENGTH
 import com.drinkit.common.IdGenerator
 import com.drinkit.common.isId
 import com.drinkit.user.CompletedUser
-import com.drinkit.user.UserId
+import com.drinkit.user.core.UserId
 import com.drinkit.utils.doesntContainsInvisibleCharacters
 import com.drinkit.utils.hasLengthBetween
 

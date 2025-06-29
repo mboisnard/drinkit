@@ -1,6 +1,6 @@
 package com.drinkit.user.registration
 
-import com.drinkit.user.UserId
+import com.drinkit.user.core.UserId
 
 class InMemoryVerificationTokens : VerificationTokens {
 

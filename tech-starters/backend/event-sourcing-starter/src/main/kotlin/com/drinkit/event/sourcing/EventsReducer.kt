@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
  * registered handler will be used.
  *
  */
-class EventsReducer<Projection, Event : Any, InitialEvent : Event>(
+class EventsReducer<Projection, Event : DomainEvent, InitialEvent : Event>(
     private val factory: (InitialEvent) -> Projection,
     private val defaultHandler: (Projection, Event) -> Projection = {projection, _ -> projection },
 ) {
