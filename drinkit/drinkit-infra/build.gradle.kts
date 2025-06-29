@@ -17,8 +17,18 @@ dependencies {
     testImplementation(testFixtures(project(":postgresql-starter")))
 }
 
-jooqCodegenConfig {
-    tables = "cellar | user | role | verification_token"
-    schema = "drinkit_application"
-    packageName = "com.drinkit.generated.jooq"
+jooq {
+    executions.getByName("main") {
+        configuration.apply {
+            generator.apply {
+                database.apply {
+                    includes = "cellar | user | role | verification_token"
+                    inputSchema = "drinkit_application"
+                }
+                target.apply {
+                    packageName = "com.drinkit.generated.jooq"
+                }
+            }
+        }
+    }
 }

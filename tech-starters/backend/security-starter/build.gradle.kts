@@ -12,8 +12,18 @@ dependencies {
     api(libs.jooq)
 }
 
-jooqCodegenConfig {
-    tables = "user"
-    schema = "drinkit_application"
-    packageName = "com.drinkit.security.generated.jooq"
+jooq {
+    executions.getByName("main") {
+        configuration.apply {
+            generator.apply {
+                database.apply {
+                    includes = "user"
+                    inputSchema = "drinkit_application"
+                }
+                target.apply {
+                    packageName = "com.drinkit.security.generated.jooq"
+                }
+            }
+        }
+    }
 }
