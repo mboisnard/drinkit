@@ -3,7 +3,7 @@
 bson = "5.3.1"
 jooq = "3.20.2"
 kotlin-logging = "7.0.7"
-meilisearch = "0.14.2"
+meilisearch = "0.15.0"
 springdoc-openapi = "2.8.5"
 tess4j = "5.15.0"
 
