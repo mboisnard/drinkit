@@ -24,6 +24,7 @@ springBoot {
 
 // Create a `git.properties` file in resource folder, info available in Actuator
 gitProperties {
+    dotGitDirectory = project.rootProject.layout.projectDirectory.dir(".git") // Workaround for issue https://github.com/n0mer/gradle-git-properties/issues/240
     gitPropertiesName = "git.properties"
     keys = listOf("git.branch", "git.commit.id", "git.commit.time", "git.commit.message.short")
 }
