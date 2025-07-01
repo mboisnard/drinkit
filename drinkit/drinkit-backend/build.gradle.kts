@@ -13,12 +13,10 @@ dependencies {
 
     implementation(libs.jooq) // TODO Remove this dependency here (fix version using platform & constraints)
 
-    //developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-    //developmentOnly(files("../../deployment/local/docker-compose.yml"))
+    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
     openApiInput(project(":drinkit-api-contract", "openApi"))
 }
-
 
 openApiGenerate {
     apiPackage.set("com.drinkit.api.generated.api")
@@ -36,4 +34,11 @@ openApiGenerate {
             "UserId" to "com.drinkit.user.UserId",
         )
     )
+}
+
+// Simplify configuration for local application launch
+// (use Spring dev profile and enforce project root folder to find local docker compose file)
+tasks.bootRun {
+    systemProperty("spring.profiles.active", findProperty("spring.profiles.active") ?: "dev")
+    systemProperty("ROOT_FOLDER", "../../")
 }
