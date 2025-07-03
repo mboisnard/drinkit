@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   srcDir: 'src',
+  base: '/drinkit/',
 
   title: "Drink It",
   description: "Cellar management for beer, wine, spirits",
