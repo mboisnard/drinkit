@@ -11,7 +11,7 @@
     "docs:preview": "vitepress preview"
   },
   "devDependencies": {
-    "d3": "4.13.0",
+    "d3": "^7.8.5",
     "vitepress": "^1.6.3"
   }
 }

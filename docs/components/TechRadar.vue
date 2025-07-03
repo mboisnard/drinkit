@@ -384,11 +384,11 @@
               .data(segmented[quadrant][ring])
               .enter()
               .append("a")
-              .attr("href", function (d, i) {
+              .attr("href", function (d) {
                 return d.link ? d.link : "#"; // stay on same page if no link was provided
               })
               // Add a target if (and only if) there is a link and we want new tabs
-              .attr("target", function (d, i) {
+              .attr("target", function (d) {
                 return (d.link && config.links_in_new_tabs) ? "_blank" : null;
               })
               .append("text")
