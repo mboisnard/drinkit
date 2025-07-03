@@ -10,8 +10,8 @@
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview"
   },
-  "dependencies": {
+  "devDependencies": {
     "d3": "4.13.0",
-    "vitepress": "^1.2.2"
+    "vitepress": "^1.6.3"
   }
 }
