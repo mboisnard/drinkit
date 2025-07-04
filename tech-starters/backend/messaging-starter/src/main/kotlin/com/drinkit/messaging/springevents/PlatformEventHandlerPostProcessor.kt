@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component
 import org.springframework.util.ClassUtils
 
 @Component
-internal class EventHandlerPostProcessor : ApplicationContextAware, SmartInitializingSingleton, BeanFactoryPostProcessor {
+internal class PlatformEventHandlerPostProcessor : ApplicationContextAware, SmartInitializingSingleton, BeanFactoryPostProcessor {
 
     private lateinit var applicationContext: ConfigurableApplicationContext
     private lateinit var beanFactory: ConfigurableListableBeanFactory
