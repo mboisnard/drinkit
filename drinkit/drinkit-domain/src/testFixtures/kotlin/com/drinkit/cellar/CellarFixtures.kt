@@ -2,13 +2,13 @@ package com.drinkit.cellar
 
 import com.drinkit.common.ControlledClock
 import com.drinkit.common.ControlledIdGenerator
-import com.drinkit.messaging.SpyEventPublisher
+import com.drinkit.messaging.SpyPlatformEventPublisher
 
 class CellarFixtures {
 
     val controlledIdGenerator = ControlledIdGenerator()
 
-    val spyEventPublisher = SpyEventPublisher()
+    val spyEventPublisher = SpyPlatformEventPublisher()
 
     val controlledClock = ControlledClock()
 

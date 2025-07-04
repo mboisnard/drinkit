@@ -1,8 +1,8 @@
 package com.drinkit.user.registration
 
 import com.drinkit.common.IdGenerator
-import com.drinkit.messaging.Event
-import com.drinkit.messaging.EventPublisher
+import com.drinkit.messaging.PlatformEvent
+import com.drinkit.messaging.PlatformEventPublisher
 import com.drinkit.user.Email
 import com.drinkit.user.EncodedPassword
 import com.drinkit.user.NotCompletedUser
@@ -22,13 +22,13 @@ data class CreateUserCommand(
 data class UserCreated(
     val userId: UserId,
     val locale: Locale,
-) : Event<UserCreated>
+) : PlatformEvent<UserCreated>
 
 @Service
 class CreateANotCompletedUser(
-    private val generator: IdGenerator,
-    private val notCompletedUsers: NotCompletedUsers,
-    private val eventPublisher: EventPublisher,
+        private val generator: IdGenerator,
+        private val notCompletedUsers: NotCompletedUsers,
+        private val platformEventPublisher: PlatformEventPublisher,
 ) {
 
     private val logger = KotlinLogging.logger { }
@@ -52,7 +52,7 @@ class CreateANotCompletedUser(
         val userId = notCompletedUsers.create(user)
             ?: error("User not created $user")
 
-        eventPublisher.publish(
+        platformEventPublisher.publish(
             UserCreated(
                 userId = userId,
                 locale = locale

@@ -5,7 +5,7 @@ import com.drinkit.common.ControlledIdGenerator
 import com.drinkit.common.ControlledRandom
 import com.drinkit.common.SpyMessageSender
 import com.drinkit.faker
-import com.drinkit.messaging.SpyEventPublisher
+import com.drinkit.messaging.SpyPlatformEventPublisher
 import com.drinkit.user.registration.*
 import java.time.LocalDate
 
@@ -13,7 +13,7 @@ class UserFixtures {
 
     val controlledIdGenerator = ControlledIdGenerator()
 
-    val spyEventPublisher = SpyEventPublisher()
+    val spyEventPublisher = SpyPlatformEventPublisher()
 
     val controlledClock = ControlledClock()
 
@@ -29,7 +29,7 @@ class UserFixtures {
     val createANotCompletedUser = CreateANotCompletedUser(
         generator = controlledIdGenerator,
         notCompletedUsers = notCompletedUsers,
-        eventPublisher = spyEventPublisher,
+        platformEventPublisher = spyEventPublisher,
     )
 
     val generateVerificationToken = GenerateVerificationToken(

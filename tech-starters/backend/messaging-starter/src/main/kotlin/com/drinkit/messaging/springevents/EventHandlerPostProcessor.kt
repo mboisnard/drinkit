@@ -1,6 +1,6 @@
 package com.drinkit.messaging.springevents
 
-import com.drinkit.messaging.EventHandler
+import com.drinkit.messaging.PlatformEventHandler
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils
 import org.springframework.aop.support.AopUtils
 import org.springframework.beans.factory.SmartInitializingSingleton
@@ -55,7 +55,7 @@ internal class EventHandlerPostProcessor : ApplicationContextAware, SmartInitial
                 it to targetClass
             }
             .filter { (_, targetClass) ->
-                AnnotationUtils.isCandidateClass(targetClass, EventHandler::class.java) && !isSpringContainerClass(
+                AnnotationUtils.isCandidateClass(targetClass, PlatformEventHandler::class.java) && !isSpringContainerClass(
                     targetClass
                 )
             }
@@ -64,7 +64,7 @@ internal class EventHandlerPostProcessor : ApplicationContextAware, SmartInitial
                     MethodIntrospector.selectMethods(
                         targetClass,
                         MethodIntrospector.MetadataLookup {
-                            AnnotatedElementUtils.findMergedAnnotation(it, EventHandler::class.java)
+                            AnnotatedElementUtils.findMergedAnnotation(it, PlatformEventHandler::class.java)
                         }
                     )
                 } catch (ex: Throwable) {
