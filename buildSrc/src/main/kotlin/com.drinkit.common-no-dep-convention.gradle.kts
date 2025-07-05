@@ -10,7 +10,7 @@ plugins {
 
     id("io.spring.dependency-management")
     id("com.drinkit.code-analysis-conventions")
-    id("com.drinkit.test-conventions")
+    id("com.drinkit.test-convention")
 }
 
 // Use the Spring Dependency Management BOM without importing the spring-boot plugin

@@ -1,5 +1,5 @@
 plugins {
-    id("com.drinkit.library-conventions")
+    id("com.drinkit.library-convention")
 }
 
 dependencies {

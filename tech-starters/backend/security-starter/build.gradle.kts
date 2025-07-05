@@ -1,6 +1,6 @@
 plugins {
-    id("com.drinkit.library-conventions")
-    id("com.drinkit.jooq-codegen-conventions")
+    id("com.drinkit.library-convention")
+    id("com.drinkit.jooq-codegen-convention")
 }
 
 dependencies {
