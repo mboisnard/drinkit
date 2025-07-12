@@ -1,6 +1,6 @@
 # Tech Starters
 
-## What is a Tech-Starter?
+## 🚀 What is a Tech-Starter?
 
 A **Tech-Starter** is a **ready-to-use technical building block** (library, service) that you can **pick off the shelf** to integrate into a business project **without mixing technical concerns with business logic**.
 
@@ -12,7 +12,7 @@ When adopted with discipline, they help build **robust, standardized, and mainta
 
 ---
 
-## Objectives of a Tech-Starter
+## Objectives
 
 ✅ **Technical isolation**: business code does not depend on technical implementation details.
 
@@ -49,7 +49,7 @@ When adopted with discipline, they help build **robust, standardized, and mainta
 
 ---
 
-## Benefits
+## 🌟 Benefits
 
 ✅ Faster development  
 ✅ Consistency across projects  
@@ -57,7 +57,7 @@ When adopted with discipline, they help build **robust, standardized, and mainta
 
 ---
 
-## Limitations
+## ⚖️ Known Limitations
 
 ⚠️ Introduces abstraction requiring learning conventions.  
 ⚠️ Some boilerplate may be needed for clean integration.  
@@ -65,7 +65,7 @@ When adopted with discipline, they help build **robust, standardized, and mainta
 
 ---
 
-## Best Practices for Designing Tech-Starters
+## 🗒️ Best Practices
 
 ✅ Expose **simple interfaces** (hook, middleware, service)  
 ✅ Allow **parameter-based configuration**  
