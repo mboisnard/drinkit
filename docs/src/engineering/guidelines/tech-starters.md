@@ -10,18 +10,18 @@ Its goals are to:
 
 When adopted with discipline, they help build **robust, standardized, and maintainable applications** for the long term.
 
-## Objectives
+## 🎯 Objectives
 
-✅ **Technical isolation**: business code does not depend on technical implementation details.  
-✅ **Plug & Play**: easy to add or remove from a project.  
-✅ **Internal mutability**: the behavior of a Tech-Starter can evolve without impacting business code.  
-✅ **Technical consistency**: standardizes cross-cutting practices across projects or the organization.  
-✅ **Acceleration**: reduces time-to-market by avoiding reinventing essential technical blocks.  
+- **Technical isolation**: business code does not depend on technical implementation details.  
+- **Plug & Play**: easy to add or remove from a project.  
+- **Internal mutability**: the behavior of a Tech-Starter can evolve without impacting business code.  
+- **Technical consistency**: standardizes cross-cutting practices across projects or the organization.  
+- **Acceleration**: reduces time-to-market by avoiding reinventing essential technical blocks.  
 
 
-### Examples Covered by Tech-Starters
+### Tech-Starters Examples
 
-- **Security**: JWT, OAuth2, RBAC, anti-CSRF
+- **Security**: JWT, OAuth2, RBAC, CSRF token
 - **Structured Logging**: standardized, traceable logs
 - **Tracing & Monitoring**: built-in OpenTelemetry
 - **Error Management**: standardized error responses

@@ -114,8 +114,8 @@ export default defineConfig({
     },
 
     footer: {
-      message: 'MIT Licensed | Aged to Perfection',
-      copyright: 'Copyright © 2024-present | Crafted by Mathieu Boisnard with 🍺🥃🍷🪵🛢️❤️'
+      message: 'MIT Licensed',
+      copyright: 'Copyright © 2024-present | Crafted by Mathieu Boisnard with 🍺🥃🍷❤️'
     },
   }
 })
