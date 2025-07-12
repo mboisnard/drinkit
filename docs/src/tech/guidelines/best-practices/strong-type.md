@@ -1,1 +1,1 @@
-# String Type
+# Strong Type
