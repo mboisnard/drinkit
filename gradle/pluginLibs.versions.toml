@@ -2,7 +2,7 @@
 
 detekt = "1.23.8"
 graalvm-buildtools-native = "0.10.6"
-gradle-git-properties = "2.5.0"
+gradle-git-properties = "2.5.2"
 jooq = "3.20.5"
 kotlin = "2.1.10"
 openapi-generator = "7.14.0"
