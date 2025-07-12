@@ -10,8 +10,6 @@ The **Scout Rule**, introduced by Robert C. Martin, is a fundamental development
 
 It is **not** about rewriting everything or launching into massive refactors, but about making **small, continuous improvements every time you touch the code**.
 
----
-
 ## 🚩 Why adopt the Scout Rule?
 
 - Gradually reduce technical debt.
@@ -19,15 +17,11 @@ It is **not** about rewriting everything or launching into massive refactors, bu
 - Foster a team mindset of continuous improvement.
 - Preserve team mental ergonomics and reduce frustration with “legacy” code.
 
----
-
 ## 🛠️ How to apply it in practice?
 
 **Before committing**, ask yourself:
 
 > Have I left this file, module, or test in a better state than I found it?
-
----
 
 ### ✅ Small improvements you can make:
 - Rename a variable or function for clarity.
@@ -35,8 +29,6 @@ It is **not** about rewriting everything or launching into massive refactors, bu
 - Slightly factor out obvious duplication.
 - Add a missing simple test.
 - Clarify a comment or remove it by using a clearer name.
-
----
 
 ### ⚠️ Avoid these traps:
 - It is **not** a “big bang refactor.”

@@ -17,13 +17,13 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Guide', link: '/guide/get-started' },
-      { text: 'Tech', link: '/tech/' }
+      { text: 'Product', link: '/product/get-started' },
+      { text: 'Engineering', link: '/engineering/' }
     ],
 
     sidebar: {
-      '/guide/': {
-        base: '/guide/',
+      '/product/': {
+        base: '/product/',
         items: [
           {
             text: 'Introduction',
@@ -34,26 +34,26 @@ export default defineConfig({
           },
         ]
       },
-      '/tech/': {
-        base: '/tech/',
+      '/engineering/': {
+        base: '/engineering/',
         items: [
           {
             text: 'Guidelines',
-            base: '/tech/guidelines/',
+            base: '/engineering/guidelines/',
             collapsed: false,
             items: [
               {text: 'Monorepo', link: 'monorepo'},
               {text: 'Build Tool', link: 'build-tool'},
+              {text: 'Tech Starters', link: 'tech-starters'},
               {text: 'Modular Monolith', link: 'modular-monolith'},
               {text: 'Hexagonal Architecture', link: 'hexagonal-architecture'},
-              {text: 'Tech Starters', link: 'tech-starters'},
               {text: 'Events', link: 'events'},
               {text: 'Logging', link: 'logging'},
               {text: 'Database', link: 'database'},
               {
                 text: 'Best Practices',
                 collapsed: false,
-                base: '/tech/guidelines/best-practices/',
+                base: '/engineering/guidelines/best-practices/',
                 items: [
                   {text: 'SOLID', link: 'solid'},
                   {text: 'Strong Type', link: 'strong-type'},
@@ -64,7 +64,7 @@ export default defineConfig({
               {
                 text: 'Testing',
                 collapsed: false,
-                base: '/tech/guidelines/testing/',
+                base: '/engineering/guidelines/testing/',
                 items: [
                   {text: 'Test Containers', link: 'testcontainers'},
                   {text: 'Test Double', link: 'testdouble'},
@@ -76,7 +76,7 @@ export default defineConfig({
 
           {
             text: 'Tech Radars',
-            base: '/tech/tech-radars/',
+            base: '/engineering/tech-radars/',
             collapsed: true,
             items: [
               { text: 'What is it', link: 'what-is-it' },
@@ -88,7 +88,7 @@ export default defineConfig({
 
           {
             text: 'Security',
-            base: '/tech/security/',
+            base: '/engineering/security/',
             collapsed: true,
             items: [
               { text: 'Stateful vs Stateless', link: 'stateful-stateless' },
@@ -114,8 +114,8 @@ export default defineConfig({
     },
 
     footer: {
-      message: 'MIT Licensed',
-      copyright: 'Copyright © 2024-present | Made by Mathieu Boisnard with 🍺🥃🍷❤️'
+      message: 'MIT Licensed | Aged to Perfection',
+      copyright: 'Copyright © 2024-present | Crafted by Mathieu Boisnard with 🍺🥃🍷🪵🛢️❤️'
     },
   }
 })

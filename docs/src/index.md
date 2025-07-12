@@ -4,27 +4,27 @@ layout: home
 
 hero:
   name: "Drink It"
-  text: "Cellar management"
+  text: "Cellar Management"
+  tagline: "Where aged oak meets modern convenience, crafting the perfect blend of tradition and technology"
   actions:
     - theme: brand
-      text: Features
-      link: /guide/get-started
+      text: Discover Our Product
+      link: /product/get-started
     - theme: alt
-      text: Tech
-      link: /tech/
+      text: Engineering
+      link: /engineering/
 
 features:
-  - title: Add your cellars
-    details: Configure your different cellar places
-  - title: Import many bottles
-    details: Importation process will give you a large bottles database
-  - title: Select your bottles
-    details: Scan your spirits, wines, beers or manually import them
-  - title: View your bar
-    details: Easily display the content of your cellar
-  - title: Invite your friends
-    details: Add other members to the platform
-  - title: Share your activity
-    details: Share your new acquisition or an event where you drank a bottle with other members
+  - title: 🏠 Create Your Wooden Sanctuaries
+    details: Establish and customize your cellar spaces
+  - title: 🍾 Expand Your Collection
+    details: Our importation process provides access to an extensive database of fine spirits and wines
+  - title: 🔍 Curate Your Selection
+    details: Effortlessly scan your spirits, wines, and craft beers, or manually add your rare finds to your collection
+  - title: 🥃 Showcase Your Speakeasy
+    details: Display your cellar's treasures with an elegant interface
+  - title: 👥 Membership
+    details: Invite your companions to join the adventure
+  - title: 📝 Chronicle Your Journey
+    details: Share your latest acquisitions or memorable tastings with fellow connoisseurs in your network
 ---
-

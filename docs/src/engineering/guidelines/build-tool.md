@@ -13,8 +13,6 @@ Gradle was chosen as the **build tool for this project** because it better meets
 | **Extensibility** | Flexible plugins, easy automation scripting | Plugins available but limited extensibility |
 | **Version Catalog** | Centralized version management via TOML | BOM + Properties, less ergonomic |
 
----
-
 # 🛠️ Concepts Used in the Project
 
 ## 🗂️ Automatic Detection of New Gradle Modules
@@ -24,8 +22,6 @@ The project uses **Gradle automatic multi-project includes** to:
 - Automatically detects new modules placed inside `tech-starters/backend/` or `drinkit/`.
 - Avoids manual maintenance of the `settings.gradle.kts` file.
 - Enables **effortless scalability**, useful for **hexagonal or modular architectures**.
-
----
 
 ## 📦 Version Catalog
 
@@ -47,8 +43,6 @@ To **centralize and standardize dependency version management**, we use **Versio
 ✅ Easy version updates in a single location  
 ✅ Consistent dependency alignment across all modules
 
----
-
 ## 📈 Gradle Platforms (to be implemented)
 
 We plan to introduce **Gradle Platforms** to:
@@ -56,8 +50,6 @@ We plan to introduce **Gradle Platforms** to:
 - Define an **internal BOM** for aligning dependency versions across all modules.
 - Reduce version drift and prevent runtime errors due to incompatibilities.
 - Expose **declarative dependency constraints** for external consumers.
-
----
 
 ## 🧩 Gradle Conventions
 

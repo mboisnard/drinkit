@@ -9,8 +9,6 @@ We opted for a **monorepo** to centralize and simplify the management of:
 - 🗂️ **Documentation**: functional and technical documentation remain close to the code, reducing divergence risks.
 - 📦 **Shared libraries (tech-starters)**: internal tools, starters, and reusable components are transparently shared without the overhead of external versioning and publishing.
 
----
-
 ## 🌟 Benefits
 
 ✅ **Immediate visibility of change impact**
@@ -28,7 +26,6 @@ We opted for a **monorepo** to centralize and simplify the management of:
 ✅ **Technical alignment and consistency**
 - Technical improvements are applied consistently and immediately across projects.
 
----
 
 ## ⚖️ Known Limitations
 
@@ -42,8 +39,6 @@ Building the entire repository can take longer than isolated builds, but is curr
 ⚠️ **Not suited for very large scale**:  
 Monorepos can become harder to manage as they grow in size or with many independent teams, but for our current project scale, the trade-off is acceptable.
 
----
-
 ## 🗒️ Best Practices
 
 ✅ Keep modules **decoupled** where possible to minimize unnecessary rebuilds.  
@@ -55,7 +50,6 @@ Monorepos can become harder to manage as they grow in size or with many independ
 ✅ Communicate with other contributors when making **breaking changes** in shared libraries.  
 ✅ Regularly **clean up unused modules** to keep the repository lean.
 
----
 
 ::: tip
 More details in some Medium articles [like here](https://medium.com/streamdal/mostly-terrible-the-monorepo-5db704f76bdb)

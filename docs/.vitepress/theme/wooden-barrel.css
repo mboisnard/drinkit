@@ -1,0 +1,162 @@
+:root {
+  /* Modern wooden barrel color palette with improved contrast */
+  --vp-c-brand: #9B5D2C; /* Richer wood tone for better visibility */
+  --vp-c-brand-light: #B06C3B; /* Enhanced sienna for better contrast */
+  --vp-c-brand-lighter: #D19556; /* Warmer, more vibrant wood tone */
+  --vp-c-brand-dark: #7A4A23; /* Deeper wood tone with better contrast */
+  --vp-c-brand-darker: #4D3425; /* Rich dark wood for prohibition-era speakeasy feel */
+
+  /* Background colors with improved contrast */
+  --vp-c-bg: #1A1715; /* Darker background for a more modern speakeasy feel */
+  --vp-c-bg-soft: #2A2320; /* Refined background for better contrast */
+  --vp-c-bg-mute: #3A2E25; /* Modernized muted background */
+
+  /* Text colors with improved readability */
+  --vp-c-text-1: #F0DFC0; /* Brighter amber for better readability */
+  --vp-c-text-2: #D5C4A3; /* Enhanced secondary text color */
+  --vp-c-text-3: #B5A88A; /* Improved tertiary text color */
+
+  /* Border colors with better definition */
+  --vp-c-border: #6D4A3C; /* Enhanced wood color for borders */
+  --vp-c-divider: #5E3D32; /* Refined divider color */
+
+  /* Custom font settings */
+  --vp-font-family-base: "Georgia", "Times New Roman", serif; /* Classic vintage font */
+
+  /* Custom hero section styling with enhanced gradients */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #E6C158 30%, #D89545); /* More vibrant gradient */
+  --vp-home-hero-image-background-image: linear-gradient(to right, rgba(155, 93, 44, 0.8), rgba(122, 74, 35, 0.8));
+  --vp-home-hero-image-filter: blur(64px); /* Slightly reduced blur for sharper appearance */
+
+  /* Custom component variables */
+  --wood-panel-bg: rgba(73, 48, 43, 0.5);
+  --wood-panel-hover-bg: rgba(88, 58, 52, 0.6);
+  --wood-panel-border: var(--vp-c-border);
+  --wood-panel-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --wood-panel-hover-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  --brass-fixture-color: #E6C158; /* Brighter gold for better visibility */
+  --nav-bg: #2A1E16;
+  --footer-bg: #2A1E16;
+  --button-border-radius: 4px;
+  --transition-speed: 0.3s;
+}
+
+/* Add a subtle wood grain texture to the background */
+body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%231A1715'/%3E%3Cpath d='M0,20 Q50,15 100,20 T200,20 L200,25 Q150,30 100,25 T0,25 Z' fill='%23261D1A' opacity='0.3'/%3E%3Cpath d='M0,50 Q50,45 100,50 T200,50 L200,55 Q150,60 100,55 T0,55 Z' fill='%23261D1A' opacity='0.3'/%3E%3Cpath d='M0,80 Q50,75 100,80 T200,80 L200,85 Q150,90 100,85 T0,85 Z' fill='%23261D1A' opacity='0.3'/%3E%3Cpath d='M0,110 Q50,105 100,110 T200,110 L200,115 Q150,120 100,115 T0,115 Z' fill='%23261D1A' opacity='0.3'/%3E%3Cpath d='M0,140 Q50,135 100,140 T200,140 L200,145 Q150,150 100,145 T0,145 Z' fill='%23261D1A' opacity='0.3'/%3E%3Cpath d='M0,170 Q50,165 100,170 T200,170 L200,175 Q150,180 100,175 T0,175 Z' fill='%23261D1A' opacity='0.3'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+
+/* Custom styling for feature boxes to look like wooden panels - using higher specificity selectors */
+.vp-doc .VPFeature,
+.VPHome .VPFeature {
+  border: 1px solid var(--wood-panel-border);
+  background-color: var(--wood-panel-bg);
+  border-radius: 8px;
+  box-shadow: var(--wood-panel-shadow);
+  transition: transform var(--transition-speed) ease, 
+              box-shadow var(--transition-speed) ease,
+              background-color var(--transition-speed) ease;
+}
+
+.vp-doc .VPFeature:hover,
+.VPHome .VPFeature:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--wood-panel-hover-shadow);
+  background-color: var(--wood-panel-hover-bg);
+}
+
+/* Style for feature titles - using higher specificity selectors */
+.vp-doc .VPFeature .title,
+.VPHome .VPFeature .title {
+  color: var(--brass-fixture-color);
+  font-family: "Georgia", serif;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* Style for feature details - using higher specificity selectors */
+.vp-doc .VPFeature .details,
+.VPHome .VPFeature .details {
+  color: var(--vp-c-text-1);
+  font-style: italic;
+}
+
+/* Style the navbar to look like a wooden bar top - using higher specificity */
+.VPNav.has-sidebar .content,
+.VPNav:not(.has-sidebar) {
+  background-color: var(--nav-bg);
+  border-bottom: 2px solid var(--wood-panel-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Style buttons to look like vintage labels - using higher specificity */
+.vp-doc .VPButton,
+.VPHome .VPButton {
+  border-radius: var(--button-border-radius);
+  font-family: "Georgia", serif;
+  letter-spacing: 0.5px;
+  transition: all var(--transition-speed) ease;
+}
+
+/* Brand button styling - using higher specificity */
+.vp-doc .VPButton.brand,
+.VPHome .VPButton.brand {
+  background-color: var(--vp-c-brand);
+  border-color: var(--vp-c-brand-dark);
+}
+
+.vp-doc .VPButton.brand:hover,
+.VPHome .VPButton.brand:hover {
+  background-color: var(--vp-c-brand-dark);
+  transform: translateY(-2px);
+}
+
+/* Alt button styling - using higher specificity */
+.vp-doc .VPButton.alt,
+.VPHome .VPButton.alt {
+  color: var(--vp-c-text-1);
+  border-color: var(--vp-c-brand);
+}
+
+.vp-doc .VPButton.alt:hover,
+.VPHome .VPButton.alt:hover {
+  background-color: rgba(155, 93, 44, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Style footer to look like a wooden bar base - using higher specificity */
+.VPFooter {
+  background-color: var(--footer-bg);
+  border-top: 2px solid var(--wood-panel-border);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Add barrel stave-like accents to headings */
+.vp-doc h1,
+.vp-doc h2 {
+  border-top: none;
+  border-bottom: 2px solid var(--vp-c-brand-lighter);
+  padding-bottom: 0.3em;
+}
+
+/* Add a subtle wood grain texture to code blocks */
+.vp-doc div[class*='language-'] {
+  background-color: var(--vp-c-bg-soft);
+  border: 1px solid var(--wood-panel-border);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhance links to look like brass fixtures */
+.vp-doc a,
+.VPSidebar a {
+  color: var(--brass-fixture-color);
+  transition: color var(--transition-speed) ease;
+}
+
+.vp-doc a:hover,
+.VPSidebar a:hover {
+  color: var(--vp-c-brand-lighter);
+  text-decoration: none;
+}

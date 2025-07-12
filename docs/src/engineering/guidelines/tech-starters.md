@@ -10,19 +10,13 @@ Its goals are to:
 
 When adopted with discipline, they help build **robust, standardized, and maintainable applications** for the long term.
 
----
-
 ## Objectives
 
-✅ **Technical isolation**: business code does not depend on technical implementation details.
-
-✅ **Plug & Play**: easy to add or remove from a project.
-
-✅ **Internal mutability**: the behavior of a Tech-Starter can evolve without impacting business code.
-
-✅ **Technical consistency**: standardizes cross-cutting practices across projects or the organization.
-
-✅ **Acceleration**: reduces time-to-market by avoiding reinventing essential technical blocks.
+✅ **Technical isolation**: business code does not depend on technical implementation details.  
+✅ **Plug & Play**: easy to add or remove from a project.  
+✅ **Internal mutability**: the behavior of a Tech-Starter can evolve without impacting business code.  
+✅ **Technical consistency**: standardizes cross-cutting practices across projects or the organization.  
+✅ **Acceleration**: reduces time-to-market by avoiding reinventing essential technical blocks.  
 
 
 ### Examples Covered by Tech-Starters
@@ -35,35 +29,17 @@ When adopted with discipline, they help build **robust, standardized, and mainta
 - **Distributed Cache**: fallback, invalidation
 - **Database**: datasource configuration
 
----
-
-## Usage Principles
-
-1️⃣ **Do not implement the technical block in business projects**. import the Tech-Starter and use it.
-
-2️⃣ **Avoid unnecessary forks**; contribute improvements to the Tech-Starter directly.
-
-3️⃣ **Consume exposed interfaces** without knowing internal implementation details.
-
-4️⃣ **Document constraints** introduced by the Tech-Starter (patterns, limitations).
-
----
-
 ## 🌟 Benefits
 
 ✅ Faster development  
 ✅ Consistency across projects  
 ✅ New projects quickly ready for production with all requirements
 
----
-
 ## ⚖️ Known Limitations
 
 ⚠️ Introduces abstraction requiring learning conventions.  
 ⚠️ Some boilerplate may be needed for clean integration.  
 ⚠️ Risk of over-engineering if overgeneralized.
-
----
 
 ## 🗒️ Best Practices
 
