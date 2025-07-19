@@ -8,6 +8,7 @@ import com.drinkit.event.sourcing.SequenceId
 import com.drinkit.user.CreateNewUser.Result.UserCreated
 import com.drinkit.user.CreateNewUser.Result.UserAlreadyExists
 import com.drinkit.user.core.Email
+import com.drinkit.user.core.EncodedPassword
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.UserId
 import com.drinkit.user.core.UserInitialized

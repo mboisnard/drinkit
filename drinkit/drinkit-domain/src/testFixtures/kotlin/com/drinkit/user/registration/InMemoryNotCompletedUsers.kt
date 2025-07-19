@@ -1,8 +1,6 @@
 package com.drinkit.user.registration
 
 import com.drinkit.user.core.Email
-import com.drinkit.user.NotCompletedUser
-import com.drinkit.user.NotCompletedUsers
 import com.drinkit.user.core.UserId
 
 class InMemoryNotCompletedUsers : NotCompletedUsers {

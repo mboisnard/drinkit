@@ -3,6 +3,7 @@ package com.drinkit.user
 import com.drinkit.generated.jooq.DrinkitApplication
 import com.drinkit.jooq.JooqIntegrationTest
 import com.drinkit.user.registration.NotCompletedCompletedUsersTestContract
+import com.drinkit.user.registration.NotCompletedUsers
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 

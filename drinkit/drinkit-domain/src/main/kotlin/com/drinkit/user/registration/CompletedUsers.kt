@@ -1,4 +1,4 @@
-package com.drinkit.user
+package com.drinkit.user.registration
 
 import com.drinkit.user.core.BirthDate
 import com.drinkit.user.core.Email

@@ -4,7 +4,6 @@ import com.drinkit.common.Author
 import com.drinkit.event.sourcing.DomainEvent
 import com.drinkit.event.sourcing.History
 import com.drinkit.event.sourcing.SequenceId
-import com.drinkit.user.EncodedPassword
 import java.time.OffsetDateTime
 
 typealias UserHistory = History<UserEvent, UserInitialized>

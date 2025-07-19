@@ -5,6 +5,8 @@ import com.drinkit.common.CorrelationId
 import com.drinkit.user.CreateNewUser.Result.UserAlreadyExists
 import com.drinkit.user.CreateNewUser.Result.UserCreated
 import com.drinkit.user.core.Email
+import com.drinkit.user.core.EncodedPassword
+import com.drinkit.user.core.Password
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 

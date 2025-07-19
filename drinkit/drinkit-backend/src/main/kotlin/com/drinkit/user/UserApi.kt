@@ -5,6 +5,8 @@ import com.drinkit.api.generated.model.ConnectedUserInformation
 import com.drinkit.api.generated.model.Role
 import com.drinkit.config.AbstractApi
 import com.drinkit.user.core.Roles
+import com.drinkit.user.registration.CompletedUsers
+import com.drinkit.user.registration.NotCompletedUsers
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component

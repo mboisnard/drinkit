@@ -3,7 +3,7 @@ package com.drinkit.user.core
 import com.drinkit.documentation.cqrs.Query
 import com.drinkit.documentation.event.sourcing.Projection
 import com.drinkit.event.sourcing.EventsReducer
-import com.drinkit.user.EncodedPassword
+import com.drinkit.user.core.UserStatus.PROFILE_COMPLETION_REQUIRED
 import java.time.LocalDateTime
 
 @Query
@@ -15,6 +15,7 @@ data class User(
     val profile: ProfileInformation?,
     val lastConnection: LocalDateTime?,
     val roles: Roles,
+    val status: UserStatus,
 ) {
 
     companion object {
@@ -33,7 +34,14 @@ data class User(
             profile = null,
             lastConnection = null,
             roles = event.roles,
+            status = PROFILE_COMPLETION_REQUIRED,
         )
     }
+}
+
+enum class UserStatus {
+    PROFILE_COMPLETION_REQUIRED,
+    ACTIVE,
+    DELETED,
 }
 

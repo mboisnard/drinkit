@@ -9,6 +9,8 @@ import com.drinkit.user.core.FirstName
 import com.drinkit.user.core.LastName
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.UserId
+import com.drinkit.user.registration.CompletedUser
+import com.drinkit.user.registration.CompletedUsers
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 

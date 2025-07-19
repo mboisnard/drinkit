@@ -1,8 +1,8 @@
 package com.drinkit.config
 
 import com.drinkit.security.userdetails.InternalUserDetails
-import com.drinkit.user.CompletedUser
-import com.drinkit.user.CompletedUsers
+import com.drinkit.user.registration.CompletedUser
+import com.drinkit.user.registration.CompletedUsers
 import com.drinkit.user.core.UserId
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component

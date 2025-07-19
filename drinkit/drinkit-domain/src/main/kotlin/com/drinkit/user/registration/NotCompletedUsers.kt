@@ -1,7 +1,8 @@
-package com.drinkit.user
+package com.drinkit.user.registration
 
 import com.drinkit.user.core.BirthDate
 import com.drinkit.user.core.Email
+import com.drinkit.user.core.EncodedPassword
 import com.drinkit.user.core.FirstName
 import com.drinkit.user.core.LastName
 import com.drinkit.user.core.Roles

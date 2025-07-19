@@ -1,18 +1,11 @@
-package com.drinkit.user
+package com.drinkit.user.core
 
 import com.drinkit.common.Constants.MIN_PASSWORD_LENGTH
-import com.drinkit.user.core.Email
-import com.drinkit.user.core.UserId
 import com.drinkit.utils.containsACapitalLetter
 import com.drinkit.utils.containsANumber
 import com.drinkit.utils.containsASpecialCharacter
 import com.drinkit.utils.doesntContainsInvisibleCharacters
 import com.drinkit.utils.hasMinLength
-
-sealed interface User {
-    val id: UserId
-    val email: Email
-}
 
 class EncodedPassword private constructor(
     val value: String,
@@ -44,4 +37,3 @@ data class Password(
         )
     }
 }
-

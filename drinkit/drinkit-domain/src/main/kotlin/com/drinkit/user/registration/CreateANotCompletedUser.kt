@@ -4,9 +4,7 @@ import com.drinkit.common.IdGenerator
 import com.drinkit.messaging.PlatformEvent
 import com.drinkit.messaging.PlatformEventPublisher
 import com.drinkit.user.core.Email
-import com.drinkit.user.EncodedPassword
-import com.drinkit.user.NotCompletedUser
-import com.drinkit.user.NotCompletedUsers
+import com.drinkit.user.core.EncodedPassword
 import com.drinkit.user.core.UserId
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service

@@ -9,11 +9,14 @@ import com.drinkit.event.sourcing.SequenceId
 import com.drinkit.faker
 import com.drinkit.messaging.SpyPlatformEventPublisher
 import com.drinkit.user.core.Email
+import com.drinkit.user.core.EncodedPassword
+import com.drinkit.user.core.Password
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
 import com.drinkit.user.core.UserInitialized
+import com.drinkit.user.registration.NotCompletedUser
 import com.drinkit.user.spi.InMemoryUserEventsStore
 import com.drinkit.user.spi.InMemoryUsersRepository
 import java.time.LocalDate

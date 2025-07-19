@@ -8,10 +8,10 @@ import com.drinkit.config.AbstractApi
 import com.drinkit.security.AuthenticationService
 import com.drinkit.user.core.BirthDate
 import com.drinkit.user.core.Email
-import com.drinkit.user.EncodedPassword
+import com.drinkit.user.core.EncodedPassword
 import com.drinkit.user.core.FirstName
 import com.drinkit.user.core.LastName
-import com.drinkit.user.Password
+import com.drinkit.user.core.Password
 import com.drinkit.user.core.UserId
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
