@@ -2,7 +2,6 @@ package com.drinkit.event.sourcing
 
 import io.kotest.matchers.shouldBe
 import io.kotest.assertions.throwables.shouldThrow
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -88,7 +87,7 @@ internal class HistoryTest {
         val events = listOf(initEvent, event1, event2)
 
         // When
-        val history = History.from<CarEvent, CarCreated>(events)
+        val history = CarHistory.from<CarEvent, CarCreated>(events)
 
         // Then
         history.initEvent shouldBe initEvent
@@ -114,31 +113,7 @@ internal class HistoryTest {
 
         // When & Then
         shouldThrow<IllegalArgumentException> {
-            History.from<CarEvent, CarCreated>(events)
-        }
-    }
-
-    @Disabled
-    @Test
-    fun `be careful typealias does not ensure the init event type is checked when calling companion method`() {
-        // Given
-        val carId = UUID.randomUUID()
-        val event1 = CarPurchased(
-            id = carId,
-            sequenceId = SequenceId(),
-            date = OffsetDateTime.now(),
-            owner = "James Bond"
-        )
-        val event2 = MaintenanceCarriedOut(
-            id = carId,
-            sequenceId = SequenceId(10),
-            date = OffsetDateTime.now()
-        )
-        val events = listOf(event1, event2)
-
-        // When & Then
-        shouldThrow<IllegalArgumentException> {
-            CarHistory.from(events)
+            CarHistory.from<CarEvent, CarCreated>(events)
         }
     }
 
@@ -166,7 +141,7 @@ internal class HistoryTest {
 
         // When & Then
         shouldThrow<IllegalArgumentException> {
-            History.from<CarEvent, CarCreated>(events)
+            CarHistory.from<CarEvent, CarCreated>(events)
         }
     }
 }

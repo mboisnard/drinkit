@@ -1,5 +1,5 @@
-package com.drinkit.documentation.event.sourcing
+package com.drinkit.documentation.fcis
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class Aggregate()
+annotation class FunctionalCore()

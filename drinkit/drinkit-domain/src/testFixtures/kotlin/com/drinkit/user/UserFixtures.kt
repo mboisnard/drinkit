@@ -16,11 +16,13 @@ import com.drinkit.user.core.Roles
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
 import com.drinkit.user.core.UserInitialized
+import com.drinkit.user.core.UserStatus
 import com.drinkit.user.registration.NotCompletedUser
 import com.drinkit.user.spi.InMemoryUserEventsStore
 import com.drinkit.user.spi.InMemoryUsersRepository
 import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.util.Locale
 
 class UserFixtures(
     val generateId: MockGenerateId = MockGenerateId(),
@@ -36,6 +38,7 @@ class UserFixtures(
         users = users,
         generateId = generateId,
         clock = controlledClock,
+        platformEventPublisher = spyEventPublisher,
     )
 
     fun givenAUserInitializedEvent(
@@ -46,11 +49,10 @@ class UserFixtures(
         sequenceId = SequenceId(),
         date = OffsetDateTime.now(controlledClock),
         author = author,
-        email = faker.randomProvider.randomClassInstance {
-            typeGenerator<String> { faker.internet.safeEmail() }
-        },
-        password = EncodedPassword.from(Password("F@kePa$\$w0rD")) { it },
+        email = VALID_EMAIL,
+        password = VALID_PASSWORD,
         roles = Roles(setOf(Roles.Role.ROLE_REGISTRATION_IN_PROGRESS)),
+        preferredLocale = Locale.FRANCE,
     )
 
     fun givenAUser(
@@ -61,7 +63,7 @@ class UserFixtures(
             email = faker.randomProvider.randomClassInstance {
                 typeGenerator<String> { faker.internet.safeEmail() }
             },
-            password = EncodedPassword.from(Password("F@kePa$\$w0rD")) { it },
+            password = VALID_PASSWORD,
             roles = roles,
             lastConnection = null,
             profile = ProfileInformation(
@@ -75,9 +77,15 @@ class UserFixtures(
                     typeGenerator<LocalDate> { faker.person.birthDate(faker.random.nextLong(25)) }
                 },
             ),
+            status = UserStatus.ACTIVE,
         )
 
     companion object {
+        val VALID_EMAIL = faker.randomProvider.randomClassInstance<Email> {
+            typeGenerator<String> { faker.internet.safeEmail() }
+        }
+        val VALID_PASSWORD = EncodedPassword.from(Password("F@kePa\$\$w0rD")) { it }
+
         fun givenANotCompletedUser(
             id: UserId? = null,
             email: Email? = null,

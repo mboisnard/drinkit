@@ -5,6 +5,7 @@ import com.drinkit.event.sourcing.DomainEvent
 import com.drinkit.event.sourcing.History
 import com.drinkit.event.sourcing.SequenceId
 import java.time.OffsetDateTime
+import java.util.Locale
 
 typealias UserHistory = History<UserEvent, UserInitialized>
 
@@ -22,4 +23,13 @@ data class UserInitialized(
     val email: Email,
     val password: EncodedPassword,
     val roles: Roles,
+    val preferredLocale: Locale,
+) : UserEvent
+
+data class ProfileCompleted(
+    override val userId: UserId,
+    override val date: OffsetDateTime,
+    override val author: Author.Connected,
+    override val sequenceId: SequenceId,
+    val profile: ProfileInformation,
 ) : UserEvent

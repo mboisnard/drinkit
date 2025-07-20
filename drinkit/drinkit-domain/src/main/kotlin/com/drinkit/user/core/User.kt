@@ -3,6 +3,7 @@ package com.drinkit.user.core
 import com.drinkit.documentation.cqrs.Query
 import com.drinkit.documentation.event.sourcing.Projection
 import com.drinkit.event.sourcing.EventsReducer
+import com.drinkit.user.core.Roles.Role.ROLE_USER
 import com.drinkit.user.core.UserStatus.PROFILE_COMPLETION_REQUIRED
 import java.time.LocalDateTime
 
@@ -18,11 +19,17 @@ data class User(
     val status: UserStatus,
 ) {
 
+    private fun apply(event: ProfileCompleted) = this.copy(
+        profile = event.profile,
+        status = UserStatus.ACTIVE,
+        roles = Roles(setOf(ROLE_USER))
+    )
+
     companion object {
         fun from(history: UserHistory): User {
             val reducer = EventsReducer<User, UserEvent, UserInitialized>(
-                    factory = User::applyInitialization
-            )
+                factory = User::applyInitialization
+            ).register<ProfileCompleted>(User::apply)
 
             return reducer.reduce(history.initEvent, history.remainingEvents)
         }
