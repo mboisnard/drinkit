@@ -147,7 +147,7 @@ class JooqPostgresExtension : BeforeAllCallback, AfterEachCallback, AfterAllCall
             .map { it.getAnnotation(JooqIntegrationTest::class.java) }
             .filter { Objects.nonNull(it) }
             .filter { it.schemas.isNotEmpty() }
-            .orNull() ?: return
+            .orNull ?: return
 
         val queries = annotationClass.schemas
             .asSequence()

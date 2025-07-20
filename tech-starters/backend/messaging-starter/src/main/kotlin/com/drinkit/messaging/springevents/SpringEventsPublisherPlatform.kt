@@ -13,7 +13,7 @@ internal class SpringEventsPublisherPlatform(
 
     private val logger = KotlinLogging.logger { }
 
-    override fun <EventType : PlatformEvent<*>> publish(event: EventType): EventType {
+    override fun <EventType : PlatformEvent<EventType>> publish(event: EventType): EventType {
         logger.debug { "Publishing event $event" }
 
         applicationEventPublisher.publishEvent(event)

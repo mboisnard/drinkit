@@ -6,7 +6,7 @@ class SpyPlatformEventPublisher : PlatformEventPublisher {
 
     private val publishedPlatformEvents = mutableListOf<PlatformEvent<*>>()
 
-    override fun <EventType : PlatformEvent<*>> publish(event: EventType): EventType {
+    override fun <EventType : PlatformEvent<EventType>> publish(event: EventType): EventType {
         publishedPlatformEvents += event
         return event
     }
