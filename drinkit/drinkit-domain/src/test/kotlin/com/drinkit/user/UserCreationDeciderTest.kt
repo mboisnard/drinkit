@@ -66,14 +66,14 @@ internal class UserCreationDeciderTest {
         )
 
         // Then
-        decision.shouldBeInstanceOf<EventToPersist>() should {
-            it.event.userId shouldBe newUserId
-            it.event.sequenceId shouldBe SequenceId()
-            it.event.date shouldBe date
-            it.event.author shouldBe command.author
-            it.event.email shouldBe command.email
-            it.event.password shouldBe command.password
-            it.event.roles shouldBe Roles(setOf(ROLE_REGISTRATION_IN_PROGRESS))
+        decision.shouldBeInstanceOf<EventToPersist>().event should {
+            it.userId shouldBe newUserId
+            it.sequenceId shouldBe SequenceId()
+            it.date shouldBe date
+            it.author shouldBe command.author
+            it.email shouldBe command.email
+            it.password shouldBe command.password
+            it.roles shouldBe Roles(setOf(ROLE_REGISTRATION_IN_PROGRESS))
         }
     }
 }

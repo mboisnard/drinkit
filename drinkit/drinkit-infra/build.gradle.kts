@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":mail-starter"))
 
     testImplementation(testFixtures(project(":drinkit-domain")))
+    testImplementation(testFixtures(project(":messaging-starter")))
     testImplementation(testFixtures(project(":postgresql-starter")))
 }
 
