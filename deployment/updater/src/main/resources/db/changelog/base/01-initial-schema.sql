@@ -25,19 +25,19 @@ CREATE INDEX IF NOT EXISTS cellar_owner_id_idx
 
 CREATE TABLE IF NOT EXISTS drinkit_application.user
 (
-    id             VARCHAR(24)  NOT NULL PRIMARY KEY,
+    id             VARCHAR(24)              NOT NULL PRIMARY KEY,
     firstname      VARCHAR(100),
     lastname       VARCHAR(100),
     birthdate      DATE,
-    email          VARCHAR(255) NOT NULL,
-    password       VARCHAR(100) NOT NULL,
-    lastConnection TIMESTAMP,
-    status         VARCHAR(50)  NOT NULL,
-    completed      BOOLEAN      NOT NULL,
-    enabled        BOOLEAN      NOT NULL,
-    roles          VARCHAR(20) ARRAY,
-    modified       TIMESTAMP    NOT NULL,
-    CONSTRAINT roles_check CHECK (roles::VARCHAR[] && ARRAY['ROLE_ADMIN'::VARCHAR, 'ROLE_USER'::VARCHAR])
+    email          VARCHAR(255)             NOT NULL,
+    password       VARCHAR(100)             NOT NULL,
+    lastConnection TIMESTAMP WITH TIME ZONE,
+    status         VARCHAR(50)              NOT NULL,
+    completed      BOOLEAN                  NOT NULL,
+    enabled        BOOLEAN                  NOT NULL,
+    roles          VARCHAR(50) ARRAY,
+    modified       TIMESTAMP WITH TIME ZONE NOT NULL,
+    CONSTRAINT roles_check CHECK (roles::VARCHAR[] && ARRAY['ROLE_ADMIN'::VARCHAR, 'ROLE_USER'::VARCHAR, 'ROLE_REGISTRATION_IN_PROGRESS'::VARCHAR])
 );
 
 CREATE INDEX IF NOT EXISTS user_email_idx
@@ -53,9 +53,9 @@ CREATE INDEX IF NOT EXISTS user_enabled_idx
 
 CREATE TABLE IF NOT EXISTS drinkit_application.verification_token
 (
-    user_id     VARCHAR(24)  NOT NULL PRIMARY KEY,
-    token       VARCHAR(100) NOT NULL,
-    expiry_date TIMESTAMP    NOT NULL,
+    user_id     VARCHAR(24)                 NOT NULL PRIMARY KEY,
+    token       VARCHAR(100)                NOT NULL,
+    expiry_date TIMESTAMP WITH TIME ZONE    NOT NULL,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES drinkit_application.user (id) ON DELETE CASCADE
 );
 

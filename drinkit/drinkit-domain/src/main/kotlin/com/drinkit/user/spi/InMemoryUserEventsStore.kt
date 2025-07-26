@@ -4,11 +4,11 @@ import com.drinkit.user.core.User
 import com.drinkit.user.core.UserEvent
 import com.drinkit.user.core.UserHistory
 import com.drinkit.user.core.UserId
-import com.drinkit.user.core.UserInitialized
+import com.drinkit.user.core.Initialized
 import org.springframework.stereotype.Repository
 import kotlin.collections.set
 
-// Should be in testFixtures after implementing the Jooq Repository
+// TODO Should be in testFixtures after implementing the Jooq Repository
 @Repository
 class InMemoryUserEventsStore(
     private val users: Users,
@@ -24,7 +24,7 @@ class InMemoryUserEventsStore(
     override fun save(event: UserEvent): User {
         val userId = event.userId
 
-        if (eventsStore[userId] == null && event is UserInitialized) {
+        if (eventsStore[userId] == null && event is Initialized) {
             eventsStore[userId] = UserHistory(event)
         } else {
             eventsStore.computeIfPresent(userId) { _, history ->

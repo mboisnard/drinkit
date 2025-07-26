@@ -19,7 +19,7 @@ abstract class UserEventsTestContract {
     @Test
     fun `should save a user history starting by an initialized event`() {
         // Given
-        val userInitialized = userFixtures.givenAUserInitializedEvent()
+        val userInitialized = userFixtures.givenAUserHistory().initEvent
 
         // When
         userEvents.save(userInitialized)

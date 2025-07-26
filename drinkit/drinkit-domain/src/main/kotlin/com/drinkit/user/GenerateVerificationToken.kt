@@ -1,16 +1,11 @@
-package com.drinkit.user.registration
+package com.drinkit.user
 
 import com.drinkit.user.core.UserId
+import com.drinkit.user.core.VerificationToken
 import org.springframework.stereotype.Component
 import java.time.Clock
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import kotlin.random.Random
-
-data class VerificationToken(
-    val userId: UserId,
-    val token: String,
-    val expiryDate: LocalDateTime,
-)
 
 @Component
 class GenerateVerificationToken(
@@ -19,12 +14,13 @@ class GenerateVerificationToken(
 ) {
     companion object {
         private const val TOKEN_VALIDITY_IN_HOURS = 24
+        private const val TOKEN_LENGTH = 6
     }
 
-    operator fun invoke(userId: UserId): VerificationToken {
+    fun invoke(userId: UserId): VerificationToken {
         return VerificationToken(
             userId = userId,
-            token = generateRandomString(length = 6),
+            value = generateRandomString(TOKEN_LENGTH),
             expiryDate = calculateExpirationFromNow(),
         )
     }
@@ -37,6 +33,6 @@ class GenerateVerificationToken(
             .joinToString("")
     }
 
-    private fun calculateExpirationFromNow(): LocalDateTime =
-        LocalDateTime.now(clock).plusHours(TOKEN_VALIDITY_IN_HOURS.toLong())
+    private fun calculateExpirationFromNow(): OffsetDateTime =
+        OffsetDateTime.now(clock).plusHours(TOKEN_VALIDITY_IN_HOURS.toLong())
 }

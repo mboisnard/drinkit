@@ -1,6 +1,7 @@
-package com.drinkit.user.registration
+package com.drinkit.user.spi
 
 import com.drinkit.user.core.UserId
+import com.drinkit.user.core.VerificationToken
 
 class InMemoryVerificationTokens : VerificationTokens {
 
@@ -13,7 +14,7 @@ class InMemoryVerificationTokens : VerificationTokens {
 
     override fun findBy(userId: UserId, token: String): VerificationToken? =
         verificationTokens[userId]
-            ?.takeIf { it.token == token }
+            ?.takeIf { it.value == token }
 
     override fun deleteBy(userId: UserId): Int {
         val oldValue = verificationTokens.remove(userId)

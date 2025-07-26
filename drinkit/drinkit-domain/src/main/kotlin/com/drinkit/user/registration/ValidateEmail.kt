@@ -4,12 +4,14 @@ import com.drinkit.common.MessageContent
 import com.drinkit.common.MessageSender
 import com.drinkit.common.Recipient
 import com.drinkit.common.SendMessageCommand
+import com.drinkit.user.GenerateVerificationToken
 import com.drinkit.user.core.UserId
+import com.drinkit.user.spi.VerificationTokens
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.Locale
 
 @Service
@@ -30,7 +32,7 @@ class ValidateEmail(
         val notCompletedUser = notCompletedUsers.findById(userId)
             ?: throw IllegalArgumentException("User not found")
 
-        val token = generateVerificationToken(notCompletedUser.id)
+        val token = generateVerificationToken.invoke(notCompletedUser.id)
 
         verificationTokens.createOrUpdate(token)
 
@@ -38,7 +40,7 @@ class ValidateEmail(
             SendMessageCommand(
                 content = MessageContent(
                     title = "Verification code",
-                    content = token.token,
+                    content = token.value,
                 ),
                 locale = locale,
                 recipient = Recipient(notCompletedUser.email.value)
@@ -56,7 +58,7 @@ class ValidateEmail(
         val verificationToken = verificationTokens.findBy(notCompletedUser.id, token)
             ?: throw IllegalArgumentException("Token not found")
 
-        val tokenIsValid = verificationToken.expiryDate.isAfter(LocalDateTime.now(clock))
+        val tokenIsValid = verificationToken.expiryDate.isAfter(OffsetDateTime.now(clock))
 
         if (tokenIsValid) {
             notCompletedUsers.update(

@@ -14,7 +14,7 @@ import com.drinkit.generated.jooq.tables.VerificationToken.VerificationTokenPath
 import com.drinkit.generated.jooq.tables.records.UserRecord
 
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 import kotlin.collections.Collection
 import kotlin.collections.List
@@ -114,7 +114,7 @@ open class User(
     /**
      * The column <code>drinkit_application.user.lastconnection</code>.
      */
-    val LASTCONNECTION: TableField<UserRecord, LocalDateTime?> = createField(DSL.name("lastconnection"), SQLDataType.LOCALDATETIME(6), this, "")
+    val LASTCONNECTION: TableField<UserRecord, OffsetDateTime?> = createField(DSL.name("lastconnection"), SQLDataType.TIMESTAMPWITHTIMEZONE(6), this, "")
 
     /**
      * The column <code>drinkit_application.user.status</code>.
@@ -134,12 +134,12 @@ open class User(
     /**
      * The column <code>drinkit_application.user.roles</code>.
      */
-    val ROLES: TableField<UserRecord, Array<String?>?> = createField(DSL.name("roles"), SQLDataType.VARCHAR(20).array(), this, "")
+    val ROLES: TableField<UserRecord, Array<String?>?> = createField(DSL.name("roles"), SQLDataType.VARCHAR(50).array(), this, "")
 
     /**
      * The column <code>drinkit_application.user.modified</code>.
      */
-    val MODIFIED: TableField<UserRecord, LocalDateTime?> = createField(DSL.name("modified"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "")
+    val MODIFIED: TableField<UserRecord, OffsetDateTime?> = createField(DSL.name("modified"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
     private constructor(alias: Name, aliased: Table<UserRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<UserRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -192,7 +192,7 @@ open class User(
     val verificationToken: VerificationTokenPath
         get(): VerificationTokenPath = verificationToken()
     override fun getChecks(): List<Check<UserRecord>> = listOf(
-        Internal.createCheck(this, DSL.name("roles_check"), "(((roles)::character varying[] && ARRAY['ROLE_ADMIN'::character varying, 'ROLE_USER'::character varying]))", true)
+        Internal.createCheck(this, DSL.name("roles_check"), "(((roles)::character varying[] && ARRAY['ROLE_ADMIN'::character varying, 'ROLE_USER'::character varying, 'ROLE_REGISTRATION_IN_PROGRESS'::character varying]))", true)
     )
     override fun `as`(alias: String): User = User(DSL.name(alias), this)
     override fun `as`(alias: Name): User = User(alias, this)

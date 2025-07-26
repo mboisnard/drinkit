@@ -5,7 +5,7 @@ import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
 import org.springframework.stereotype.Repository
 
-// Should be in testFixtures after implementing the Jooq Repository
+// TODO Should be in testFixtures after implementing the Jooq Repository
 @Repository
 class InMemoryUsersRepository: Users {
 
@@ -19,4 +19,6 @@ class InMemoryUsersRepository: Users {
     override fun findBy(userId: UserId): User? = users[userId]
 
     override fun exists(email: Email): Boolean = users.values.any { it.email == email }
+
+    fun count(): Int = users.size
 }

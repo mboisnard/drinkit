@@ -6,7 +6,7 @@ package com.drinkit.generated.jooq.tables.records
 
 import com.drinkit.generated.jooq.tables.VerificationToken
 
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 import org.jooq.Record1
 import org.jooq.impl.UpdatableRecordImpl
@@ -26,9 +26,9 @@ open class VerificationTokenRecord private constructor() : UpdatableRecordImpl<V
         set(value): Unit = set(1, value)
         get(): String = get(1) as String
 
-    open var expiryDate: LocalDateTime
+    open var expiryDate: OffsetDateTime
         set(value): Unit = set(2, value)
-        get(): LocalDateTime = get(2) as LocalDateTime
+        get(): OffsetDateTime = get(2) as OffsetDateTime
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -39,7 +39,7 @@ open class VerificationTokenRecord private constructor() : UpdatableRecordImpl<V
     /**
      * Create a detached, initialised VerificationTokenRecord
      */
-    constructor(userId: String, token: String, expiryDate: LocalDateTime): this() {
+    constructor(userId: String, token: String, expiryDate: OffsetDateTime): this() {
         this.userId = userId
         this.token = token
         this.expiryDate = expiryDate

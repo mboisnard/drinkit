@@ -7,6 +7,7 @@ import com.drinkit.user.core.LastName
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.UserId
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 interface CompletedUsers {
 
@@ -20,7 +21,7 @@ data class CompletedUser(
     val lastName: LastName,
     val birthDate: BirthDate?,
 
-    val lastConnection: LocalDateTime?,
+    val lastConnection: OffsetDateTime?,
     val roles: Roles,
     val enabled: Boolean,
 ) : User {

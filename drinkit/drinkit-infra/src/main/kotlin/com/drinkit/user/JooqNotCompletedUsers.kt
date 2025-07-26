@@ -15,6 +15,7 @@ import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.time.Clock
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Repository
 internal class JooqNotCompletedUsers(
@@ -47,7 +48,7 @@ internal class JooqNotCompletedUsers(
             .set(USER.STATUS, user.status)
             .set(USER.COMPLETED, false)
             .set(USER.ENABLED, user.enabled)
-            .set(USER.MODIFIED, LocalDateTime.now(clock))
+            .set(USER.MODIFIED, OffsetDateTime.now(clock))
             .onConflict(USER.ID)
             .doNothing()
 
@@ -64,7 +65,7 @@ internal class JooqNotCompletedUsers(
             .set(USER.STATUS, user.status)
             .set(USER.COMPLETED, user.completed)
             .set(USER.ROLES, user.roles?.allAsString()?.toTypedArray())
-            .set(USER.MODIFIED, LocalDateTime.now(clock))
+            .set(USER.MODIFIED, OffsetDateTime.now(clock))
             .where(
                 USER.ID.eq(user.id.value)
                     .and(USER.COMPLETED.eq(false))

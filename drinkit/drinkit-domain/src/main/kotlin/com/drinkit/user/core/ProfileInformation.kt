@@ -51,7 +51,7 @@ data class LastName(
         )
         addIfNotMatch(
             value.hasLengthBetween(MIN_LASTNAME_LENGTH, MAX_LASTNAME_LENGTH),
-            "FirstName should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH, $value"
+            "LastName should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH, $value"
         )
     }
 }

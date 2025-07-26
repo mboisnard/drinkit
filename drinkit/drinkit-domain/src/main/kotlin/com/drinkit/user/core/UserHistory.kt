@@ -7,7 +7,7 @@ import com.drinkit.event.sourcing.SequenceId
 import java.time.OffsetDateTime
 import java.util.Locale
 
-typealias UserHistory = History<UserEvent, UserInitialized>
+typealias UserHistory = History<UserEvent, Initialized>
 
 sealed interface UserEvent : DomainEvent {
     val userId: UserId
@@ -15,7 +15,7 @@ sealed interface UserEvent : DomainEvent {
     val author: Author
 }
 
-data class UserInitialized(
+data class Initialized(
     override val userId: UserId,
     override val sequenceId: SequenceId,
     override val date: OffsetDateTime,
@@ -32,4 +32,25 @@ data class ProfileCompleted(
     override val author: Author.Connected,
     override val sequenceId: SequenceId,
     val profile: ProfileInformation,
+) : UserEvent
+
+data class Verified(
+    override val userId: UserId,
+    override val date: OffsetDateTime,
+    override val author: Author.Connected,
+    override val sequenceId: SequenceId,
+) : UserEvent
+
+data class PromotedAsAdmin(
+    override val userId: UserId,
+    override val date: OffsetDateTime,
+    override val author: Author.Connected,
+    override val sequenceId: SequenceId,
+) : UserEvent
+
+data class Deleted(
+    override val userId: UserId,
+    override val date: OffsetDateTime,
+    override val author: Author.Connected,
+    override val sequenceId: SequenceId,
 ) : UserEvent

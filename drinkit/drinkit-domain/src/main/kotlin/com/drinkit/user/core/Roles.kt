@@ -13,5 +13,9 @@ data class Roles(
         }
     }
 
+    operator fun plus(role: Role) = Roles(values + role)
+
+    fun contains(role: Role) = values.contains(role)
+
     fun allAsString() = values.map { it.name }.toSet()
 }

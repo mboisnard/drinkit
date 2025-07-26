@@ -1,6 +1,7 @@
-package com.drinkit.user.registration
+package com.drinkit.user.spi
 
 import com.drinkit.user.core.UserId
+import com.drinkit.user.core.VerificationToken
 
 interface VerificationTokens {
 

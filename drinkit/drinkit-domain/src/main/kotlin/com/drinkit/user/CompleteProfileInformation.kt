@@ -7,8 +7,8 @@ import com.drinkit.documentation.event.sourcing.Aggregate
 import com.drinkit.documentation.fcis.FunctionalCore
 import com.drinkit.documentation.fcis.ImperativeShell
 import com.drinkit.user.CompleteProfileInformation.Result.Forbidden
-import com.drinkit.user.CompleteProfileInformation.Result.ProfileValidationFailed
 import com.drinkit.user.CompleteProfileInformation.Result.Success
+import com.drinkit.user.CompleteProfileInformation.Result.UserNotFound
 import com.drinkit.user.ProfileCompletionDecider.Decision.AlreadyCompleted
 import com.drinkit.user.ProfileCompletionDecider.Decision.EventToPersist
 import com.drinkit.user.ProfileCompletionDecider.Decision.Unauthorized
@@ -20,7 +20,9 @@ import com.drinkit.user.core.UserDecision
 import com.drinkit.user.core.UserId
 import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.Users
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.OffsetDateTime
 
@@ -30,6 +32,7 @@ data class CompleteProfileInformationCommand(
     val profileInformation: ProfileInformation,
 )
 
+@Transactional // TODO nested Transactional
 @Service
 @Usecase @ImperativeShell
 class CompleteProfileInformation(
@@ -39,46 +42,48 @@ class CompleteProfileInformation(
 ) {
     sealed interface Result {
         data class Success(val user: User) : Result
-        data class ProfileValidationFailed(val errors: List<String>) : Result
         object UserNotFound : Result
         object Forbidden : Result
     }
 
+    private val logger = KotlinLogging.logger {}
+
     fun invoke(userId: UserId, command: CompleteProfileInformationCommand): Result {
+        logger.debug { "Completing profile information for user $userId with command $command" }
+
         val decision = userEvents.findAllBy(userId)
             ?.let {
                 ProfileCompletionDecider.invoke(
-                    date = OffsetDateTime.now(clock),
                     decision = UserDecision.from(it),
-                    command = command
+                    command = command,
+                    date = OffsetDateTime.now(clock)
                 )
             }
-            ?: return Result.UserNotFound
+            ?: return UserNotFound
 
         return when (decision) {
             is EventToPersist -> Success(userEvents.save(decision.event))
-            is ValidationFailed -> ProfileValidationFailed(decision.errors)
             AlreadyCompleted -> Success(users.findBy(userId)!!)
+            is ValidationFailed -> throw IllegalStateException("Validation failed: ${decision.errors}")
             Unauthorized -> Forbidden
         }
     }
 }
 
-@Aggregate
-@FunctionalCore
+@Aggregate @FunctionalCore
 internal object ProfileCompletionDecider {
 
     sealed interface Decision {
         data class EventToPersist(val event: ProfileCompleted) : Decision
-        data class ValidationFailed(val errors: List<String>) : Decision
         object AlreadyCompleted : Decision
+        data class ValidationFailed(val errors: List<String>) : Decision
         object Unauthorized : Decision
     }
 
     fun invoke(
-        date: OffsetDateTime,
         decision: UserDecision,
         command: CompleteProfileInformationCommand,
+        date: OffsetDateTime,
     ): Decision {
         if (!decision.canEdit(command.author)) {
             return Unauthorized

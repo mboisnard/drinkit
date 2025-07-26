@@ -4,8 +4,8 @@ import com.drinkit.generated.jooq.tables.records.VerificationTokenRecord
 import com.drinkit.generated.jooq.tables.references.VERIFICATION_TOKEN
 import com.drinkit.jooq.allFields
 import com.drinkit.user.core.UserId
-import com.drinkit.user.registration.VerificationToken
-import com.drinkit.user.registration.VerificationTokens
+import com.drinkit.user.core.VerificationToken
+import com.drinkit.user.spi.VerificationTokens
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 
@@ -17,11 +17,11 @@ internal class JooqVerificationTokens(
     override fun createOrUpdate(verificationToken: VerificationToken): VerificationToken? {
         val query = dslContext.insertInto(VERIFICATION_TOKEN)
             .set(VERIFICATION_TOKEN.USER_ID, verificationToken.userId.value)
-            .set(VERIFICATION_TOKEN.TOKEN, verificationToken.token)
+            .set(VERIFICATION_TOKEN.TOKEN, verificationToken.value)
             .set(VERIFICATION_TOKEN.EXPIRY_DATE, verificationToken.expiryDate)
             .onConflict(VERIFICATION_TOKEN.USER_ID)
             .doUpdate()
-            .set(VERIFICATION_TOKEN.TOKEN, verificationToken.token)
+            .set(VERIFICATION_TOKEN.TOKEN, verificationToken.value)
             .set(VERIFICATION_TOKEN.EXPIRY_DATE, verificationToken.expiryDate)
 
         val insertedRowCount = query.execute()
@@ -51,7 +51,7 @@ internal class JooqVerificationTokens(
     private fun VerificationTokenRecord.toDomain(): VerificationToken =
         VerificationToken(
             userId = UserId(userId),
-            token = token,
+            value = token,
             expiryDate = expiryDate,
         )
 }

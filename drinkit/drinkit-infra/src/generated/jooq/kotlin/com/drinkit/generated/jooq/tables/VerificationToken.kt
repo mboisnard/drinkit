@@ -11,7 +11,7 @@ import com.drinkit.generated.jooq.keys.VERIFICATION_TOKEN__FK_USER
 import com.drinkit.generated.jooq.tables.User.UserPath
 import com.drinkit.generated.jooq.tables.records.VerificationTokenRecord
 
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 import kotlin.collections.Collection
 import kotlin.collections.List
@@ -92,7 +92,7 @@ open class VerificationToken(
      * The column
      * <code>drinkit_application.verification_token.expiry_date</code>.
      */
-    val EXPIRY_DATE: TableField<VerificationTokenRecord, LocalDateTime?> = createField(DSL.name("expiry_date"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "")
+    val EXPIRY_DATE: TableField<VerificationTokenRecord, OffsetDateTime?> = createField(DSL.name("expiry_date"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
     private constructor(alias: Name, aliased: Table<VerificationTokenRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<VerificationTokenRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)

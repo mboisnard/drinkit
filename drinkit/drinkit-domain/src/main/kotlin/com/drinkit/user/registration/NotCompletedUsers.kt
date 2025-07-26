@@ -8,6 +8,7 @@ import com.drinkit.user.core.LastName
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.UserId
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 interface NotCompletedUsers {
 
@@ -29,7 +30,7 @@ data class NotCompletedUser(
     val lastName: LastName? = null,
     val birthDate: BirthDate? = null,
 
-    val lastConnection: LocalDateTime? = null,
+    val lastConnection: OffsetDateTime? = null,
     val roles: Roles? = null,
     val status: String,
     val completed: Boolean,
