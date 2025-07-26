@@ -55,6 +55,7 @@ export default defineConfig({
                 collapsed: false,
                 base: '/engineering/guidelines/best-practices/',
                 items: [
+                  {text: 'Software Craftsmanship Manifesto', link: 'craft-manifesto'},
                   {text: 'SOLID', link: 'solid'},
                   {text: 'Strong Type', link: 'strong-type'},
                   {text: 'Scout Rule', link: 'scout-rule'},
