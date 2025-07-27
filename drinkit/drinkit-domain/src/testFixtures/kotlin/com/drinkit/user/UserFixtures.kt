@@ -17,7 +17,6 @@ import com.drinkit.user.core.Initialized
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.UserHistory
 import com.drinkit.user.spi.InMemoryVerificationTokens
-import com.drinkit.user.registration.NotCompletedUser
 import com.drinkit.user.spi.InMemoryUserEventsStore
 import com.drinkit.user.spi.InMemoryUsersRepository
 import java.time.LocalDate
@@ -134,32 +133,5 @@ class UserFixtures(
                 typeGenerator<LocalDate> { faker.person.birthDate(faker.random.nextLong(25)) }
             }
         )
-
-        fun givenANotCompletedUser(
-            id: UserId? = null,
-            email: Email? = null,
-            status: String = "USER_CREATED"
-        ): NotCompletedUser =
-            NotCompletedUser(
-                id = id ?: faker.randomProvider.randomClassInstance {
-                    typeGenerator<String> { "659ee3164b1d53340c4f7608" }
-                },
-                email = email ?: faker.randomProvider.randomClassInstance {
-                    typeGenerator<String> { faker.internet.safeEmail() }
-                },
-                password = EncodedPassword.from(Password("F@kePa$\$w0rD"), encoder = { it }),
-                firstName = faker.randomProvider.randomClassInstance {
-                    typeGenerator<String> { faker.name.firstName() }
-                },
-                lastName = faker.randomProvider.randomClassInstance {
-                    typeGenerator<String> { faker.name.lastName() }
-                },
-                birthDate = faker.randomProvider.randomClassInstance {
-                    typeGenerator<LocalDate> { faker.person.birthDate(faker.random.nextLong(25)) }
-                },
-                status = status,
-                completed = false,
-                enabled = true,
-            )
     }
 }

@@ -13,8 +13,8 @@ class DuplicateSequenceException(override val message: String, override val caus
 /**
  * Composite annotation that ensures reliable event saving in a concurrent context.
  *
- * It combines a nested transaction with a {@code @Retryable} mechanism
- * to handle {@code DuplicateSequenceException} failures.
+ * It combines a nested transaction with a [Retryable] mechanism
+ * to handle [DuplicateSequenceException] failures.
  *
  * The NESTED propagation is crucial: it creates a savepoint that isolates the failure,
  * allowing the retry to execute without rolling back the main transaction.

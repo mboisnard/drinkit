@@ -6,7 +6,7 @@ import com.drinkit.common.Constants.MAX_CELLAR_NAME_LENGTH
 import com.drinkit.common.Constants.MAX_CELLAR_ROOM_LENGTH
 import com.drinkit.common.IdGenerator
 import com.drinkit.common.isId
-import com.drinkit.user.registration.CompletedUser
+import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
 import com.drinkit.utils.doesntContainsInvisibleCharacters
 import com.drinkit.utils.hasLengthBetween
@@ -71,6 +71,6 @@ data class Cellar(
     val owner: UserId,
 ) {
 
-    fun canBeSeenBy(user: CompletedUser): Boolean =
-        user.id == owner || user.isAdmin
+    fun canBeSeenBy(user: User): Boolean =
+        user.id == owner
 }

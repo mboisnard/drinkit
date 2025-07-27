@@ -2,7 +2,7 @@ package com.drinkit.cellar
 
 import com.drinkit.common.CityLocation
 import com.drinkit.common.IdGenerator
-import com.drinkit.user.registration.CompletedUser
+import com.drinkit.user.core.User
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 data class CreateCellarCommand(
     val name: CellarName,
     val location: CityLocation,
-    val owner: CompletedUser,
+    val owner: User,
 )
 
 @Service

@@ -1,8 +1,7 @@
 package com.drinkit.config
 
 import com.drinkit.security.userdetails.InternalUserDetails
-import com.drinkit.user.registration.CompletedUser
-import com.drinkit.user.registration.CompletedUsers
+import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -10,11 +9,10 @@ import org.springframework.stereotype.Component
 // @Scope("session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 class ConnectedUser(
-    private val completedUsers: CompletedUsers,
 ) {
     // private var user: User? = null
 
-    fun getOrFail(): CompletedUser {
+    fun getOrFail(): User {
         val authentication = SecurityContextHolder.getContext().authentication
 
         if (!authentication.isAuthenticated) {
@@ -29,6 +27,6 @@ class ConnectedUser(
         // if (user == null)
         //    user = userRepository.findById(userId)
 
-        return completedUsers.findById(userId) ?: throw ConnectedUserException("User not found from id $userId")
+        return TODO()
     }
 }

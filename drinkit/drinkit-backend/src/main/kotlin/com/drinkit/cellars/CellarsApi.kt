@@ -14,6 +14,7 @@ import com.drinkit.cellar.CreateCellar
 import com.drinkit.cellar.CreateCellarCommand
 import com.drinkit.cellar.DeleteCellar
 import com.drinkit.cellar.FindCellars
+import com.drinkit.config.AbstractApi
 import com.drinkit.config.ConnectedUser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,7 +28,7 @@ internal class CellarsApi(
     private val deleteCellar: DeleteCellar,
     private val findCellars: FindCellars,
     private val connectedUser: ConnectedUser,
-) : CellarsApiDelegate {
+) : CellarsApiDelegate, AbstractApi() {
 
     override fun createCellar(createCellarRequest: CreateCellarRequest): ResponseEntity<CellarId> {
         val command = createCellarRequest.toCommand()
@@ -44,7 +45,7 @@ internal class CellarsApi(
     }
 
     override fun findCellars(): ResponseEntity<CellarsResponse> {
-        val cellars = findCellars.byOwnerId(connectedUser().id)
+        val cellars = findCellars.byOwnerId(connectedUserIdOrFail())
             .map { it.toResponse() }
             .toList()
 
