@@ -6,6 +6,7 @@ import com.drinkit.documentation.cqrs.Command
 import com.drinkit.documentation.event.sourcing.Aggregate
 import com.drinkit.documentation.fcis.FunctionalCore
 import com.drinkit.documentation.fcis.ImperativeShell
+import com.drinkit.event.sourcing.transaction.RetryableTransactional
 import com.drinkit.user.CompleteProfileInformation.Result.Forbidden
 import com.drinkit.user.CompleteProfileInformation.Result.Success
 import com.drinkit.user.CompleteProfileInformation.Result.UserNotFound
@@ -32,8 +33,8 @@ data class CompleteProfileInformationCommand(
     val profileInformation: ProfileInformation,
 )
 
-@Transactional // TODO nested Transactional
 @Service
+@RetryableTransactional
 @Usecase @ImperativeShell
 class CompleteProfileInformation(
     private val userEvents: UserEvents,

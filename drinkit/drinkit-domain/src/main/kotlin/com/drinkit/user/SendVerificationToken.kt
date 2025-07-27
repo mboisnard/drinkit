@@ -10,6 +10,7 @@ import com.drinkit.documentation.cqrs.Command
 import com.drinkit.documentation.event.sourcing.Aggregate
 import com.drinkit.documentation.fcis.FunctionalCore
 import com.drinkit.documentation.fcis.ImperativeShell
+import com.drinkit.event.sourcing.transaction.RetryableTransactional
 import com.drinkit.user.SendVerificationToken.Result.Forbidden
 import com.drinkit.user.SendVerificationToken.Result.Success
 import com.drinkit.user.SendVerificationToken.Result.UserNotFound
@@ -24,7 +25,6 @@ import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.VerificationTokens
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.util.Locale
 
 @Command
@@ -33,8 +33,8 @@ data class SendVerificationTokenCommand(
     val locale: Locale,
 )
 
-@Transactional
 @Service
+@RetryableTransactional
 @Usecase @ImperativeShell
 class SendVerificationToken(
     private val userEvents: UserEvents,

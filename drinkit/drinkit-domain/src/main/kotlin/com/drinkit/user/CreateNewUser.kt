@@ -37,8 +37,8 @@ data class CreateNewUserCommand(
     val locale: Locale,
 )
 
-@Transactional // TODO nested Transactional
 @Service
+@Transactional
 @Usecase @ImperativeShell
 class CreateNewUser(
     private val userEvents: UserEvents,

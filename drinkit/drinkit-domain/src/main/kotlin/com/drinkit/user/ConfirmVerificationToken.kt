@@ -5,6 +5,7 @@ import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.cqrs.Command
 import com.drinkit.documentation.fcis.FunctionalCore
 import com.drinkit.documentation.fcis.ImperativeShell
+import com.drinkit.event.sourcing.transaction.RetryableTransactional
 import com.drinkit.user.ConfirmVerificationToken.Result.Forbidden
 import com.drinkit.user.ConfirmVerificationToken.Result.NotFound
 import com.drinkit.user.ConfirmVerificationToken.Result.Success
@@ -23,7 +24,6 @@ import com.drinkit.user.spi.Users
 import com.drinkit.user.spi.VerificationTokens
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.OffsetDateTime
 
@@ -33,8 +33,8 @@ data class ConfirmVerificationTokenCommand(
     val token: String,
 )
 
-@Transactional // TODO nested Transactional
 @Service
+@RetryableTransactional
 @Usecase @ImperativeShell
 class ConfirmVerificationToken(
     private val userEvents: UserEvents,

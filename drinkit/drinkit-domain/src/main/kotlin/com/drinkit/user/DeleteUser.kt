@@ -6,6 +6,7 @@ import com.drinkit.documentation.cqrs.Command
 import com.drinkit.documentation.event.sourcing.Aggregate
 import com.drinkit.documentation.fcis.FunctionalCore
 import com.drinkit.documentation.fcis.ImperativeShell
+import com.drinkit.event.sourcing.transaction.RetryableTransactional
 import com.drinkit.user.DeleteUser.Result.Forbidden
 import com.drinkit.user.DeleteUser.Result.Success
 import com.drinkit.user.DeleteUser.Result.UserNotFound
@@ -18,7 +19,6 @@ import com.drinkit.user.core.UserId
 import com.drinkit.user.spi.UserEvents
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.OffsetDateTime
 
@@ -27,8 +27,8 @@ data class DeleteUserCommand(
     val author: Author.Connected,
 )
 
-@Transactional // TODO nested Transactional
 @Service
+@RetryableTransactional
 @Usecase @ImperativeShell
 class DeleteUser(
     private val userEvents: UserEvents,
