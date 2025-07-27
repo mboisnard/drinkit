@@ -61,7 +61,7 @@ class CreateNewUser(
             command = command,
             emailFoundInDatabase = users.exists(command.email),
             newUserId = generateId.invoke(UserId::class),
-            date = OffsetDateTime.now(clock)
+            date = OffsetDateTime.now(clock),
         )
 
         return when (decision) {

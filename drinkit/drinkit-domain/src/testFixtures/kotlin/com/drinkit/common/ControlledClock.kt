@@ -1,24 +1,28 @@
 package com.drinkit.common
 
 import java.time.Clock
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 
 class ControlledClock(
     private val delegate: Clock = systemDefaultZone(),
-    var fixedInstant: Instant? = null,
+    private var fixedInstant: Instant? = null,
     var zoneId: ZoneId = delegate.zone,
 ) : Clock() {
 
+    override fun getZone(): ZoneId = zoneId
     override fun instant(): Instant = fixedInstant ?: delegate.instant()
+    override fun withZone(zone: ZoneId): Clock = ControlledClock(delegate, fixedInstant, zone)
 
-    override fun withZone(zone: ZoneId): Clock {
-        if (this.zoneId == zone) {  // intentional NPE
-            return this
-        }
+    fun fix() = apply { fixedInstant = delegate.instant() }
 
-        return ControlledClock(delegate, fixedInstant, zone)
+    fun fix(instant: Instant) = apply { fixedInstant = instant }
+
+    fun add(duration: Duration) = apply {
+        require(fixedInstant != null) { "Clock must be fixed with setFixed() before advancing time." }
+        fixedInstant = fixedInstant?.plus(duration)
     }
 
-    override fun getZone(): ZoneId = zoneId
+    fun reset() = apply { fixedInstant = null }
 }

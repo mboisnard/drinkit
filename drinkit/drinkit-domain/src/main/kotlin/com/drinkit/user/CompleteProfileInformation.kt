@@ -56,7 +56,7 @@ class CompleteProfileInformation(
                 ProfileCompletionDecider.invoke(
                     decision = UserDecision.from(it),
                     command = command,
-                    date = OffsetDateTime.now(clock)
+                    date = OffsetDateTime.now(clock),
                 )
             }
             ?: return UserNotFound
@@ -104,7 +104,7 @@ internal object ProfileCompletionDecider {
                 date = date,
                 author = command.author,
                 sequenceId = decision.nextSequenceId,
-                profile = command.profileInformation
+                profile = command.profileInformation,
             )
         )
     }

@@ -65,7 +65,7 @@ class ConfirmVerificationToken(
                 decision = UserDecision.from(userHistory),
                 command = command,
                 foundToken = verificationToken,
-                date = OffsetDateTime.now(clock)
+                date = OffsetDateTime.now(clock),
             )
         } ?: return NotFound
 

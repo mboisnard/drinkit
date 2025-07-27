@@ -20,4 +20,6 @@ class InMemoryVerificationTokens : VerificationTokens {
         val oldValue = verificationTokens.remove(userId)
         return if (oldValue != null) 1 else 0
     }
+
+    fun count(): Int = verificationTokens.size
 }

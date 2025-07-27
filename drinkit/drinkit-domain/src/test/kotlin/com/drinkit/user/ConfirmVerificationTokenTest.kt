@@ -2,6 +2,7 @@ package com.drinkit.user
 
 import com.drinkit.user.ConfirmVerificationToken.Result.NotFound
 import com.drinkit.user.ConfirmVerificationToken.Result.Success
+import com.drinkit.user.ConfirmVerificationToken.Result.TokenExpired
 import com.drinkit.user.VerificationTokenDecider.Decision.AlreadyVerified
 import com.drinkit.user.VerificationTokenDecider.Decision.EventToPersist
 import com.drinkit.user.VerificationTokenDecider.Decision.Expired
@@ -14,6 +15,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.time.Duration
 import java.util.Locale
 
 internal class ConfirmVerificationTokenTest {
@@ -25,7 +27,7 @@ internal class ConfirmVerificationTokenTest {
     private val verificationTokens = userFixtures.verificationTokens
 
     @Test
-    fun `confirm verification token for an existing user and mark the user as verified`() {
+    fun `confirm verification token for an existing user, mark him as verified and delete used verification token`() {
         // Given
         val user = userFixtures.givenAnInitializedUser()
         val verificationSent = sendVerificationToken.invoke(
@@ -33,6 +35,7 @@ internal class ConfirmVerificationTokenTest {
             command = SendVerificationTokenCommand(user.id.toConnectedAuthor(), Locale.FRANCE),
         )
         verificationSent.shouldBeInstanceOf<SendVerificationToken.Result.Success>()
+        verificationTokens.count() shouldBe 1
 
         val command = ConfirmVerificationTokenCommand(
             author = user.id.toConnectedAuthor(),
@@ -49,6 +52,34 @@ internal class ConfirmVerificationTokenTest {
         userEvents.findAllBy(user.id).shouldNotBeNull() should {
             it.remainingEvents shouldHaveSize 1
         }
+        verificationTokens.count() shouldBe 0
+    }
+
+    @Test
+    fun `delete an expired verification token`() {
+        // Given
+        userFixtures.controlledClock.fix()
+
+        val user = userFixtures.givenAnInitializedUser()
+        val verificationSent = sendVerificationToken.invoke(
+            userId = user.id,
+            command = SendVerificationTokenCommand(user.id.toConnectedAuthor(), Locale.FRANCE),
+        )
+        verificationSent.shouldBeInstanceOf<SendVerificationToken.Result.Success>()
+        verificationTokens.count() shouldBe 1
+
+        val command = ConfirmVerificationTokenCommand(
+            author = user.id.toConnectedAuthor(),
+            token = verificationSent.token.value,
+        )
+
+        // When
+        userFixtures.controlledClock.add(Duration.ofDays(5))
+        val result = confirmVerificationToken.invoke(user.id, command)
+
+        // Then
+        result.shouldBeInstanceOf<TokenExpired>()
+        verificationTokens.count() shouldBe 0
     }
 
     @Test

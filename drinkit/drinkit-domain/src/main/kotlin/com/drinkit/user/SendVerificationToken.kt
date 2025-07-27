@@ -72,7 +72,7 @@ class SendVerificationToken(
                     SendMessageCommand(
                         content = MessageContent("Verification code", token.value),
                         locale = command.locale,
-                        recipient = Recipient(decision.email.value)
+                        recipient = Recipient(decision.email.value),
                     )
                 )
 
