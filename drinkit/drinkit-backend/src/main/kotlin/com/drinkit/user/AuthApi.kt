@@ -17,7 +17,7 @@ internal class AuthApi(
         try {
             authenticationService.authenticate(signInRequest.username, signInRequest.password)
             return ResponseEntity.ok().build()
-        } catch (ex: AuthenticationFailedException) {
+        } catch (_: AuthenticationFailedException) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         }
     }

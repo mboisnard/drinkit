@@ -1,18 +1,24 @@
 package com.drinkit.user.registration
 
+import com.drinkit.common.Author
 import com.drinkit.messaging.PlatformEventHandler
+import com.drinkit.user.SendVerificationToken
+import com.drinkit.user.SendVerificationTokenCommand
 import org.springframework.stereotype.Component
 
 @Component
-class RegistrationHandler(
-    private val validateEmail: ValidateEmail,
+internal class RegistrationHandler(
+    private val sendVerificationToken: SendVerificationToken,
 ) {
 
     @PlatformEventHandler
     fun sendVerificationTokenToTheCreatedUser(event: UserCreated) {
-        validateEmail.sendVerificationTokenToUser(
+        sendVerificationToken.invoke(
             userId = event.userId,
-            locale = event.locale
+            command = SendVerificationTokenCommand(
+                author = Author.Connected(event.userId), // TODO
+                locale = event.locale,
+            )
         )
     }
 }

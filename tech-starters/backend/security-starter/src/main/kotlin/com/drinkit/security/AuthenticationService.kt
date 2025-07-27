@@ -24,8 +24,8 @@ interface AuthenticationService {
 
 @Service
 internal class InternalAuthenticationService(
-    private val request: HttpServletRequest?,
-    private val response: HttpServletResponse?,
+    private val request: HttpServletRequest,
+    private val response: HttpServletResponse,
     private val authenticationManager: AuthenticationManager,
     private val securityContextRepository: SecurityContextRepository,
     private val userDetailsService: InternalUserDetailsService,
@@ -45,7 +45,7 @@ internal class InternalAuthenticationService(
             securityContext.authentication = authentication
 
             securityContextHolderStrategy.context = securityContext
-            securityContextRepository.saveContext(securityContext, request!!, response!!)
+            securityContextRepository.saveContext(securityContext, request, response)
         } catch (ex: AuthenticationException) {
             logger.debug(ex) { "Authentication failed for user $username" }
 
