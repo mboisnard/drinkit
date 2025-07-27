@@ -3,7 +3,7 @@ package com.drinkit.documentation.clean.architecture
 /**
  * Marks a class as a **Use Case**, often called an **Interactor**, which is a core component
  * in a Clean Architecture design.
- * <p>
+ *
  * This annotation signifies that the class encapsulates a specific,
  * self-contained business operation or user-initiated action.
  *
