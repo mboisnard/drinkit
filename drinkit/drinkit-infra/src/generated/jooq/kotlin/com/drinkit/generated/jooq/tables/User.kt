@@ -5,7 +5,6 @@ package com.drinkit.generated.jooq.tables
 
 
 import com.drinkit.generated.jooq.DrinkitApplication
-import com.drinkit.generated.jooq.indexes.USER_COMPLETED_IDX
 import com.drinkit.generated.jooq.indexes.USER_EMAIL_IDX
 import com.drinkit.generated.jooq.indexes.USER_ENABLED_IDX
 import com.drinkit.generated.jooq.keys.USER_PKEY
@@ -122,9 +121,9 @@ open class User(
     val STATUS: TableField<UserRecord, String?> = createField(DSL.name("status"), SQLDataType.VARCHAR(50).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.user.completed</code>.
+     * The column <code>drinkit_application.user.verified</code>.
      */
-    val COMPLETED: TableField<UserRecord, Boolean?> = createField(DSL.name("completed"), SQLDataType.BOOLEAN.nullable(false), this, "")
+    val VERIFIED: TableField<UserRecord, Boolean?> = createField(DSL.name("verified"), SQLDataType.BOOLEAN.nullable(false), this, "")
 
     /**
      * The column <code>drinkit_application.user.enabled</code>.
@@ -134,7 +133,7 @@ open class User(
     /**
      * The column <code>drinkit_application.user.roles</code>.
      */
-    val ROLES: TableField<UserRecord, Array<String?>?> = createField(DSL.name("roles"), SQLDataType.VARCHAR(50).array(), this, "")
+    val ROLES: TableField<UserRecord, Array<String?>?> = createField(DSL.name("roles"), SQLDataType.VARCHAR(50).array().nullable(false), this, "")
 
     /**
      * The column <code>drinkit_application.user.modified</code>.
@@ -173,7 +172,7 @@ open class User(
         override fun `as`(alias: Table<*>): UserPath = UserPath(alias.qualifiedName, this)
     }
     override fun getSchema(): Schema? = if (aliased()) null else DrinkitApplication.DRINKIT_APPLICATION
-    override fun getIndexes(): List<Index> = listOf(USER_COMPLETED_IDX, USER_EMAIL_IDX, USER_ENABLED_IDX)
+    override fun getIndexes(): List<Index> = listOf(USER_EMAIL_IDX, USER_ENABLED_IDX)
     override fun getPrimaryKey(): UniqueKey<UserRecord> = USER_PKEY
 
     private lateinit var _verificationToken: VerificationTokenPath
@@ -192,7 +191,7 @@ open class User(
     val verificationToken: VerificationTokenPath
         get(): VerificationTokenPath = verificationToken()
     override fun getChecks(): List<Check<UserRecord>> = listOf(
-        Internal.createCheck(this, DSL.name("roles_check"), "(((roles)::character varying[] && ARRAY['ROLE_ADMIN'::character varying, 'ROLE_USER'::character varying, 'ROLE_REGISTRATION_IN_PROGRESS'::character varying]))", true)
+        Internal.createCheck(this, DSL.name("roles_check"), "((((roles)::character varying[] && ARRAY['ROLE_ADMIN'::character varying, 'ROLE_USER'::character varying, 'ROLE_REGISTRATION_IN_PROGRESS'::character varying]) AND (array_position(roles, NULL::character varying) IS NULL)))", true)
     )
     override fun `as`(alias: String): User = User(DSL.name(alias), this)
     override fun `as`(alias: Name): User = User(alias, this)

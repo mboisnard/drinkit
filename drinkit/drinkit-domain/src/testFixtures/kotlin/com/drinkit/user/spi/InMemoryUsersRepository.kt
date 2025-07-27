@@ -5,8 +5,6 @@ import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
 import org.springframework.stereotype.Repository
 
-// TODO Should be in testFixtures after implementing the Jooq Repository
-@Repository
 class InMemoryUsersRepository: Users {
 
     private val users: MutableMap<UserId, User> = mutableMapOf()

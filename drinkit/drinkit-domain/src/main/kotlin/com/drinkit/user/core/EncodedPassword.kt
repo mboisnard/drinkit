@@ -7,7 +7,7 @@ import com.drinkit.utils.containsASpecialCharacter
 import com.drinkit.utils.doesntContainsInvisibleCharacters
 import com.drinkit.utils.hasMinLength
 
-class EncodedPassword private constructor(
+class EncodedPassword(
     val value: String,
 ) {
     init {

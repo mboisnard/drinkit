@@ -33,18 +33,15 @@ CREATE TABLE IF NOT EXISTS drinkit_application.user
     password       VARCHAR(100)             NOT NULL,
     lastConnection TIMESTAMP WITH TIME ZONE,
     status         VARCHAR(50)              NOT NULL,
-    completed      BOOLEAN                  NOT NULL,
+    verified       BOOLEAN                  NOT NULL,
     enabled        BOOLEAN                  NOT NULL,
-    roles          VARCHAR(50) ARRAY,
+    roles          VARCHAR(50) ARRAY        NOT NULL,
     modified       TIMESTAMP WITH TIME ZONE NOT NULL,
     CONSTRAINT roles_check CHECK (roles::VARCHAR[] && ARRAY['ROLE_ADMIN'::VARCHAR, 'ROLE_USER'::VARCHAR, 'ROLE_REGISTRATION_IN_PROGRESS'::VARCHAR])
 );
 
 CREATE INDEX IF NOT EXISTS user_email_idx
     ON drinkit_application.user (email);
-
-CREATE INDEX IF NOT EXISTS user_completed_idx
-    ON drinkit_application.user (completed);
 
 CREATE INDEX IF NOT EXISTS user_enabled_idx
     ON drinkit_application.user (enabled);
