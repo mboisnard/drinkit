@@ -16,7 +16,7 @@ class InMemoryUsersRepository: Users {
         return user
     }
 
-    override fun findBy(userId: UserId): User? = users[userId]
+    override fun findEnabledBy(userId: UserId): User? = users[userId]?.takeIf { it.enabled }
 
     override fun exists(email: Email): Boolean = users.values.any { it.email == email }
 

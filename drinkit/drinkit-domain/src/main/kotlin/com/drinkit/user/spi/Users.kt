@@ -8,7 +8,7 @@ interface Users {
 
     fun saveOrUpdate(user: User): User
 
-    fun findBy(userId: UserId): User?
+    fun findEnabledBy(userId: UserId): User?
 
     fun exists(email: Email): Boolean
 }

@@ -2,7 +2,6 @@ package com.drinkit.user.spi
 
 import com.drinkit.user.UserFixtures
 import com.drinkit.user.core.User
-import com.drinkit.user.core.UserHistory
 import com.drinkit.user.core.UserId
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -24,7 +23,7 @@ abstract class UsersTestContract {
         repository.saveOrUpdate(user)
 
         // Then
-        val savedUser = repository.findBy(user.id)
+        val savedUser = repository.findEnabledBy(user.id)
 
         // Then
         savedUser shouldBe user
@@ -50,7 +49,7 @@ abstract class UsersTestContract {
         val userId = userFixtures.generateId.invoke(UserId::class)
 
         // When
-        val user = repository.findBy(userId)
+        val user = repository.findEnabledBy(userId)
 
         // Then
         user shouldBe null

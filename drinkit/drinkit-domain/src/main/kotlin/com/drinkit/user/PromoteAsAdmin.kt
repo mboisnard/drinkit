@@ -62,7 +62,7 @@ class PromoteAsAdmin(
                 logger.info { "User $userId has been promoted as admin by ${command.author}" }
                 Success(userEvents.save(decision.event))
             }
-            AlreadyAdmin -> Success(users.findBy(userId)!!)
+            AlreadyAdmin -> Success(users.findEnabledBy(userId)!!)
             Unauthorized -> Result.Forbidden
         }
     }

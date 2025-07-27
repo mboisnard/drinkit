@@ -46,7 +46,7 @@ internal class CreateNewUserTest {
         result.shouldBeInstanceOf<UserCreated>()
         val createdUser = result.user
         userEvents.findAllBy(createdUser.id).shouldNotBeNull()
-        users.findBy(createdUser.id) shouldBe createdUser
+        users.findEnabledBy(createdUser.id) shouldBe createdUser
         spyEventPublisher.countEventsOfType(com.drinkit.user.spi.UserCreated::class) shouldBe 1
     }
 

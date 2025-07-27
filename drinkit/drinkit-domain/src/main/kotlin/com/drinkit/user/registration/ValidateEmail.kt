@@ -34,7 +34,7 @@ class ValidateEmail(
 
         val token = generateVerificationToken.invoke(notCompletedUser.id)
 
-        verificationTokens.createOrUpdate(token)
+        verificationTokens.saveOrUpdate(token)
 
         messageSender.send(
             SendMessageCommand(

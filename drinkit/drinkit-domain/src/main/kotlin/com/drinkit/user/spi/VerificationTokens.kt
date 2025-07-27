@@ -5,7 +5,7 @@ import com.drinkit.user.core.VerificationToken
 
 interface VerificationTokens {
 
-    fun createOrUpdate(verificationToken: VerificationToken): VerificationToken?
+    fun saveOrUpdate(verificationToken: VerificationToken): VerificationToken?
 
     fun findBy(userId: UserId, token: String): VerificationToken?
 

@@ -66,7 +66,7 @@ class SendVerificationToken(
         return when (decision) {
             is CanSendToken -> {
                 val token = generateVerificationToken.invoke(decision.userId)
-                verificationTokens.createOrUpdate(token)
+                verificationTokens.saveOrUpdate(token)
 
                 messageSender.send(
                     SendMessageCommand(

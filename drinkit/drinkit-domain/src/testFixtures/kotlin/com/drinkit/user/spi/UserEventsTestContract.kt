@@ -27,7 +27,7 @@ abstract class UserEventsTestContract {
         // Then
         userEvents.findAllBy(userInitialized.userId).shouldNotBeNull() shouldBe UserHistory(userInitialized)
 
-        val savedUser = users.findBy(userInitialized.userId)
+        val savedUser = users.findEnabledBy(userInitialized.userId)
         savedUser.shouldNotBeNull() should {
             it.email shouldBe userInitialized.email
             it.password shouldBe userInitialized.password

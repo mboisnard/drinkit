@@ -102,7 +102,7 @@ internal class ConfirmVerificationTokenTest {
     fun `can't confirm verification token for unknown user`() {
         // Given
         val unknownUser = userFixtures.givenAConnectedAuthor
-        verificationTokens.createOrUpdate(
+        verificationTokens.saveOrUpdate(
             VerificationToken(
                 userId = unknownUser.userId,
                 value = "verification-token",

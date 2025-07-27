@@ -63,7 +63,7 @@ class CompleteProfileInformation(
 
         return when (decision) {
             is EventToPersist -> Success(userEvents.save(decision.event))
-            AlreadyCompleted -> Success(users.findBy(userId)!!)
+            AlreadyCompleted -> Success(users.findEnabledBy(userId)!!)
             is ValidationFailed -> throw IllegalStateException("Validation failed: ${decision.errors}")
             Unauthorized -> Forbidden
         }

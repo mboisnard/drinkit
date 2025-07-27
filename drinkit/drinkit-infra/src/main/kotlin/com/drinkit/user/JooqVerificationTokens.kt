@@ -14,7 +14,7 @@ internal class JooqVerificationTokens(
     private val dslContext: DSLContext,
 ) : VerificationTokens {
 
-    override fun createOrUpdate(verificationToken: VerificationToken): VerificationToken? {
+    override fun saveOrUpdate(verificationToken: VerificationToken): VerificationToken? {
         val query = dslContext.insertInto(VERIFICATION_TOKEN)
             .set(VERIFICATION_TOKEN.USER_ID, verificationToken.userId.value)
             .set(VERIFICATION_TOKEN.TOKEN, verificationToken.value)

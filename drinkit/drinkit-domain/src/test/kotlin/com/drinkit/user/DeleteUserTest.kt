@@ -18,6 +18,7 @@ internal class DeleteUserTest {
     private val userFixtures = UserFixtures()
     private val deleteUser = userFixtures.deleteUser
     private val userEvents = userFixtures.userEvents
+    private val users = userFixtures.users
 
     @Test
     fun `delete an existing user`() {
@@ -35,6 +36,23 @@ internal class DeleteUserTest {
         userEvents.findAllBy(user.id).shouldNotBeNull() should {
             it.remainingEvents shouldHaveSize 1
         }
+    }
+
+    @Test
+    fun `a deleted user can't be found in database`() {
+        // Given
+        val user = userFixtures.givenAnInitializedUser()
+        val command = DeleteUserCommand(
+            author = user.id.toConnectedAuthor(),
+        )
+        deleteUser.invoke(user.id, command)
+
+        // When
+        val foundUser = users.findEnabledBy(user.id)
+
+        // Then
+        foundUser shouldBe null
+        users.count() shouldBe 1
     }
 
     @Test

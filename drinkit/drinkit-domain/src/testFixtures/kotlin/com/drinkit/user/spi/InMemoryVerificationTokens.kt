@@ -7,7 +7,7 @@ class InMemoryVerificationTokens : VerificationTokens {
 
     private val verificationTokens: MutableMap<UserId, VerificationToken> = mutableMapOf()
 
-    override fun createOrUpdate(verificationToken: VerificationToken): VerificationToken {
+    override fun saveOrUpdate(verificationToken: VerificationToken): VerificationToken {
         verificationTokens[verificationToken.userId] = verificationToken
         return verificationToken
     }

@@ -74,7 +74,7 @@ class ConfirmVerificationToken(
                 verificationTokens.deleteBy(userId)
                 Success(userEvents.save(decision.event))
             }
-            AlreadyVerified -> Success(users.findBy(userId)!!)
+            AlreadyVerified -> Success(users.findEnabledBy(userId)!!)
             is Expired -> {
                 verificationTokens.deleteBy(userId)
                 TokenExpired
