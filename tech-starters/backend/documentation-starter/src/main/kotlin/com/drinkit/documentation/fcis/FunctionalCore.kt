@@ -9,7 +9,7 @@ package com.drinkit.documentation.fcis
  *
  * ## Principles of the Functional Core
  *
- * A class or function marked with{@code @FunctionalCore} must adhere to strict principles:
+ * A class or function marked with [FunctionalCore] must adhere to strict principles:
  *
  * - **Purity:** Functions should be pure. Given the same input, they must always return the
  * same output without any observable side effects.

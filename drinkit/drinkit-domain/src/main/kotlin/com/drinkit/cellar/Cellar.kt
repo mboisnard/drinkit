@@ -4,7 +4,6 @@ import com.drinkit.common.AbstractId
 import com.drinkit.common.CityLocation
 import com.drinkit.common.Constants.MAX_CELLAR_NAME_LENGTH
 import com.drinkit.common.Constants.MAX_CELLAR_ROOM_LENGTH
-import com.drinkit.common.IdGenerator
 import com.drinkit.common.isId
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
@@ -16,10 +15,6 @@ data class CellarId(
 ) : AbstractId(value) {
     init {
         require(value.isId())
-    }
-
-    companion object {
-        fun create(generator: IdGenerator) = CellarId(value = generator.createNewId())
     }
 }
 
