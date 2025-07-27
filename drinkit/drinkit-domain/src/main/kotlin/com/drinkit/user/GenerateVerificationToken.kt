@@ -13,7 +13,7 @@ class GenerateVerificationToken(
     private val random: Random = Random.Default,
 ) {
     companion object {
-        private const val TOKEN_VALIDITY_IN_HOURS = 24
+        private const val TOKEN_VALIDITY_IN_HOURS = 3
         private const val TOKEN_LENGTH = 6
     }
 
