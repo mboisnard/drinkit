@@ -95,3 +95,7 @@ Configures tools required for **static code analysis**:
 - Security analysis (`dependency-check`, etc.).
 - Automatically generates reports during build phases or CI pipelines.
 - ...
+
+::: tip
+More Gradle best practices [here](https://docs.gradle.org/9.0.0/userguide/best_practices_general.html)
+:::
