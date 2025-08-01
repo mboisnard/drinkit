@@ -2,7 +2,6 @@ package com.drinkit.user
 
 import com.drinkit.generated.jooq.tables.records.VerificationTokenRecord
 import com.drinkit.generated.jooq.tables.references.VERIFICATION_TOKEN
-import com.drinkit.jooq.allFields
 import com.drinkit.user.core.UserId
 import com.drinkit.user.core.VerificationToken
 import com.drinkit.user.spi.VerificationTokens
@@ -30,14 +29,13 @@ internal class JooqVerificationTokens(
     }
 
     override fun findBy(userId: UserId, token: String): VerificationToken? {
-        val query = dslContext.select(allFields(VERIFICATION_TOKEN))
-            .from(VERIFICATION_TOKEN)
+        val query = dslContext.selectFrom(VERIFICATION_TOKEN)
             .where(
                 VERIFICATION_TOKEN.USER_ID.eq(userId.value)
                     .and(VERIFICATION_TOKEN.TOKEN.eq(token))
             )
 
-        return query.fetchOne { it.value1() }?.toDomain()
+        return query.fetchOne { it.toDomain() }
     }
 
     override fun deleteBy(userId: UserId): Int {

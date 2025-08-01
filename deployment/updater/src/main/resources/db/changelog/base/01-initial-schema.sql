@@ -20,6 +20,18 @@ CREATE TABLE IF NOT EXISTS drinkit_application.cellar
 CREATE INDEX IF NOT EXISTS cellar_owner_id_idx
     ON drinkit_application.cellar (owner_id);
 
+-- User Events
+
+CREATE TABLE IF NOT EXISTS drinkit_application.user_event
+(
+    user_id        VARCHAR(24)              NOT NULL,
+    sequence_id    BIGINT                   NOT NULL,
+    event_name     VARCHAR(50)              NOT NULL,
+    date           TIMESTAMP WITH TIME ZONE NOT NULL,
+    author         JSONB                    NOT NULL,
+    payload        JSONB                    NOT NULL,
+    PRIMARY KEY (user_id, sequence_id)
+);
 
 -- User
 

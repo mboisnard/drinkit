@@ -23,7 +23,7 @@ jooq {
         configuration.apply {
             generator.apply {
                 database.apply {
-                    includes = "cellar | user | role | verification_token"
+                    includes = "cellar | user_event | user | verification_token"
                     inputSchema = "drinkit_application"
                 }
                 target.apply {

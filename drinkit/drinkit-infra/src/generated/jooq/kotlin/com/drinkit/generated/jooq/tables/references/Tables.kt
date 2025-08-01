@@ -7,6 +7,7 @@ package com.drinkit.generated.jooq.tables.references
 
 import com.drinkit.generated.jooq.tables.Cellar
 import com.drinkit.generated.jooq.tables.User
+import com.drinkit.generated.jooq.tables.UserEvent
 import com.drinkit.generated.jooq.tables.VerificationToken
 
 
@@ -20,6 +21,11 @@ val CELLAR: Cellar = Cellar.CELLAR
  * The table <code>drinkit_application.user</code>.
  */
 val USER: User = User.USER
+
+/**
+ * The table <code>drinkit_application.user_event</code>.
+ */
+val USER_EVENT: UserEvent = UserEvent.USER_EVENT
 
 /**
  * The table <code>drinkit_application.verification_token</code>.

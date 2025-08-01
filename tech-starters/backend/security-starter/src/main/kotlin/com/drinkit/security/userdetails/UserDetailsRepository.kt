@@ -1,7 +1,5 @@
 package com.drinkit.security.userdetails
 
-import com.drinkit.jooq.allFields
-import com.drinkit.jooq.fetchSequence
 import com.drinkit.security.generated.jooq.tables.User.Companion.USER
 import com.drinkit.security.generated.jooq.tables.records.UserRecord
 import org.jooq.DSLContext
@@ -18,16 +16,10 @@ internal class JooqUserDetailsRepository(
 ) : UserDetailsRepository {
 
     override fun findByEmail(email: String): InternalUserDetails? {
-        val query = dslContext.select(
-            allFields(USER),
-        )
-            .from(USER)
+        val query = dslContext.selectFrom(USER)
             .where(USER.EMAIL.eq(email))
 
-        return query
-            .fetchSequence({ it.value1() })
-            .firstOrNull()
-            ?.toSecurityUser()
+        return query.fetchOne { it.toSecurityUser() }
     }
 
     private fun UserRecord.toSecurityUser(): InternalUserDetails =
