@@ -1,6 +1,11 @@
-name: Build All DrinkIt projects
+name: Build DrinkIt backend projects
 
-on: push
+on:
+  push:
+    paths-ignore:
+      - 'drinkit/drinkit-front/**'
+      - 'tech-starters/frontend/**'
+      - 'docs/**'
 
 jobs:
   build:

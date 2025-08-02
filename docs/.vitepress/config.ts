@@ -49,7 +49,8 @@ export default withMermaid(
                   {text: 'Tech Starters', link: 'tech-starters'},
                   {text: 'Modular Monolith', link: 'modular-monolith'},
                   {text: 'Hexagonal Architecture', link: 'hexagonal-architecture'},
-                  {text: 'Events', link: 'events'},
+                  {text: 'Event Sourcing', link: 'event-sourcing'},
+                  {text: 'Platform Events', link: 'platform-events'},
                   {text: 'Logging', link: 'logging'},
                   {text: 'Database', link: 'database'},
                   {

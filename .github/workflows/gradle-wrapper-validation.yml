@@ -2,9 +2,8 @@ name: Validate Gradle Wrapper
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
+    paths:
+      - 'gradle/wrapper/**'
 
 permissions:
   contents: read
