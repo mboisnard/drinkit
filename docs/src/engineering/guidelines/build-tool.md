@@ -2,17 +2,6 @@
 
 Gradle was chosen as the **build tool for this project** because it better meets the needs of a **modular, scalable, CI/CD automation-oriented project** than alternatives like Maven.
 
-### 🆚 Comparison with Maven
-
-| Aspect | **Gradle** | **Maven** |
-|-------|-------------|------------|
-| **DSL** | Flexible, Groovy/Kotlin | Rigid XML |
-| **Incremental Build** | ✅ Fully incremental, fine-grained change detection | ❌ No native incremental build |
-| **Performance** | Very fast (local/remote build cache) | Slower on multi-module projects |
-| **Modularity** | Native multi-module support, conventions | Multi-module support but heavy config |
-| **Extensibility** | Flexible plugins, easy automation scripting | Plugins available but limited extensibility |
-| **Version Catalog** | Centralized version management via TOML | BOM + Properties, less ergonomic |
-
 # 🛠️ Concepts Used in the Project
 
 ## 🗂️ Automatic Detection of New Gradle Modules
