@@ -2,7 +2,7 @@ package com.drinkit.documentation.fcis
 
 /**
  * Marks a class or function as part of the **Functional Core** of the application.
- * <p>
+ *
  * This annotation designates code that is purely functional, containing the core business logic,
  * calculations, and decision-making processes. The Functional Core is the brain of the application,
  * completely decoupled from the outside world.

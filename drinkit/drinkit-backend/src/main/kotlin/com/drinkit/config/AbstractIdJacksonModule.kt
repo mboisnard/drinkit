@@ -1,6 +1,5 @@
 package com.drinkit.config
 
-import com.drinkit.cellar.CellarId
 import com.drinkit.common.AbstractId
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
@@ -17,6 +16,6 @@ class AbstractIdSerializer : JsonSerializer<AbstractId>() {
 class AbstractIdJacksonModule : SimpleModule() {
 
     init {
-        addSerializer(CellarId::class.java, AbstractIdSerializer())
+        addSerializer(AbstractId::class.java, AbstractIdSerializer())
     }
 }

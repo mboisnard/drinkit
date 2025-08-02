@@ -6,6 +6,15 @@ import org.springframework.retry.RetryContext
 import org.springframework.retry.RetryListener
 import org.springframework.stereotype.Component
 
+/**
+ * An implementation of [RetryListener] that logs each failed retry attempt.
+ *
+ * This component hooks into the retry mechanism to provide a trace
+ * for any occurring errors. On each failure of a retryable operation,
+ * it logs a message containing the attempt count and the captured exception.
+ *
+ * @see RetryListener
+ */
 @Component(value = "loggingRetryListener")
 internal class LoggingRetryListener: RetryListener {
 

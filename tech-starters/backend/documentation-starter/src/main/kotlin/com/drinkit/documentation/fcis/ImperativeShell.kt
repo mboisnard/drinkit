@@ -25,7 +25,6 @@ package com.drinkit.documentation.fcis
  * events into calls to pure functions and translates the results of those calls back into actions
  * in the outside world. This keeps the core logic clean and testable.
  *
- *
  * A class annotated with [ImperativeShell] is explicitly acknowledged as being stateful and
  * impure, forming the robust outer layer of the application.
  */

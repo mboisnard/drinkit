@@ -1,15 +1,11 @@
 package com.drinkit.user.spi
 
+import com.drinkit.user.core.Initialized
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserEvent
 import com.drinkit.user.core.UserHistory
 import com.drinkit.user.core.UserId
-import com.drinkit.user.core.Initialized
-import org.springframework.stereotype.Repository
-import kotlin.collections.set
 
-// TODO Should be in testFixtures after implementing the Jooq Repository
-@Repository
 class InMemoryUserEventsStore(
     private val users: Users,
 ): UserEvents {
@@ -32,7 +28,7 @@ class InMemoryUserEventsStore(
             }
         }
 
-        val user = findAllBy(userId)!!.let { history -> User.from(history) }
+        val user = findAllBy(userId)!!.let { history -> User.Companion.from(history) }
 
         return users.saveOrUpdate(user)
     }

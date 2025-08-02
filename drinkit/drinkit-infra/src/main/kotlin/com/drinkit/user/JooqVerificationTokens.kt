@@ -30,10 +30,8 @@ internal class JooqVerificationTokens(
 
     override fun findBy(userId: UserId, token: String): VerificationToken? {
         val query = dslContext.selectFrom(VERIFICATION_TOKEN)
-            .where(
-                VERIFICATION_TOKEN.USER_ID.eq(userId.value)
-                    .and(VERIFICATION_TOKEN.TOKEN.eq(token))
-            )
+            .where(VERIFICATION_TOKEN.USER_ID.eq(userId.value))
+            .and(VERIFICATION_TOKEN.TOKEN.eq(token))
 
         return query.fetchOne { it.toDomain() }
     }
