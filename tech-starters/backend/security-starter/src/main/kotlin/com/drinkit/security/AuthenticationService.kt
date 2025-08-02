@@ -66,6 +66,6 @@ internal class InternalAuthenticationService(
         )
 
         securityContextHolderStrategy.context = securityContext
-        securityContextRepository.saveContext(securityContext, request!!, response!!)
+        securityContextRepository.saveContext(securityContext, request, response)
     }
 }

@@ -28,12 +28,9 @@ internal class JooqUserEventsRepositoryTest : UserEventsTestContract() {
     override fun fetchUsers(): Users = JooqUsersRepository(dsl = dsl, clock = ControlledClock())
 
     override fun fetchUserEvents(users: Users): UserEvents {
-        val configuration = UserEventMixinConfiguration()
-
-
         val objectMapper = JsonMapper.builder()
             .addModule(kotlinModule { configure(KotlinFeature.NullIsSameAsDefault, true) })
-            .addModule(configuration.authorModule())
+            .addModule(UserEventMixinConfiguration().authorModule())
             .build()
 
         return JooqUserEventsRepository(
