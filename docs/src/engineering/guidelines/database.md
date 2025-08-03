@@ -36,11 +36,15 @@ Several options can be added to the `--changeset` line to control its behavior:
 
 To enhance security, it is recommended to run Liquibase via an external process (CI/CD, dedicated script) with elevated privileges, while the application connects to the database using a role with restricted permissions (read/write on its tables, but no administrative rights like `CREATE`, `ALTER`, `DROP`).
 
-## ✅ Schema Best Practices
+## ✅ Database Best Practices
 
-To avoid conflicts and keep your database well-organized, it is crucial not to use the default `public` schema.
+- **Use a Dedicated Schema**: To avoid conflicts and keep your database well-organized, it is crucial not to use the default `public` schema. Create a specific schema for your application, such as `drinkit_application`. This isolates your database objects and simplifies permissions management.
 
--   **Use a Dedicated Schema**: Create a specific schema for your application, such as `drinkit_application`. This isolates your database objects and simplifies permissions management.
+
+- **Don't ignore timezones when manipulating dates and times**: don't use `TIMESTAMP` alone use `TIMESTAMP WITH TIME ZONE` unless you actually want to store a logical date such as a birth date, in which case you should use `DATE`.
+
+
+- **Don't use hyphens (`-`) to name your PostgreSQL objects**: It's just painful to have to protect every such name with quotes
 
 ## 🛡️Writing Safe Migrations
 

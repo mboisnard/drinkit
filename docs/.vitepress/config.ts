@@ -60,8 +60,8 @@ export default withMermaid(
                     items: [
                       {text: 'Software Craftsmanship Manifesto', link: 'craft-manifesto'},
                       {text: 'SOLID', link: 'solid'},
-                      {text: 'Strong Type', link: 'strong-type'},
                       {text: 'Scout Rule', link: 'scout-rule'},
+                      {text: 'Coding Rules', link: 'coding-rules'},
                       {text: 'Developer Experience', link: 'dev-exp'},
                     ],
                   },
