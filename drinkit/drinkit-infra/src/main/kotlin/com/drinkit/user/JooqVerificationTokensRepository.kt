@@ -9,7 +9,7 @@ import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 
 @Repository
-internal class JooqVerificationTokens(
+internal class JooqVerificationTokensRepository(
     private val dslContext: DSLContext,
 ) : VerificationTokens {
 

@@ -5,7 +5,6 @@ import com.drinkit.common.CityLocation
 import com.drinkit.generated.jooq.tables.records.CellarRecord
 import com.drinkit.generated.jooq.tables.references.CELLAR
 import com.drinkit.jooq.JSONBToJacksonConverter
-import com.drinkit.jooq.allFields
 import com.drinkit.jooq.fetchSequence
 import com.drinkit.user.core.UserId
 import com.fasterxml.jackson.databind.ObjectMapper
