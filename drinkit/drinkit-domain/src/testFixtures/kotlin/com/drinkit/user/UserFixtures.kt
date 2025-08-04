@@ -21,6 +21,7 @@ import com.drinkit.user.spi.InMemoryUserEventsStore
 import com.drinkit.user.spi.InMemoryUsersRepository
 import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 class UserFixtures(
@@ -76,7 +77,7 @@ class UserFixtures(
     )
 
     val givenAUserId: UserId get() = generateId.invoke(UserId::class)
-    val givenANewDate: OffsetDateTime get() = OffsetDateTime.now(controlledClock)
+    val givenANewDate: OffsetDateTime get() = OffsetDateTime.now(controlledClock).truncatedTo(ChronoUnit.MICROS)
 
     val givenAnUnloggedAuthor: Unlogged get() = Unlogged(CorrelationId.create())
     val givenAConnectedAuthor: Author.Connected get() = Author.Connected(givenAUserId)
