@@ -23,3 +23,4 @@ services:
     environment:
       MEILI_MASTER_KEY: masterKey
       MEILI_NO_ANALYTICS: true
+      MEILI_EXPERIMENTAL_DUMPLESS_UPGRADE: true
