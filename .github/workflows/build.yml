@@ -28,3 +28,12 @@ jobs:
 
       - name: Execute Gradle build
         run: ./gradlew build
+
+      - name: Upload Failing tests reports to GitHub Actions Artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: drinkit/**/build/reports/tests/**
+          if-no-files-found: ignore
+          retention-days: 1
