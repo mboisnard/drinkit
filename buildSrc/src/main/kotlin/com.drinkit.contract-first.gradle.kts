@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.10")
 }
 
 val openApiInput: Configuration by configurations.creating {
