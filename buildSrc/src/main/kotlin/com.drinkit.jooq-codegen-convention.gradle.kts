@@ -6,7 +6,10 @@ plugins {
 }
 
 dependencies {
-    jooqCodegen("org.postgresql:postgresql")
+    jooqCodegen("org.postgresql:postgresql:42.7.8") //TODO check why I need the version here
+
+    implementation(project(":postgresql-starter"))
+    testImplementation(testFixtures(project(":postgresql-starter")))
 }
 
 

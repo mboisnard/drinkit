@@ -70,3 +70,12 @@ CREATE TABLE IF NOT EXISTS drinkit_application.verification_token
 
 CREATE INDEX IF NOT EXISTS verification_token_user_id_token_expiry_date_idx
     ON drinkit_application.verification_token (user_id, token, expiry_date);
+
+-- Configuration
+
+CREATE TABLE IF NOT EXISTS drinkit_application.configuration
+(
+    key        VARCHAR(255) NOT NULL PRIMARY KEY,
+    value      JSONB        NOT NULL,
+    modified   TIMESTAMP WITH TIME ZONE NOT NULL
+);

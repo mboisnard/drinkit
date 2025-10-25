@@ -1,14 +1,11 @@
 plugins {
     id("com.drinkit.library-convention")
     id("com.drinkit.jooq-codegen-convention")
+    id("com.drinkit.test-fixtures-convention")
 }
 
 dependencies {
-    api(project(":configuration-starter"))
-
-    compileOnly("jakarta.servlet:jakarta.servlet-api:6.1.0")
-    api("org.springframework.boot:spring-boot-starter-security")
-    api("org.springframework.session:spring-session-jdbc")
+    api("org.springframework.boot:spring-boot-starter-cache")
 }
 
 jooq {
@@ -16,11 +13,11 @@ jooq {
         configuration.apply {
             generator.apply {
                 database.apply {
-                    includes = "user"
+                    includes = "configuration"
                     inputSchema = "drinkit_application"
                 }
                 target.apply {
-                    packageName = "com.drinkit.security.generated.jooq"
+                    packageName = "com.drinkit.configuration.generated.jooq"
                 }
             }
         }

@@ -6,15 +6,12 @@ plugins {
 dependencies {
     implementation(project(":drinkit-domain"))
 
-    // Database dependencies
-    implementation(project(":postgresql-starter"))
     implementation(libs.bson)
 
     implementation(project(":mail-starter"))
 
     testImplementation(testFixtures(project(":drinkit-domain")))
     testImplementation(testFixtures(project(":messaging-starter")))
-    testImplementation(testFixtures(project(":postgresql-starter")))
 }
 
 jooq {
