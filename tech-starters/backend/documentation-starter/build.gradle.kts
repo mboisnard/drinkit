@@ -1,3 +1,3 @@
 plugins {
-    id("com.drinkit.common-no-dep-convention")
+    id("com.drinkit.common-convention")
 }

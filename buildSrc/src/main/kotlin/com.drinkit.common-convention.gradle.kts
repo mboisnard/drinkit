@@ -1,4 +1,3 @@
-import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -13,21 +12,18 @@ plugins {
     id("com.drinkit.test-convention")
 }
 
-// Use the Spring Dependency Management BOM without importing the spring-boot plugin
-// We don't want to use the spring-boot plugin in this common convention used ether by libraries and applications
-// https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/htmlsingle/#managing-dependencies.dependency-management-plugin.using-in-isolation
-the<DependencyManagementExtension>().apply {
-    imports {
-        mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
-        mavenBom("com.google.cloud:spring-cloud-gcp-dependencies:7.4.0")
-    }
-}
-
 group = "com.drinkit"
 version = "0.0.1-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_22
+}
+
+dependencies {
+    sourceSets.all {
+        // implementationConfigurationName replaces api/runtimeOnly/testImplementation(platform(project(":platform"))
+        implementationConfigurationName(platform(project(":platform")))
+    }
 }
 
 kotlin {

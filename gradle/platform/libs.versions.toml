@@ -1,4 +1,8 @@
 [versions]
+# BOM Versions
+spring-boot-dependencies = "3.5.6"
+spring-cloud-gcp-dependencies = "7.4.0"
+
 # Runtime Versions
 bson = "5.6.1"
 jooq = "3.20.8"
@@ -17,6 +21,10 @@ testcontainers-meilisearch = "1.0.5"
 
 
 [libraries]
+# BOM Dependencies
+spring-boot-dependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-dependencies" }
+spring-cloud-gcp-dependencies-bom = { module = "com.google.cloud:spring-cloud-gcp-dependencies", version.ref = "spring-cloud-gcp-dependencies" }
+
 # Runtime Dependencies
 bson = { module = "org.mongodb:bson", version.ref = "bson" }
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }

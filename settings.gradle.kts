@@ -1,5 +1,16 @@
 rootProject.name = "drinkit"
 
+// Version catalog location is configured here to be able to use it in all subprojects
+// By default we don't need to configure location but we decided to group files in the platform module
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs") {
+            from(files("./gradle/platform/libs.versions.toml"))
+        }
+    }
+}
+
+
 // Gradle Multi projects
 // https://docs.gradle.org/current/userguide/intro_multi_project_builds.html#sec:project_standard
 // Here we dynamically includes all gradle subprojects from specified folders
@@ -25,7 +36,7 @@ fun containsAGradleFile(folder: File): Boolean {
         ?.any { it.name.equals("build.gradle.kts") } == true
 }
 
-fun includeModules(folder: File) {
+fun includeModulesFrom(folder: File) {
     if (!folder.isDirectory || folder.isHidden) {
         return
     }
@@ -42,6 +53,8 @@ fun includeModules(folder: File) {
         ?.forEach { addGradleProject(it) }
 }
 
-includeModules(file("tech-starters/backend"))
-includeModules(file("drinkit"))
-includeModules(file("deployment/updater"))
+addGradleProject(file("gradle/platform"))
+addGradleProject(file("deployment/updater"))
+
+includeModulesFrom(file("tech-starters/backend"))
+includeModulesFrom(file("drinkit"))

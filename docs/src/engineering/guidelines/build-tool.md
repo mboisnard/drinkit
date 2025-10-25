@@ -32,9 +32,9 @@ To **centralize and standardize dependency version management**, we use **Versio
 ✅ Easy version updates in a single location  
 ✅ Consistent dependency alignment across all modules
 
-## 📈 Gradle Platforms (to be implemented)
+## 📈 Internal Dependency Management (BOM)
 
-We plan to introduce **Gradle Platforms** to:
+We use a **Gradle Platform** (`platform`) combined with **Spring Dependency Management Plugin** to ensure consistent dependency versions across all modules.
 
 - Define an **internal BOM** for aligning dependency versions across all modules.
 - Reduce version drift and prevent runtime errors due to incompatibilities.
@@ -44,7 +44,7 @@ We plan to introduce **Gradle Platforms** to:
 
 To maintain **consistency**, we use **modular Gradle Conventions** to factor shared configurations across modules:
 
-### `common-no-dep-convention`
+### `common-convention`
 
 - Defines generic shared configurations (e.g., JVM version, Kotlin compilation, encoding, test strategy).
 - **Dependency-free** and included by all other conventions.

@@ -11,8 +11,6 @@ dependencies {
     implementation(project(":messaging-starter"))
     implementation(project(":ocr-starter"))
 
-    implementation(libs.jooq) // TODO Remove this dependency here (fix version using platform & constraints)
-
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
     openApiInput(project(":drinkit-api-contract", "openApi"))

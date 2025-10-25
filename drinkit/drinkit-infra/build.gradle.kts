@@ -8,7 +8,6 @@ dependencies {
 
     // Database dependencies
     implementation(project(":postgresql-starter"))
-    implementation(libs.jooq) // TODO remove after adding platform version constraint
     implementation(libs.bson)
 
     implementation(project(":mail-starter"))
