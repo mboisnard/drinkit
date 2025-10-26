@@ -37,7 +37,7 @@ fun HttpSecurity.configureFromStarter(securityContextRepository: SecurityContext
         }
 
 @Configuration
-class SecurityConfig {
+internal class SecurityConfig {
 
     @Bean
     fun authenticationProvider(

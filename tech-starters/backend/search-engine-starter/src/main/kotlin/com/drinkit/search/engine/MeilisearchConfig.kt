@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class MeilisearchConfig(
+internal class MeilisearchConfig(
     @Value("\${meilisearch.url}")
     private val url: String,
     @Value("\${meilisearch.apiKey}")
