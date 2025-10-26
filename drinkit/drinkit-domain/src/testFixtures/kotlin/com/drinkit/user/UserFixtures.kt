@@ -2,12 +2,12 @@ package com.drinkit.user
 
 import com.drinkit.common.Author
 import com.drinkit.common.Author.Unlogged
-import com.drinkit.common.ControlledClock
 import com.drinkit.common.CorrelationId
 import com.drinkit.common.MockGenerateId
 import com.drinkit.common.SpyMessageSender
 import com.drinkit.faker
 import com.drinkit.messaging.SpyPlatformEventPublisher
+import com.drinkit.test.ControlledClock
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.EncodedPassword
 import com.drinkit.user.core.Password

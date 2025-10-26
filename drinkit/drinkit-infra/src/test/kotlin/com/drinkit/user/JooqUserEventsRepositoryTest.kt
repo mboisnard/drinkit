@@ -1,19 +1,16 @@
 package com.drinkit.user
 
-import com.drinkit.common.ControlledClock
 import com.drinkit.generated.jooq.DrinkitApplication
 import com.drinkit.jooq.JooqIntegrationTest
+import com.drinkit.test.ControlledClock
 import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.UserEventsTestContract
 import com.drinkit.user.spi.Users
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
-import org.springframework.beans.factory.annotation.Autowired
 
 @JooqIntegrationTest(schemas = [DrinkitApplication::class])
 internal class JooqUserEventsRepositoryTest : UserEventsTestContract() {

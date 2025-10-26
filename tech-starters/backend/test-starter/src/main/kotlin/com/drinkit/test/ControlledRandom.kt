@@ -1,4 +1,4 @@
-package com.drinkit.common
+package com.drinkit.test
 
 import kotlin.random.Random
 
