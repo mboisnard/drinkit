@@ -1,5 +1,7 @@
 package com.drinkit.configuration
 
+import com.drinkit.utils.toKebabCase
+
 /**
  * Type-safe key for accessing configuration values.
  *
@@ -19,5 +21,5 @@ package com.drinkit.configuration
 interface ConfigurationKey<T> {
 
     val key: String
-        get() = this::class.simpleName!!.replace(Regex("(?<=[a-z])(?=[A-Z])"), "-").lowercase()
+        get() = this::class.simpleName!!.toKebabCase()
 }

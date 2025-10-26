@@ -26,3 +26,6 @@ fun String.containsASpecialCharacter(): Boolean =
 
 fun String.isEmail(): Boolean =
     VALID_EMAIL_REGEX.matches(this)
+
+fun String.toKebabCase(): String =
+    this.replace(Regex("(?<=[a-z])(?=[A-Z])"), "-").lowercase()
