@@ -17,6 +17,5 @@ import org.jooq.impl.Internal
 // INDEX definitions
 // -------------------------------------------------------------------------
 
-val USER_COMPLETED_IDX: Index = Internal.createIndex(DSL.name("user_completed_idx"), User.USER, arrayOf(User.USER.COMPLETED), false)
 val USER_EMAIL_IDX: Index = Internal.createIndex(DSL.name("user_email_idx"), User.USER, arrayOf(User.USER.EMAIL), false)
 val USER_ENABLED_IDX: Index = Internal.createIndex(DSL.name("user_enabled_idx"), User.USER, arrayOf(User.USER.ENABLED), false)

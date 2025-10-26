@@ -191,7 +191,7 @@ open class User(
     val verificationToken: VerificationTokenPath
         get(): VerificationTokenPath = verificationToken()
     override fun getChecks(): List<Check<UserRecord>> = listOf(
-        Internal.createCheck(this, DSL.name("roles_check"), "((((roles)::character varying[] && ARRAY['ROLE_ADMIN'::character varying, 'ROLE_USER'::character varying, 'ROLE_REGISTRATION_IN_PROGRESS'::character varying]) AND (array_position(roles, NULL::character varying) IS NULL)))", true)
+        Internal.createCheck(this, DSL.name("roles_check"), "(((roles)::character varying[] && ARRAY['ROLE_ADMIN'::character varying, 'ROLE_USER'::character varying, 'ROLE_REGISTRATION_IN_PROGRESS'::character varying]))", true)
     )
     override fun `as`(alias: String): User = User(DSL.name(alias), this)
     override fun `as`(alias: Name): User = User(alias, this)

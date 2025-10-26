@@ -27,7 +27,7 @@ internal class JooqUserDetailsRepository(
             id = id,
             username = email,
             password = password,
-            authorities = roles?.mapNotNull { it?.let { SimpleGrantedAuthority(it) } }?.toSet() ?: emptySet(),
+            authorities = roles.mapNotNull { it?.let { SimpleGrantedAuthority(it) } }.toSet(),
             enabled = enabled,
         )
 }

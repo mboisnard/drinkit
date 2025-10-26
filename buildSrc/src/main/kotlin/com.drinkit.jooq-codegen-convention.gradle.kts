@@ -6,7 +6,9 @@ plugins {
 }
 
 dependencies {
-    jooqCodegen("org.postgresql:postgresql:42.7.8") //TODO check why I need the version here
+    // Code generation specific dependencies
+    // postgresql-starter contain all dependencies needed to generate jooq classes (postgresql driver with BOM managed version)
+    jooqCodegen(project(":postgresql-starter"))
 
     implementation(project(":postgresql-starter"))
     testImplementation(testFixtures(project(":postgresql-starter")))
