@@ -4,11 +4,11 @@ plugins {
 }
 
 dependencies {
-    api(project(":configuration-starter"))
+    implementation(project(":configuration-starter"))
+    implementation("org.springframework.session:spring-session-jdbc")
+    api("org.springframework.boot:spring-boot-starter-security")
 
     compileOnly("jakarta.servlet:jakarta.servlet-api:6.1.0")
-    api("org.springframework.boot:spring-boot-starter-security")
-    api("org.springframework.session:spring-session-jdbc")
 }
 
 jooq {
