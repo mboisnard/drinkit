@@ -78,7 +78,7 @@ class SendVerificationToken(
 
                 logger.debug { "Verification token sent to user: ${decision.userId}, email: ${decision.email}" }
 
-                return Success(token)
+                Success(token)
             }
             AlreadyVerified -> Result.AlreadyVerified
             Unauthorized -> Forbidden
