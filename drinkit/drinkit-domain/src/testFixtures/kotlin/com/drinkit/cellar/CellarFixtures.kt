@@ -1,5 +1,6 @@
 package com.drinkit.cellar
 
+import com.drinkit.cellar.spi.InMemoryCellars
 import com.drinkit.common.MockGenerateId
 import com.drinkit.messaging.SpyPlatformEventPublisher
 import com.drinkit.test.ControlledClock

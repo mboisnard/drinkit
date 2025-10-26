@@ -1,6 +1,11 @@
 package com.drinkit.cellar
 
-import com.drinkit.cellar.CellarRooms.CellarRoom
+import com.drinkit.cellar.core.Cellar
+import com.drinkit.cellar.core.CellarId
+import com.drinkit.cellar.core.CellarName
+import com.drinkit.cellar.core.CellarRooms
+import com.drinkit.cellar.core.CellarRooms.CellarRoom
+import com.drinkit.cellar.spi.Cellars
 import com.drinkit.common.CityLocation
 import com.drinkit.generated.jooq.tables.records.CellarRecord
 import com.drinkit.generated.jooq.tables.references.CELLAR

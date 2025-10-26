@@ -7,9 +7,9 @@ import com.drinkit.api.generated.model.CityLocation
 import com.drinkit.api.generated.model.Country
 import com.drinkit.api.generated.model.CreateCellarRequest
 import com.drinkit.api.generated.model.Point
-import com.drinkit.cellar.Cellar
-import com.drinkit.cellar.CellarId
-import com.drinkit.cellar.CellarName
+import com.drinkit.cellar.core.Cellar
+import com.drinkit.cellar.core.CellarId
+import com.drinkit.cellar.core.CellarName
 import com.drinkit.cellar.CreateCellar
 import com.drinkit.cellar.CreateCellarCommand
 import com.drinkit.cellar.DeleteCellar
@@ -58,7 +58,7 @@ internal class CellarsApi(
         CreateCellarCommand(
             name = CellarName(name),
             location = location.toDomain(),
-            owner = connectedUser(),
+            ownerId = connectedUser().id,
         )
 
     private fun CityLocation.toDomain() =

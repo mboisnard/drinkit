@@ -1,5 +1,7 @@
 package com.drinkit.cellar
 
+import com.drinkit.cellar.spi.Cellars
+import com.drinkit.cellar.spi.CellarsTestContract
 import com.drinkit.generated.jooq.DrinkitApplication
 import com.drinkit.jooq.JooqIntegrationTest
 import com.fasterxml.jackson.databind.ObjectMapper

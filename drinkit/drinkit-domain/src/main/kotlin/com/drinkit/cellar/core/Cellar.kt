@@ -1,4 +1,4 @@
-package com.drinkit.cellar
+package com.drinkit.cellar.core
 
 import com.drinkit.common.AbstractId
 import com.drinkit.common.CityLocation
@@ -7,6 +7,7 @@ import com.drinkit.common.Constants.MAX_CELLAR_ROOM_LENGTH
 import com.drinkit.common.isId
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
+import com.drinkit.utils.addIfNotMatch
 import com.drinkit.utils.doesntContainsInvisibleCharacters
 import com.drinkit.utils.hasLengthBetween
 
@@ -21,15 +22,16 @@ data class CellarId(
 data class CellarName(
     val value: String,
 ) {
-    init {
-        require(
-            value.isNotBlank() &&
-                value.doesntContainsInvisibleCharacters() &&
-                value.hasLengthBetween(1, MAX_CELLAR_NAME_LENGTH)
-        ) {
-            "Cellar name should not be blank, contains invisible chars or have more " +
-                "than $MAX_CELLAR_NAME_LENGTH characters. Given value: $value"
-        }
+    fun validate() = buildList {
+        addIfNotMatch(value.isNotBlank(), "Cellar name should not be blank")
+        addIfNotMatch(
+            value.doesntContainsInvisibleCharacters(),
+            "Cellar name should not contains invisible characters, $value"
+        )
+        addIfNotMatch(
+            value.hasLengthBetween(1, MAX_CELLAR_NAME_LENGTH),
+            "Cellar name should have size between 1 and $MAX_CELLAR_NAME_LENGTH, $value"
+        )
     }
 }
 

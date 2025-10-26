@@ -1,5 +1,7 @@
-package com.drinkit.cellar
+package com.drinkit.cellar.spi
 
+import com.drinkit.cellar.core.Cellar
+import com.drinkit.cellar.core.CellarId
 import com.drinkit.user.core.UserId
 
 interface Cellars {

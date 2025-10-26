@@ -1,5 +1,7 @@
 package com.drinkit.cellar
 
+import com.drinkit.cellar.core.CellarId
+import com.drinkit.cellar.spi.Cellars
 import com.drinkit.user.core.User
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service

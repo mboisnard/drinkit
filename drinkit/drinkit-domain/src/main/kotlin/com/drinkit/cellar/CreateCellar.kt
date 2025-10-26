@@ -1,8 +1,14 @@
 package com.drinkit.cellar
 
+import com.drinkit.cellar.core.Cellar
+import com.drinkit.cellar.core.CellarId
+import com.drinkit.cellar.core.CellarName
+import com.drinkit.cellar.core.CellarRooms
+import com.drinkit.cellar.spi.Cellars
 import com.drinkit.common.CityLocation
 import com.drinkit.common.GenerateId
 import com.drinkit.user.core.User
+import com.drinkit.user.core.UserId
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 data class CreateCellarCommand(
     val name: CellarName,
     val location: CityLocation,
-    val owner: User,
+    val ownerId: UserId,
 )
 
 @Service
@@ -31,7 +37,7 @@ class CreateCellar(
                 name = name,
                 location = location,
                 rooms = CellarRooms.EMPTY,
-                owner = owner.id,
+                owner = ownerId,
             )
         }
 
