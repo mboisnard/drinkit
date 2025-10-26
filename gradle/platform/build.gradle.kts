@@ -18,7 +18,11 @@ dependencies {
     constraints {
         // Runtime Dependencies
         api(libs.bson)
-        api(libs.jooq)
+        api(libs.jooq) {
+            version {
+                strictly(libs.versions.jooq.get())
+            }
+        }
         api(libs.kotlin.logging.jvm)
         api(libs.meilisearch.java.client)
         api(libs.springdoc.openapi.starter.webmvc.ui)

@@ -19,10 +19,14 @@ java {
     sourceCompatibility = JavaVersion.VERSION_22
 }
 
+// Force dependency versions to override Spring Boot's BOM
+extra["jooq.version"] = "3.20.8" //TODO Enforced platform seems not working
+
 dependencies {
     sourceSets.all {
         // implementationConfigurationName replaces api/runtimeOnly/testImplementation(platform(project(":platform"))
-        implementationConfigurationName(platform(project(":platform")))
+        // enforcedPlatform ensures our BOM constraints override third-party BOMs (like Spring Boot)
+        implementationConfigurationName(enforcedPlatform(project(":platform")))
     }
 }
 
