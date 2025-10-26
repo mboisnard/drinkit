@@ -13,8 +13,6 @@ dependencies {
     implementation(project(":documentation-starter"))
     implementation(project(":kotlin-starter"))
     implementation(project(":monitoring-starter"))
-
-    testImplementation(project(":test-starter"))
 }
 
 // Create a `build-info.properties` file in resource folder, info available in Actuator
