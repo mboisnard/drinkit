@@ -6,6 +6,7 @@ package com.drinkit.generated.jooq.tables.references
 
 
 import com.drinkit.generated.jooq.tables.Cellar
+import com.drinkit.generated.jooq.tables.ExchangeRate
 import com.drinkit.generated.jooq.tables.User
 import com.drinkit.generated.jooq.tables.UserEvent
 import com.drinkit.generated.jooq.tables.VerificationToken
@@ -16,6 +17,11 @@ import com.drinkit.generated.jooq.tables.VerificationToken
  * The table <code>drinkit_application.cellar</code>.
  */
 val CELLAR: Cellar = Cellar.CELLAR
+
+/**
+ * The table <code>drinkit_application.exchange_rate</code>.
+ */
+val EXCHANGE_RATE: ExchangeRate = ExchangeRate.EXCHANGE_RATE
 
 /**
  * The table <code>drinkit_application.user</code>.

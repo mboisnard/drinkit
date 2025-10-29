@@ -5,6 +5,7 @@ package com.drinkit.generated.jooq
 
 
 import com.drinkit.generated.jooq.tables.Cellar
+import com.drinkit.generated.jooq.tables.ExchangeRate
 import com.drinkit.generated.jooq.tables.User
 import com.drinkit.generated.jooq.tables.UserEvent
 import com.drinkit.generated.jooq.tables.VerificationToken
@@ -36,6 +37,11 @@ open class DrinkitApplication : SchemaImpl(DSL.name("drinkit_application"), Defa
     val CELLAR: Cellar get() = Cellar.CELLAR
 
     /**
+     * The table <code>drinkit_application.exchange_rate</code>.
+     */
+    val EXCHANGE_RATE: ExchangeRate get() = ExchangeRate.EXCHANGE_RATE
+
+    /**
      * The table <code>drinkit_application.user</code>.
      */
     val USER: User get() = User.USER
@@ -54,6 +60,7 @@ open class DrinkitApplication : SchemaImpl(DSL.name("drinkit_application"), Defa
 
     override fun getTables(): List<Table<*>> = listOf(
         Cellar.CELLAR,
+        ExchangeRate.EXCHANGE_RATE,
         User.USER,
         UserEvent.USER_EVENT,
         VerificationToken.VERIFICATION_TOKEN
