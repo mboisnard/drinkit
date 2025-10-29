@@ -79,3 +79,14 @@ CREATE TABLE IF NOT EXISTS drinkit_application.configuration
     value      JSONB        NOT NULL,
     modified   TIMESTAMP WITH TIME ZONE NOT NULL
 );
+
+-- Exchange Rates
+
+CREATE TABLE IF NOT EXISTS drinkit_application.exchange_rate
+(
+    source_currency   VARCHAR(3)       NOT NULL,
+    target_currency   VARCHAR(3)       NOT NULL,
+    rate              DECIMAL(18, 8)   NOT NULL,  -- Decimal Precision linked to EXCHANGE_RATE_SCALE_PRECISION
+    modified          TIMESTAMP WITH TIME ZONE NOT NULL,
+    PRIMARY KEY (source_currency, target_currency)
+);

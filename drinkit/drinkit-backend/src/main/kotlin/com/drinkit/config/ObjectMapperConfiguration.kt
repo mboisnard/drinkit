@@ -1,5 +1,6 @@
 package com.drinkit.config
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
@@ -17,6 +18,7 @@ class ObjectMapperConfiguration {
     @Primary
     fun configureCustomObjectMapper(jacksonModules: List<Module>): ObjectMapper {
         val mapper = ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
         mapper.registerModules(
             AbstractIdJacksonModule(),

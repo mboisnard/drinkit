@@ -13,6 +13,7 @@ javaPlatform {
 dependencies {
     // Import third-party BOMs, our constraints below will override their versions
     api(platform(libs.spring.boot.dependencies.bom))
+    api(platform(libs.spring.cloud.dependencies.bom))
     api(platform(libs.spring.cloud.gcp.dependencies.bom))
 
     constraints {

@@ -8,6 +8,8 @@ dependencies {
 
     implementation(libs.bson)
 
+    implementation(project(":configuration-starter"))
+    implementation(project(":feign-starter"))
     implementation(project(":mail-starter"))
 
     testImplementation(testFixtures(project(":drinkit-domain")))
@@ -19,7 +21,7 @@ jooq {
         configuration.apply {
             generator.apply {
                 database.apply {
-                    includes = "cellar | user_event | user | verification_token"
+                    includes = "cellar | user_event | user | verification_token | exchange_rate"
                     inputSchema = "drinkit_application"
                 }
                 target.apply {
