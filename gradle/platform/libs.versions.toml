@@ -1,7 +1,7 @@
 [versions]
 # BOM Versions
 spring-boot-dependencies = "3.5.7"
-spring-cloud-gcp-dependencies = "7.4.0"
+spring-cloud-gcp-dependencies = "7.4.1"
 
 # Runtime Versions
 bson = "5.6.1"
