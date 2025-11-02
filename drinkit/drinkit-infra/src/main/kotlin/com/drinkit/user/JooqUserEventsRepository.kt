@@ -4,9 +4,10 @@ import com.drinkit.common.Author
 import com.drinkit.event.sourcing.transaction.DuplicateSequenceException
 import com.drinkit.generated.jooq.keys.USER_EVENT_PKEY
 import com.drinkit.generated.jooq.tables.references.USER_EVENT
-import com.drinkit.jooq.JSONBToJacksonConverter
-import com.drinkit.jooq.fetchSequence
-import com.drinkit.jooq.isEventSourcingSequenceException
+import com.drinkit.postgresql.jooq.JooqRepository
+import com.drinkit.postgresql.jooq.JSONBToJacksonConverter
+import com.drinkit.postgresql.jooq.fetchSequence
+import com.drinkit.postgresql.jooq.isEventSourcingSequenceException
 import com.drinkit.user.core.Initialized
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserEvent
@@ -17,9 +18,8 @@ import com.drinkit.user.spi.Users
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.jooq.DSLContext
 import org.springframework.dao.DataAccessException
-import org.springframework.stereotype.Repository
 
-@Repository
+@JooqRepository
 internal class JooqUserEventsRepository(
     private val dsl: DSLContext,
     private val objectMapper: ObjectMapper,

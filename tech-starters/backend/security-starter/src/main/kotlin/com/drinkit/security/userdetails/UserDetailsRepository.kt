@@ -1,16 +1,16 @@
 package com.drinkit.security.userdetails
 
+import com.drinkit.postgresql.jooq.JooqRepository
 import com.drinkit.security.generated.jooq.tables.User.Companion.USER
 import com.drinkit.security.generated.jooq.tables.records.UserRecord
 import org.jooq.DSLContext
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.stereotype.Repository
 
 internal fun interface UserDetailsRepository {
     fun findByEmail(email: String): InternalUserDetails?
 }
 
-@Repository
+@JooqRepository
 internal class JooqUserDetailsRepository(
     private val dslContext: DSLContext,
 ) : UserDetailsRepository {

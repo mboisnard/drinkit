@@ -2,6 +2,7 @@ package com.drinkit.user
 
 import com.drinkit.generated.jooq.tables.User.Companion.USER
 import com.drinkit.generated.jooq.tables.records.UserRecord
+import com.drinkit.postgresql.jooq.JooqRepository
 import com.drinkit.user.core.BirthDate
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.EncodedPassword
@@ -18,12 +19,11 @@ import com.drinkit.user.core.UserStatus
 import com.drinkit.user.spi.Users
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jooq.DSLContext
-import org.springframework.stereotype.Repository
 import java.time.Clock
 import java.time.LocalDate
 import java.time.OffsetDateTime
 
-@Repository
+@JooqRepository
 internal class JooqUsersRepository(
     private val dsl: DSLContext,
     private val clock: Clock,

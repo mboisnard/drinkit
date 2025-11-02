@@ -5,12 +5,12 @@ import com.drinkit.money.forex.spi.ExchangeRates
 import com.drinkit.generated.jooq.tables.ExchangeRate.Companion.EXCHANGE_RATE
 import com.drinkit.generated.jooq.tables.records.ExchangeRateRecord
 import com.drinkit.money.forex.core.ExchangeRate
+import com.drinkit.postgresql.jooq.JooqRepository
 import org.jooq.DSLContext
-import org.springframework.stereotype.Repository
 import java.time.Clock
 import java.time.OffsetDateTime
 
-@Repository
+@JooqRepository
 internal class JooqExchangeRatesRepository(
     private val dsl: DSLContext,
     private val clock: Clock,

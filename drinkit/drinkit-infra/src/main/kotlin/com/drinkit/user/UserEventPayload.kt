@@ -3,7 +3,7 @@ package com.drinkit.user
 import com.drinkit.common.Author
 import com.drinkit.event.sourcing.SequenceId
 import com.drinkit.generated.jooq.tables.records.UserEventRecord
-import com.drinkit.jooq.JSONBToJacksonConverter
+import com.drinkit.postgresql.jooq.JSONBToJacksonConverter
 import com.drinkit.user.UserEventPayloadType.DELETED
 import com.drinkit.user.UserEventPayloadType.INITIALIZED
 import com.drinkit.user.UserEventPayloadType.PROFILE_COMPLETED

@@ -9,16 +9,16 @@ import com.drinkit.cellar.spi.Cellars
 import com.drinkit.common.CityLocation
 import com.drinkit.generated.jooq.tables.records.CellarRecord
 import com.drinkit.generated.jooq.tables.references.CELLAR
-import com.drinkit.jooq.JSONBToJacksonConverter
-import com.drinkit.jooq.fetchSequence
+import com.drinkit.postgresql.jooq.JooqRepository
+import com.drinkit.postgresql.jooq.JSONBToJacksonConverter
+import com.drinkit.postgresql.jooq.fetchSequence
 import com.drinkit.user.core.UserId
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.jooq.DSLContext
-import org.springframework.stereotype.Repository
 import java.time.Clock
 import java.time.LocalDateTime
 
-@Repository
+@JooqRepository
 internal class JooqCellars(
     private val dslContext: DSLContext,
     private val clock: Clock,

@@ -1,4 +1,4 @@
-package com.drinkit.jooq
+package com.drinkit.postgresql.jooq
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
