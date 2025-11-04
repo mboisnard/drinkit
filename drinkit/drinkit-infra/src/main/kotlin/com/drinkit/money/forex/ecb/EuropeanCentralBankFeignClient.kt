@@ -1,7 +1,6 @@
 package com.drinkit.money.forex.ecb
 
-import com.drinkit.feign.FeignXmlConfiguration
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.drinkit.webclient.feign.FeignXmlConfiguration
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement

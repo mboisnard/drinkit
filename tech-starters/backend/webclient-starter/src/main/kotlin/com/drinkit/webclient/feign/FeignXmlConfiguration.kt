@@ -1,10 +1,8 @@
-package com.drinkit.feign
+package com.drinkit.webclient.feign
 
-import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
-import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import feign.Retryer
 import feign.codec.Decoder

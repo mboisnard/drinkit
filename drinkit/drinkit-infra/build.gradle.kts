@@ -9,8 +9,8 @@ dependencies {
     implementation(libs.bson)
 
     implementation(project(":configuration-starter"))
-    implementation(project(":feign-starter"))
     implementation(project(":mail-starter"))
+    implementation(project(":webclient-starter"))
 
     testImplementation(testFixtures(project(":drinkit-domain")))
     testImplementation(testFixtures(project(":messaging-starter")))

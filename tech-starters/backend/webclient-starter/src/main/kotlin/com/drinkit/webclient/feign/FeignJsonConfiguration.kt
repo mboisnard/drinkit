@@ -1,4 +1,4 @@
-package com.drinkit.feign
+package com.drinkit.webclient.feign
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import feign.Retryer

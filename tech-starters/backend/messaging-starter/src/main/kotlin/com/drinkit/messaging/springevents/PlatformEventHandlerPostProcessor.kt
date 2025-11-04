@@ -6,6 +6,8 @@ import org.springframework.aop.support.AopUtils
 import org.springframework.beans.factory.SmartInitializingSingleton
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
+import org.springframework.beans.factory.getBeanNamesForType
+import org.springframework.beans.factory.getBeansOfType
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ConfigurableApplicationContext
@@ -28,13 +30,13 @@ internal class PlatformEventHandlerPostProcessor : ApplicationContextAware, Smar
 
     override fun setApplicationContext(applicationContext: ApplicationContext) {
         require(applicationContext is ConfigurableApplicationContext) {
-            "ApplicationContext does not implement ConfigurableApplicationContext"
+            "ApplicationContext must implement ConfigurableApplicationContext"
         }
         this.applicationContext = applicationContext
     }
 
     override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
-        val factories = beanFactory.getBeansOfType(EventListenerFactory::class.java, false, false)
+        val factories = beanFactory.getBeansOfType<EventListenerFactory>(includeNonSingletons = false, allowEagerInit = false)
             .values
 
         this.beanFactory = beanFactory
@@ -42,7 +44,7 @@ internal class PlatformEventHandlerPostProcessor : ApplicationContextAware, Smar
     }
 
     override fun afterSingletonsInstantiated() {
-        val beanNames = beanFactory.getBeanNamesForType(Any::class.java)
+        val beanNames = beanFactory.getBeanNamesForType<Any>()
 
         val evaluatorClass = Class.forName("org.springframework.context.event.EventExpressionEvaluator")
         val evaluatorConstructor = evaluatorClass.declaredConstructors[0]

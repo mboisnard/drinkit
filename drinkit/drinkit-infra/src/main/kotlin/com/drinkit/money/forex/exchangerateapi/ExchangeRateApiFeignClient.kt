@@ -1,6 +1,6 @@
 package com.drinkit.money.forex.exchangerateapi
 
-import com.drinkit.feign.FeignJsonConfiguration
+import com.drinkit.webclient.feign.FeignJsonConfiguration
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
