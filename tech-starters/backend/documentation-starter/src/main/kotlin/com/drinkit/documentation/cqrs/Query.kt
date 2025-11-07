@@ -26,6 +26,6 @@ package com.drinkit.documentation.cqrs
  * This annotation helps enforce the strict separation between state-modifying and data-retrieving
  * operations, which is the core benefit of CQRS.
  */
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 annotation class Query

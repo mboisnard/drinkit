@@ -5,6 +5,7 @@ graalvm-buildtools-native = "0.11.2"
 gradle-git-properties = "2.5.2"
 jooq = "3.20.8"
 kotlin = "2.2.21"
+ksp = "2.3.2"
 openapi-generator = "7.16.0"
 spring-dependency-management = "1.1.7"
 spring-boot = "3.5.7"
@@ -18,6 +19,7 @@ gradle-git-properties-plugin = { module = "com.gorylenko.gradle-git-properties:g
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 jooq-codegen-gradle-plugin = { module = "org.jooq.jooq-codegen-gradle:org.jooq.jooq-codegen-gradle.gradle.plugin", version.ref = "jooq" }
 jooq-meta = { module = "org.jooq:jooq-meta", version.ref = "jooq" }
+ksp-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 openapi-generator-plugin = { module = "org.openapitools:openapi-generator-gradle-plugin", version.ref = "openapi-generator" }
 spring-dependency-management-plugin = { module = "io.spring.dependency-management:io.spring.dependency-management.gradle.plugin", version.ref = "spring-dependency-management" }
 spring-boot-gradle-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot" }

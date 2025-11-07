@@ -24,6 +24,6 @@ package com.drinkit.documentation.cqrs
  *
  * Using this annotation clearly separates the operations that modify data from those that only read it.
  */
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 annotation class Command

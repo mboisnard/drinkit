@@ -61,6 +61,7 @@ export default withMermaid(
                       {text: 'Software Craftsmanship Manifesto', link: 'craft-manifesto'},
                       {text: 'SOLID', link: 'solid'},
                       {text: 'Scout Rule', link: 'scout-rule'},
+                      {text: 'Living Documentation', link: 'living-documentation'},
                       {text: 'Coding Rules', link: 'coding-rules'},
                       {text: 'Developer Experience', link: 'dev-exp'},
                     ],
@@ -102,6 +103,15 @@ export default withMermaid(
                   { text: 'Login Bruteforce Protection', link: 'bruteforce-protection' },
                   { text: 'Remember Me', link: 'remember-me' },
                   { text: 'TOTP', link: 'totp' },
+                ],
+              },
+
+              {
+                text: 'Resources',
+                base: '/engineering/resources/',
+                collapsed: true,
+                items: [
+                  { text: 'Domains', link: 'domains/domains' },
                 ],
               },
             ],

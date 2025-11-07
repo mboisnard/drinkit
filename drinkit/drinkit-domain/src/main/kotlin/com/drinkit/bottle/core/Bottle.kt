@@ -2,6 +2,7 @@ package com.drinkit.bottle.core
 
 import com.drinkit.common.AbstractId
 import com.drinkit.common.Percentage
+import com.drinkit.documentation.clean.architecture.CoreDomain
 import com.drinkit.utils.addIfNotMatch
 import com.drinkit.utils.doesntContainsInvisibleCharacters
 import java.math.BigDecimal
@@ -36,6 +37,7 @@ data class Description(val value: String) {
     }
 }
 
+@CoreDomain
 sealed interface Bottle {
     val id: BottleId
     val alcoholContent: AlcoholContent

@@ -24,6 +24,6 @@ package com.drinkit.documentation.event.sourcing
  * By annotating a class with [Projection], you identify it as a consumer of events responsible
  * for creating a queryable view of the application's state.
  */
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 annotation class Projection

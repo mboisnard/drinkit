@@ -1,10 +1,11 @@
 package com.drinkit.money.forex.core
 
+import com.drinkit.documentation.clean.architecture.CoreDomain
 import com.drinkit.money.Currency
 import com.drinkit.utils.SAFE_ROUNDING_MODE
 import java.math.BigDecimal
-import java.math.RoundingMode
 
+@CoreDomain
 data class ExchangeRate private constructor(
     val source: Currency,
     val target: Currency,
