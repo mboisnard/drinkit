@@ -30,6 +30,6 @@ package com.drinkit.documentation.fcis
  * By using this annotation, you are committing to keeping this piece of code clean, predictable,
  * and free from the complexities of the outside world.
  */
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 annotation class FunctionalCore

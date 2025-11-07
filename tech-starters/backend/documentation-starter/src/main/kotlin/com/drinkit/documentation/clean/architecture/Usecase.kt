@@ -25,6 +25,9 @@ package com.drinkit.documentation.clean.architecture
  * piece of your application's business logic, adhering to the principles of separation of concerns
  * and dependency inversion.
  */
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class Usecase
+annotation class Usecase(
+    val name: String = "",
+    val description: String = "",
+)

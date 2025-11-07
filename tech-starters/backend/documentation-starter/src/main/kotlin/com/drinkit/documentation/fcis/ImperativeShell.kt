@@ -28,6 +28,6 @@ package com.drinkit.documentation.fcis
  * A class annotated with [ImperativeShell] is explicitly acknowledged as being stateful and
  * impure, forming the robust outer layer of the application.
  */
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 annotation class ImperativeShell

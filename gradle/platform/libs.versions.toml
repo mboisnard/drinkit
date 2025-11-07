@@ -8,6 +8,7 @@ spring-cloud-gcp-dependencies = "7.4.1"
 bson = "5.6.1"
 jooq = "3.20.8"
 kotlin-logging = "7.0.13"
+ksp = "2.3.2"
 meilisearch = "0.17.0"
 springdoc-openapi = "2.8.14"
 tess4j = "5.16.0"
@@ -31,6 +32,7 @@ spring-cloud-gcp-dependencies-bom = { module = "com.google.cloud:spring-cloud-gc
 bson = { module = "org.mongodb:bson", version.ref = "bson" }
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
+ksp-symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 meilisearch-java-client = { module = "com.meilisearch.sdk:meilisearch-java", version.ref = "meilisearch" }
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
 tess4j = { module = "net.sourceforge.tess4j:tess4j", version.ref = "tess4j" }

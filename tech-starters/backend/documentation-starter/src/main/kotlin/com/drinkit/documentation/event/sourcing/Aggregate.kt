@@ -25,6 +25,6 @@ package com.drinkit.documentation.event.sourcing
  *
  * This annotation identifies the primary consistency boundary for all write operations.
  */
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 annotation class Aggregate

@@ -5,6 +5,7 @@ import com.drinkit.common.CityLocation
 import com.drinkit.common.Constants.MAX_CELLAR_NAME_LENGTH
 import com.drinkit.common.Constants.MAX_CELLAR_ROOM_LENGTH
 import com.drinkit.common.isId
+import com.drinkit.documentation.clean.architecture.CoreDomain
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
 import com.drinkit.utils.addIfNotMatch
@@ -60,6 +61,7 @@ data class CellarRooms(
     }
 }
 
+@CoreDomain
 data class Cellar(
     val id: CellarId,
     val name: CellarName,
