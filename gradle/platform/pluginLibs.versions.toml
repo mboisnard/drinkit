@@ -3,7 +3,7 @@
 detekt = "1.23.8"
 graalvm-buildtools-native = "0.11.2"
 gradle-git-properties = "2.5.2"
-jooq = "3.20.8"
+jooq = "3.20.9"
 kotlin = "2.2.21"
 ksp = "2.3.2"
 openapi-generator = "7.16.0"
