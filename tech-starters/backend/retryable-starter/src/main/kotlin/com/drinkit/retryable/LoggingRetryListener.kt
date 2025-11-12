@@ -1,5 +1,6 @@
 package com.drinkit.retryable
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.retry.RetryCallback
 import org.springframework.retry.RetryContext
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component
  * @see RetryListener
  */
 @Component(value = "loggingRetryListener")
+@TechStarterTool
 internal class LoggingRetryListener: RetryListener {
 
     private val logger = KotlinLogging.logger {}

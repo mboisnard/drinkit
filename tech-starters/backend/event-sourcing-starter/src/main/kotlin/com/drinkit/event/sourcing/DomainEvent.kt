@@ -1,5 +1,7 @@
 package com.drinkit.event.sourcing
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
+
 /**
  * Interface representing a domain event in an event-sourced system.
  * All domain events must have a sequenceId to maintain order.
@@ -18,6 +20,7 @@ interface DomainEvent {
  * - Providing a clean separation between the initial creation event and subsequent events
  *
  */
+@TechStarterTool
 data class History<Event : DomainEvent, InitEvent: Event>(
     val initEvent: InitEvent,
     val remainingEvents: List<Event> = emptyList(),

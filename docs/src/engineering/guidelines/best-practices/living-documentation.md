@@ -62,8 +62,6 @@ plugins {
 
 Generated files are placed in `docs/src/engineering/resources/`
 
----
-
 ## 4️⃣ Usage
 
 ### Annotate Your Code
@@ -94,8 +92,6 @@ You can also use KDoc instead of the `description` parameter. The `name` paramet
 ```
 
 Generated files are automatically published via CI/CD.
-
----
 
 ## Resources
 

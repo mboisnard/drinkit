@@ -1,5 +1,6 @@
 package com.drinkit.postgresql.jooq
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -20,4 +21,5 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(propagation = Propagation.MANDATORY)
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
+@TechStarterTool
 annotation class JooqRepository

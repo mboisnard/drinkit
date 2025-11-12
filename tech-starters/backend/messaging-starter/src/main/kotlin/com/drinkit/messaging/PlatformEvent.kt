@@ -1,5 +1,7 @@
 package com.drinkit.messaging
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
+
 /**
  * Defines the base contract for a platform-level event, using the
  * Curiously Recurring Generic Pattern (CRGP).
@@ -13,4 +15,5 @@ package com.drinkit.messaging
  *
  * @param <Type> The concrete event class that implements this interface.
  */
+@TechStarterTool
 interface PlatformEvent<Type : PlatformEvent<Type>>

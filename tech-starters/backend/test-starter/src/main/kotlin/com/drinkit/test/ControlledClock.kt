@@ -1,10 +1,12 @@
 package com.drinkit.test
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 
+@TechStarterTool
 class ControlledClock(
     private val delegate: Clock = systemDefaultZone(),
     private var fixedInstant: Instant? = null,

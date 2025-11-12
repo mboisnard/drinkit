@@ -1,5 +1,6 @@
 package com.drinkit.webclient.feign
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
@@ -17,7 +18,7 @@ import java.time.Duration
  * Feign client configuration for XML support.
  *
  * Usage:
- * ```
+ * ```kotlin
  * @FeignClient(
  *     name = "my-api",
  *     url = "https://api.example.com",
@@ -33,6 +34,7 @@ import java.time.Duration
  *
  * The beans are scoped to the Feign client context (isolated per client).
  */
+@TechStarterTool
 class FeignXmlConfiguration {
 
     @Bean

@@ -1,5 +1,6 @@
 package com.drinkit.ocr
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.drinkit.ocr.analyzers.OCRAnalyzers
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
@@ -11,6 +12,7 @@ sealed interface OCRResponse {
     data object FeatureDisabled : OCRResponse
 }
 
+@TechStarterTool
 interface OCRAnalysis {
 
     fun featureAvailable(): Boolean

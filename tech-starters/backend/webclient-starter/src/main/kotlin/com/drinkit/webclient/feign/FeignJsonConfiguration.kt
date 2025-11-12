@@ -1,5 +1,6 @@
 package com.drinkit.webclient.feign
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.fasterxml.jackson.databind.ObjectMapper
 import feign.Retryer
 import feign.codec.Decoder
@@ -14,7 +15,7 @@ import java.time.Duration
  * Feign client configuration for JSON support.
  *
  * Usage:
- * ```
+ * ```kotlin
  * @FeignClient(
  *     name = "my-api",
  *     url = "https://api.example.com",
@@ -31,6 +32,7 @@ import java.time.Duration
  *
  * The beans are scoped to the Feign client context (isolated per client).
  */
+@TechStarterTool
 class FeignJsonConfiguration {
 
     @Bean

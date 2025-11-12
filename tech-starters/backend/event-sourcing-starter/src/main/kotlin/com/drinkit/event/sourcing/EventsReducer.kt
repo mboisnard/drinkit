@@ -1,5 +1,6 @@
 package com.drinkit.event.sourcing
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import kotlin.reflect.KClass
 
 /**
@@ -21,6 +22,7 @@ import kotlin.reflect.KClass
  * registered handler will be used.
  *
  */
+@TechStarterTool
 class EventsReducer<Projection, Event : DomainEvent, InitialEvent : Event>(
     private val factory: (InitialEvent) -> Projection,
     private val defaultHandler: (Projection, Event) -> Projection = {projection, _ -> projection },

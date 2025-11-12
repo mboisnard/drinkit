@@ -1,5 +1,6 @@
 package com.drinkit.security
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.drinkit.security.userdetails.InternalUserDetailsService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service
 
 class AuthenticationFailedException : RuntimeException()
 
+@TechStarterTool
 interface AuthenticationService {
 
     @Throws(AuthenticationFailedException::class)

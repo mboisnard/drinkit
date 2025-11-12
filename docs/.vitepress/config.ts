@@ -112,6 +112,7 @@ export default withMermaid(
                 collapsed: true,
                 items: [
                   { text: 'Domains', link: 'domains/domains' },
+                  { text: 'Tech Starters', link: 'tech-starters/tech-starters' },
                 ],
               },
             ],

@@ -7,7 +7,9 @@ internal class CreateCoreDomainDocumentation(
     private val outputFolderPath: String,
     private val logger: KSPLogger,
 ) {
-    private val outputDirectory: File by lazy { File(outputFolderPath).apply { mkdirs() } }
+    private val outputDirectory: File by lazy {
+        File(outputFolderPath).apply { mkdirs() }
+    }
 
     fun invoke(domain: CoreDomainInfo, useCases: List<UseCaseInfo>) {
         logger.warn("  Processing: ${domain.displayName}")
@@ -18,7 +20,10 @@ internal class CreateCoreDomainDocumentation(
         logger.warn("    Generated: ${outputFile.name} (${useCases.size} use case(s))")
     }
 
-    private fun generateMarkdown(domain: CoreDomainInfo, useCases: List<UseCaseInfo>): String = buildString {
+    private fun generateMarkdown(
+        domain: CoreDomainInfo,
+        useCases: List<UseCaseInfo>
+    ) = buildString {
         appendLine("# ${domain.displayName}")
         appendLine()
 

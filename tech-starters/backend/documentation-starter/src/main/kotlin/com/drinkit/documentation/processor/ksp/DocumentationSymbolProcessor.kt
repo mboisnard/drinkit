@@ -2,6 +2,7 @@ package com.drinkit.documentation.processor.ksp
 
 import com.drinkit.documentation.clean.architecture.CoreDomain
 import com.drinkit.documentation.clean.architecture.Usecase
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
@@ -11,16 +12,20 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.validate
 
 /**
- * KSP processor that orchestrates documentation generation from [CoreDomain] and [Usecase] annotations.
+ * KSP processor that orchestrates documentation generation from [CoreDomain], [Usecase] and [TechStarterTool] annotations.
  */
 internal class DocumentationSymbolProcessor(
-    private val createCoreDomainDocumentation: CreateCoreDomainDocumentation,
-    private val createCoreDomainsSummaryDocumentation: CreateCoreDomainsSummaryDocumentation,
-    private val logger: KSPLogger,
+        private val createCoreDomainDocumentation: CreateCoreDomainDocumentation,
+        private val createCoreDomainsOverviewDocumentation: CreateCoreDomainsOverviewDocumentation,
+        private val createTechStarterToolDocumentation: CreateTechStarterToolDocumentation,
+        private val createTechStarterToolsOverviewDocumentation: CreateTechStarterToolsOverviewDocumentation,
+        private val moduleName: String,
+        private val logger: KSPLogger,
 ) : SymbolProcessor {
 
     private lateinit var coreDomainsByPackage: Map<String, List<CoreDomainInfo>>
     private lateinit var useCasesByPackage: Map<String, List<UseCaseInfo>>
+    private lateinit var techStarterToolsByPackage: Map<String, List<TechStarterToolInfo>>
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         coreDomainsByPackage = collectInfo<CoreDomain, CoreDomainInfo>(
@@ -29,6 +34,9 @@ internal class DocumentationSymbolProcessor(
         useCasesByPackage = collectInfo<Usecase, UseCaseInfo>(
             resolver, KSClassDeclaration::toUseCase
         )
+        techStarterToolsByPackage = collectInfo<TechStarterTool, TechStarterToolInfo>(
+            resolver, KSClassDeclaration::toTechStarterTool
+        )
 
         return emptyList()
     }
@@ -36,20 +44,28 @@ internal class DocumentationSymbolProcessor(
     override fun finish() {
         val allDomains = coreDomainsByPackage.values.flatten()
 
-        if (allDomains.isEmpty()) {
-            logger.warn("No @CoreDomain found. Skipping documentation generation.")
-            return
+        if (allDomains.isNotEmpty()) {
+            logger.warn("Generating documentation for ${allDomains.size} core domain(s)...")
+
+            allDomains.forEach { domain ->
+                val associatedUseCases = domain.findAssociatedUseCases(useCasesByPackage)
+                createCoreDomainDocumentation.invoke(domain, associatedUseCases)
+            }
+            createCoreDomainsOverviewDocumentation.invoke(allDomains, useCasesByPackage)
+
+            logger.warn("Core domain documentation generation completed")
         }
 
-        logger.warn("Generating documentation for ${allDomains.size} core domain(s)...")
+        val allTools = techStarterToolsByPackage.values.flatten()
 
-        allDomains.forEach { domain ->
-            val associatedUseCases = domain.findAssociatedUseCases(useCasesByPackage)
-            createCoreDomainDocumentation.invoke(domain, associatedUseCases)
+        if (allTools.isNotEmpty() || moduleName.endsWith("-starter")) {
+            logger.warn("Generating documentation for tech starter tools")
+
+            createTechStarterToolDocumentation.invoke(moduleName, allTools)
+            createTechStarterToolsOverviewDocumentation.invoke(moduleName, allTools.size)
+
+            logger.warn("Tech starter tools documentation generation completed")
         }
-        createCoreDomainsSummaryDocumentation.invoke(allDomains)
-
-        logger.warn("Documentation generation completed")
     }
 
     private inline fun <reified A : Annotation, T : AnnotatedInfo> collectInfo(
@@ -64,39 +80,4 @@ internal class DocumentationSymbolProcessor(
                 mapper(classDeclaration, annotation)
             }
             .groupBy { it.packageName }
-
-    private inline fun <reified T : Annotation> KSClassDeclaration.findAnnotation(): KSAnnotation {
-        val qualifiedName = T::class.qualifiedName!!
-        return annotations.first {
-            it.annotationType.resolve().declaration.qualifiedName?.asString() == qualifiedName
-        }
-    }
 }
-
-private fun KSClassDeclaration.toCoreDomain(annotation: KSAnnotation): CoreDomainInfo {
-    val description = annotation.getStringArgument(CoreDomain::description.name)
-        ?: docString?.trim()
-
-    return CoreDomainInfo(
-        packageName = packageName.asString(),
-        className = simpleName.asString(),
-        customName = annotation.getStringArgument(CoreDomain::name.name),
-        description = description,
-    )
-}
-
-private fun KSClassDeclaration.toUseCase(annotation: KSAnnotation): UseCaseInfo {
-    val description = annotation.getStringArgument(Usecase::description.name)
-        ?: docString?.trim()
-
-    return UseCaseInfo(
-        packageName = packageName.asString(),
-        className = simpleName.asString(),
-        customName = annotation.getStringArgument(Usecase::name.name),
-        description = description,
-    )
-}
-
-private fun KSAnnotation.getStringArgument(argName: String): String? =
-    (arguments.find { it.name?.asString() == argName }?.value as? String)
-            ?.takeIf { it.isNotBlank() }

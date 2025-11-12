@@ -13,6 +13,7 @@ dependencies {
 
 ksp {
     arg("docsOutputDir", project.rootProject.file("docs/src/engineering/resources").absolutePath)
+    arg("moduleName", project.name)
 }
 
 // Execute the kspKotlin task only when you want (avoid having automatic documentation generation on build task)

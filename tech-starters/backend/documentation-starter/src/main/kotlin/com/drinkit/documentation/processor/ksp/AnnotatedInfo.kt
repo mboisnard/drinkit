@@ -66,3 +66,16 @@ internal data class UseCaseInfo(
         domain.customName?.let { className.contains(it.replace(" ", ""), ignoreCase = true) } ?: false ||
         className.contains(domain.className, ignoreCase = true)
 }
+
+internal data class TechStarterToolInfo(
+    override val packageName: String,
+    override val className: String,
+    override val customName: String?,
+    override val description: String?,
+    val methods: List<MethodInfo>,
+) : AnnotatedInfo
+
+internal data class MethodInfo(
+    val name: String,
+    val description: String?,
+)

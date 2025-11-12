@@ -1,5 +1,6 @@
 package com.drinkit.postgresql.jooq
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.jooq.JSONB
@@ -11,6 +12,7 @@ import org.jooq.impl.AbstractConverter
  * Just to be able to control the objectMapper used for serialization/deserialization
  * and be able to include project modules
  */
+@TechStarterTool
 class JSONBToJacksonConverter<U>(
     toType: Class<U>,
     private val mapper: ObjectMapper,

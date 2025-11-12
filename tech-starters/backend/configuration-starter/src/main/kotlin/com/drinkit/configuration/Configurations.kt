@@ -1,5 +1,6 @@
 package com.drinkit.configuration
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import kotlin.reflect.KClass
 
 /**
@@ -18,6 +19,7 @@ import kotlin.reflect.KClass
  * val retries = configurations.get(AppConfig.MaxRetries) // returns 3
  * ```
  */
+@TechStarterTool
 interface Configurations {
 
     fun <T : Any> get(key: ConfigurationKey<T>, type: KClass<T>): T?
