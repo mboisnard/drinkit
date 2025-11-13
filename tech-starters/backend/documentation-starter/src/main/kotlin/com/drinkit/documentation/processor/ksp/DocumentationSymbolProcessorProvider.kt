@@ -1,5 +1,9 @@
 package com.drinkit.documentation.processor.ksp
 
+import com.drinkit.documentation.processor.ksp.documentation.CreateCoreDomainDocumentation
+import com.drinkit.documentation.processor.ksp.documentation.CreateCoreDomainsOverviewDocumentation
+import com.drinkit.documentation.processor.ksp.documentation.CreateTechStarterToolDocumentation
+import com.drinkit.documentation.processor.ksp.documentation.CreateTechStarterToolsOverviewDocumentation
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
@@ -18,14 +22,8 @@ internal class DocumentationSymbolProcessorProvider : SymbolProcessorProvider {
         return DocumentationSymbolProcessor(
             createCoreDomainDocumentation = CreateCoreDomainDocumentation(domainsOutputPath, logger),
             createCoreDomainsOverviewDocumentation = CreateCoreDomainsOverviewDocumentation(domainsOutputPath, logger),
-            createTechStarterToolDocumentation = CreateTechStarterToolDocumentation(
-                outputFolderPath = techStartersOutputPath,
-                logger = logger,
-            ),
-            createTechStarterToolsOverviewDocumentation = CreateTechStarterToolsOverviewDocumentation(
-                outputFolderPath = techStartersOutputPath,
-                logger = logger,
-            ),
+            createTechStarterToolDocumentation = CreateTechStarterToolDocumentation(techStartersOutputPath, logger),
+            createTechStarterToolsOverviewDocumentation = CreateTechStarterToolsOverviewDocumentation(techStartersOutputPath, logger),
             logger = logger,
             moduleName = moduleName,
         )

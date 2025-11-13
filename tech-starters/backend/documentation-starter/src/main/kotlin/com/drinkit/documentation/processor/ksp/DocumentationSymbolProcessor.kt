@@ -2,6 +2,10 @@ package com.drinkit.documentation.processor.ksp
 
 import com.drinkit.documentation.clean.architecture.CoreDomain
 import com.drinkit.documentation.clean.architecture.Usecase
+import com.drinkit.documentation.processor.ksp.documentation.CreateCoreDomainDocumentation
+import com.drinkit.documentation.processor.ksp.documentation.CreateCoreDomainsOverviewDocumentation
+import com.drinkit.documentation.processor.ksp.documentation.CreateTechStarterToolDocumentation
+import com.drinkit.documentation.processor.ksp.documentation.CreateTechStarterToolsOverviewDocumentation
 import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
