@@ -18,8 +18,8 @@ internal class SearchApi(
     private val ocrAnalysis: OCRAnalysis,
 ) : SearchApiDelegate, AbstractApi() {
 
-    override fun searchByPhotoUpload(file: MultipartFile?): ResponseEntity<Unit> {
-        val ocrResponse = ocrAnalysis.extractText(file!!.resource, locale())
+    override fun searchByPhotoUpload(file: MultipartFile): ResponseEntity<Unit> {
+        val ocrResponse = ocrAnalysis.extractText(file.resource, locale())
 
         return when (ocrResponse) {
             is OCRResponse.ExtractedText -> ResponseEntity.ok().build()
