@@ -1,5 +1,6 @@
 [versions]
 # BOM Versions
+spring-ai-dependencies = "1.1.0"
 spring-boot-dependencies = "3.5.7"
 spring-cloud-dependencies = "2025.0.0"
 spring-cloud-gcp-dependencies = "7.4.1"
@@ -24,6 +25,7 @@ testcontainers-meilisearch = "1.0.5"
 
 [libraries]
 # BOM Dependencies
+spring-ai-dependencies-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai-dependencies" }
 spring-boot-dependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-dependencies" }
 spring-cloud-dependencies-bom = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref = "spring-cloud-dependencies" }
 spring-cloud-gcp-dependencies-bom = { module = "com.google.cloud:spring-cloud-gcp-dependencies", version.ref = "spring-cloud-gcp-dependencies" }
