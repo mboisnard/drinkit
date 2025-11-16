@@ -34,7 +34,7 @@ Avoid adding technical pattern suffixes like `UseCase`, `Service`, `Repository`,
 
 ## ✅ Write Concise and Meaningful Test Names
 
-Keep your test names focused on the specific behavior being tested. Omit filler words like _should_, _when_, _given_, or _returns_ if they don't add real value. The test's structure and assertions often make these words redundant and just add noise.
+Keep your test names focused on the specific behavior being tested. Omit filler words like `should`, `when`, `given`, or `returns` if they don't add real value. The test's structure and assertions often make these words redundant and just add noise.
 
 - **Good**: `throws_error_if_password_is_too_short`
 - **Less good**: `test_that_it_should_return_an_error_if_the_password_is_too_short`
