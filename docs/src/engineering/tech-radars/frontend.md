@@ -1,13 +1,8 @@
----
-sidebar: false
-aside: false
----
+# Frontend Tech Radar
 
 <script setup>
     import TechRadar from '../../../components/TechRadar.vue'
 </script>
-
-[Back to index][index]
 
 <TechRadar 
     title="Frontend Tech Radar"
@@ -17,5 +12,3 @@ aside: false
     { "quadrant": "Techniques", "ring": "ADOPT", "label": "Contract first approach" },
     ]'
 />
-
-[index]: what-is-it

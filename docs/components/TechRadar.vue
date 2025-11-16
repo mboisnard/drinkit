@@ -1,540 +1,619 @@
 <template>
-  <div>
-    <svg :id="svgId"></svg>
+  <div class="tech-radar-container">
+    <!-- View Toggle -->
+    <div class="view-toggle">
+      <button
+        :class="{ active: currentView === 'radar' }"
+        @click="currentView = 'radar'"
+      >
+        Radar View
+      </button>
+      <button
+        :class="{ active: currentView === 'list' }"
+        @click="currentView = 'list'"
+      >
+        List View
+      </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters" v-if="currentView === 'list'">
+      <div class="filter-group">
+        <label>Ring:</label>
+        <select v-model="selectedRing">
+          <option value="">All</option>
+          <option v-for="ring in Object.keys(rings)" :key="ring" :value="ring">
+            {{ ring }}
+          </option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Quadrant:</label>
+        <select v-model="selectedQuadrant">
+          <option value="">All</option>
+          <option v-for="quadrant in quadrants" :key="quadrant" :value="quadrant">
+            {{ quadrant }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Radar View -->
+    <div v-if="currentView === 'radar'" class="radar-view">
+      <svg
+        :viewBox="`-450 -450 900 900`"
+        class="radar-svg"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <!-- Grid lines -->
+        <line x1="0" y1="-400" x2="0" y2="400" stroke="#e0e0e0" stroke-width="2"/>
+        <line x1="-400" y1="0" x2="400" y2="0" stroke="#e0e0e0" stroke-width="2"/>
+
+        <!-- Rings -->
+        <g v-for="(ring, index) in ringRadii" :key="index">
+          <circle
+            cx="0"
+            cy="0"
+            :r="ring.radius"
+            fill="none"
+            stroke="#e0e0e0"
+            stroke-width="1.5"
+          />
+          <text
+            :y="-ring.radius + 40"
+            text-anchor="middle"
+            :fill="ring.color"
+            opacity="0.3"
+            font-size="36"
+            font-weight="bold"
+          >
+            {{ ring.name }}
+          </text>
+        </g>
+
+          <!-- Quadrant labels at edges within their quadrant -->
+          <!-- Top-right quadrant -->
+          <text x="200" y="-420" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+              {{ quadrants[0] }}
+          </text>
+          <!-- Top-left quadrant -->
+          <text x="-200" y="-420" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+              {{ quadrants[1] }}
+          </text>
+          <!-- Bottom-left quadrant -->
+          <text x="-200" y="435" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+              {{ quadrants[2] }}
+          </text>
+          <!-- Bottom-right quadrant -->
+          <text x="200" y="435" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+              {{ quadrants[3] }}
+          </text>
+
+        <!-- Blips -->
+        <g
+          v-for="(entry, index) in positionedEntries"
+          :key="index"
+          class="blip-group"
+          :transform="`translate(${entry.x}, ${entry.y})`"
+        >
+          <!-- Invisible larger circle for better hover detection -->
+          <circle
+            r="15"
+            fill="transparent"
+            class="blip-hover-area"
+            @mouseenter="hoveredEntry = entry"
+            @mouseleave="hoveredEntry = null"
+            @click="handleBlipClick(entry)"
+          />
+
+          <!-- Blip shape -->
+          <circle
+            v-if="entry.moved === 0"
+            r="10"
+            :fill="entry.color"
+            class="blip-circle"
+            pointer-events="none"
+          />
+          <path
+            v-else-if="entry.moved > 0"
+            d="M -10,5 10,5 0,-13 z"
+            :fill="entry.color"
+            class="blip-triangle"
+            pointer-events="none"
+          />
+          <path
+            v-else
+            d="M -10,-5 10,-5 0,13 z"
+            :fill="entry.color"
+            class="blip-triangle"
+            pointer-events="none"
+          />
+
+          <!-- Blip number -->
+          <text
+            y="4"
+            text-anchor="middle"
+            fill="white"
+            font-size="10"
+            font-weight="bold"
+            pointer-events="none"
+          >
+            {{ entry.id }}
+          </text>
+
+          <!-- Tooltip attached to this blip -->
+          <g
+            v-if="hoveredEntry && hoveredEntry.label === entry.label"
+            class="blip-tooltip"
+            pointer-events="none"
+          >
+            <rect
+              :x="-hoveredEntry.label.length * 3.5"
+              y="-30"
+              :width="hoveredEntry.label.length * 7"
+              height="18"
+              fill="#333"
+              rx="3"
+              opacity="0.9"
+            />
+            <text
+              y="-18"
+              text-anchor="middle"
+              fill="white"
+              font-size="12"
+            >
+              {{ hoveredEntry.label }}
+            </text>
+          </g>
+        </g>
+      </svg>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div v-for="qIndex in [3, 2, 1, 0]" :key="qIndex" class="legend-quadrant">
+          <h3>{{ quadrants[qIndex] }}</h3>
+          <div v-for="ringName in Object.keys(rings)" :key="ringName" class="legend-ring">
+            <h4 :style="{ color: rings[ringName].color }">{{ ringName }}</h4>
+            <ul>
+              <li
+                v-for="(entry, eIndex) in getEntriesForQuadrantRing(qIndex, ringName)"
+                :key="eIndex"
+                @mouseenter="hoveredEntry = entry"
+                @mouseleave="hoveredEntry = null"
+                @click="handleBlipClick(entry)"
+                class="legend-item"
+              >
+                <span class="entry-number">{{ entry.id }}.</span>
+                <span class="entry-label">{{ entry.label }}</span>
+                <span v-if="entry.moved > 0" class="move-indicator">▲</span>
+                <span v-if="entry.moved < 0" class="move-indicator">▼</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- List View -->
+    <div v-else class="list-view">
+      <div class="entries-list">
+        <div
+          v-for="(entry, index) in filteredEntries"
+          :key="index"
+          class="entry-card"
+          :style="{ borderLeftColor: rings[entry.ring].color }"
+        >
+          <div class="entry-header">
+            <h3>{{ entry.label }}</h3>
+            <span class="entry-ring" :style="{ backgroundColor: rings[entry.ring].color }">
+              {{ entry.ring }}
+            </span>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-quadrant">{{ entry.quadrant }}</span>
+            <span v-if="entry.moved > 0" class="entry-moved up">Moved up</span>
+            <span v-if="entry.moved < 0" class="entry-moved down">Moved down</span>
+          </div>
+          <p v-if="entry.description" class="entry-description">{{ entry.description }}</p>
+          <a v-if="entry.link" :href="entry.link" target="_blank" class="entry-link">
+            Learn more →
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
+
 <script setup lang="ts">
-  import { onMounted } from 'vue';
-  import * as d3 from 'd3';
+import { ref, computed } from 'vue';
 
-  const rings = {
-    ADOPT: { name: 'ADOPT', color: '#5ba300', index: 0 },
-    TRIAL: { name: 'TRIAL', color: '#009eb0', index: 1 },
-    ASSESS: { name: 'ASSESS', color: '#c7ba00', index: 2 },
-    HOLD: { name: 'HOLD', color: '#e09b96', index: 3 },
-  };
-  type Ring = keyof typeof rings;
+const rings = {
+  ADOPT: { name: 'ADOPT', color: '#5ba300', index: 0, radius: 150 },
+  TRIAL: { name: 'TRIAL', color: '#009eb0', index: 1, radius: 250 },
+  ASSESS: { name: 'ASSESS', color: '#c7ba00', index: 2, radius: 350 },
+  HOLD: { name: 'HOLD', color: '#e09b96', index: 3, radius: 450 },
+};
+type Ring = keyof typeof rings;
 
-  const size = {
-    width: 1450,
-    height: 1000,
-  };
+interface TechRadarEntry {
+  quadrant: string;
+  ring: Ring;
+  label: string;
+  description?: string;
+  link?: string;
+  moved?: number;
+}
 
-  const colors = {
-    background: '#fff',
-    grid: '#dddde0',
-    inactive: '#ddd',
-  };
+interface TechRadarProps {
+  quadrants: string[];
+  entries: TechRadarEntry[];
+}
 
-  const svgId = 'techRadar';
+const props = defineProps<TechRadarProps>();
 
-  interface TechRadarEntry {
-    quadrant: string, //TechRadarProps['quadrants'][number],
-    ring: Ring,
-    label: string,
-    description: string,
-    link: string,
-    moved: number,
-  }
+const currentView = ref<'radar' | 'list'>('radar');
+const selectedRing = ref<string>('');
+const selectedQuadrant = ref<string>('');
+const hoveredEntry = ref<any>(null);
 
-  interface TechRadarProps {
-    title: string,
-    quadrants: string[],
-    entries: TechRadarEntry[],
-  }
+const ringRadii = computed(() =>
+  Object.keys(rings).map(key => ({
+    name: key,
+    radius: rings[key].radius,
+    color: rings[key].color
+  }))
+);
 
-  const props = defineProps<TechRadarProps>();
+// Position entries in the radar with proper spacing
+const positionedEntries = computed(() => {
+  // Visual quadrant positions (matching labels in template):
+  // quadrants[3] → Top-right (0° to 90°)
+  // quadrants[2] → Top-left (90° to 180°)
+  // quadrants[1] → Bottom-left (180° to 270°)
+  // quadrants[0] → Bottom-right (270° to 360°)
 
-  const ringsList = Object.keys(rings).map(key => rings[key]);
-  const quadrantsWithIndex = props.quadrants.map((quadrant, index) => {
-    return {
-      name: quadrant,
-      index: index,
-    };
-  });
-  const radarEntries = props.entries.map((entry) => {
-    return {
-      quadrant: quadrantsWithIndex.find((quadrant) => quadrant.name === entry.quadrant).index,
-      ring: ringsList.find((ring) => ring.name === entry.ring).index,
-      label: entry.label,
-      active: true,
-      moved: entry.moved || 0,
-      link: entry.link,
-      description: entry.description,
-    };
-  });
+  const quadrantConfig = [
+    { visualIndex: 3, min: 0, max: Math.PI / 2 },           // Top-right
+    { visualIndex: 2, min: Math.PI / 2, max: Math.PI },     // Top-left
+    { visualIndex: 1, min: Math.PI, max: 3 * Math.PI / 2 }, // Bottom-left
+    { visualIndex: 0, min: 3 * Math.PI / 2, max: 2 * Math.PI } // Bottom-right
+  ];
 
-  onMounted(() => {
-    radar_visualization({
-      svg_id: svgId,
-      width: size.width,
-      height: size.height,
-      colors: colors,
-      title: props.title,
-      quadrants: props.quadrants.map(quadrant => {
-        return { name: quadrant }
-      }),
-      rings: ringsList,
-      print_layout: true,
-      links_in_new_tabs: true,
-      entries: radarEntries,
-    });
-  });
+  const positioned: any[] = [];
+  let globalId = 1;
 
-  function radar_visualization(config) {
+  // Process in visual order: top-right, top-left, bottom-left, bottom-right
+  for (const config of quadrantConfig) {
+    const quadrantName = props.quadrants[config.visualIndex];
 
-    // custom random number generator, to make random sequence reproducible
-    // source: https://stackoverflow.com/questions/521295
-    var seed = 42;
-    function random() {
-      var x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
+    for (const ringKey of Object.keys(rings) as Ring[]) {
+      const ringInfo = rings[ringKey];
 
-    function random_between(min, max) {
-      return min + random() * (max - min);
-    }
-
-    function normal_between(min, max) {
-      return min + (random() + random()) * 0.5 * (max - min);
-    }
-
-    // radial_min / radial_max are multiples of PI
-    const quadrants = [
-      { radial_min: 0, radial_max: 0.5, factor_x: 1, factor_y: 1 },
-      { radial_min: 0.5, radial_max: 1, factor_x: -1, factor_y: 1 },
-      { radial_min: -1, radial_max: -0.5, factor_x: -1, factor_y: -1 },
-      { radial_min: -0.5, radial_max: 0, factor_x: 1, factor_y: -1 }
-    ];
-
-    const rings = [
-      { radius: 130 },
-      { radius: 220 },
-      { radius: 310 },
-      { radius: 400 }
-    ];
-
-    const title_offset =
-        { x: -675, y: -420 };
-
-    const footer_offset =
-        { x: -675, y: 420 };
-
-    const legend_offset = [
-      { x: 450, y: 90 },
-      { x: -675, y: 90 },
-      { x: -675, y: -310 },
-      { x: 450, y: -310 }
-    ];
-
-    function polar(cartesian) {
-      var x = cartesian.x;
-      var y = cartesian.y;
-      return {
-        t: Math.atan2(y, x),
-        r: Math.sqrt(x * x + y * y)
-      }
-    }
-
-    function cartesian(polar) {
-      return {
-        x: polar.r * Math.cos(polar.t),
-        y: polar.r * Math.sin(polar.t)
-      }
-    }
-
-    function bounded_interval(value, min, max) {
-      var low = Math.min(min, max);
-      var high = Math.max(min, max);
-      return Math.min(Math.max(value, low), high);
-    }
-
-    function bounded_ring(polar, r_min, r_max) {
-      return {
-        t: polar.t,
-        r: bounded_interval(polar.r, r_min, r_max)
-      }
-    }
-
-    function bounded_box(point, min, max) {
-      return {
-        x: bounded_interval(point.x, min.x, max.x),
-        y: bounded_interval(point.y, min.y, max.y)
-      }
-    }
-
-    function segment(quadrant, ring) {
-      var polar_min = {
-        t: quadrants[quadrant].radial_min * Math.PI,
-        r: ring === 0 ? 30 : rings[ring - 1].radius
-      };
-      var polar_max = {
-        t: quadrants[quadrant].radial_max * Math.PI,
-        r: rings[ring].radius
-      };
-      var cartesian_min = {
-        x: 15 * quadrants[quadrant].factor_x,
-        y: 15 * quadrants[quadrant].factor_y
-      };
-      var cartesian_max = {
-        x: rings[3].radius * quadrants[quadrant].factor_x,
-        y: rings[3].radius * quadrants[quadrant].factor_y
-      };
-      return {
-        clipx: function(d) {
-          var c = bounded_box(d, cartesian_min, cartesian_max);
-          var p = bounded_ring(polar(c), polar_min.r + 15, polar_max.r - 15);
-          d.x = cartesian(p).x; // adjust data too!
-          return d.x;
-        },
-        clipy: function(d) {
-          var c = bounded_box(d, cartesian_min, cartesian_max);
-          var p = bounded_ring(polar(c), polar_min.r + 15, polar_max.r - 15);
-          d.y = cartesian(p).y; // adjust data too!
-          return d.y;
-        },
-        random: function() {
-          return cartesian({
-            t: random_between(polar_min.t, polar_max.t),
-            r: normal_between(polar_min.r, polar_max.r)
-          });
-        }
-      }
-    }
-
-    // position each entry randomly in its segment
-    for (var i = 0; i < config.entries.length; i++) {
-      var entry = config.entries[i];
-      entry.segment = segment(entry.quadrant, entry.ring);
-      var point = entry.segment.random();
-      entry.x = point.x;
-      entry.y = point.y;
-      entry.color = entry.active || config.print_layout ?
-          config.rings[entry.ring].color : config.colors.inactive;
-    }
-
-    // partition entries according to segments
-    var segmented = new Array(4);
-    for (var quadrant = 0; quadrant < 4; quadrant++) {
-      segmented[quadrant] = new Array(4);
-      for (var ring = 0; ring < 4; ring++) {
-        segmented[quadrant][ring] = [];
-      }
-    }
-    for (var i=0; i<config.entries.length; i++) {
-      var entry = config.entries[i];
-      segmented[entry.quadrant][entry.ring].push(entry);
-    }
-
-    // assign unique sequential id to each entry
-    var id = 1;
-    for (var quadrant of [2,3,1,0]) {
-      for (var ring = 0; ring < 4; ring++) {
-        var entries = segmented[quadrant][ring];
-        entries.sort(function(a,b) { return a.label.localeCompare(b.label); })
-        for (var i=0; i<entries.length; i++) {
-          entries[i].id = "" + id++;
-        }
-      }
-    }
-
-    function translate(x, y) {
-      return "translate(" + x + "," + y + ")";
-    }
-
-    function viewbox(quadrant) {
-      return [
-        Math.max(0, quadrants[quadrant].factor_x * 400) - 420,
-        Math.max(0, quadrants[quadrant].factor_y * 400) - 420,
-        440,
-        440
-      ].join(" ");
-    }
-
-    // adjust with config.scale.
-    config.scale = config.scale || 1;
-    var scaled_width = config.width * config.scale;
-    var scaled_height = config.height * config.scale;
-
-    var svg = d3.select("svg#" + config.svg_id)
-        .style("background-color", config.colors.background)
-        .attr("width", scaled_width)
-        .attr("height", scaled_height);
-
-    var radar = svg.append("g");
-    if ("zoomed_quadrant" in config) {
-      svg.attr("viewBox", viewbox(config.zoomed_quadrant));
-    } else {
-      radar.attr("transform", translate(scaled_width / 2, scaled_height / 2).concat(`scale(${config.scale})`));
-    }
-
-    var grid = radar.append("g");
-
-    // draw grid lines
-    grid.append("line")
-        .attr("x1", 0).attr("y1", -400)
-        .attr("x2", 0).attr("y2", 400)
-        .style("stroke", config.colors.grid)
-        .style("stroke-width", 1);
-    grid.append("line")
-        .attr("x1", -400).attr("y1", 0)
-        .attr("x2", 400).attr("y2", 0)
-        .style("stroke", config.colors.grid)
-        .style("stroke-width", 1);
-
-    // background color. Usage `.attr("filter", "url(#solid)")`
-    // SOURCE: https://stackoverflow.com/a/31013492/2609980
-    var defs = grid.append("defs");
-    var filter = defs.append("filter")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", 1)
-        .attr("height", 1)
-        .attr("id", "solid");
-    filter.append("feFlood")
-        .attr("flood-color", "rgb(0, 0, 0, 0.8)");
-    filter.append("feComposite")
-        .attr("in", "SourceGraphic");
-
-    // draw rings
-    for (var i = 0; i < rings.length; i++) {
-      grid.append("circle")
-          .attr("cx", 0)
-          .attr("cy", 0)
-          .attr("r", rings[i].radius)
-          .style("fill", "none")
-          .style("stroke", config.colors.grid)
-          .style("stroke-width", 1);
-      if (config.print_layout) {
-        grid.append("text")
-            .text(config.rings[i].name)
-            .attr("y", -rings[i].radius + 62)
-            .attr("text-anchor", "middle")
-            .style("fill", config.rings[i].color)
-            .style("opacity", 0.35)
-            .style("font-family", "Arial, Helvetica")
-            .style("font-size", "42px")
-            .style("font-weight", "bold")
-            .style("pointer-events", "none")
-            .style("user-select", "none");
-      }
-    }
-
-    function legend_transform(quadrant, ring, index=null) {
-      var dx = ring < 2 ? 0 : 140;
-      var dy = (index == null ? -16 : index * 12);
-      if (ring % 2 === 1) {
-        dy = dy + 36 + segmented[quadrant][ring-1].length * 12;
-      }
-      return translate(
-          legend_offset[quadrant].x + dx,
-          legend_offset[quadrant].y + dy
+      // Get all entries for this quadrant and ring
+      const entriesInSegment = props.entries.filter(
+        e => e.quadrant === quadrantName && e.ring === ringKey
       );
+
+      if (entriesInSegment.length === 0) continue;
+
+      // Sort alphabetically
+      entriesInSegment.sort((a, b) => a.label.localeCompare(b.label));
+
+      // Position each entry
+      const minRadius = ringInfo.index === 0 ? 40 : rings[Object.keys(rings)[ringInfo.index - 1] as Ring].radius + 15;
+      const maxRadius = ringInfo.radius - 15;
+      const angleRange = config.max - config.min;
+      const angleStep = angleRange / (entriesInSegment.length + 1);
+
+      entriesInSegment.forEach((entry, idx) => {
+        // Deterministic but varied positioning based on label
+        const seed = entry.label.split('').reduce((acc: number, char: string) =>
+          acc + char.charCodeAt(0), 0);
+        const random = (Math.sin(seed) + 1) / 2;
+
+        // Angle: evenly distributed with slight randomness
+        const angle = config.min + angleStep * (idx + 1) + (random - 0.5) * angleStep * 0.3;
+
+        // Radius: varied to avoid overlap
+        const radiusRange = maxRadius - minRadius;
+        const radius = minRadius + radiusRange * (0.3 + random * 0.6);
+
+        positioned.push({
+          ...entry,
+          x: radius * Math.cos(angle),
+          y: radius * Math.sin(angle),
+          color: ringInfo.color,
+          moved: entry.moved || 0,
+          id: globalId++,
+          quadrantIndex: config.visualIndex,
+          ringIndex: ringInfo.index
+        });
+      });
     }
-
-    // draw title and legend (only in print layout)
-    if (config.print_layout) {
-
-      // title
-      radar.append("text")
-          .attr("transform", translate(title_offset.x, title_offset.y))
-          .text(config.title)
-          .style("font-family", "Arial, Helvetica")
-          .style("font-size", "30")
-          .style("font-weight", "bold")
-
-      // date
-      radar
-          .append("text")
-          .attr("transform", translate(title_offset.x, title_offset.y + 20))
-          .text(config.date || "")
-          .style("font-family", "Arial, Helvetica")
-          .style("font-size", "14")
-          .style("fill", "#999")
-
-      // footer
-      radar.append("text")
-          .attr("transform", translate(footer_offset.x, footer_offset.y))
-          .text("▲ moved up     ▼ moved down")
-          .attr("xml:space", "preserve")
-          .style("font-family", "Arial, Helvetica")
-          .style("font-size", "10px");
-
-      // legend
-      var legend = radar.append("g");
-      for (var quadrant = 0; quadrant < 4; quadrant++) {
-        legend.append("text")
-            .attr("transform", translate(
-                legend_offset[quadrant].x,
-                legend_offset[quadrant].y - 45
-            ))
-            .text(config.quadrants[quadrant].name)
-            .style("font-family", "Arial, Helvetica")
-            .style("font-size", "18px")
-            .style("font-weight", "bold");
-        for (var ring = 0; ring < 4; ring++) {
-          legend.append("text")
-              .attr("transform", legend_transform(quadrant, ring))
-              .text(config.rings[ring].name)
-              .style("font-family", "Arial, Helvetica")
-              .style("font-size", "12px")
-              .style("font-weight", "bold")
-              .style("fill", config.rings[ring].color);
-          legend.selectAll(".legend" + quadrant + ring)
-              .data(segmented[quadrant][ring])
-              .enter()
-              .append("a")
-              .attr("href", function (d) {
-                return d.link ? d.link : "#"; // stay on same page if no link was provided
-              })
-              // Add a target if (and only if) there is a link and we want new tabs
-              .attr("target", function (d) {
-                return (d.link && config.links_in_new_tabs) ? "_blank" : null;
-              })
-              .append("text")
-              .attr("transform", function(d, i) { return legend_transform(quadrant, ring, i); })
-              .attr("class", "legend" + quadrant + ring)
-              .attr("id", function(d, i) { return "legendItem" + d.id; })
-              .text(function(d, i) { return d.id + ". " + d.label; })
-              .style("font-family", "Arial, Helvetica")
-              .style("font-size", "11px")
-              .on("mouseover", function(d) { showBubble(d); highlightLegendItem(d); })
-              .on("mouseout", function(d) { hideBubble(d); unhighlightLegendItem(d); });
-        }
-      }
-    }
-
-    // layer for entries
-    var rink = radar.append("g")
-        .attr("id", "rink");
-
-    // rollover bubble (on top of everything else)
-    var bubble = radar.append("g")
-        .attr("id", "bubble")
-        .attr("x", 0)
-        .attr("y", 0)
-        .style("opacity", 0)
-        .style("pointer-events", "none")
-        .style("user-select", "none");
-    bubble.append("rect")
-        .attr("rx", 4)
-        .attr("ry", 4)
-        .style("fill", "#333");
-    bubble.append("text")
-        .style("font-family", "sans-serif")
-        .style("font-size", "10px")
-        .style("fill", "#fff");
-    bubble.append("path")
-        .attr("d", "M 0,0 10,0 5,8 z")
-        .style("fill", "#333");
-
-    function showBubble(d) {
-      if (d.active || config.print_layout) {
-        var tooltip = d3.select("#bubble text")
-            .text(d.label);
-        var bbox = tooltip.node().getBBox();
-        d3.select("#bubble")
-            .attr("transform", translate(d.x - bbox.width / 2, d.y - 16))
-            .style("opacity", 0.8);
-        d3.select("#bubble rect")
-            .attr("x", -5)
-            .attr("y", -bbox.height)
-            .attr("width", bbox.width + 10)
-            .attr("height", bbox.height + 4);
-        d3.select("#bubble path")
-            .attr("transform", translate(bbox.width / 2 - 5, 3));
-      }
-    }
-
-    function hideBubble(d) {
-      var bubble = d3.select("#bubble")
-          .attr("transform", translate(0,0))
-          .style("opacity", 0);
-    }
-
-    function highlightLegendItem(d) {
-      var legendItem = document.getElementById("legendItem" + d.id);
-      legendItem.setAttribute("filter", "url(#solid)");
-      legendItem.setAttribute("fill", "white");
-    }
-
-    function unhighlightLegendItem(d) {
-      var legendItem = document.getElementById("legendItem" + d.id);
-      legendItem.removeAttribute("filter");
-      legendItem.removeAttribute("fill");
-    }
-
-    // draw blips on radar
-    var blips = rink.selectAll(".blip")
-        .data(config.entries)
-        .enter()
-        .append("g")
-        .attr("class", "blip")
-        .attr("transform", function(d, i) { return legend_transform(d.quadrant, d.ring, i); })
-        .on("mouseover", function(d) { showBubble(d); highlightLegendItem(d); })
-        .on("mouseout", function(d) { hideBubble(d); unhighlightLegendItem(d); });
-
-    // configure each blip
-    blips.each(function(d) {
-      var blip = d3.select(this);
-
-      // blip link
-      if (d.active && Object.prototype.hasOwnProperty.call(d, "link") && d.link) {
-        blip = blip.append("a")
-            .attr("xlink:href", d.link);
-
-        if (config.links_in_new_tabs) {
-          blip.attr("target", "_blank");
-        }
-      }
-
-      // blip shape
-      if (d.moved > 0) {
-        blip.append("path")
-            .attr("d", "M -11,5 11,5 0,-13 z") // triangle pointing up
-            .style("fill", d.color);
-      } else if (d.moved < 0) {
-        blip.append("path")
-            .attr("d", "M -11,-5 11,-5 0,13 z") // triangle pointing down
-            .style("fill", d.color);
-      } else {
-        blip.append("circle")
-            .attr("r", 9)
-            .attr("fill", d.color);
-      }
-
-      // blip text
-      if (d.active || config.print_layout) {
-        var blip_text = config.print_layout ? d.id : d.label.match(/[a-z]/i);
-        blip.append("text")
-            .text(blip_text)
-            .attr("y", 3)
-            .attr("text-anchor", "middle")
-            .style("fill", "#fff")
-            .style("font-family", "Arial, Helvetica")
-            .style("font-size", function(d) { return blip_text.length > 2 ? "8px" : "9px"; })
-            .style("pointer-events", "none")
-            .style("user-select", "none");
-      }
-    });
-
-    // make sure that blips stay inside their segment
-    function ticked() {
-      blips.attr("transform", function(d) {
-        return translate(d.segment.clipx(d), d.segment.clipy(d));
-      })
-    }
-
-    // distribute blips, while avoiding collisions
-    d3.forceSimulation()
-        .nodes(config.entries)
-        .velocityDecay(0.19) // magic number (found by experimentation)
-        .force("collision", d3.forceCollide().radius(12).strength(0.85))
-        .on("tick", ticked);
   }
+
+  return positioned;
+});
+
+const filteredEntries = computed(() => {
+  return props.entries.filter(entry => {
+    const ringMatch = !selectedRing.value || entry.ring === selectedRing.value;
+    const quadrantMatch = !selectedQuadrant.value || entry.quadrant === selectedQuadrant.value;
+    return ringMatch && quadrantMatch;
+  });
+});
+
+function getEntriesForQuadrantRing(quadrantIndex: number, ringName: string) {
+  const quadrantName = props.quadrants[quadrantIndex];
+  return positionedEntries.value.filter(
+    entry => entry.quadrant === quadrantName && entry.ring === ringName
+  );
+}
+
+function handleBlipClick(entry: any) {
+  if (entry.link) {
+    window.open(entry.link, '_blank');
+  }
+}
 </script>
-<style module>
-  svg a:link {
-    text-decoration: none;
+
+<style scoped>
+.tech-radar-container {
+  width: 100%;
+  margin: 2rem 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.view-toggle button {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.view-toggle button:hover {
+  color: #333;
+}
+
+.view-toggle button.active {
+  color: #5ba300;
+  border-bottom-color: #5ba300;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.filter-group select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.radar-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.radar-svg {
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  margin-bottom: 2rem;
+}
+
+.blip-group {
+  /* No transform to prevent movement on hover */
+}
+
+.blip-hover-area {
+  cursor: pointer;
+}
+
+.blip-circle,
+.blip-triangle {
+  transition: filter 0.2s, opacity 0.2s;
+}
+
+.blip-group:hover .blip-circle,
+.blip-group:hover .blip-triangle {
+  filter: brightness(1.15) drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
+}
+
+.blip-tooltip {
+  animation: fadeIn 0.15s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.legend-quadrant h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.legend-ring h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+}
+
+.legend-ring ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.legend-item {
+  padding: 0.4rem 0;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-item:hover {
+  background: #f5f5f5;
+}
+
+.entry-number {
+  font-weight: 600;
+  color: #666;
+  min-width: 2rem;
+}
+
+.entry-label {
+  flex: 1;
+}
+
+.move-indicator {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.list-view {
+  width: 100%;
+}
+
+.entries-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.entry-card {
+  padding: 1.5rem;
+  background: white;
+  border-left: 4px solid;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.entry-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 0.5rem;
+}
+
+.entry-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.entry-ring {
+  padding: 0.25rem 0.75rem;
+  color: white;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.entry-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.entry-quadrant {
+  font-weight: 500;
+}
+
+.entry-moved {
+  font-weight: 600;
+}
+
+.entry-moved.up {
+  color: #5ba300;
+}
+
+.entry-moved.down {
+  color: #e09b96;
+}
+
+.entry-description {
+  margin: 0.75rem 0;
+  color: #555;
+  line-height: 1.5;
+}
+
+.entry-link {
+  display: inline-block;
+  color: #5ba300;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.entry-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .legend {
+    grid-template-columns: 1fr;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+}
 </style>
