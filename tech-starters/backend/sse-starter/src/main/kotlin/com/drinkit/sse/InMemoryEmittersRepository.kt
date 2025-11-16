@@ -5,7 +5,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
-data class Emitter(
+internal data class Emitter(
     val eventName: String,
     val emitter: SseEmitter,
 )
