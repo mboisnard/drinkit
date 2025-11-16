@@ -55,28 +55,6 @@ npm run dev
 * https://rapidapi.com/thecocktaildb/api/the-cocktail-db
 * https://github.com/gugarosa/viviner
 
-## Wine Bottle Size
-
-https://en.wikipedia.org/wiki/Wine_bottle#Sizes
-
-* Flacon - 0.1L
-* Piccolo - 0.2L
-* Chopine - 0.25L
-* Demi-bouteille - 0.375L
-* Pot - 0.5L
-* Clavelin - 0.62L
-* Bouteille - 0.75L
-* Magnum - 1.5L
-* Marie-Jeanne - 2.25L
-* Double Magnum - 3.0L
-* Réhoboam - 4.5L
-* Jéroboam - 5.25L
-* Impériale - 6.0L
-* Salmanazar - 9.0L
-* Balthazar - 12.0L
-* Nabuchodonosor - 15.0L
-* Melchior - 18.0L
-
 ## Gradle Plugins to check/add
 
 * https://github.com/gradle/github-dependency-graph-gradle-plugin
