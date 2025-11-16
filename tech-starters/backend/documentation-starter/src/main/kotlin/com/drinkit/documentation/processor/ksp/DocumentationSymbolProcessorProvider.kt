@@ -15,14 +15,19 @@ internal class DocumentationSymbolProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
         val logger = environment.logger
         val docsOutputDir = environment.options["docsOutputDir"]
-        val moduleName = environment.options["moduleName"] ?: "unknown-module-name"
+        val moduleName = environment.options["moduleName"]!!
+        val moduleSourceDir = environment.options["moduleSourceDir"]!!
         val domainsOutputPath = "$docsOutputDir$DOMAINS_FOLDER"
         val techStartersOutputPath = "$docsOutputDir$TECH_STARTERS_FOLDER"
 
         return DocumentationSymbolProcessor(
             createCoreDomainDocumentation = CreateCoreDomainDocumentation(domainsOutputPath, logger),
             createCoreDomainsOverviewDocumentation = CreateCoreDomainsOverviewDocumentation(domainsOutputPath, logger),
-            createTechStarterToolDocumentation = CreateTechStarterToolDocumentation(techStartersOutputPath, logger),
+            createTechStarterToolDocumentation = CreateTechStarterToolDocumentation(
+                outputFolderPath = techStartersOutputPath,
+                moduleSourceDir = moduleSourceDir,
+                logger = logger
+            ),
             createTechStarterToolsOverviewDocumentation = CreateTechStarterToolsOverviewDocumentation(techStartersOutputPath, logger),
             logger = logger,
             moduleName = moduleName,

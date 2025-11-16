@@ -3,6 +3,9 @@ package com.drinkit.documentation.processor.ksp
 import com.drinkit.documentation.clean.architecture.CoreDomain
 import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.tech.starter.TechStarterTool
+import com.google.devtools.ksp.isInternal
+import com.google.devtools.ksp.isPrivate
+import com.google.devtools.ksp.isPublic
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 
@@ -56,6 +59,7 @@ private fun KSAnnotation.getStringArgument(argName: String): String? =
 
 private fun KSClassDeclaration.extractMethods(): List<MethodInfo> =
     getAllFunctions()
+        .filter { !it.isPrivate() && !it.isInternal() }
         .filter { !it.simpleName.asString().startsWith("component") }
         .filter { !it.simpleName.asString().startsWith("copy") }
         .filter { !listOf("<init>", "equals", "hashCode", "toString").contains(it.simpleName.asString()) }

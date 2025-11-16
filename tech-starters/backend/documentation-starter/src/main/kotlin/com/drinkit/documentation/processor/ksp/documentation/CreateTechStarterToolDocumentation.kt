@@ -6,6 +6,7 @@ import java.io.File
 
 internal class CreateTechStarterToolDocumentation(
     private val outputFolderPath: String,
+    private val moduleSourceDir: String,
     private val logger: KSPLogger,
 ) {
     private val outputDirectory: File by lazy {
@@ -15,56 +16,82 @@ internal class CreateTechStarterToolDocumentation(
     fun invoke(moduleName: String, tools: List<TechStarterToolInfo>) {
         logger.warn("  Processing module: $moduleName")
 
+        val readmeContent = readReadmeIfExists()
         val outputFile = File(outputDirectory, "$moduleName.md")
         outputFile.writeText(
-            generateMarkdown(moduleName, tools)
+            generateMarkdown(moduleName, tools, readmeContent)
         )
 
         logger.warn("    Generated: ${outputFile.name} (${tools.size} tool(s))")
     }
 
+    private fun readReadmeIfExists(): String? {
+        val readmeFile = File(moduleSourceDir, "README.md")
+        return if (readmeFile.exists()) {
+            logger.warn("    Found README.md, including content in documentation")
+            readmeFile.readText()
+        } else {
+            null
+        }
+    }
+
     private fun generateMarkdown(
         moduleName: String,
-        tools: List<TechStarterToolInfo>
+        tools: List<TechStarterToolInfo>,
+        readmeContent: String?
     ) = buildString {
-        appendLine("# $moduleName")
-        appendLine()
-
-        // Tools details
-        tools.sortedBy { it.displayName }.forEach { tool ->
-            appendLine("## ${tool.displayName}")
+        if (readmeContent != null) {
+            appendLine(readmeContent)
             appendLine()
 
-            // Description
-            tool.description?.let { description ->
-                description.lines().forEach { line ->
-                    appendLine("> $line")
-                }
+            if (tools.isNotEmpty()) {
+                appendLine("---")
+                appendLine()
+                appendLine("## API Reference")
                 appendLine()
             }
-
-            // Class info
-            appendLine("**Class**: `${tool.qualifiedName}`")
+        } else {
+            appendLine("# $moduleName")
             appendLine()
+        }
 
-            // Methods in a collapsible section if there are any
-            if (tool.methods.isNotEmpty()) {
-                appendLine("<details>")
-                appendLine("<summary><strong>Methods (${tool.methods.size})</strong></summary>")
+        // Tools details
+        if (tools.isNotEmpty()) {
+            tools.sortedBy { it.displayName }.forEach { tool ->
+                appendLine("### ${tool.displayName}")
                 appendLine()
 
-                tool.methods.sortedBy { it.name }.forEach { method ->
-                    append("- **`${method.name}()`**")
-                    method.description?.let { description ->
-                        val inlineDescription = description.lines().joinToString(" ") { it.trim() }
-                        append(" - $inlineDescription")
+                // Description
+                tool.description?.let { description ->
+                    description.lines().forEach { line ->
+                        appendLine("> $line")
                     }
                     appendLine()
                 }
 
+                // Class info
+                appendLine("**Class**: `${tool.qualifiedName}`")
                 appendLine()
-                appendLine("</details>")
-                appendLine()
+
+                // Methods in a collapsible section if there are any
+                if (tool.methods.isNotEmpty()) {
+                    appendLine("<details>")
+                    appendLine("<summary><strong>Methods (${tool.methods.size})</strong></summary>")
+                    appendLine()
+
+                    tool.methods.sortedBy { it.name }.forEach { method ->
+                        append("- **`${method.name}()`**")
+                        method.description?.let { description ->
+                            val inlineDescription = description.lines().joinToString(" ") { it.trim() }
+                            append(" - $inlineDescription")
+                        }
+                        appendLine()
+                    }
+
+                    appendLine()
+                    appendLine("</details>")
+                    appendLine()
+                }
             }
         }
 

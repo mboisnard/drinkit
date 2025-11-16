@@ -1,5 +1,6 @@
 package com.drinkit.sse
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.drinkit.messaging.PlatformEventHandler
 import com.drinkit.messaging.events.SendSseEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -13,6 +14,7 @@ import java.time.Duration
 
 private val EMITTER_TIMEOUT = Duration.ofMinutes(3)
 
+@TechStarterTool
 @RestController("/sse")
 internal class SseApi(
     private val emitters: InMemoryEmittersRepository,
