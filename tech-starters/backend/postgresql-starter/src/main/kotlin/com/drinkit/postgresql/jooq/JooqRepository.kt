@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
  *
  * Usage:
  * - Use cases (domain layer) MUST be annotated with @Transactional
- * - Tests MUST use @Transactional or configure a transaction manager
+ * - Spring tests MUST use @Transactional or configure a transaction manager
  *
  * This enforces that transactions are managed at the use case level,
  * never at the repository level.

@@ -1,5 +1,7 @@
 plugins {
     id("com.drinkit.common-convention")
+    id("com.drinkit.documentation-convention")
+
     id("org.springframework.boot")
 
     id("com.gorylenko.gradle-git-properties")
@@ -10,7 +12,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    implementation(project(":documentation-starter"))
     implementation(project(":kotlin-starter"))
     implementation(project(":monitoring-starter"))
 }
