@@ -4,7 +4,7 @@ import com.drinkit.documentation.processor.ksp.TechStarterToolInfo
 import com.google.devtools.ksp.processing.KSPLogger
 import java.io.File
 
-internal class CreateTechStarterToolDocumentation(
+internal class CreateTechStarterDocumentation(
     private val outputFolderPath: String,
     private val moduleSourceDir: String,
     private val logger: KSPLogger,

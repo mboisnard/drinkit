@@ -4,8 +4,8 @@ import com.drinkit.documentation.clean.architecture.CoreDomain
 import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.processor.ksp.documentation.CreateCoreDomainDocumentation
 import com.drinkit.documentation.processor.ksp.documentation.CreateCoreDomainsOverviewDocumentation
-import com.drinkit.documentation.processor.ksp.documentation.CreateTechStarterToolDocumentation
-import com.drinkit.documentation.processor.ksp.documentation.CreateTechStarterToolsOverviewDocumentation
+import com.drinkit.documentation.processor.ksp.documentation.CreateTechStarterDocumentation
+import com.drinkit.documentation.processor.ksp.documentation.CreateTechStartersOverviewDocumentation
 import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
@@ -19,12 +19,12 @@ import com.google.devtools.ksp.validate
  * KSP processor that orchestrates documentation generation from [CoreDomain], [Usecase] and [TechStarterTool] annotations.
  */
 internal class DocumentationSymbolProcessor(
-        private val createCoreDomainDocumentation: CreateCoreDomainDocumentation,
-        private val createCoreDomainsOverviewDocumentation: CreateCoreDomainsOverviewDocumentation,
-        private val createTechStarterToolDocumentation: CreateTechStarterToolDocumentation,
-        private val createTechStarterToolsOverviewDocumentation: CreateTechStarterToolsOverviewDocumentation,
-        private val moduleName: String,
-        private val logger: KSPLogger,
+    private val createCoreDomainDocumentation: CreateCoreDomainDocumentation,
+    private val createCoreDomainsOverviewDocumentation: CreateCoreDomainsOverviewDocumentation,
+    private val createTechStarterDocumentation: CreateTechStarterDocumentation,
+    private val createTechStartersOverviewDocumentation: CreateTechStartersOverviewDocumentation,
+    private val moduleName: String,
+    private val logger: KSPLogger,
 ) : SymbolProcessor {
 
     private lateinit var coreDomainsByPackage: Map<String, List<CoreDomainInfo>>
@@ -65,8 +65,8 @@ internal class DocumentationSymbolProcessor(
         if (allTools.isNotEmpty() || moduleName.endsWith("-starter")) {
             logger.warn("Generating documentation for tech starter tools")
 
-            createTechStarterToolDocumentation.invoke(moduleName, allTools)
-            createTechStarterToolsOverviewDocumentation.invoke(moduleName, allTools.size)
+            createTechStarterDocumentation.invoke(moduleName, allTools)
+            createTechStartersOverviewDocumentation.invoke(moduleName, allTools.size)
 
             logger.warn("Tech starter tools documentation generation completed")
         }

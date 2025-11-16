@@ -3,7 +3,7 @@ package com.drinkit.documentation.processor.ksp.documentation
 import com.google.devtools.ksp.processing.KSPLogger
 import java.io.File
 
-internal class CreateTechStarterToolsOverviewDocumentation(
+internal class CreateTechStartersOverviewDocumentation(
     private val outputFolderPath: String,
     private val logger: KSPLogger,
 ) {
@@ -43,7 +43,7 @@ internal class CreateTechStarterToolsOverviewDocumentation(
     private fun generateMarkdown(entries: List<ModuleEntry>) = buildString {
         appendLine("# Tech Starters")
         appendLine()
-        appendLine("This section documents all available tech starter tools organized by module.")
+        appendLine("This section documents all available tech starters and their associated tools.")
         appendLine()
         appendLine("## Available Modules")
         appendLine()
