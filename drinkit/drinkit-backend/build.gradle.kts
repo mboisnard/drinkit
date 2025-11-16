@@ -7,9 +7,10 @@ dependencies {
     implementation(project(":drinkit-domain"))
     implementation(project(":drinkit-infra"))
 
-    implementation(project(":security-starter"))
     implementation(project(":messaging-starter"))
     implementation(project(":ocr-starter"))
+    implementation(project(":security-starter"))
+    implementation(project(":sse-starter"))
 
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 

@@ -69,7 +69,7 @@ internal class PlatformEventHandlerPostProcessor : ApplicationContextAware, Smar
                             AnnotatedElementUtils.findMergedAnnotation(it, PlatformEventHandler::class.java)
                         }
                     )
-                } catch (ex: Throwable) {
+                } catch (_: Throwable) {
                     emptyMap()
                 }
 

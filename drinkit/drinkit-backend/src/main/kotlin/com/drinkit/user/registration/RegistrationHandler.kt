@@ -12,7 +12,7 @@ internal class RegistrationHandler(
     private val sendVerificationToken: SendVerificationToken,
 ) {
 
-    @PlatformEventHandler
+    @PlatformEventHandler("send.verification.token.to.created.user.queue")
     fun sendVerificationTokenToTheCreatedUser(event: UserCreated) {
         sendVerificationToken.invoke(
             userId = event.userId,

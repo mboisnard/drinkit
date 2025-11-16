@@ -6,5 +6,7 @@ import org.springframework.scheduling.annotation.Async
 @Async
 @TechStarterTool
 annotation class PlatformEventHandler(
-    val name: String = ""
+    val name: String,
+    val exchange: String = "",
+    val oneQueuePerInstance: Boolean = false,
 )
