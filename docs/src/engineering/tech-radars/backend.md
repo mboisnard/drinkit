@@ -22,6 +22,14 @@
       "link": "https://spring.io/projects/spring-boot"
     },
     {
+      "quadrant": "Languages & Frameworks",
+      "ring": "ASSESS",
+      "label": "Spring AI",
+      "description": "Integration layer for AI/ML services",
+      "link": "https://spring.io/projects/spring-ai",
+      "moved": 1
+    },
+    {
       "quadrant": "Techniques",
       "ring": "ADOPT",
       "label": "Contract First APIs",
@@ -37,11 +45,60 @@
     },
     {
       "quadrant": "Techniques",
+      "ring": "ADOPT",
+      "label": "SOLID Principles",
+      "description": "Five fundamental object-oriented design principles for maintainable and scalable code",
+      "link": "/drinkit/engineering/guidelines/best-practices/solid.html"
+    },
+    {
+      "quadrant": "Techniques",
+      "ring": "ADOPT",
+      "label": "Living Documentation",
+      "description": "Documentation that evolves with the code and stays up-to-date automatically",
+      "link": "/drinkit/engineering/guidelines/best-practices/living-documentation.html"
+    },
+    {
+      "quadrant": "Techniques",
+      "ring": "ADOPT",
+      "label": "Strong Typing",
+      "description": "Leverage type systems to catch errors at compile time and improve code safety",
+      "link": "/drinkit/engineering/guidelines/best-practices/coding-rules.html#strong-typing-for-clarity-and-safety"
+    },
+    {
+      "quadrant": "Techniques",
+      "ring": "ADOPT",
+      "label": "Scout Rule",
+      "description": "Always leave the code better than you found it - continuous incremental improvement",
+      "link": "/drinkit/engineering/guidelines/best-practices/scout-rule.html"
+    },
+    {
+      "quadrant": "Techniques",
       "ring": "TRIAL",
       "label": "Event Sourcing",
       "description": "Store state changes as events for audit and temporal queries",
       "link": "https://martinfowler.com/eaaDev/EventSourcing.html",
       "moved": 1
+    },
+    {
+      "quadrant": "Techniques",
+      "ring": "ASSESS",
+      "label": "Embeddings",
+      "description": "Vector representations of data for semantic search and AI applications",
+      "link": "https://docs.spring.io/spring-ai/reference/api/embeddings.html"
+    },
+    {
+      "quadrant": "Techniques",
+      "ring": "ASSESS",
+      "label": "OCR",
+      "description": "Optical Character Recognition for extracting text from images and documents",
+      "link": "https://github.com/tesseract-ocr/tesseract"
+    },
+    {
+      "quadrant": "Techniques",
+      "ring": "ASSESS",
+      "label": "LLM Integration",
+      "description": "Large Language Model integration for AI-powered features - testing in this project",
+      "link": "https://docs.spring.io/spring-ai/reference/api/chatclient.html"
     },
     {
       "quadrant": "Databases & Middlewares",
@@ -74,9 +131,16 @@
     {
       "quadrant": "Tools",
       "ring": "ADOPT",
-      "label": "Gradle",
-      "description": "Build tool with Kotlin DSL for better IDE support",
-      "link": "https://gradle.org/"
+      "label": "Gradle Conventions",
+      "description": "Modular convention plugins to maintain consistency across Gradle modules",
+      "link": "/drinkit/engineering/guidelines/build-tool.html#gradle-conventions"
+    },
+    {
+      "quadrant": "Tools",
+      "ring": "ADOPT",
+      "label": "Gradle Platform",
+      "description": "Internal BOM for consistent dependency version management across modules",
+      "link": "/drinkit/engineering/guidelines/build-tool.html#internal-dependency-management-bom"
     },
     {
       "quadrant": "Tools",
@@ -105,14 +169,6 @@
         "label": "Testcontainers",
         "description": "Docker containers for integration tests with real dependencies",
         "link": "https://testcontainers.com/"
-    },
-    {
-      "quadrant": "Tools",
-      "ring": "ASSESS",
-      "label": "Spring AI",
-      "description": "Integration layer for AI/ML services",
-      "link": "https://spring.io/projects/spring-ai",
-      "moved": 1
     }
     ]'
 />
