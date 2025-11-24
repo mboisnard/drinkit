@@ -46,8 +46,8 @@
         preserveAspectRatio="xMidYMid meet"
       >
         <!-- Grid lines -->
-        <line x1="0" y1="-400" x2="0" y2="400" stroke="#e0e0e0" stroke-width="2"/>
-        <line x1="-400" y1="0" x2="400" y2="0" stroke="#e0e0e0" stroke-width="2"/>
+        <line x1="0" y1="-450" x2="0" y2="450" stroke="#e0e0e0" stroke-width="2"/>
+        <line x1="-450" y1="0" x2="450" y2="0" stroke="#e0e0e0" stroke-width="2"/>
 
         <!-- Rings -->
         <g v-for="(ring, index) in ringRadii" :key="index">
