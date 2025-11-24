@@ -26,7 +26,6 @@ enum class BottleSize(
     NEBUCHADNEZZAR(15.0), // Nabuchodonosor in French
     MELCHIOR(18.0),
 
-    // Big formats
     SOLOMON(20.0),
     SOVEREIGN(25.0), // Souverain in French
     PRIMAT(27.0),

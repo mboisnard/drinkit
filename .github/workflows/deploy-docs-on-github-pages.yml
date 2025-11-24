@@ -40,7 +40,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Generate living documentation
-        run: ./gradlew kspKotlin
+        run: ./gradlew kspKotlin --rerun-tasks
 
       - name: Setup Node
         uses: actions/setup-node@v6
