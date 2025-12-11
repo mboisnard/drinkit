@@ -12,7 +12,7 @@ kotlin-logging = "7.0.13"
 ksp = "2.3.3"
 meilisearch = "0.17.1"
 springdoc-openapi = "2.8.14"
-tess4j = "5.16.0"
+tess4j = "5.17.0"
 
 # Test Versions
 approvaltests = "26.0.0"
