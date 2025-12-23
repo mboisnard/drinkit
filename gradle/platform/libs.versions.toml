@@ -3,7 +3,7 @@
 spring-ai-dependencies = "1.1.2"
 spring-boot-dependencies = "3.5.8"
 spring-cloud-dependencies = "2025.0.0"
-spring-cloud-gcp-dependencies = "7.4.1"
+spring-cloud-gcp-dependencies = "7.4.2"
 
 # Runtime Versions
 bson = "5.6.2"
