@@ -8,7 +8,7 @@ spring-cloud-gcp-dependencies = "7.4.2"
 # Runtime Versions
 bson = "5.6.2"
 jooq = "3.20.10"
-kotlin-logging = "7.0.13"
+kotlin-logging = "7.0.14"
 ksp = "2.3.4"
 meilisearch = "0.18.0"
 springdoc-openapi = "2.8.14"
