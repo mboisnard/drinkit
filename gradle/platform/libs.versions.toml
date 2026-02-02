@@ -15,7 +15,7 @@ springdoc-openapi = "2.8.15"
 tess4j = "5.18.0"
 
 # Test Versions
-approvaltests = "26.6.0"
+approvaltests = "26.6.1"
 cucumber = "7.34.1"
 io-rest-assured = "6.0.0"
 kotest = "6.1.2"
