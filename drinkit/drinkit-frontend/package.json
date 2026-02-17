@@ -18,7 +18,7 @@
     "vue-router": "^4.3.2"
   },
   "dependencies": {
-    "primeicons": "^6.0.1",
+    "primeicons": "^7.0.0",
     "primevue": "^3.51.0"
   }
 }
