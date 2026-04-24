@@ -31,7 +31,7 @@ jobs:
 
       - name: Upload Failing tests reports to GitHub Actions Artifacts
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: test-report
           path: drinkit/**/build/reports/tests/**
