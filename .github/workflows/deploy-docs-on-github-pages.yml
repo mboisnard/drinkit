@@ -39,7 +39,7 @@ jobs:
           java-version: 24
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Generate living documentation
         run: ./gradlew kspKotlin --rerun-tasks
