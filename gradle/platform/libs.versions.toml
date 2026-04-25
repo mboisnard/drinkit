@@ -19,7 +19,7 @@ approvaltests = "30.1.0"
 cucumber = "7.34.3"
 io-rest-assured = "6.0.0"
 kotest = "6.1.11"
-kotlin-faker = "1.16.0"
+kotlin-faker = "1.16.1"
 testcontainers-meilisearch = "1.0.5"
 
 
