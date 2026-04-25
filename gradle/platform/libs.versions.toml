@@ -11,7 +11,7 @@ jooq = "3.21.2"
 kotlin-logging = "8.0.01"
 ksp = "2.3.7"
 meilisearch = "0.20.1"
-springdoc-openapi = "2.8.15"
+springdoc-openapi = "2.8.17"
 tess4j = "5.18.0"
 
 # Test Versions
