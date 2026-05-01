@@ -8,7 +8,7 @@ kotlin = "2.3.21"
 ksp = "2.3.7"
 openapi-generator = "7.21.0"
 spring-dependency-management = "1.1.7"
-spring-boot = "3.5.14"
+spring-boot = "4.0.6"
 
 [libraries]
 
