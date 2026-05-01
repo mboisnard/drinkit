@@ -183,26 +183,7 @@ dependencies {
 }
 ```
 
-### 2. Configure
-
-The starter ships with default configuration in `application-feature-flags.yml`. Add the `feature-flags` profile to your application:
-
-```yaml
-spring:
-  profiles:
-    include: feature-flags
-```
-
-To override the defaults:
-
-```yaml
-feature-flags:
-  flipt:
-    url: http://localhost:8082    # Flipt server URL (default)
-    namespace: default            # Flipt namespace (default)
-```
-
-### 3. Use from Business Code
+### 2. Use from Business Code
 
 With a `FeatureFlagContextProvider` bean, context is injected automatically:
 
@@ -227,7 +208,7 @@ You can still pass explicit context when needed (e.g., evaluating for a differen
 featureFlags.isEnabled("feature-x", FeatureFlagContext(userId = otherUserId))
 ```
 
-### 4. Use in Tests (testFixtures)
+### 3. Use in Tests (testFixtures)
 
 `MockFeatureFlags` provides an in-memory store with state inspection and evaluation tracking:
 
@@ -269,7 +250,3 @@ class CheckoutServiceTest {
     }
 }
 ```
-
-### 5. Manage Flags in Flipt UI
-
-Flipt runs as part of the local docker-compose and is accessible at **http://localhost:8082**. Non-technical users can create, enable, and configure flags through the web interface.
