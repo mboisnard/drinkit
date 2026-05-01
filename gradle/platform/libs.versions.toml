@@ -6,7 +6,7 @@ spring-cloud-dependencies = "2025.0.0"
 spring-cloud-gcp-dependencies = "7.4.6"
 
 # Runtime Versions
-bson = "5.6.5"
+bson = "5.7.0"
 jooq = "3.21.2"
 kotlin-logging = "8.0.01"
 ksp = "2.3.7"
