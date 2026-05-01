@@ -1,0 +1,5 @@
+starters:
+  feature-flags:
+    flipt:
+      url: ${DRINKIT_FLIPT_URL:}
+      namespace: ${DRINKIT_FLIPT_NAMESPACE:}

@@ -22,3 +22,9 @@ spring:
 
 logging.level:
     org.springframework.security: DEBUG
+
+starters:
+  feature-flags:
+    flipt:
+      url: http://localhost:8082
+      namespace: default

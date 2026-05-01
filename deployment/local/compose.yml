@@ -1,6 +1,7 @@
 volumes:
   postgresql-data:
   meilisearch-data:
+  flipt-data:
 
 services:
   postgresql:
@@ -24,3 +25,10 @@ services:
       MEILI_MASTER_KEY: masterKey
       MEILI_NO_ANALYTICS: true
       MEILI_EXPERIMENTAL_DUMPLESS_UPGRADE: true
+
+  flipt:
+    image: flipt/flipt:v2.9.0
+    ports:
+      - "8082:8080"
+    volumes:
+      - flipt-data:/var/opt/flipt # TODO change to real path

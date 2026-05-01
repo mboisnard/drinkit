@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":ocr-starter"))
     implementation(project(":security-starter"))
     implementation(project(":sse-starter"))
+    implementation(project(":feature-flags-starter"))
 
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
