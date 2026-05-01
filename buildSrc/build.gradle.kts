@@ -12,12 +12,12 @@ repositories {
 // Version is also defined in the convention to defined the java version used by the application
 // TODO Find a way to mutualize version
 java {
-    sourceCompatibility = JavaVersion.VERSION_22
+    sourceCompatibility = JavaVersion.VERSION_25
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_22)
+        jvmTarget.set(JvmTarget.JVM_25)
     }
 }
 

@@ -16,11 +16,11 @@ group = "com.drinkit"
 version = "0.0.1-SNAPSHOT"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_22
+    sourceCompatibility = JavaVersion.VERSION_25
 }
 
 // Force dependency versions to override Spring Boot's BOM
-extra["jooq.version"] = "3.20.8" //TODO Enforced platform seems not working
+extra["jooq.version"] = "3.21.2" //TODO Enforced platform seems not working
 
 dependencies {
     sourceSets.all {
@@ -31,9 +31,9 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(24)
+    jvmToolchain(25)
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_22)
+        jvmTarget.set(JvmTarget.JVM_25)
 
         // Null safety management https://docs.spring.io/spring-boot/docs/3.0.13/reference/htmlsingle/#features.kotlin.null-safety
         freeCompilerArgs.add("-Xjsr305=strict")

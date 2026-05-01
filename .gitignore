@@ -40,3 +40,6 @@ out/
 
 ### GCP ###
 **/service-account.json
+
+### Env ###
+**/.env
