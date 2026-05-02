@@ -2,7 +2,7 @@
 # BOM Versions
 spring-ai-dependencies = "1.1.5"
 spring-boot-dependencies = "3.5.14"
-spring-cloud-dependencies = "2025.0.0"
+spring-cloud-dependencies = "2025.1.1"
 spring-cloud-gcp-dependencies = "7.4.6"
 
 # Runtime Versions
