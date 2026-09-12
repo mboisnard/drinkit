@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm")
 }
 
-tasks.withType<Test> {
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
