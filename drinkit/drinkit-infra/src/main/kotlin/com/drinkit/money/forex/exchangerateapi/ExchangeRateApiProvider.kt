@@ -6,7 +6,7 @@ import com.drinkit.configuration.get
 import com.drinkit.money.Currency
 import com.drinkit.money.forex.core.ExchangeRate
 import com.drinkit.money.forex.spi.ExchangeRateProvider
-import feign.FeignException
+import org.springframework.web.client.RestClientException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +25,7 @@ internal object ExchangeRateApiConfiguration {
 @Service
 internal class ExchangeRateApiProvider(
     private val configurations: Configurations,
-    private val exchangeRateApiClient: ExchangeRateApiFeignClient,
+    private val exchangeRateApiClient: ExchangeRateApiClient,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ExchangeRateProvider {
 
@@ -67,7 +67,7 @@ internal class ExchangeRateApiProvider(
                                 value = BigDecimal(rate.toString())
                             )
                         }
-                    } catch (ex: FeignException) {
+                    } catch (ex: RestClientException) {
                         logger.error(ex) { "Failed to fetch exchange rates from ExchangeRate API for ${baseCurrency.code}" }
                         emptyList()
                     }

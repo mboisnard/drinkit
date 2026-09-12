@@ -15,31 +15,31 @@ import com.drinkit.user.core.UserHistory
 import com.drinkit.user.core.UserId
 import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.Users
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
 import org.jooq.DSLContext
 import org.springframework.dao.DataAccessException
 
 @JooqRepository
 internal class JooqUserEventsRepository(
     private val dsl: DSLContext,
-    private val objectMapper: ObjectMapper,
+    private val jsonMapper: JsonMapper,
     private val users: Users,
 ) : UserEvents {
 
-    private val authorConverter = JSONBToJacksonConverter(Author::class.java, objectMapper)
+    private val authorConverter = JSONBToJacksonConverter(Author::class.java, jsonMapper)
 
     override fun findAllBy(userId: UserId): UserHistory? {
         return dsl.selectFrom(USER_EVENT)
             .where(USER_EVENT.USER_ID.eq(userId.value))
             .orderBy(USER_EVENT.SEQUENCE_ID.asc())
-            .fetchSequence { it.toEvent(objectMapper) }
+            .fetchSequence { it.toEvent(jsonMapper) }
             .toList()
             .takeIf { it.isNotEmpty() }
             ?.let { UserHistory.from<UserEvent, Initialized>(it) }
     }
 
     override fun save(event: UserEvent): User {
-        val (eventName, payload) = event.toEventNameWithPayload(objectMapper)
+        val (eventName, payload) = event.toEventNameWithPayload(jsonMapper)
 
         try {
             dsl.insertInto(USER_EVENT)

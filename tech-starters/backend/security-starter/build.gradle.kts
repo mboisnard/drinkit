@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     implementation(project(":configuration-starter"))
-    implementation("org.springframework.session:spring-session-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-session-jdbc")
     api("org.springframework.boot:spring-boot-starter-security")
 
     compileOnly("jakarta.servlet:jakarta.servlet-api")

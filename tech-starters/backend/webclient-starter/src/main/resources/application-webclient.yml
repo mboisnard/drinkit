@@ -1,13 +1,6 @@
 spring:
-  cloud:
-    openfeign:
-      okhttp:
-        enabled: true
-      httpclient:
-        enabled: false
-      client:
-        config:
-          default:
-            connectTimeout: 2000
-            readTimeout: 5000
-            loggerLevel: basic
+  http:
+    # Defaults for every HTTP client. Each client group may override them.
+    clients:
+      connect-timeout: 2s
+      read-timeout: 5s

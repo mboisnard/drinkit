@@ -20,12 +20,12 @@ import com.drinkit.user.core.Roles
 import com.drinkit.user.core.UserEvent
 import com.drinkit.user.core.UserId
 import com.drinkit.user.core.Verified
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.jooq.JSONB
+import tools.jackson.databind.json.JsonMapper
 import java.time.OffsetDateTime
 import java.util.Locale
 
-internal fun UserEvent.toEventNameWithPayload(objectMapper: ObjectMapper): Pair<UserEventPayloadType, JSONB> {
+internal fun UserEvent.toEventNameWithPayload(jsonMapper: JsonMapper): Pair<UserEventPayloadType, JSONB> {
     val payload = when (this) {
         is Initialized -> INITIALIZED to InitializedPayload.from(this)
         is ProfileCompleted -> PROFILE_COMPLETED to ProfileCompletedPayload.from(this)
@@ -34,15 +34,15 @@ internal fun UserEvent.toEventNameWithPayload(objectMapper: ObjectMapper): Pair<
         is Deleted -> DELETED to NoPayload
     }
 
-    return payload.first to JSONBToJacksonConverter(payload.second.javaClass, objectMapper).to(payload.second)
+    return payload.first to JSONBToJacksonConverter(payload.second.javaClass, jsonMapper).to(payload.second)
 }
 
-internal fun UserEventRecord.toEvent(objectMapper: ObjectMapper): UserEvent {
-    val commonFields = UserEventCommonFields.from(this, objectMapper)
+internal fun UserEventRecord.toEvent(jsonMapper: JsonMapper): UserEvent {
+    val commonFields = UserEventCommonFields.from(this, jsonMapper)
 
     return when (UserEventPayloadType.valueOf(eventName)) {
         INITIALIZED -> {
-            val payload = JSONBToJacksonConverter(InitializedPayload::class.java, objectMapper).from(payload)
+            val payload = JSONBToJacksonConverter(InitializedPayload::class.java, jsonMapper).from(payload)
             Initialized(
                 userId = commonFields.userId,
                 sequenceId = commonFields.sequenceId,
@@ -55,7 +55,7 @@ internal fun UserEventRecord.toEvent(objectMapper: ObjectMapper): UserEvent {
             )
         }
         PROFILE_COMPLETED -> {
-            val payload = JSONBToJacksonConverter(ProfileCompletedPayload::class.java, objectMapper).from(payload)
+            val payload = JSONBToJacksonConverter(ProfileCompletedPayload::class.java, jsonMapper).from(payload)
             ProfileCompleted(
                 userId = commonFields.userId,
                 sequenceId = commonFields.sequenceId,
@@ -143,11 +143,11 @@ internal data class UserEventCommonFields(
     }
 
     companion object {
-        fun from(record: UserEventRecord, objectMapper: ObjectMapper) = UserEventCommonFields(
+        fun from(record: UserEventRecord, jsonMapper: JsonMapper) = UserEventCommonFields(
             userId = UserId(record.userId),
             sequenceId = SequenceId(record.sequenceId),
             date = record.date,
-            author = JSONBToJacksonConverter(Author::class.java, objectMapper).from(record.author),
+            author = JSONBToJacksonConverter(Author::class.java, jsonMapper).from(record.author),
         )
     }
 }

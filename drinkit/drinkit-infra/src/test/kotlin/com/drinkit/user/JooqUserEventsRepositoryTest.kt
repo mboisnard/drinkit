@@ -6,9 +6,9 @@ import com.drinkit.test.ControlledClock
 import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.UserEventsTestContract
 import com.drinkit.user.spi.Users
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.kotlin.KotlinFeature
-import com.fasterxml.jackson.module.kotlin.kotlinModule
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.KotlinFeature
+import tools.jackson.module.kotlin.kotlinModule
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 
@@ -25,14 +25,14 @@ internal class JooqUserEventsRepositoryTest : UserEventsTestContract() {
     override fun fetchUsers(): Users = JooqUsersRepository(dsl = dsl, clock = ControlledClock())
 
     override fun fetchUserEvents(users: Users): UserEvents {
-        val objectMapper = JsonMapper.builder()
+        val jsonMapper = JsonMapper.builder()
             .addModule(kotlinModule { configure(KotlinFeature.NullIsSameAsDefault, true) })
             .addModule(UserEventMixinConfiguration().authorModule())
             .build()
 
         return JooqUserEventsRepository(
             dsl = dsl,
-            objectMapper = objectMapper,
+            jsonMapper = jsonMapper,
             users = users,
         )
     }

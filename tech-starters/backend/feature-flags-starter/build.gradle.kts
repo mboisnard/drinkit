@@ -9,5 +9,5 @@ dependencies {
     implementation(libs.openfeature.flipt.provider)
 
     compileOnly("org.springframework.boot:spring-boot-starter-actuator")
-    compileOnly("org.springframework.boot:spring-boot-starter-web")
+    compileOnly("org.springframework.boot:spring-boot-starter-webmvc")
 }

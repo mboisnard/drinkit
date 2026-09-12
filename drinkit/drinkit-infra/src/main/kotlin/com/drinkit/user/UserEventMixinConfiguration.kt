@@ -3,8 +3,8 @@ package com.drinkit.user
 import com.drinkit.common.Author
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.databind.Module
-import com.fasterxml.jackson.databind.module.SimpleModule
+import tools.jackson.databind.JacksonModule
+import tools.jackson.databind.module.SimpleModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -19,7 +19,7 @@ internal abstract class AuthorMixin
 internal class UserEventMixinConfiguration {
 
     @Bean
-    fun authorModule(): Module {
+    fun authorModule(): JacksonModule {
         return SimpleModule()
             .setMixInAnnotation(Author::class.java, AuthorMixin::class.java)
     }

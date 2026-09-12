@@ -3,10 +3,9 @@
 java = "25"
 
 # BOM Versions
-spring-ai-dependencies = "1.1.8"
-spring-boot-dependencies = "3.5.16"
-spring-cloud-dependencies = "2025.0.3"
-spring-cloud-gcp-dependencies = "7.4.10"
+spring-ai-dependencies = "2.0.1"
+spring-boot-dependencies = "4.1.1"
+spring-cloud-gcp-dependencies = "8.2.1"
 
 # Runtime Versions
 bson = "5.11.1"
@@ -14,9 +13,10 @@ jooq = "3.21.8"
 kotlin-logging = "8.0.4"
 ksp = "2.3.12"
 meilisearch = "0.21.0"
+spring-retry = "2.0.13"
 openfeature-sdk = "1.22.1"
 openfeature-flipt-provider = "0.1.4"
-springdoc-openapi = "2.9.1"
+springdoc-openapi = "3.1.1"
 tess4j = "5.20.0"
 
 # Test Versions
@@ -25,14 +25,13 @@ cucumber = "7.34.8"
 io-rest-assured = "6.0.1"
 kotest = "6.2.5"
 kotlin-faker = "1.16.2"
-testcontainers-meilisearch = "1.2.0"
+testcontainers-meilisearch = "2.0.0"
 
 
 [libraries]
 # BOM Dependencies
 spring-ai-dependencies-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai-dependencies" }
 spring-boot-dependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-dependencies" }
-spring-cloud-dependencies-bom = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref = "spring-cloud-dependencies" }
 spring-cloud-gcp-dependencies-bom = { module = "com.google.cloud:spring-cloud-gcp-dependencies", version.ref = "spring-cloud-gcp-dependencies" }
 
 # Runtime Dependencies
@@ -41,6 +40,7 @@ jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 ksp-symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 meilisearch-java-client = { module = "com.meilisearch.sdk:meilisearch-java", version.ref = "meilisearch" }
+spring-retry = { module = "org.springframework.retry:spring-retry", version.ref = "spring-retry" }
 openfeature-sdk = { module = "dev.openfeature:sdk", version.ref = "openfeature-sdk" }
 openfeature-flipt-provider = { module = "dev.openfeature.contrib.providers:flipt", version.ref = "openfeature-flipt-provider" }
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }

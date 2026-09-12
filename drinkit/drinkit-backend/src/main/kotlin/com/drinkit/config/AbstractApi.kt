@@ -11,6 +11,7 @@ abstract class AbstractApi {
 
     fun maybeConnectedUserId(): UserId? {
         val authentication = SecurityContextHolder.getContext().authentication
+            ?: return null
 
         if (!authentication.isAuthenticated) {
             return null
@@ -24,6 +25,7 @@ abstract class AbstractApi {
 
     fun connectedUserIdOrFail(): UserId {
         val authentication = SecurityContextHolder.getContext().authentication
+            ?: throw ConnectedUserException("No connected user")
 
         if (!authentication.isAuthenticated) {
             throw ConnectedUserException("No connected user")

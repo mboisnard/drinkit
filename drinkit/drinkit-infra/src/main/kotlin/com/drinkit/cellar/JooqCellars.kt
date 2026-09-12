@@ -13,7 +13,7 @@ import com.drinkit.postgresql.jooq.JooqRepository
 import com.drinkit.postgresql.jooq.JSONBToJacksonConverter
 import com.drinkit.postgresql.jooq.fetchSequence
 import com.drinkit.user.core.UserId
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
 import org.jooq.DSLContext
 import java.time.Clock
 import java.time.LocalDateTime
@@ -22,11 +22,11 @@ import java.time.LocalDateTime
 internal class JooqCellars(
     private val dslContext: DSLContext,
     private val clock: Clock,
-    objectMapper: ObjectMapper,
+    jsonMapper: JsonMapper,
 ) : Cellars {
 
-    private val cityLocationConverter = JSONBToJacksonConverter(CityLocation::class.java, objectMapper)
-    private val cellarRoomsConverter = JSONBToJacksonConverter(Set::class.java, objectMapper)
+    private val cityLocationConverter = JSONBToJacksonConverter(CityLocation::class.java, jsonMapper)
+    private val cellarRoomsConverter = JSONBToJacksonConverter(Set::class.java, jsonMapper)
 
     override fun create(cellar: Cellar): CellarId? {
         val query = dslContext.insertInto(CELLAR)

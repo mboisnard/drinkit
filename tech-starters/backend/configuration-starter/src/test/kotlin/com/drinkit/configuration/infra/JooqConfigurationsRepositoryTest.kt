@@ -4,7 +4,7 @@ import com.drinkit.configuration.Configurations
 import com.drinkit.configuration.generated.jooq.DrinkitApplication
 import com.drinkit.jooq.JooqIntegrationTest
 import com.drinkit.test.ControlledClock
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.jacksonMapperBuilder
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 
@@ -21,7 +21,7 @@ internal class JooqConfigurationsRepositoryTest : ConfigurationsTestContract() {
     override fun fetchRepository(): Configurations {
         return JooqConfigurationsRepository(
             dsl = dsl,
-            objectMapper = jacksonObjectMapper(),
+            jsonMapper = jacksonMapperBuilder().build(),
             clock = ControlledClock()
         )
     }

@@ -4,6 +4,9 @@ plugins {
 }
 
 dependencies {
+    // Typed configuration properties
+    implementation("org.springframework.boot:spring-boot")
+
     api(libs.meilisearch.java.client)
 
     testFixturesApi(libs.testcontainers.meilisearch)

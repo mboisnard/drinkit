@@ -4,6 +4,13 @@ spring:
     include: security,postgresql,mail,monitoring,search-engine,ocr,webclient
   threads.virtual.enabled: true
 
+  http:
+    serviceclient:
+      exchangerate-api:
+        base-url: https://v6.exchangerate-api.com/v6
+      ecb:
+        base-url: https://www.ecb.europa.eu
+
 server:
   port: ${PORT:8080}
   servlet:

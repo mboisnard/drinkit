@@ -31,7 +31,11 @@ kotlin {
     jvmToolchain(libs.findVersion("java").get().requiredVersion.toInt())
 
     compilerOptions {
-        // Null safety management https://docs.spring.io/spring-boot/docs/3.0.13/reference/htmlsingle/#features.kotlin.null-safety
-        freeCompilerArgs.add("-Xjsr305=strict")
+        // Null safety management https://docs.spring.io/spring-boot/reference/features/kotlin.html
+        freeCompilerArgs.addAll("-Xjsr305=strict")
+
+        // Kotlin equivalent of javac's -parameters, which Spring Boot expects so that parameter
+        // names survive compilation for constructor binding and dependency injection
+        javaParameters.set(true)
     }
 }

@@ -2,14 +2,14 @@ package com.drinkit.config
 
 import com.drinkit.common.AbstractId
 import com.fasterxml.jackson.annotation.JsonValue
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.module.SimpleModule
+import tools.jackson.core.JsonGenerator
+import tools.jackson.databind.ValueSerializer
+import tools.jackson.databind.SerializationContext
+import tools.jackson.databind.module.SimpleModule
 
-class AbstractIdSerializer : JsonSerializer<AbstractId>() {
+class AbstractIdSerializer : ValueSerializer<AbstractId>() {
 
-    override fun serialize(id: AbstractId, generator: JsonGenerator, serializer: SerializerProvider) {
+    override fun serialize(id: AbstractId, generator: JsonGenerator, serializer: SerializationContext) {
         generator.writeString(id.value)
     }
 }
