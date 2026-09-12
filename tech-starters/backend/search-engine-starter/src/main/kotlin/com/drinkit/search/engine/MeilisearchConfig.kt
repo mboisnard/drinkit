@@ -3,22 +3,25 @@ package com.drinkit.search.engine
 import com.meilisearch.sdk.Client
 import com.meilisearch.sdk.Config
 import com.meilisearch.sdk.json.GsonJsonHandler
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-@Configuration
-internal class MeilisearchConfig(
-    @Value("\${meilisearch.url}")
-    private val url: String,
-    @Value("\${meilisearch.apiKey}")
-    private val apiKey: String,
-) {
+@ConfigurationProperties(prefix = "meilisearch")
+internal data class MeilisearchProperties(
+    val url: String,
+    val apiKey: String,
+)
+
+@Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(MeilisearchProperties::class)
+internal class MeilisearchConfig {
 
     @Bean
-    fun meilisearchClient(): Client {
+    fun meilisearchClient(properties: MeilisearchProperties): Client {
         // Gson is the SDK default and what MeilisearchExtension already uses in tests
-        val config = Config(url, apiKey, GsonJsonHandler())
+        val config = Config(properties.url, properties.apiKey, GsonJsonHandler())
         return Client(config)
     }
 }

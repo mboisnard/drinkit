@@ -1,25 +1,16 @@
 package com.drinkit.money.forex.ecb
 
-import com.drinkit.webclient.feign.FeignXmlConfiguration
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
-import org.springframework.cloud.openfeign.FeignClient
-import org.springframework.web.bind.annotation.GetMapping
+import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import org.springframework.web.service.annotation.GetExchange
 import java.math.BigDecimal
 
-@FeignClient(
-    name = "ecb-forex",
-    url = "https://www.ecb.europa.eu",
-    configuration = [FeignXmlConfiguration::class]
-)
-internal interface EuropeanCentralBankFeignClient {
+internal interface EuropeanCentralBankClient {
 
-    @GetMapping("/stats/eurofxref/eurofxref-daily.xml")
+    @GetExchange("/stats/eurofxref/eurofxref-daily.xml")
     fun fetchDailyExchangeRates(): EcbDailyExchangeRatesResponse
 }
 
-@JacksonXmlRootElement(localName = "Envelope")
 internal data class EcbDailyExchangeRatesResponse(
     @field:JacksonXmlProperty(localName = "Cube")
     val outerCube: EcbOuterCube

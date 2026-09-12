@@ -4,7 +4,7 @@ import com.drinkit.cellar.spi.Cellars
 import com.drinkit.cellar.spi.CellarsTestContract
 import com.drinkit.generated.jooq.DrinkitApplication
 import com.drinkit.jooq.JooqIntegrationTest
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 
@@ -21,5 +21,5 @@ internal class JooqCellarsIntegrationTest : CellarsTestContract() {
     }
 
     override fun fetchRepository(): Cellars =
-        JooqCellars(dslContext, cellarFixtures.controlledClock, ObjectMapper())
+        JooqCellars(dslContext, cellarFixtures.controlledClock, JsonMapper.builder().build())
 }

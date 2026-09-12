@@ -14,6 +14,7 @@ class ConnectedUser(
 
     fun getOrFail(): User {
         val authentication = SecurityContextHolder.getContext().authentication
+            ?: throw ConnectedUserException("No connected user")
 
         if (!authentication.isAuthenticated) {
             throw ConnectedUserException("No connected user")

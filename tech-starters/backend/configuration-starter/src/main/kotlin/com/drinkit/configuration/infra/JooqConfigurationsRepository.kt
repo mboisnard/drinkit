@@ -3,7 +3,7 @@ package com.drinkit.configuration.infra
 import com.drinkit.configuration.ConfigurationKey
 import com.drinkit.configuration.Configurations
 import com.drinkit.configuration.generated.jooq.tables.references.CONFIGURATION
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
 import org.jooq.DSLContext
 import org.jooq.JSONB
 import org.springframework.stereotype.Repository
@@ -15,7 +15,7 @@ import kotlin.reflect.KClass
 @Repository
 internal class JooqConfigurationsRepository(
     private val dsl: DSLContext,
-    private val objectMapper: ObjectMapper,
+    private val jsonMapper: JsonMapper,
     private val clock: Clock,
 ) : Configurations {
 
@@ -26,13 +26,13 @@ internal class JooqConfigurationsRepository(
              .fetchOne()
              ?: return null
 
-         return objectMapper.readValue(record.value.data(), type.java)
+         return jsonMapper.readValue(record.value.data(), type.java)
     }
 
     @Transactional
     override fun <T : Any> set(key: ConfigurationKey<T>, value: T, type: KClass<T>): T {
         val date = OffsetDateTime.now(clock)
-        val serializedValue = JSONB.jsonb(objectMapper.writeValueAsString(value))
+        val serializedValue = JSONB.jsonb(jsonMapper.writeValueAsString(value))
 
         dsl.insertInto(CONFIGURATION)
              .set(CONFIGURATION.KEY, key.key)

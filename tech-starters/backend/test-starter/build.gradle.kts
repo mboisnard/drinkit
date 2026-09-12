@@ -21,5 +21,5 @@ dependencies {
     runtimeOnly("org.junit.platform:junit-platform-launcher")
 
     api("org.springframework.boot:spring-boot-testcontainers")
-    api("org.testcontainers:junit-jupiter")
+    api("org.testcontainers:testcontainers-junit-jupiter")
 }

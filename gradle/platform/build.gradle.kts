@@ -14,7 +14,6 @@ dependencies {
     // Import third-party BOMs, our constraints below will override their versions
     api(platform(libs.spring.ai.dependencies.bom))
     api(platform(libs.spring.boot.dependencies.bom))
-    api(platform(libs.spring.cloud.dependencies.bom))
     api(platform(libs.spring.cloud.gcp.dependencies.bom))
 
     constraints {
@@ -26,6 +25,8 @@ dependencies {
             }
         }
         api(libs.kotlin.logging.jvm)
+        // No longer managed by a BOM since Spring Cloud was removed
+        api(libs.spring.retry)
         api(libs.meilisearch.java.client)
         api(libs.springdoc.openapi.starter.webmvc.ui)
         api(libs.tess4j)

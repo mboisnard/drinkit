@@ -11,9 +11,9 @@ import com.drinkit.user.UserEventMixinConfiguration
 import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.UserEventsTestContract
 import com.drinkit.user.spi.Users
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.kotlin.KotlinFeature
-import com.fasterxml.jackson.module.kotlin.kotlinModule
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.KotlinFeature
+import tools.jackson.module.kotlin.kotlinModule
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 

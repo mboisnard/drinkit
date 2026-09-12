@@ -2,7 +2,7 @@ package com.drinkit.postgresql.jooq
 
 import org.jooq.SQLDialect
 import org.jooq.conf.Settings
-import org.springframework.boot.autoconfigure.jooq.DefaultConfigurationCustomizer
+import org.springframework.boot.jooq.autoconfigure.DefaultConfigurationCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

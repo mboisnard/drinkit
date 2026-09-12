@@ -57,7 +57,9 @@ internal class RegistrationApi(
             CreateNewUserCommand(
                 author = Author.Unlogged(CorrelationId.create()),
                 email = Email(createUserRequest.email),
-                password = EncodedPassword.from(password, passwordEncoder::encode),
+                password = EncodedPassword.from(password) { raw ->
+                    requireNotNull(passwordEncoder.encode(raw)) { "Password encoder returned no value" }
+                },
                 locale = request.locale,
             )
         )

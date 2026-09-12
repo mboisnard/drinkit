@@ -56,13 +56,17 @@ internal class InternalAuthenticationService(
     }
 
     override fun refreshContext() {
-        val oldAuthentication = securityContextHolderStrategy.context.authentication
+        // Spring Security 7 annotates this as nullable; refreshing without an authentication
+        // has never been valid, so fail explicitly rather than on a NullPointerException
+        val oldAuthentication = requireNotNull(securityContextHolderStrategy.context.authentication) {
+            "Cannot refresh the security context: no authentication in the current context"
+        }
 
         val recentlyUpdatedUser = userDetailsService.loadUserByUsername(oldAuthentication.name)
 
         val securityContext = securityContextHolderStrategy.createEmptyContext()
         securityContext.authentication = PreAuthenticatedAuthenticationToken(
-            oldAuthentication.principal,
+            requireNotNull(oldAuthentication.principal) { "Authentication has no principal" },
             oldAuthentication.credentials,
             recentlyUpdatedUser.authorities
         )

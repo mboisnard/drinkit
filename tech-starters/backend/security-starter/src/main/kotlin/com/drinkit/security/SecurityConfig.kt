@@ -44,9 +44,8 @@ internal class SecurityConfig {
         userDetailsService: UserDetailsService,
         passwordEncoder: PasswordEncoder,
     ): AuthenticationProvider {
-        val provider = DaoAuthenticationProvider()
+        val provider = DaoAuthenticationProvider(userDetailsService)
 
-        provider.setUserDetailsService(userDetailsService)
         provider.setPasswordEncoder(passwordEncoder)
 
         return provider

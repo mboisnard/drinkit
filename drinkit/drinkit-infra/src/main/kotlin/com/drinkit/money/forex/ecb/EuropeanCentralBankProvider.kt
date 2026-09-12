@@ -3,13 +3,13 @@ package com.drinkit.money.forex.ecb
 import com.drinkit.money.Currency
 import com.drinkit.money.forex.core.ExchangeRate
 import com.drinkit.money.forex.spi.ExchangeRateProvider
-import feign.FeignException
+import org.springframework.web.client.RestClientException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 
 @Service
 internal class EuropeanCentralBankProvider(
-    private val ecbClient: EuropeanCentralBankFeignClient,
+    private val ecbClient: EuropeanCentralBankClient,
 ) : ExchangeRateProvider {
 
     private val logger = KotlinLogging.logger {}
@@ -34,7 +34,7 @@ internal class EuropeanCentralBankProvider(
                     value = rate.rate,
                 )
             }
-        } catch (ex: FeignException) {
+        } catch (ex: RestClientException) {
             logger.error(ex) { "Failed to fetch exchange rates from ECB, returning no rates" }
             emptyList()
         }

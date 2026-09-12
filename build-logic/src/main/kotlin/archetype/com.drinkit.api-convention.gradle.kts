@@ -14,8 +14,8 @@ dependencies {
     // configuration it is declared in, or those extending it
     developmentOnly(platform(project(":platform")))
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    implementation("tools.jackson.module:jackson-module-kotlin")
 
     implementation(project(":kotlin-starter"))
     implementation(project(":monitoring-starter"))
