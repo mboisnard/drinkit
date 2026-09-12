@@ -1,9 +1,10 @@
-import org.jooq.codegen.gradle.CodegenTask
-
 plugins {
     kotlin("jvm")
     id("org.jooq.jooq-codegen-gradle")
 }
+
+// Generated sources are committed to the repository, not produced on every build
+val generatedSourcesDir = "src/generated/jooq/kotlin"
 
 dependencies {
     // Code generation specific dependencies
@@ -57,7 +58,7 @@ jooq {
                         isPojosAsKotlinDataClasses = true
                     }
                     target {
-                        directory = "src/generated/jooq/kotlin"
+                        directory = generatedSourcesDir
                     }
 
                     strategy {
@@ -69,15 +70,12 @@ jooq {
     }
 }
 
+// Generated sources are committed, so the source set points at the directory rather than at the
+// task: compiling never triggers a regeneration, and `jooqCodegen` stays an explicit, on-demand task
 kotlin {
     sourceSets {
         main {
-            kotlin.srcDir(tasks.jooqCodegen)
+            kotlin.srcDir(generatedSourcesDir)
         }
     }
-}
-
-// Execute the JooqCodegen task only when you want (avoid having automatic jooq generation on build task)
-tasks.withType<CodegenTask> {
-    onlyIf { gradle.startParameter.taskNames.contains("jooqCodegen") }
 }
