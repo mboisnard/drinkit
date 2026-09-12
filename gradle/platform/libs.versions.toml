@@ -6,7 +6,7 @@ java = "25"
 spring-ai-dependencies = "1.1.8"
 spring-boot-dependencies = "3.5.16"
 spring-cloud-dependencies = "2025.0.3"
-spring-cloud-gcp-dependencies = "7.4.10"
+spring-cloud-gcp-dependencies = "8.2.1"
 
 # Runtime Versions
 bson = "5.11.1"
