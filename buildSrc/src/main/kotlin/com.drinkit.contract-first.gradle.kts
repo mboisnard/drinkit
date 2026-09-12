@@ -7,18 +7,23 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
 }
 
-val openApiInput: Configuration by configurations.creating {
-    isCanBeConsumed = false
+// Gradle role-based configurations: `dependencyScope` receives the declared dependencies
+// (see `openApiInput(project(...))` in consuming modules), `resolvable` is what actually gets resolved
+// https://docs.gradle.org/current/userguide/declaring_configurations.html
+val openApiInput = configurations.dependencyScope("openApiInput")
+val openApiInputPath = configurations.resolvable("openApiInputPath") {
+    extendsFrom(openApiInput.get())
 }
 
-val openApiCommonTemplates: Configuration by configurations.creating {
-    isCanBeConsumed = false
+val openApiCommonTemplates = configurations.dependencyScope("openApiCommonTemplates")
+val openApiCommonTemplatesPath = configurations.resolvable("openApiCommonTemplatesPath") {
+    extendsFrom(openApiCommonTemplates.get())
 }
 
 // https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-gradle-plugin
 openApiGenerate {
     generatorName.set("kotlin-spring")
-    outputDir.set(layout.buildDirectory.dir("generated-sources/openapi/src/main/kotlin").map { it.asFile.toString() })
+    outputDir.set(layout.buildDirectory.dir("generated-sources/openapi/src/main/kotlin"))
 
     // Remove old generated files before starting a new generation task
     cleanupOutput.set(true)
@@ -54,12 +59,13 @@ openApiGenerate {
 }
 
 tasks.openApiGenerate {
-    if (openApiInput.files.isNotEmpty()) {
-        inputSpec.set("${openApiInput.singleFile.path}/api-definition.yaml")
+    val openApiInputFiles = openApiInputPath.get()
+    if (openApiInputFiles.files.isNotEmpty()) {
+        inputSpec.set("${openApiInputFiles.singleFile.path}/api-definition.yaml")
     }
 
-    inputs.files(openApiInput)
-    inputs.files(openApiCommonTemplates)
+    inputs.files(openApiInputPath)
+    inputs.files(openApiCommonTemplatesPath)
 }
 
 kotlin {
