@@ -10,7 +10,8 @@ import org.jooq.conf.Settings
 import org.jooq.impl.DefaultConfiguration
 import org.jooq.impl.DefaultDSLContext
 import org.junit.jupiter.api.extension.*
-import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.postgresql.PostgreSQLContainer
+import org.testcontainers.utility.DockerImageName
 import org.testcontainers.lifecycle.Startables
 import org.testcontainers.utility.TestcontainersConfiguration
 import java.sql.Connection
@@ -34,7 +35,7 @@ class JooqPostgresExtension : BeforeAllCallback, AfterEachCallback, AfterAllCall
     private lateinit var connection: Connection
     private lateinit var dslContext: DSLContext
 
-    private val container = PostgreSQLContainer(PG_IMAGE_NAME)
+    private val container = PostgreSQLContainer(DockerImageName.parse(PG_IMAGE_NAME))
         .withDatabaseName(DB_NAME)
         .withStartupAttempts(2)
         .withReuse(true)

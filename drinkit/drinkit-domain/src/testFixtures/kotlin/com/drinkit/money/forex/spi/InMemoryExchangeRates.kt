@@ -13,9 +13,7 @@ class InMemoryExchangeRates : ExchangeRates {
 
     override fun saveOrUpdate(exchangeRates: Set<ExchangeRate>): Set<ExchangeRate> {
         exchangeRates.forEach { exchangeRate ->
-            store[exchangeRate.source to exchangeRate.target] = exchangeRate.copy(
-                    value = exchangeRate.value
-            )
+            store[exchangeRate.source to exchangeRate.target] = exchangeRate
         }
         return exchangeRates
     }
