@@ -34,6 +34,5 @@ dependencies {
     implementation(pluginLibs.jooq.meta)
     implementation(pluginLibs.ksp.plugin)
     implementation(pluginLibs.openapi.generator.plugin)
-    implementation(pluginLibs.spring.dependency.management.plugin)
     implementation(pluginLibs.spring.boot.gradle.plugin)
 }
