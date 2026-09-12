@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     `java-library` // Expand the 'java' default plugin with dependencies api/implementation concepts https://docs.gradle.org/current/userguide/java_library_plugin.html
 
@@ -14,9 +12,8 @@ plugins {
 group = "com.drinkit"
 version = "0.0.1-SNAPSHOT"
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_25
-}
+// Explicit lookup here: Precompiled script plugins get no generated `libs` accessor
+val libs = the<VersionCatalogsExtension>().named("libs")
 
 dependencies {
     // A platform only constrains the configuration it is declared in, or those extending it, so it
@@ -28,11 +25,12 @@ dependencies {
     }
 }
 
+// The toolchain is the single source of truth for the Java version: the Kotlin plugin derives its
+// own jvmTarget from it, and java.sourceCompatibility becomes redundant
 kotlin {
-    jvmToolchain(25)
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_25)
+    jvmToolchain(libs.findVersion("java").get().requiredVersion.toInt())
 
+    compilerOptions {
         // Null safety management https://docs.spring.io/spring-boot/docs/3.0.13/reference/htmlsingle/#features.kotlin.null-safety
         freeCompilerArgs.add("-Xjsr305=strict")
     }
