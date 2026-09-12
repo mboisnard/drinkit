@@ -16,7 +16,7 @@ ksp = "2.3.12"
 meilisearch = "0.21.0"
 openfeature-sdk = "1.22.1"
 openfeature-flipt-provider = "0.1.4"
-springdoc-openapi = "2.9.1"
+springdoc-openapi = "3.1.1"
 tess4j = "5.20.0"
 
 # Test Versions
