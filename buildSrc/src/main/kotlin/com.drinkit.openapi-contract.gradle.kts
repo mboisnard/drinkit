@@ -1,12 +1,5 @@
-val openApi: Configuration by configurations.creating {
-    isCanBeConsumed = true
-    isCanBeResolved = false
-}
-
-val openApiTemplates: Configuration by configurations.creating {
-    isCanBeConsumed = true
-    isCanBeResolved = false
-}
+val openApi = configurations.consumable("openApi")
+val openApiTemplates = configurations.consumable("openApiTemplates")
 
 artifacts {
     add(openApi.name, file(layout.projectDirectory.dir("contract")))
