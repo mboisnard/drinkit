@@ -7,7 +7,6 @@ plugins {
     kotlin("plugin.spring") // Use allopen plugin to open Kotlin Spring Beans https://kotlinlang.org/docs/all-open-plugin.html
     id("idea")
 
-    id("io.spring.dependency-management")
     id("com.drinkit.code-analysis-conventions")
     id("com.drinkit.test-convention")
 }
@@ -19,14 +18,13 @@ java {
     sourceCompatibility = JavaVersion.VERSION_25
 }
 
-// Force dependency versions to override Spring Boot's BOM
-extra["jooq.version"] = "3.21.8" //TODO Enforced platform seems not working
-
 dependencies {
+    // A platform only constrains the configuration it is declared in, or those extending it, so it
+    // is declared on every source set: implementation, testImplementation, testFixturesImplementation.
+    // compileClasspath and runtimeClasspath extend those, which is what makes `api` dependencies
+    // constrained too. Configurations outside of any source set need it explicitly, see api-convention.
     sourceSets.all {
-        // implementationConfigurationName replaces api/runtimeOnly/testImplementation(platform(project(":platform"))
-        // enforcedPlatform ensures our BOM constraints override third-party BOMs (like Spring Boot)
-        implementationConfigurationName(enforcedPlatform(project(":platform")))
+        implementationConfigurationName(platform(project(":platform")))
     }
 }
 

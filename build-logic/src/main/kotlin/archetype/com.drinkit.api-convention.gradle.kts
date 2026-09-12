@@ -9,6 +9,11 @@ plugins {
 }
 
 dependencies {
+    // `developmentOnly` is created by the Spring Boot plugin and belongs to no source set, so the
+    // platform declared in common-convention never reaches it: a platform only constrains the
+    // configuration it is declared in, or those extending it
+    developmentOnly(platform(project(":platform")))
+
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
