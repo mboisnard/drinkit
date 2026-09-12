@@ -2,7 +2,7 @@ package com.drinkit.search.engine
 
 import com.meilisearch.sdk.Client
 import com.meilisearch.sdk.Config
-import com.meilisearch.sdk.json.JacksonJsonHandler
+import com.meilisearch.sdk.json.GsonJsonHandler
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -17,7 +17,8 @@ internal class MeilisearchConfig(
 
     @Bean
     fun meilisearchClient(): Client {
-        val config = Config(url, apiKey, JacksonJsonHandler())
+        // Gson is the SDK default and what MeilisearchExtension already uses in tests
+        val config = Config(url, apiKey, GsonJsonHandler())
         return Client(config)
     }
 }
