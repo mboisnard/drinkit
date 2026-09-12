@@ -20,7 +20,7 @@ java {
 }
 
 // Force dependency versions to override Spring Boot's BOM
-extra["jooq.version"] = "3.21.2" //TODO Enforced platform seems not working
+extra["jooq.version"] = "3.21.8" //TODO Enforced platform seems not working
 
 dependencies {
     sourceSets.all {
