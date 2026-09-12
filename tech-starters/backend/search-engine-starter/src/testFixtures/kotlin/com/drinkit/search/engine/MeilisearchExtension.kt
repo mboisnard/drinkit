@@ -8,7 +8,8 @@ import org.testcontainers.lifecycle.Startables
 import org.testcontainers.utility.DockerImageName
 import org.testcontainers.utility.TestcontainersConfiguration
 
-private const val MEILISEARCH_IMAGE_NAME = "getmeili/meilisearch:1.8.1"
+// Keep in sync with deployment/local/compose.yml
+private const val MEILISEARCH_IMAGE_NAME = "getmeili/meilisearch:v1.53.2"
 private const val MASTER_KEY = "masterKey"
 
 class MeilisearchExtension : BeforeAllCallback, AfterAllCallback, ParameterResolver {
@@ -50,7 +51,7 @@ class MeilisearchExtension : BeforeAllCallback, AfterAllCallback, ParameterResol
     }
 
     private fun createClient(): Client {
-        val config = Config(container.host, MASTER_KEY)
+        val config = Config(container.endpoint, MASTER_KEY)
         return Client(config)
     }
 }

@@ -5,7 +5,7 @@ volumes:
 
 services:
   postgresql:
-    image: postgres:18.3
+    image: postgres:18.6
     ports:
       - "5432:5432"
     volumes:
@@ -16,7 +16,7 @@ services:
       POSTGRES_PASSWORD: admin
 
   meilisearch:
-    image: getmeili/meilisearch:v1.42.1
+    image: getmeili/meilisearch:v1.53.2
     ports:
       - "7700:7700"
     volumes:
@@ -24,10 +24,10 @@ services:
     environment:
       MEILI_MASTER_KEY: masterKey
       MEILI_NO_ANALYTICS: true
-      MEILI_EXPERIMENTAL_DUMPLESS_UPGRADE: true
+      MEILI_UPGRADE_DB: true
 
   flipt:
-    image: flipt/flipt:v2.9.0
+    image: flipt/flipt:v2.12.0
     ports:
       - "8082:8080"
     volumes:
