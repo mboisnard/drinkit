@@ -1,8 +1,10 @@
 import com.google.devtools.ksp.gradle.KspAATask
 import org.gradle.kotlin.dsl.withType
 
+// Add-on convention: only the Kotlin source sets and the KSP extension it configures below. The
+// module-wide setup comes from the convention this is always combined with.
 plugins {
-    id("com.drinkit.common-convention")
+    kotlin("jvm")
     id("com.google.devtools.ksp")
 }
 
@@ -23,7 +25,5 @@ ksp {
 val kspExplicitlyRequested = gradle.startParameter.taskNames.any { it.substringAfterLast(':') == "kspKotlin" }
 
 tasks.withType<KspAATask>().configureEach {
-    // `enabled` rather than `onlyIf`: an onlyIf lambda holds a reference to this script, which the
-    // configuration cache cannot serialize
     enabled = kspExplicitlyRequested
 }

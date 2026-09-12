@@ -1,4 +1,7 @@
 [versions]
+# Toolchain
+java = "25"
+
 # BOM Versions
 spring-ai-dependencies = "1.1.8"
 spring-boot-dependencies = "3.5.16"

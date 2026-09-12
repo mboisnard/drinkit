@@ -1,3 +1,5 @@
+// Add-on convention: it only declares what it technically needs
+// (the Kotlin source sets and dependency configurations it touches below)
 plugins {
     kotlin("jvm")
     id("org.jooq.jooq-codegen-gradle")
@@ -5,6 +7,15 @@ plugins {
 
 // Generated sources are committed to the repository, not produced on every build
 val generatedSourcesDir = "src/generated/jooq/kotlin"
+
+// Defaults match deployment/local/compose.yml; override with -PjooqJdbcUrl=... to generate against
+// another database without editing the convention
+val jdbcUrl = providers.gradleProperty("jooqJdbcUrl")
+        .getOrElse("jdbc:postgresql://localhost:5432/drinkit")
+val jdbcUser = providers.gradleProperty("jooqJdbcUser")
+        .getOrElse("drinkit")
+val jdbcPassword = providers.gradleProperty("jooqJdbcPassword")
+        .getOrElse("admin")
 
 dependencies {
     // Code generation specific dependencies
@@ -44,9 +55,9 @@ jooq {
 
                     jdbc {
                         driver = "org.postgresql.Driver"
-                        url = "jdbc:postgresql://localhost:5432/drinkit"
-                        username = "drinkit"
-                        password = "admin"
+                        url = jdbcUrl
+                        username = jdbcUser
+                        password = jdbcPassword
                     }
                     database {
                         name = "org.jooq.meta.postgres.PostgresDatabase"

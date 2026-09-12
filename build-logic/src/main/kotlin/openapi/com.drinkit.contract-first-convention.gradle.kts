@@ -1,5 +1,7 @@
+// Add-on convention: only what the OpenAPI generation below needs. The module-wide setup — platform,
+// toolchain, Spring plugins — comes from the api-convention this is always combined with.
 plugins {
-    id("com.drinkit.common-convention")
+    kotlin("jvm")
     id("org.openapi.generator")
 }
 

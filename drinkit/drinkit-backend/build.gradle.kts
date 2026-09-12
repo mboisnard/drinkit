@@ -1,6 +1,6 @@
 plugins {
     id("com.drinkit.api-convention")
-    id("com.drinkit.contract-first")
+    id("com.drinkit.contract-first-convention")
 }
 
 dependencies {

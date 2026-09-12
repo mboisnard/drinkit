@@ -1,3 +1,3 @@
 plugins {
-    id("com.drinkit.openapi-contract")
+    id("com.drinkit.openapi-contract-convention")
 }

@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     `kotlin-dsl` // Support convention plugins written in Kotlin. Convention plugins are build scripts in 'src/main' that automatically become available as plugins in the main build.
 }
@@ -9,17 +7,10 @@ plugins {
 // that would prefix every id with the package name and break every `id(...)` in the build.
 // File names must stay unique across all folders, since the id is what identifies them.
 
-// Java sourceCompatibility & jvmTarget are defined here only to specify the java version used when building buildSrc library
-// Version is also defined in the convention to defined the java version used by the application
-// TODO Find a way to mutualize version
-java {
-    sourceCompatibility = JavaVersion.VERSION_25
-}
-
+// The Java version used to build the convention plugins themselves. It comes from the same catalog
+// entry as the one the conventions apply to the application, so both stay in sync
 kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_25)
-    }
+    jvmToolchain(libs.versions.java.get().toInt())
 }
 
 dependencies {
