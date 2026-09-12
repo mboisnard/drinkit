@@ -4,9 +4,10 @@ plugins {
     `kotlin-dsl` // Support convention plugins written in Kotlin. Convention plugins are build scripts in 'src/main' that automatically become available as plugins in the main build.
 }
 
-repositories {
-    gradlePluginPortal() // so that external plugins can be resolved in dependencies section
-}
+// Conventions are grouped in subfolders of src/main/kotlin for readability only: a plugin id comes
+// from the file name alone, never from its folder. Do NOT add a `package` declaration to them —
+// that would prefix every id with the package name and break every `id(...)` in the build.
+// File names must stay unique across all folders, since the id is what identifies them.
 
 // Java sourceCompatibility & jvmTarget are defined here only to specify the java version used when building buildSrc library
 // Version is also defined in the convention to defined the java version used by the application

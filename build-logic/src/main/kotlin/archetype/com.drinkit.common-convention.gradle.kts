@@ -39,7 +39,3 @@ kotlin {
         freeCompilerArgs.add("-Xjsr305=strict")
     }
 }
-
-repositories {
-    mavenCentral()
-}

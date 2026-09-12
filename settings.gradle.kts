@@ -1,8 +1,23 @@
 rootProject.name = "drinkit"
 
-// Version catalog location is configured here to be able to use it in all subprojects
-// By default we don't need to configure location but we decided to group files in the platform module
+// Convention plugins live in an included build rather than in buildSrc: changing one of them no
+// longer invalidates the whole build, and they are consumed like any external plugin
+// https://docs.gradle.org/current/userguide/best_practices_structuring_builds.html
+pluginManagement {
+    includeBuild("build-logic")
+}
+
+// Repositories belong to the build logic, not to each project
+// https://docs.gradle.org/current/userguide/best_practices_dependencies.html
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
+    repositories {
+        mavenCentral()
+    }
+
+    // Version catalog location is configured here to be able to use it in all subprojects
+    // By default we don't need to configure location but we decided to group files in the platform module
     versionCatalogs {
         create("libs") {
             from(files("./gradle/platform/libs.versions.toml"))
@@ -19,7 +34,7 @@ val excludedFolders = setOf(
     "build",
     "node_modules",
     "out",
-    "buildSrc",
+    "build-logic",
 )
 
 fun addGradleProject(folder: File) {
