@@ -141,7 +141,7 @@ internal data class UserEventCommonFields(
 ) {
     val connectedAuthor get(): Author.Connected = when (author) {
         is Author.Connected -> author
-        is Author.Unlogged -> throw IllegalStateException("Can't be unlogged here")
+        is Author.Unlogged -> error("Can't be unlogged here")
     }
 
     companion object {

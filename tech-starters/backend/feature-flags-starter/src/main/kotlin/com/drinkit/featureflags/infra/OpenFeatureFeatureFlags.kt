@@ -22,7 +22,7 @@ internal class OpenFeatureFeatureFlags(private val client: Client) : FeatureFlag
 
 // Used by OpenFeatureFeatureFlags for explicit context passed by the caller
 internal fun FeatureFlagContext.toEvaluationContext(): ImmutableContext {
-    val targetingKey = userId ?: sessionId ?: correlationId ?: ""
+    val targetingKey = (userId ?: sessionId ?: correlationId).orEmpty()
     val attrs = buildMap {
         userId?.let { put(USER_ID_ATTRIBUTE_KEY, Value(it)) }
         correlationId?.let { put(CORRELATION_ID_ATTRIBUTE_KEY, Value(it)) }

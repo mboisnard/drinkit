@@ -1,7 +1,6 @@
 #!/bin/sh
 #
-# Formats Kotlin sources and Gradle scripts, and fails when detekt does — which it will as soon as
-# `ignoreFailures` is dropped from the code-analysis convention. No --quiet: that hides the findings
-# and leaves only "Analysis failed with N issues".
+# Formats Kotlin sources and Gradle scripts, and fails when detekt does. No --quiet: that hides the
+# findings and leaves only "Analysis failed with N issues".
 
 exec ./gradlew detektAll -Pdetekt.autoCorrect=true --console=plain

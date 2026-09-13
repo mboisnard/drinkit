@@ -1,0 +1,88 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>AbstractClassCanBeConcreteClass:AbstractApi.kt:AbstractApi$AbstractApi</ID>
+    <ID>AbstractClassCanBeConcreteClass:AbstractId.kt:AbstractId$AbstractId</ID>
+    <ID>AbstractClassCanBeConcreteClass:AbstractIdJacksonModule.kt:AbstractIdMixin$AbstractIdMixin</ID>
+    <ID>AbstractClassCanBeInterface:UserEventMixinConfiguration.kt:AuthorMixin$AuthorMixin</ID>
+    <ID>CouldBeSequence:CreateCoreDomainsOverviewDocumentation.kt:CreateCoreDomainsOverviewDocumentation$filterNot { existingEntry -&gt; newEntries.any { it.fileName == existingEntry.fileName } }</ID>
+    <ID>CouldBeSequence:CreateTechStartersOverviewDocumentation.kt:CreateTechStartersOverviewDocumentation$filterNot { it.moduleName == moduleName }</ID>
+    <ID>EmptyFunctionBlock:NoOpKSPLogger.kt:NoOpKSPLogger${}</ID>
+    <ID>ForbiddenMethodCall:ExchangeRateApiProvider.kt:ExchangeRateApiProvider$BigDecimal(rate.toString())</ID>
+    <ID>ForbiddenMethodCall:ExchangeRateFixtures.kt:ExchangeRateFixtures$BigDecimal("1.10")</ID>
+    <ID>ForbiddenMethodCall:ExchangeRateTest.kt:ExchangeRateTest$BigDecimal("-1.10")</ID>
+    <ID>ForbiddenMethodCall:ExchangeRateTest.kt:ExchangeRateTest$BigDecimal("1.10")</ID>
+    <ID>ForbiddenMethodCall:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$BigDecimal("0.85")</ID>
+    <ID>ForbiddenMethodCall:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$BigDecimal("0.91")</ID>
+    <ID>ForbiddenMethodCall:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$BigDecimal("1.10")</ID>
+    <ID>ForbiddenMethodCall:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$BigDecimal("1.15")</ID>
+    <ID>ForbiddenMethodCall:FindExchangeRateTest.kt:FindExchangeRateTest$BigDecimal("0.77272727")</ID>
+    <ID>ForbiddenMethodCall:FindExchangeRateTest.kt:FindExchangeRateTest$BigDecimal("0.80")</ID>
+    <ID>ForbiddenMethodCall:FindExchangeRateTest.kt:FindExchangeRateTest$BigDecimal("0.85")</ID>
+    <ID>ForbiddenMethodCall:FindExchangeRateTest.kt:FindExchangeRateTest$BigDecimal("0.90909091")</ID>
+    <ID>ForbiddenMethodCall:FindExchangeRateTest.kt:FindExchangeRateTest$BigDecimal("1.10")</ID>
+    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("-10.00")</ID>
+    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("1.10")</ID>
+    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("1.12345")</ID>
+    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("100.00")</ID>
+    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("110.00")</ID>
+    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("112.34")</ID>
+    <ID>FunctionNaming:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$@Test fun `save an exchange rate and find it`</ID>
+    <ID>FunctionNaming:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$@Test fun `save multiple exchange rates`</ID>
+    <ID>FunctionNaming:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$@Test fun `should distinguish between different currency pairs`</ID>
+    <ID>FunctionNaming:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$@Test fun `update existing exchange rate when saving with same source and target`</ID>
+    <ID>FunctionNaming:UserEventsTestContract.kt:UserEventsTestContract$@Test fun `should save a user history starting by an initialized event`</ID>
+    <ID>FunctionNaming:UsersTestContract.kt:UsersTestContract$@Test fun `should be null when user is not found by his id`</ID>
+    <ID>FunctionNaming:UsersTestContract.kt:UsersTestContract$@Test fun `should find user by his email`</ID>
+    <ID>FunctionNaming:UsersTestContract.kt:UsersTestContract$@Test fun `should save a user and find it by his id`</ID>
+    <ID>LongParameterList:RegistrationApi.kt:RegistrationApi</ID>
+    <ID>MagicNumber:FeatureFlagsConfig.kt:FeatureFlagsConfig$10</ID>
+    <ID>MagicNumber:Percentage.kt:Percentage$100</ID>
+    <ID>MaxLineLength:Aggregate.kt:Aggregate$*</ID>
+    <ID>MaxLineLength:DocumentationSymbolProcessor.kt:DocumentationSymbolProcessor$* KSP processor that orchestrates documentation generation from [CoreDomain], [Usecase] and [TechStarterTool] annotations.</ID>
+    <ID>MaxLineLength:EventsReducerTest.kt:EventsReducerTest$// Reduce the events to build the final state, include MaintenanceCarriedOut which doesn't have a registered handler</ID>
+    <ID>MaxLineLength:ExchangeRateApiProvider.kt:ExchangeRateApiProvider$"Fetched ${allRates.size} exchange rates from ExchangeRate API across ${baseCurrencies.size} base currencies"</ID>
+    <ID>MaxLineLength:JooqConfig.kt:JooqConfig$// Override Dialect here to be sure this tech-starter will work with postgresql and not with a dialect determined by a property</ID>
+    <ID>MaxLineLength:JooqPostgresExtension.kt:JooqPostgresExtension$"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$dbName';"</ID>
+    <ID>NestedBlockDepth:PlatformEventHandlerPostProcessor.kt:PlatformEventHandlerPostProcessor$override fun afterSingletonsInstantiated</ID>
+    <ID>NullableBooleanCheck:AnnotatedInfo.kt:UseCaseInfo$domain.customName?.let { className.contains(it.replace(" ", ""), ignoreCase = true) } ?: false</ID>
+    <ID>NullableBooleanCheck:MockFeatureFlags.kt:MockFeatureFlags$flags[flag] ?: false</ID>
+    <ID>ReturnCount:AbstractApi.kt:AbstractApi$fun maybeConnectedUserId: UserId?</ID>
+    <ID>ReturnCount:AnnotatedInfo.kt:CoreDomainInfo$fun findAssociatedUseCases: List&lt;UseCaseInfo&gt;</ID>
+    <ID>ReturnCount:CompleteProfileInformation.kt:ProfileCompletionDecider$fun invoke: Decision</ID>
+    <ID>ReturnCount:ConfirmVerificationToken.kt:VerificationTokenDecider$fun decide: Decision</ID>
+    <ID>ReturnCount:CreateNewUser.kt:UserCreationDecider$fun invoke: Decision</ID>
+    <ID>ReturnCount:DeleteUser.kt:UserDeletionDecider$fun decide: Decision</ID>
+    <ID>ReturnCount:ExchangeRateApiProvider.kt:ExchangeRateApiProvider$override fun fetchRates: List&lt;ExchangeRate&gt;</ID>
+    <ID>ReturnCount:FindExchangeRate.kt:FindExchangeRate$private fun crossRateCalculationFromEuro: ExchangeRate?</ID>
+    <ID>ReturnCount:PromoteAsAdmin.kt:AdminPromotionDecider$fun decide: Decision</ID>
+    <ID>ReturnCount:SendVerificationToken.kt:VerificationTokenSendingDecider$fun decide: Decision</ID>
+    <ID>SpreadOperator:DrinkitApplication.kt:(*args)</ID>
+    <ID>SpreadOperator:JooqUtils.kt:(*table.fields())</ID>
+    <ID>SpreadOperator:UpdaterApplication.kt:(*args)</ID>
+    <ID>ThrowsCount:AbstractApi.kt:AbstractApi$fun connectedUserIdOrFail: UserId</ID>
+    <ID>ThrowsCount:ConnectedUser.kt:ConnectedUser$fun getOrFail: User</ID>
+    <ID>TooGenericExceptionCaught:SseApi.kt:SseApi$ex: Exception</ID>
+    <ID>TooGenericExceptionThrown:FakeExchangeRateProvider.kt:FakeExchangeRateProvider$throw RuntimeException("Provider failed")</ID>
+    <ID>TooManyFunctions:JooqPostgresExtension.kt:JooqPostgresExtension : BeforeAllCallbackAfterEachCallbackAfterAllCallbackParameterResolver</ID>
+    <ID>UnreachableCode:ConnectedUser.kt:ConnectedUser$return TODO()</ID>
+    <ID>UnsafeCallOnNullableType:CompleteProfileInformation.kt:CompleteProfileInformation$users.findEnabledBy(userId)!!</ID>
+    <ID>UnsafeCallOnNullableType:ConfigurationKey.kt:ConfigurationKey$this::class.simpleName!!</ID>
+    <ID>UnsafeCallOnNullableType:ConfirmVerificationToken.kt:ConfirmVerificationToken$users.findEnabledBy(userId)!!</ID>
+    <ID>UnsafeCallOnNullableType:DocumentationSymbolProcessor.kt:DocumentationSymbolProcessor$A::class.qualifiedName!!</ID>
+    <ID>UnsafeCallOnNullableType:EmailMessageSender.kt:EmailMessageSender$content!!</ID>
+    <ID>UnsafeCallOnNullableType:GCPCloudVisionAnalyzer.kt:GCPCloudVisionAnalyzer$ex.message!!</ID>
+    <ID>UnsafeCallOnNullableType:GenerateObjectId.kt:GenerateObjectId$idType.primaryConstructor!!</ID>
+    <ID>UnsafeCallOnNullableType:InMemoryUserEventsStore.kt:InMemoryUserEventsStore$findAllBy(userId)!!</ID>
+    <ID>UnsafeCallOnNullableType:JooqUserEventsRepository.kt:JooqUserEventsRepository$findAllBy(event.userId)!!</ID>
+    <ID>UnsafeCallOnNullableType:KSClassDeclarationTools.kt:T::class.qualifiedName!!</ID>
+    <ID>UnsafeCallOnNullableType:MockGenerateId.kt:MockGenerateId$idType.primaryConstructor!!</ID>
+    <ID>UnsafeCallOnNullableType:MockGenerateId.kt:MockGenerateId$ids.compute(idType) { _, value -&gt; if (value == null) 1 else value + 1 }!!</ID>
+    <ID>UnsafeCallOnNullableType:PromoteAsAdmin.kt:PromoteAsAdmin$users.findEnabledBy(userId)!!</ID>
+    <ID>UnsafeCallOnNullableType:TesseractAnalyzer.kt:TesseractAnalyzer$ex.message!!</ID>
+    <ID>UnusedPrivateProperty:CellarsTestContract.kt:CellarsTestContract$private val repository: Cellars by lazy { fetchRepository() }</ID>
+    <ID>UnusedVariable:ConnectedUser.kt:ConnectedUser$val userId = when (authentication.principal) { is InternalUserDetails -&gt; UserId((authentication.principal as InternalUserDetails).id) else -&gt; throw ConnectedUserException("Can't find userId from authentication principal") }</ID>
+    <ID>VarCouldBeVal:CreateCoreDomainDocumentationTest.kt:CreateCoreDomainDocumentationTest$@TempDir private lateinit var tempDir: File</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -9,6 +9,6 @@ sealed interface Author {
 
     fun connectedAuthorOrFail(): Connected = when (this) {
         is Connected -> this
-        else -> throw IllegalStateException("Anonymous author is not allowed")
+        else -> error("Anonymous author is not allowed")
     }
 }
