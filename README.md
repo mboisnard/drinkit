@@ -50,11 +50,21 @@ detekt is in **adoption mode** — it reports but does not fail the build, so th
 findings stay visible in the GitHub code scanning tab instead of being buried. Drop
 `ignoreFailures` from the convention once the backlog is burnt down.
 
-To have the formatting applied automatically before each commit, enable the repository's hook once:
+`.githooks/lint-kotlin` formats every Kotlin source and Gradle script, and fails when detekt does —
+which it will as soon as `ignoreFailures` is dropped from the convention.
+
+The pre-commit hook runs it and stages what got reformatted, so the commit carries the formatted
+version. A file that was only partly staged is reformatted on disk but left for you to stage:
+staging it wholesale would carry its unstaged edits into the commit too.
+
+To have it run before each commit, enable the repository's hook once:
 
 ```
 git config core.hooksPath .githooks
 ```
+
+Claude Code calls the same script after it edits a file, through the `PostToolUse` hook in
+`.claude/settings.json`, so it sees the findings on what it just wrote.
 
 The build needs JDK 25, and `gradle/gradle-daemon-jvm.properties` is what makes that work outside
 IntelliJ: Gradle picks a matching JDK for its daemon whatever JVM launched the wrapper, so the

@@ -58,6 +58,12 @@ tasks.withType<Detekt>().configureEach {
     // Leaving the others on would analyse everything twice and duplicate every merged finding
     enabled = name in enabledDetektTasks
 
+    // Auto-correction rewrites the very files Gradle snapshotted as inputs, so the snapshot it
+    // records is the *unformatted* state. The next run on that same unformatted content is judged
+    // up to date and the correction silently never happens. Only the correcting runs skip the
+    // check; the analysis the CI runs stays incremental.
+    outputs.upToDateWhen { !autoCorrect.get() }
+
     // Generated code: JOOQ under src/generated, OpenAPI under build/. Matched on the absolute path,
     // Ant patterns here being resolved against each source root rather than the project directory.
     exclude {

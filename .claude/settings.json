@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./.githooks/lint-kotlin 2>&1 || true",
+            "statusMessage": "Linting with detekt...",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}
