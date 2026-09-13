@@ -1,8 +1,9 @@
 [versions]
 
-detekt = "1.23.8"
+detekt = "2.0.0-alpha.6"
 graalvm-buildtools-native = "1.1.12"
 gradle-git-properties = "4.0.1"
+idea-settings = "4.0.9"
 jooq = "3.21.8"
 kotlin = "2.4.20"
 ksp = "2.3.12"
@@ -12,10 +13,11 @@ spring-boot = "4.1.1"
 [libraries]
 
 all-open-plugin = { module = "org.jetbrains.kotlin.plugin.allopen:org.jetbrains.kotlin.plugin.allopen.gradle.plugin", version.ref = "kotlin" }
-detekt-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+detekt-plugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 graalvm-buildtools-native-plugin = { module = "org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin", version.ref = "graalvm-buildtools-native" }
 gradle-git-properties-plugin = { module = "com.gorylenko.gradle-git-properties:gradle-git-properties", version.ref = "gradle-git-properties" }
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+idea-settings-plugin = { module = "name.remal.idea-settings:name.remal.idea-settings.gradle.plugin", version.ref = "idea-settings" }
 jooq-codegen-gradle-plugin = { module = "org.jooq.jooq-codegen-gradle:org.jooq.jooq-codegen-gradle.gradle.plugin", version.ref = "jooq" }
 jooq-meta = { module = "org.jooq:jooq-meta", version.ref = "jooq" }
 ksp-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }

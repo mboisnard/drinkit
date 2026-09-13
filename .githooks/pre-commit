@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# Formats staged Kotlin files to detekt's style before the commit is created.
+# Enable once per clone: git config core.hooksPath .githooks
+# Skip once: git commit --no-verify
+
+set -e
+
+staged_kotlin=$(git diff --cached --name-only --diff-filter=ACMR -- '*.kt' '*.kts')
+[ -z "$staged_kotlin" ] && exit 0
+
+# A partially staged file cannot be re-staged safely: `git add` would sweep in the unstaged edits
+partially_staged=$(git diff --name-only -- $staged_kotlin)
+if [ -n "$partially_staged" ]; then
+    echo "pre-commit: these files are staged but also have unstaged changes:"
+    echo "$partially_staged" | sed 's/^/  /'
+    echo "Stage or stash the rest, then commit again (or use --no-verify)."
+    exit 1
+fi
+
+echo "pre-commit: formatting with detekt..."
+./gradlew detektAll -Pdetekt.autoCorrect=true --quiet
+
+reformatted=$(git diff --name-only -- $staged_kotlin)
+if [ -n "$reformatted" ]; then
+    git add $reformatted
+    echo "pre-commit: reformatted and re-staged:"
+    echo "$reformatted" | sed 's/^/  /'
+fi

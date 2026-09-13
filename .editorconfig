@@ -1,0 +1,29 @@
+# Configures IntelliJ's own formatter, nothing else — detekt's ktlint rule set reads detekt's
+# config and ignores this file. It cannot be dropped: the detekt IDE plugin annotates but never
+# formats, so IntelliJ's formatter stays in play and this keeps it from fighting the build.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{kt,kts}]
+max_line_length = 120
+# The closest IntelliJ's formatter gets to ktlint_official
+ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
+# ktlint_official wants trailing commas, IntelliJ only writes them when asked
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+# IntelliJ collapses imports to a star past a threshold, which detekt then flags
+ij_kotlin_name_count_to_use_star_import = 2147483647
+ij_kotlin_name_count_to_use_star_import_for_members = 2147483647
+
+[*.{yml,yaml,json,md}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

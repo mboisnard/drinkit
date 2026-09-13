@@ -16,6 +16,9 @@ DrinkIt is a wine & spirit cellar management application. Stack: **Kotlin + Spri
 ./gradlew :drinkit-domain:test            # Run tests for a specific module
 ./gradlew :drinkit-infra:test             # Run infrastructure (integration) tests
 ./gradlew jooqCodegen                     # Regenerate JOOQ classes (requires PostgreSQL on localhost:5432)
+./gradlew detektAll                       # Static analysis with type resolution (also run by `check`)
+./gradlew detektAll -Pdetekt.autoCorrect=true  # Same, fixing what can be fixed (formatting included)
+./gradlew detektReportMergeSarif          # Merge the per-module SARIF reports for GitHub
 ```
 
 `bootRun` activates the `dev` Spring profile, which uses Spring Boot Docker Compose to start the local `deployment/local/compose.yml` (PostgreSQL on 5432, Meilisearch on 7700).

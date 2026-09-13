@@ -11,41 +11,38 @@ val generatedSourcesDir = "src/generated/jooq/kotlin"
 // Defaults match deployment/local/compose.yml; override with -PjooqJdbcUrl=... to generate against
 // another database without editing the convention
 val jdbcUrl = providers.gradleProperty("jooqJdbcUrl")
-        .getOrElse("jdbc:postgresql://localhost:5432/drinkit")
+    .getOrElse("jdbc:postgresql://localhost:5432/drinkit")
 val jdbcUser = providers.gradleProperty("jooqJdbcUser")
-        .getOrElse("drinkit")
+    .getOrElse("drinkit")
 val jdbcPassword = providers.gradleProperty("jooqJdbcPassword")
-        .getOrElse("admin")
+    .getOrElse("admin")
 
 dependencies {
     // Code generation specific dependencies
-    // postgresql-starter contain all dependencies needed to generate jooq classes (postgresql driver with BOM managed version)
+    // postgresql-starter carries the driver jooq codegen needs, at the BOM-managed version
     jooqCodegen(project(":postgresql-starter"))
 
     implementation(project(":postgresql-starter"))
     testImplementation(testFixtures(project(":postgresql-starter")))
 }
 
-
-/**
- * Jooq executions element will generate gradle tasks that you can override in any module using this convention
- *
- * jooq {
- *     executions.getByName("main") {
- *         configuration.apply {
- *             generator.apply {
- *                 database.apply {
- *                     includes = "table names"
- *                     inputSchema = "schema name"
- *                 }
- *                 target.apply {
- *                     packageName = "..."
- *                 }
- *             }
- *         }
- *     }
- * }
- */
+// Each jooq execution registers a gradle task that a module applying this convention can override:
+//
+// jooq {
+//     executions.getByName("main") {
+//         configuration.apply {
+//             generator.apply {
+//                 database.apply {
+//                     includes = "table names"
+//                     inputSchema = "schema name"
+//                 }
+//                 target.apply {
+//                     packageName = "..."
+//                 }
+//             }
+//         }
+//     }
+// }
 jooq {
     executions {
         create("main") {
@@ -63,9 +60,10 @@ jooq {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
                     }
                     generate {
-                        isKotlinNotNullPojoAttributes = true // Generate non-nullable types on POJO attributes, where column is not null
-                        isKotlinNotNullRecordAttributes = true // Generate non-nullable types on Record attributes, where column is not null
-                        isKotlinNotNullInterfaceAttributes = true // Generate non-nullable types on interface attributes, where column is not null
+                        // Non-nullable Kotlin types wherever the column is NOT NULL
+                        isKotlinNotNullPojoAttributes = true
+                        isKotlinNotNullRecordAttributes = true
+                        isKotlinNotNullInterfaceAttributes = true
                         isPojosAsKotlinDataClasses = true
                     }
                     target {
