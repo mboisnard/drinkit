@@ -6,7 +6,7 @@ import com.drinkit.user.core.UserId
 
 class InMemoryCellars : Cellars {
 
-    private var cellars: MutableMap<CellarId, Cellar> = mutableMapOf()
+    private val cellars: MutableMap<CellarId, Cellar> = mutableMapOf()
 
     override fun create(cellar: Cellar): CellarId? {
         if (cellars.containsKey(cellar.id)) {

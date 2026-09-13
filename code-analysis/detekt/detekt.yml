@@ -1,12 +1,28 @@
 # This project's deviations from detekt's defaults, nothing else: the convention sets
 # `buildUponDefaultConfig`, so anything unmentioned keeps detekt's own value.
 
-# Rules detekt ships inactive that this project opts into
+naming:
+  # A leading underscore marks something deliberately kept out of the public surface: an event an
+  # `apply` overload needs only for dispatch, a `var` sitting behind a computed getter.
+  ConstructorParameterNaming:
+    privateParameterPattern: '_?[a-z][A-Za-z0-9]*'
+  FunctionParameterNaming:
+    parameterPattern: '_?[a-z][A-Za-z0-9]*'
+
 performance:
   CouldBeSequence:
     active: true
 
 style:
+  # The same underscore convention
+  UnusedParameter:
+    allowedNames: 'ignored|expected|_.*'
+
+  # An enum entry's number is the domain value itself, not a magic one — bottle capacities in litres
+  MagicNumber:
+    ignoreEnums: true
+
+  # Rules detekt ships inactive that this project opts into
   ForbiddenAnnotation:
     active: true
   ForbiddenMethodCall:

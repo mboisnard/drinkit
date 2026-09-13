@@ -22,7 +22,7 @@ class ControlledClock(
     fun fix(instant: Instant) = apply { fixedInstant = instant }
 
     fun add(duration: Duration) = apply {
-        require(fixedInstant != null) { "Clock must be fixed with fix() before advancing time." }
+        requireNotNull(fixedInstant) { "Clock must be fixed with fix() before advancing time." }
         fixedInstant = fixedInstant?.plus(duration)
     }
 

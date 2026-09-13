@@ -15,8 +15,8 @@ internal class DocumentationSymbolProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
         val logger = environment.logger
         val docsOutputDir = environment.options["docsOutputDir"]
-        val moduleName = environment.options["moduleName"]!!
-        val moduleSourceDir = environment.options["moduleSourceDir"]!!
+        val moduleName = environment.options.getValue("moduleName")
+        val moduleSourceDir = environment.options.getValue("moduleSourceDir")
         val domainsOutputPath = "$docsOutputDir$DOMAINS_FOLDER"
         val techStartersOutputPath = "$docsOutputDir$TECH_STARTERS_FOLDER"
 

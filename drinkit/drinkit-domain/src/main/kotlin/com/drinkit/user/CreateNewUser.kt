@@ -80,7 +80,7 @@ class CreateNewUser(
 
             is EmailAlreadyExists -> UserAlreadyExists
 
-            is ValidationFailed -> throw IllegalStateException("Validation failed: ${decision.errors}")
+            is ValidationFailed -> error("Validation failed: ${decision.errors}")
         }
     }
 }

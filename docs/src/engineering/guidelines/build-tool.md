@@ -95,9 +95,8 @@ through its own rule sets, formatting through its ktlint ruleset.
   uploads to GitHub code scanning. Without the merge the upload is impossible, GitHub taking only
   a handful of SARIF files per category.
 - Generated code (JOOQ under `src/generated`, OpenAPI under `build/`) is excluded.
-- **Adoption mode**: `ignoreFailures` is on, so detekt reports without blocking. Baselining the
-  ~150 current findings would also strip them from the SARIF reports and hide them from code
-  scanning, which defeats the point while the tool is being assessed.
+- Any finding **fails the build** — `failOnSeverity` is tightened from detekt's default `Error`
+  down to `Info`.
 
 A single file configures it: `code-analysis/detekt/detekt.yml`, holding **only this project's
 deviations** from detekt's defaults, the convention setting `buildUponDefaultConfig`. There are
@@ -105,10 +104,14 @@ four: the rules this project opts into out of the 108 detekt ships inactive. Eve
 detekt's own default, test sources included — `**/testFixtures/**` is held to the same standard as
 production code, which is what detekt does by default and costs twelve findings.
 
-There is no baseline. The old one was written in detekt 1.x's ID format, which 2.x no longer
-understands, and it suppressed nothing: the analysis reported the same count with and without it.
-None is needed while detekt runs in adoption mode; `detektBaselineMain` generates one on demand,
-per source set, into `baseline-main.xml` rather than a single shared file.
+`code-analysis/detekt/baseline.xml` holds the 82 findings that predate the switch to a blocking
+build. They no longer fail anything; everything new does. The file only ever shrinks — you delete a
+line when you fix what it holds.
+
+The `detektBaseline*` tasks write one file per source set rather than to that path, so regenerating
+wholesale means merging their output back into it. `DetektCreateBaselineTask` does not extend
+`Detekt` either, so the convention applies the generated-code exclusion to it separately: without
+that it records the JOOQ and OpenAPI output too, 1117 entries instead of 82.
 
 ::: warning
 detekt's ktlint ruleset reads **detekt's** configuration, not `.editorconfig`. The root

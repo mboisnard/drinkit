@@ -24,7 +24,7 @@ internal class JooqUserDetailsRepository(private val dslContext: DSLContext) : U
         id = id,
         username = email,
         password = password,
-        authorities = roles.mapNotNull { it?.let { SimpleGrantedAuthority(it) } }.toSet(),
+        authorities = roles.mapNotNull { role -> role?.let { SimpleGrantedAuthority(it) } }.toSet(),
         enabled = enabled,
     )
 }

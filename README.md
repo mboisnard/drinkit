@@ -46,12 +46,11 @@ to the one it follows and leaves the rest silently in report-only mode. The `aut
 entries in `detekt.yml` only declare which rules are *allowed* to rewrite code; without the
 property detekt reports and touches nothing, which is what CI needs.
 
-detekt is in **adoption mode** — it reports but does not fail the build, so that the current
-findings stay visible in the GitHub code scanning tab instead of being buried. Drop
-`ignoreFailures` from the convention once the backlog is burnt down.
+detekt **fails the build** on any finding. The 82 that predate that switch sit in
+`code-analysis/detekt/baseline.xml`: they no longer block, and everything new does. Burning one down
+means fixing it and deleting its line.
 
-`.githooks/lint-kotlin` formats every Kotlin source and Gradle script, and fails when detekt does —
-which it will as soon as `ignoreFailures` is dropped from the convention.
+`.githooks/lint-kotlin` formats every Kotlin source and Gradle script, and fails when detekt does.
 
 The pre-commit hook runs it and stages what got reformatted, so the commit carries the formatted
 version. A file that was only partly staged is reformatted on disk but left for you to stage:
