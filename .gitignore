@@ -17,7 +17,11 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea
+# .idea is generated, not authored: the com.drinkit.ide-convention plugin rewrites most of it at
+# every Gradle sync. The one exception is the detekt plugin's own project settings, which
+# idea-settings has no DSL for, so that single file is versioned.
+.idea/*
+!.idea/detekt.xml
 *.iws
 *.iml
 *.ipr
@@ -49,6 +53,11 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### JVM crash artefacts ###
+*.hprof
+hs_err_pid*.log
+replay_pid*.log
 
 ### MacOS ###
 **/.DS_Store

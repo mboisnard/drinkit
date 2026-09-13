@@ -1,11 +1,15 @@
 plugins {
-    `java-library` // Expand the 'java' default plugin with dependencies api/implementation concepts https://docs.gradle.org/current/userguide/java_library_plugin.html
+    // Adds the api/implementation separation on top of the `java` plugin
+    // https://docs.gradle.org/current/userguide/java_library_plugin.html
+    `java-library`
 
     kotlin("jvm")
-    kotlin("plugin.spring") // Use allopen plugin to open Kotlin Spring Beans https://kotlinlang.org/docs/all-open-plugin.html
+    // Opens Spring beans, which Kotlin makes final by default
+    // https://kotlinlang.org/docs/all-open-plugin.html
+    kotlin("plugin.spring")
     id("idea")
 
-    id("com.drinkit.code-analysis-conventions")
+    id("com.drinkit.code-analysis-convention")
     id("com.drinkit.test-convention")
 }
 
@@ -33,9 +37,5 @@ kotlin {
     compilerOptions {
         // Null safety management https://docs.spring.io/spring-boot/reference/features/kotlin.html
         freeCompilerArgs.addAll("-Xjsr305=strict")
-
-        // Kotlin equivalent of javac's -parameters, which Spring Boot expects so that parameter
-        // names survive compilation for constructor binding and dependency injection
-        javaParameters.set(true)
     }
 }

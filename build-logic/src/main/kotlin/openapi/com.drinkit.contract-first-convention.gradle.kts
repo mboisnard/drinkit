@@ -34,12 +34,12 @@ openApiGenerate {
     // https://openapi-generator.tech/docs/generators/kotlin-spring/
     configOptions.set(
         mapOf(
-            "delegatePattern" to "true", // Delegate pattern will create an interface that we can easily implement with a Spring service
+            "delegatePattern" to "true", // Generates interfaces a Spring service can implement
             "useTags" to "true", // Use the defined tags in the yaml file to create interfaces and class names
-            "useSpringBoot3" to "true", // Use jakarta annotations in generated code, jakarta libraries are imported by spring boot dependencies
+            "useSpringBoot3" to "true", // Jakarta annotations in the generated code
             "sourceFolder" to "",
             "enumPropertyNaming" to "UPPERCASE",
-        )
+        ),
     )
 
     // Scope the generated files to only supportingFile/apis/models classes
@@ -50,13 +50,13 @@ openApiGenerate {
             "supportingFiles" to "ApiUtil.kt",
             "apis" to "",
             "models" to "",
-        )
+        ),
     )
 
     additionalProperties.set(
         mapOf(
             "removeEnumValuePrefix" to "false", // Disable enum stripping on generated code
-        )
+        ),
     )
 }
 

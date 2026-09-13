@@ -25,7 +25,6 @@ dependencyResolutionManagement {
     }
 }
 
-
 // Gradle Multi projects
 // https://docs.gradle.org/current/userguide/intro_multi_project_builds.html#sec:project_standard
 // Here we dynamically includes all gradle subprojects from specified folders

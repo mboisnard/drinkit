@@ -1,5 +1,6 @@
 plugins {
-    `kotlin-dsl` // Support convention plugins written in Kotlin. Convention plugins are build scripts in 'src/main' that automatically become available as plugins in the main build.
+    // Lets src/main scripts become plugins usable by the main build
+    `kotlin-dsl`
 }
 
 // Conventions are grouped in subfolders of src/main/kotlin for readability only: a plugin id comes
@@ -21,6 +22,7 @@ dependencies {
     implementation(pluginLibs.graalvm.buildtools.native.plugin)
     implementation(pluginLibs.gradle.git.properties.plugin)
     implementation(pluginLibs.gradle.kotlin.plugin)
+    implementation(pluginLibs.idea.settings.plugin)
     implementation(pluginLibs.jooq.codegen.gradle.plugin)
     implementation(pluginLibs.jooq.meta)
     implementation(pluginLibs.ksp.plugin)
