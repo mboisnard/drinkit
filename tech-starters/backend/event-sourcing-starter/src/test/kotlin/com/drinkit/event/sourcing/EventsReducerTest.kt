@@ -15,7 +15,7 @@ internal class EventsReducerTest {
     fun `should build a projection from a sequence of events`() {
         // Given
         val reducer = EventsReducer<CarProjection, CarEvent, CarCreated>(
-            factory = CarProjection::applyInit
+            factory = CarProjection::applyInit,
         )
             .register<CarPurchased>(CarProjection::apply)
             .register<MaintenanceCarriedOut>(CarProjection::apply)
@@ -24,25 +24,25 @@ internal class EventsReducerTest {
             id = UUID.randomUUID(),
             sequenceId = SequenceId(),
             date = OffsetDateTime.now(),
-            name = "Aston Martin DB5"
+            name = "Aston Martin DB5",
         )
         val events = listOf(
             CarPurchased(
                 id = initEvent.id,
                 sequenceId = SequenceId(10),
                 date = OffsetDateTime.now(),
-                owner = "James Bond"
+                owner = "James Bond",
             ),
             MaintenanceCarriedOut(
                 id = initEvent.id,
                 sequenceId = SequenceId(20),
-                date = OffsetDateTime.now()
+                date = OffsetDateTime.now(),
             ),
             MaintenanceCarriedOut(
                 id = initEvent.id,
                 sequenceId = SequenceId(30),
-                date = OffsetDateTime.now()
-            )
+                date = OffsetDateTime.now(),
+            ),
         )
 
         // When
@@ -62,36 +62,35 @@ internal class EventsReducerTest {
         // Given
         val reducer = EventsReducer<CarProjection, CarEvent, CarCreated>(
             factory = CarProjection::applyInit,
-            defaultHandler = { projection, event -> projection.copy(sequenceId = event.sequenceId) }
+            defaultHandler = { projection, event -> projection.copy(sequenceId = event.sequenceId) },
         )
             // Can also be written with .register(CarPurchased::class) { projection, event -> projection.apply(event) }
             // or .register<CarPurchased>(CarProjection::apply)
             .register(CarPurchased::class, CarProjection::apply)
 
-
         val initEvent = CarCreated(
             id = UUID.randomUUID(),
             sequenceId = SequenceId(),
             date = OffsetDateTime.now(),
-            name = "Aston Martin DB5"
+            name = "Aston Martin DB5",
         )
         val events = listOf(
             CarPurchased(
                 id = initEvent.id,
                 sequenceId = SequenceId(10),
                 date = OffsetDateTime.now(),
-                owner = "James Bond"
+                owner = "James Bond",
             ),
             MaintenanceCarriedOut(
                 id = initEvent.id,
                 sequenceId = SequenceId(20),
-                date = OffsetDateTime.now()
+                date = OffsetDateTime.now(),
             ),
             MaintenanceCarriedOut(
                 id = initEvent.id,
                 sequenceId = SequenceId(30),
-                date = OffsetDateTime.now()
-            )
+                date = OffsetDateTime.now(),
+            ),
         )
 
         // When

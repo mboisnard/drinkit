@@ -54,6 +54,7 @@ internal fun UserEventRecord.toEvent(jsonMapper: JsonMapper): UserEvent {
                 preferredLocale = payload.preferredLocale,
             )
         }
+
         PROFILE_COMPLETED -> {
             val payload = JSONBToJacksonConverter(ProfileCompletedPayload::class.java, jsonMapper).from(payload)
             ProfileCompleted(
@@ -64,6 +65,7 @@ internal fun UserEventRecord.toEvent(jsonMapper: JsonMapper): UserEvent {
                 profile = payload.profile,
             )
         }
+
         VERIFIED -> {
             Verified(
                 userId = commonFields.userId,
@@ -72,6 +74,7 @@ internal fun UserEventRecord.toEvent(jsonMapper: JsonMapper): UserEvent {
                 author = commonFields.connectedAuthor,
             )
         }
+
         PROMOTED_AS_ADMIN -> {
             PromotedAsAdmin(
                 userId = commonFields.userId,
@@ -80,6 +83,7 @@ internal fun UserEventRecord.toEvent(jsonMapper: JsonMapper): UserEvent {
                 author = commonFields.connectedAuthor,
             )
         }
+
         DELETED -> {
             Deleted(
                 userId = commonFields.userId,
@@ -96,7 +100,7 @@ internal enum class UserEventPayloadType {
     PROFILE_COMPLETED,
     VERIFIED,
     PROMOTED_AS_ADMIN,
-    DELETED
+    DELETED,
 }
 
 internal sealed interface UserEventPayload
@@ -120,13 +124,11 @@ internal data class InitializedPayload(
     }
 }
 
-internal data class ProfileCompletedPayload(
-    val profile: ProfileInformation,
-) : UserEventPayload {
+internal data class ProfileCompletedPayload(val profile: ProfileInformation) : UserEventPayload {
 
     companion object {
         fun from(event: ProfileCompleted) = ProfileCompletedPayload(
-            profile = event.profile
+            profile = event.profile,
         )
     }
 }

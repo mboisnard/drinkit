@@ -9,21 +9,18 @@ import com.drinkit.cellar.spi.Cellars
 import com.drinkit.common.CityLocation
 import com.drinkit.generated.jooq.tables.records.CellarRecord
 import com.drinkit.generated.jooq.tables.references.CELLAR
-import com.drinkit.postgresql.jooq.JooqRepository
 import com.drinkit.postgresql.jooq.JSONBToJacksonConverter
+import com.drinkit.postgresql.jooq.JooqRepository
 import com.drinkit.postgresql.jooq.fetchSequence
 import com.drinkit.user.core.UserId
-import tools.jackson.databind.json.JsonMapper
 import org.jooq.DSLContext
+import tools.jackson.databind.json.JsonMapper
 import java.time.Clock
 import java.time.LocalDateTime
 
 @JooqRepository
-internal class JooqCellars(
-    private val dslContext: DSLContext,
-    private val clock: Clock,
-    jsonMapper: JsonMapper,
-) : Cellars {
+internal class JooqCellars(private val dslContext: DSLContext, private val clock: Clock, jsonMapper: JsonMapper) :
+    Cellars {
 
     private val cityLocationConverter = JSONBToJacksonConverter(CityLocation::class.java, jsonMapper)
     private val cellarRoomsConverter = JSONBToJacksonConverter(Set::class.java, jsonMapper)
@@ -66,12 +63,11 @@ internal class JooqCellars(
         return query.fetchSequence { it.toCellar() }
     }
 
-    private fun CellarRecord.toCellar(): Cellar =
-        Cellar(
-            id = CellarId(id),
-            name = CellarName(name),
-            location = cityLocationConverter.from(location),
-            rooms = CellarRooms(cellarRoomsConverter.from(rooms).map { CellarRoom(it as String) }.toSet()),
-            owner = UserId(ownerId),
-        )
+    private fun CellarRecord.toCellar(): Cellar = Cellar(
+        id = CellarId(id),
+        name = CellarName(name),
+        location = cityLocationConverter.from(location),
+        rooms = CellarRooms(cellarRoomsConverter.from(rooms).map { CellarRoom(it as String) }.toSet()),
+        owner = UserId(ownerId),
+    )
 }

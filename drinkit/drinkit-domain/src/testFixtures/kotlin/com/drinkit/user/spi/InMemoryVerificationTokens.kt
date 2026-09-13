@@ -12,9 +12,8 @@ class InMemoryVerificationTokens : VerificationTokens {
         return verificationToken
     }
 
-    override fun findBy(userId: UserId, token: String): VerificationToken? =
-        verificationTokens[userId]
-            ?.takeIf { it.value == token }
+    override fun findBy(userId: UserId, token: String): VerificationToken? = verificationTokens[userId]
+        ?.takeIf { it.value == token }
 
     override fun deleteBy(userId: UserId): Int {
         val oldValue = verificationTokens.remove(userId)

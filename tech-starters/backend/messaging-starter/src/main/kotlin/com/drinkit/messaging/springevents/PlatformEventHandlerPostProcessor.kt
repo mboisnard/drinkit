@@ -22,7 +22,10 @@ import org.springframework.stereotype.Component
 import org.springframework.util.ClassUtils
 
 @Component
-internal class PlatformEventHandlerPostProcessor : ApplicationContextAware, SmartInitializingSingleton, BeanFactoryPostProcessor {
+internal class PlatformEventHandlerPostProcessor :
+    ApplicationContextAware,
+    SmartInitializingSingleton,
+    BeanFactoryPostProcessor {
 
     private lateinit var applicationContext: ConfigurableApplicationContext
     private lateinit var beanFactory: ConfigurableListableBeanFactory
@@ -36,7 +39,10 @@ internal class PlatformEventHandlerPostProcessor : ApplicationContextAware, Smar
     }
 
     override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
-        val factories = beanFactory.getBeansOfType<EventListenerFactory>(includeNonSingletons = false, allowEagerInit = false)
+        val factories = beanFactory.getBeansOfType<EventListenerFactory>(
+            includeNonSingletons = false,
+            allowEagerInit = false,
+        )
             .values
 
         this.beanFactory = beanFactory
@@ -57,8 +63,11 @@ internal class PlatformEventHandlerPostProcessor : ApplicationContextAware, Smar
                 it to targetClass
             }
             .filter { (_, targetClass) ->
-                AnnotationUtils.isCandidateClass(targetClass, PlatformEventHandler::class.java) && !isSpringContainerClass(
-                    targetClass
+                AnnotationUtils.isCandidateClass(
+                    targetClass,
+                    PlatformEventHandler::class.java,
+                ) && !isSpringContainerClass(
+                    targetClass,
                 )
             }
             .forEach { (beanName, targetClass) ->
@@ -67,7 +76,7 @@ internal class PlatformEventHandlerPostProcessor : ApplicationContextAware, Smar
                         targetClass,
                         MethodIntrospector.MetadataLookup {
                             AnnotatedElementUtils.findMergedAnnotation(it, PlatformEventHandler::class.java)
-                        }
+                        },
                     )
                 } catch (_: Throwable) {
                     emptyMap()
@@ -98,8 +107,6 @@ internal class PlatformEventHandlerPostProcessor : ApplicationContextAware, Smar
             }
     }
 
-    private fun isSpringContainerClass(clazz: Class<*>): Boolean {
-        return clazz.name.startsWith("org.springframework.") &&
-            !AnnotatedElementUtils.isAnnotated(ClassUtils.getUserClass(clazz), Component::class.java)
-    }
+    private fun isSpringContainerClass(clazz: Class<*>): Boolean = clazz.name.startsWith("org.springframework.") &&
+        !AnnotatedElementUtils.isAnnotated(ClassUtils.getUserClass(clazz), Component::class.java)
 }

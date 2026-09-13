@@ -23,19 +23,16 @@ import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.Users
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.OffsetDateTime
 
 @Command
-data class CompleteProfileInformationCommand(
-    val author: Author.Connected,
-    val profileInformation: ProfileInformation,
-)
+data class CompleteProfileInformationCommand(val author: Author.Connected, val profileInformation: ProfileInformation)
 
 @Service
 @RetryableTransactional
-@Usecase @ImperativeShell
+@Usecase
+@ImperativeShell
 class CompleteProfileInformation(
     private val userEvents: UserEvents,
     private val users: Users,
@@ -81,11 +78,7 @@ internal object ProfileCompletionDecider {
         object Unauthorized : Decision
     }
 
-    fun invoke(
-        decision: UserDecision,
-        command: CompleteProfileInformationCommand,
-        date: OffsetDateTime,
-    ): Decision {
+    fun invoke(decision: UserDecision, command: CompleteProfileInformationCommand, date: OffsetDateTime): Decision {
         if (!decision.canEdit(command.author)) {
             return Unauthorized
         }
@@ -106,7 +99,7 @@ internal object ProfileCompletionDecider {
                 author = command.author,
                 sequenceId = decision.nextSequenceId,
                 profile = command.profileInformation,
-            )
+            ),
         )
     }
 }

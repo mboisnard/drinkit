@@ -11,14 +11,14 @@ import com.drinkit.user.ConfirmVerificationToken.Result.NotFound
 import com.drinkit.user.ConfirmVerificationToken.Result.Success
 import com.drinkit.user.ConfirmVerificationToken.Result.TokenExpired
 import com.drinkit.user.VerificationTokenDecider.Decision.AlreadyVerified
+import com.drinkit.user.VerificationTokenDecider.Decision.EventToPersist
 import com.drinkit.user.VerificationTokenDecider.Decision.Expired
 import com.drinkit.user.VerificationTokenDecider.Decision.Unauthorized
-import com.drinkit.user.VerificationTokenDecider.Decision.EventToPersist
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserDecision
 import com.drinkit.user.core.UserId
-import com.drinkit.user.core.Verified
 import com.drinkit.user.core.VerificationToken
+import com.drinkit.user.core.Verified
 import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.Users
 import com.drinkit.user.spi.VerificationTokens
@@ -28,14 +28,12 @@ import java.time.Clock
 import java.time.OffsetDateTime
 
 @Command
-data class ConfirmVerificationTokenCommand(
-    val author: Author.Connected,
-    val token: String,
-)
+data class ConfirmVerificationTokenCommand(val author: Author.Connected, val token: String)
 
 @Service
 @RetryableTransactional
-@Usecase @ImperativeShell
+@Usecase
+@ImperativeShell
 class ConfirmVerificationToken(
     private val userEvents: UserEvents,
     private val users: Users,
@@ -74,11 +72,14 @@ class ConfirmVerificationToken(
                 verificationTokens.deleteBy(userId)
                 Success(userEvents.save(decision.event))
             }
+
             AlreadyVerified -> Success(users.findEnabledBy(userId)!!)
+
             is Expired -> {
                 verificationTokens.deleteBy(userId)
                 TokenExpired
             }
+
             Unauthorized -> Forbidden
         }
     }
@@ -118,7 +119,7 @@ internal object VerificationTokenDecider {
                 date = date,
                 author = command.author,
                 sequenceId = decision.nextSequenceId,
-            )
+            ),
         )
     }
 }

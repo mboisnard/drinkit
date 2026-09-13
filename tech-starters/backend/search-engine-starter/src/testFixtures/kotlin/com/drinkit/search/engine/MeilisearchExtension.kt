@@ -3,7 +3,11 @@ package com.drinkit.search.engine
 import com.meilisearch.sdk.Client
 import com.meilisearch.sdk.Config
 import io.vanslog.testcontainers.meilisearch.MeilisearchContainer
-import org.junit.jupiter.api.extension.*
+import org.junit.jupiter.api.extension.AfterAllCallback
+import org.junit.jupiter.api.extension.BeforeAllCallback
+import org.junit.jupiter.api.extension.ExtensionContext
+import org.junit.jupiter.api.extension.ParameterContext
+import org.junit.jupiter.api.extension.ParameterResolver
 import org.testcontainers.lifecycle.Startables
 import org.testcontainers.utility.DockerImageName
 import org.testcontainers.utility.TestcontainersConfiguration
@@ -12,7 +16,10 @@ import org.testcontainers.utility.TestcontainersConfiguration
 private const val MEILISEARCH_IMAGE_NAME = "getmeili/meilisearch:v1.53.2"
 private const val MASTER_KEY = "masterKey"
 
-class MeilisearchExtension : BeforeAllCallback, AfterAllCallback, ParameterResolver {
+class MeilisearchExtension :
+    BeforeAllCallback,
+    AfterAllCallback,
+    ParameterResolver {
 
     private lateinit var client: Client
 

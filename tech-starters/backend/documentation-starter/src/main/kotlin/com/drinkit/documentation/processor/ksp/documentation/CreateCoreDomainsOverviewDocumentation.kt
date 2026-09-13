@@ -27,15 +27,16 @@ internal class CreateCoreDomainsOverviewDocumentation(
             .sortedBy { it.displayName }
 
         outputFile.writeText(
-            generateMarkdown(updatedEntries)
+            generateMarkdown(updatedEntries),
         )
 
         logger.warn("    Updated overview with ${domains.size} domain(s)")
     }
 
     private fun fetchExistingEntries(): List<DomainEntry> {
-        if (!outputFile.exists())
+        if (!outputFile.exists()) {
             return emptyList()
+        }
 
         return outputFile.readLines()
             .filter { it.startsWith("- [") }
@@ -44,9 +45,11 @@ internal class CreateCoreDomainsOverviewDocumentation(
                 val displayName = line.substringAfter('[').substringBefore(']')
                 val fileName = line.substringAfter("(./").substringBefore(".md)")
                 val count = line.substringAfterLast('(').substringBefore(' ').toIntOrNull()
-                if (displayName.isNotBlank() && fileName.isNotBlank() && count != null)
+                if (displayName.isNotBlank() && fileName.isNotBlank() && count != null) {
                     DomainEntry(displayName, fileName, count)
-                else null
+                } else {
+                    null
+                }
             }
     }
 
@@ -72,9 +75,5 @@ internal class CreateCoreDomainsOverviewDocumentation(
         appendLine("*Generated automatically from code annotations*")
     }
 
-    private data class DomainEntry(
-        val displayName: String,
-        val fileName: String,
-        val useCasesCount: Int,
-    )
+    private data class DomainEntry(val displayName: String, val fileName: String, val useCasesCount: Int)
 }

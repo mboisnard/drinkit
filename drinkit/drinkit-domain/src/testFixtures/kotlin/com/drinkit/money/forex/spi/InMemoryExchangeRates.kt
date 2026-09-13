@@ -7,9 +7,7 @@ class InMemoryExchangeRates : ExchangeRates {
 
     private val store = mutableMapOf<Pair<Currency, Currency>, ExchangeRate>()
 
-    override fun find(source: Currency, target: Currency): ExchangeRate? {
-        return store[source to target]
-    }
+    override fun find(source: Currency, target: Currency): ExchangeRate? = store[source to target]
 
     override fun saveOrUpdate(exchangeRates: Set<ExchangeRate>): Set<ExchangeRate> {
         exchangeRates.forEach { exchangeRate ->

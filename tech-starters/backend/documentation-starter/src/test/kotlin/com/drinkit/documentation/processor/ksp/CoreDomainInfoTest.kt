@@ -14,7 +14,7 @@ internal class CoreDomainInfoTest {
             packageName = "com.drinkit.user",
             className = "UserManagement",
             customName = null,
-            description = "User management core domain"
+            description = "User management core domain",
         )
 
         // When
@@ -31,7 +31,7 @@ internal class CoreDomainInfoTest {
             packageName = "com.drinkit.user",
             className = "UserManagement",
             customName = "Custom User Name",
-            description = "User management core domain"
+            description = "User management core domain",
         )
 
         // When
@@ -48,7 +48,7 @@ internal class CoreDomainInfoTest {
             packageName = "com.drinkit.user",
             className = "UserManagement",
             customName = null,
-            description = "User management core domain"
+            description = "User management core domain",
         )
 
         // When
@@ -65,26 +65,26 @@ internal class CoreDomainInfoTest {
             packageName = "com.drinkit.user",
             className = "User",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCaseInSamePackage = UseCaseInfo(
             packageName = "com.drinkit.user",
             className = "CreateUser",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCaseInOtherPackage = UseCaseInfo(
             packageName = "com.drinkit.order",
             className = "CreateOrder",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCasesByPackage = mapOf(
             "com.drinkit.user" to listOf(useCaseInSamePackage),
-            "com.drinkit.order" to listOf(useCaseInOtherPackage)
+            "com.drinkit.order" to listOf(useCaseInOtherPackage),
         )
 
         // When
@@ -101,18 +101,18 @@ internal class CoreDomainInfoTest {
             packageName = "com.drinkit.user.domain",
             className = "User",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCaseInParentPackage = UseCaseInfo(
             packageName = "com.drinkit.user",
             className = "CreateInformation",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCasesByPackage = mapOf(
-            "com.drinkit.user" to listOf(useCaseInParentPackage)
+            "com.drinkit.user" to listOf(useCaseInParentPackage),
         )
 
         // When
@@ -129,25 +129,25 @@ internal class CoreDomainInfoTest {
             packageName = "com.drinkit.domain.user",
             className = "User",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCaseMatchingDomainName = UseCaseInfo(
             packageName = "com.drinkit.domain",
             className = "CreateUser",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCaseNotMatchingDomainName = UseCaseInfo(
             packageName = "com.drinkit.domain",
             className = "CreateOrder",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCasesByPackage = mapOf(
-            "com.drinkit.domain" to listOf(useCaseMatchingDomainName, useCaseNotMatchingDomainName)
+            "com.drinkit.domain" to listOf(useCaseMatchingDomainName, useCaseNotMatchingDomainName),
         )
 
         // When
@@ -164,34 +164,34 @@ internal class CoreDomainInfoTest {
             packageName = "com.drinkit.domain.user",
             className = "User",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCaseMatchingDomainName1 = UseCaseInfo(
             packageName = "com.drinkit.application",
             className = "CreateUser",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCaseMatchingDomainName2 = UseCaseInfo(
             packageName = "com.drinkit.service",
             className = "UpdateUser",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCaseNotMatching = UseCaseInfo(
             packageName = "com.drinkit.order",
             className = "CreateOrder",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCasesByPackage = mapOf(
             "com.drinkit.application" to listOf(useCaseMatchingDomainName1),
             "com.drinkit.service" to listOf(useCaseMatchingDomainName2),
-            "com.drinkit.order" to listOf(useCaseNotMatching)
+            "com.drinkit.order" to listOf(useCaseNotMatching),
         )
 
         // When
@@ -208,7 +208,7 @@ internal class CoreDomainInfoTest {
             packageName = "com.drinkit.user",
             className = "User",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCasesByPackage = mapOf(
@@ -217,9 +217,9 @@ internal class CoreDomainInfoTest {
                     packageName = "com.drinkit.order",
                     className = "CreateOrder",
                     customName = null,
-                    description = null
-                )
-            )
+                    description = null,
+                ),
+            ),
         )
 
         // When
@@ -236,18 +236,18 @@ internal class CoreDomainInfoTest {
             packageName = "com.drinkit.domain",
             className = "UserManagement",
             customName = "UserDomain",
-            description = null
+            description = null,
         )
 
         val useCaseMatchingCustomName = UseCaseInfo(
             packageName = "com.drinkit.application",
             className = "CreateUserDomain",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCasesByPackage = mapOf(
-            "com.drinkit.application" to listOf(useCaseMatchingCustomName)
+            "com.drinkit.application" to listOf(useCaseMatchingCustomName),
         )
 
         // When

@@ -5,9 +5,7 @@ import com.drinkit.common.MockGenerateId
 import com.drinkit.messaging.SpyPlatformEventPublisher
 import com.drinkit.test.ControlledClock
 
-class CellarFixtures(
-    val generateId: MockGenerateId = MockGenerateId(),
-) {
+class CellarFixtures(val generateId: MockGenerateId = MockGenerateId()) {
     val spyEventPublisher = SpyPlatformEventPublisher()
 
     val controlledClock = ControlledClock()

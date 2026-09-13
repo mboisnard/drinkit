@@ -9,9 +9,7 @@ import com.drinkit.user.spi.VerificationTokens
 import org.jooq.DSLContext
 
 @JooqRepository
-internal class JooqVerificationTokensRepository(
-    private val dslContext: DSLContext,
-) : VerificationTokens {
+internal class JooqVerificationTokensRepository(private val dslContext: DSLContext) : VerificationTokens {
 
     override fun saveOrUpdate(verificationToken: VerificationToken): VerificationToken? {
         val query = dslContext.insertInto(VERIFICATION_TOKEN)
@@ -44,10 +42,9 @@ internal class JooqVerificationTokensRepository(
         return query.execute()
     }
 
-    private fun VerificationTokenRecord.toDomain(): VerificationToken =
-        VerificationToken(
-            userId = UserId(userId),
-            value = token,
-            expiryDate = expiryDate,
-        )
+    private fun VerificationTokenRecord.toDomain(): VerificationToken = VerificationToken(
+        userId = UserId(userId),
+        value = token,
+        expiryDate = expiryDate,
+    )
 }

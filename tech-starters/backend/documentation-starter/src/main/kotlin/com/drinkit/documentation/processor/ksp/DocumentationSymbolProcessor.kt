@@ -33,13 +33,16 @@ internal class DocumentationSymbolProcessor(
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         coreDomainsByPackage = collectInfo<CoreDomain, CoreDomainInfo>(
-            resolver, KSClassDeclaration::toCoreDomain
+            resolver,
+            KSClassDeclaration::toCoreDomain,
         )
         useCasesByPackage = collectInfo<Usecase, UseCaseInfo>(
-            resolver, KSClassDeclaration::toUseCase
+            resolver,
+            KSClassDeclaration::toUseCase,
         )
         techStarterToolsByPackage = collectInfo<TechStarterTool, TechStarterToolInfo>(
-            resolver, KSClassDeclaration::toTechStarterTool
+            resolver,
+            KSClassDeclaration::toTechStarterTool,
         )
 
         return emptyList()
@@ -74,14 +77,13 @@ internal class DocumentationSymbolProcessor(
 
     private inline fun <reified A : Annotation, T : AnnotatedInfo> collectInfo(
         resolver: Resolver,
-        noinline mapper: (KSClassDeclaration, KSAnnotation) -> T
-    ): Map<String, List<T>> =
-        resolver.getSymbolsWithAnnotation(A::class.qualifiedName!!)
-            .filterIsInstance<KSClassDeclaration>()
-            .filter { it.validate() }
-            .map { classDeclaration ->
-                val annotation = classDeclaration.findAnnotation<A>()
-                mapper(classDeclaration, annotation)
-            }
-            .groupBy { it.packageName }
+        noinline mapper: (KSClassDeclaration, KSAnnotation) -> T,
+    ): Map<String, List<T>> = resolver.getSymbolsWithAnnotation(A::class.qualifiedName!!)
+        .filterIsInstance<KSClassDeclaration>()
+        .filter { it.validate() }
+        .map { classDeclaration ->
+            val annotation = classDeclaration.findAnnotation<A>()
+            mapper(classDeclaration, annotation)
+        }
+        .groupBy { it.packageName }
 }

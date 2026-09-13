@@ -8,18 +8,18 @@ import com.drinkit.documentation.fcis.FunctionalCore
 import com.drinkit.documentation.fcis.ImperativeShell
 import com.drinkit.event.sourcing.SequenceId
 import com.drinkit.messaging.PlatformEventPublisher
-import com.drinkit.user.CreateNewUser.Result.UserCreated
 import com.drinkit.user.CreateNewUser.Result.UserAlreadyExists
+import com.drinkit.user.CreateNewUser.Result.UserCreated
 import com.drinkit.user.UserCreationDecider.Decision.EmailAlreadyExists
 import com.drinkit.user.UserCreationDecider.Decision.EventToPersist
 import com.drinkit.user.UserCreationDecider.Decision.ValidationFailed
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.EncodedPassword
+import com.drinkit.user.core.Initialized
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.Roles.Role.ROLE_REGISTRATION_IN_PROGRESS
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
-import com.drinkit.user.core.Initialized
 import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.Users
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -39,7 +39,8 @@ data class CreateNewUserCommand(
 
 @Service
 @Transactional
-@Usecase @ImperativeShell
+@Usecase
+@ImperativeShell
 class CreateNewUser(
     private val userEvents: UserEvents,
     private val users: Users,
@@ -71,12 +72,14 @@ class CreateNewUser(
                     com.drinkit.user.spi.UserCreated(
                         userId = user.id,
                         locale = command.locale,
-                    )
+                    ),
                 )
 
                 UserCreated(user)
             }
+
             is EmailAlreadyExists -> UserAlreadyExists
+
             is ValidationFailed -> throw IllegalStateException("Validation failed: ${decision.errors}")
         }
     }
@@ -116,7 +119,7 @@ internal object UserCreationDecider {
                 password = command.password,
                 roles = Roles(setOf(ROLE_REGISTRATION_IN_PROGRESS)),
                 preferredLocale = command.locale,
-            )
+            ),
         )
     }
 }

@@ -7,13 +7,11 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-internal class InternalUserDetailsService(
-    private val userDetailsRepository: UserDetailsRepository,
-) : UserDetailsService {
+internal class InternalUserDetailsService(private val userDetailsRepository: UserDetailsRepository) :
+    UserDetailsService {
 
     @Transactional(readOnly = true)
     @Throws(UsernameNotFoundException::class)
-    override fun loadUserByUsername(username: String): UserDetails =
-        userDetailsRepository.findByEmail(username)
-            ?: throw UsernameNotFoundException(username)
+    override fun loadUserByUsername(username: String): UserDetails = userDetailsRepository.findByEmail(username)
+        ?: throw UsernameNotFoundException(username)
 }

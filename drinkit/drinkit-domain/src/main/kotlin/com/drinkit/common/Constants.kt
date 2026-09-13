@@ -28,5 +28,4 @@ object Constants {
     const val MAX_CELLAR_ROOM_LENGTH = 100
 }
 
-fun String.isId(): Boolean =
-    Constants.ID_REGEX.matches(this)
+fun String.isId(): Boolean = Constants.ID_REGEX.matches(this)

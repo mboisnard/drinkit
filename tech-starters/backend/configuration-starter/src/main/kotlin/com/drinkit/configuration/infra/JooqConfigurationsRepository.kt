@@ -3,11 +3,11 @@ package com.drinkit.configuration.infra
 import com.drinkit.configuration.ConfigurationKey
 import com.drinkit.configuration.Configurations
 import com.drinkit.configuration.generated.jooq.tables.references.CONFIGURATION
-import tools.jackson.databind.json.JsonMapper
 import org.jooq.DSLContext
 import org.jooq.JSONB
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.json.JsonMapper
 import java.time.Clock
 import java.time.OffsetDateTime
 import kotlin.reflect.KClass
@@ -21,12 +21,12 @@ internal class JooqConfigurationsRepository(
 
     @Transactional(readOnly = true)
     override fun <T : Any> get(key: ConfigurationKey<T>, type: KClass<T>): T? {
-         val record = dsl.selectFrom(CONFIGURATION)
-             .where(CONFIGURATION.KEY.eq(key.key))
-             .fetchOne()
-             ?: return null
+        val record = dsl.selectFrom(CONFIGURATION)
+            .where(CONFIGURATION.KEY.eq(key.key))
+            .fetchOne()
+            ?: return null
 
-         return jsonMapper.readValue(record.value.data(), type.java)
+        return jsonMapper.readValue(record.value.data(), type.java)
     }
 
     @Transactional
@@ -35,22 +35,22 @@ internal class JooqConfigurationsRepository(
         val serializedValue = JSONB.jsonb(jsonMapper.writeValueAsString(value))
 
         dsl.insertInto(CONFIGURATION)
-             .set(CONFIGURATION.KEY, key.key)
-             .set(CONFIGURATION.VALUE, serializedValue)
-             .set(CONFIGURATION.MODIFIED, date)
-             .onConflict(CONFIGURATION.KEY)
-             .doUpdate()
-             .set(CONFIGURATION.VALUE, serializedValue)
-             .set(CONFIGURATION.MODIFIED, date)
-             .execute()
+            .set(CONFIGURATION.KEY, key.key)
+            .set(CONFIGURATION.VALUE, serializedValue)
+            .set(CONFIGURATION.MODIFIED, date)
+            .onConflict(CONFIGURATION.KEY)
+            .doUpdate()
+            .set(CONFIGURATION.VALUE, serializedValue)
+            .set(CONFIGURATION.MODIFIED, date)
+            .execute()
 
-         return value
+        return value
     }
 
     @Transactional
     override fun delete(key: ConfigurationKey<*>) {
-         dsl.deleteFrom(CONFIGURATION)
-             .where(CONFIGURATION.KEY.eq(key.key))
-             .execute()
+        dsl.deleteFrom(CONFIGURATION)
+            .where(CONFIGURATION.KEY.eq(key.key))
+            .execute()
     }
 }

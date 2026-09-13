@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class DeleteCellar(
-    private val cellars: Cellars,
-) {
+class DeleteCellar(private val cellars: Cellars) {
     private val logger = KotlinLogging.logger { }
 
     @Transactional

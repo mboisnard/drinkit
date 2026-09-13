@@ -6,16 +6,13 @@ import com.drinkit.user.core.UserEvent
 import com.drinkit.user.core.UserHistory
 import com.drinkit.user.core.UserId
 
-class InMemoryUserEventsStore(
-    private val users: Users,
-): UserEvents {
+class InMemoryUserEventsStore(private val users: Users) : UserEvents {
 
     private val eventsStore: MutableMap<UserId, UserHistory> = mutableMapOf()
 
-    override fun findAllBy(userId: UserId): UserHistory? =
-        eventsStore[userId]?.let { history ->
-            history.copy(remainingEvents = history.remainingEvents.sortedBy { it.sequenceId })
-        }
+    override fun findAllBy(userId: UserId): UserHistory? = eventsStore[userId]?.let { history ->
+        history.copy(remainingEvents = history.remainingEvents.sortedBy { it.sequenceId })
+    }
 
     override fun save(event: UserEvent): User {
         val userId = event.userId

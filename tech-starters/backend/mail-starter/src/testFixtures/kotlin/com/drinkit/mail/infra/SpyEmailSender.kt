@@ -14,8 +14,7 @@ class SpyEmailSender : EmailSender {
 
     fun count(): Int = sentEmails.size
 
-    fun countForRecipient(recipient: Recipient): Int =
-        sentEmails.count { it.recipients.values.contains(recipient) }
+    fun countForRecipient(recipient: Recipient): Int = sentEmails.count { it.recipients.values.contains(recipient) }
 
     fun findLastSentEmail(): Email? = sentEmails.lastOrNull()
 }

@@ -6,11 +6,11 @@ import com.drinkit.test.ControlledClock
 import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.UserEventsTestContract
 import com.drinkit.user.spi.Users
+import org.jooq.DSLContext
+import org.junit.jupiter.api.BeforeEach
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.kotlin.KotlinFeature
 import tools.jackson.module.kotlin.kotlinModule
-import org.jooq.DSLContext
-import org.junit.jupiter.api.BeforeEach
 
 @JooqIntegrationTest(schemas = [DrinkitApplication::class])
 internal class JooqUserEventsRepositoryTest : UserEventsTestContract() {

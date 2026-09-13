@@ -1,8 +1,8 @@
 package com.drinkit.money.forex.ecb
 
+import org.springframework.web.service.annotation.GetExchange
 import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
-import org.springframework.web.service.annotation.GetExchange
 import java.math.BigDecimal
 
 internal interface EuropeanCentralBankClient {
@@ -13,14 +13,14 @@ internal interface EuropeanCentralBankClient {
 
 internal data class EcbDailyExchangeRatesResponse(
     @field:JacksonXmlProperty(localName = "Cube")
-    val outerCube: EcbOuterCube
+    val outerCube: EcbOuterCube,
 ) {
     val rates: List<EcbRate> = outerCube.dateCube.rates
 }
 
 internal data class EcbOuterCube(
     @field:JacksonXmlProperty(localName = "Cube")
-    val dateCube: EcbDateCube
+    val dateCube: EcbDateCube,
 )
 
 internal data class EcbDateCube(
@@ -29,7 +29,7 @@ internal data class EcbDateCube(
 
     @field:JacksonXmlElementWrapper(useWrapping = false)
     @field:JacksonXmlProperty(localName = "Cube")
-    val rates: List<EcbRate>
+    val rates: List<EcbRate>,
 )
 
 internal data class EcbRate(
@@ -37,5 +37,5 @@ internal data class EcbRate(
     val currency: String,
 
     @field:JacksonXmlProperty(isAttribute = true, localName = "rate")
-    val rate: BigDecimal
+    val rate: BigDecimal,
 )

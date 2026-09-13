@@ -16,13 +16,14 @@ private val EMITTER_TIMEOUT = Duration.ofMinutes(3)
 
 @TechStarterTool
 @RestController("/sse")
-internal class SseApi(
-    private val emitters: InMemoryEmittersRepository,
-) {
+internal class SseApi(private val emitters: InMemoryEmittersRepository) {
     private val logger = KotlinLogging.logger { }
 
     @GetMapping("/event-stream", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    fun subscribeToEventStream(request: HttpServletRequest, @RequestParam eventName: String): SseEmitter {
+    fun subscribeToEventStream(
+        request: HttpServletRequest,
+        @RequestParam eventName: String,
+    ): SseEmitter {
         val sessionId = request.session.id
         val emitter = createEmitterFor(sessionId)
 
@@ -35,7 +36,6 @@ internal class SseApi(
 
     @PlatformEventHandler(name = "send.sse.event.to.connected.event.stream.queue", oneQueuePerInstance = true)
     fun sendMessageToEventStream(platformEvent: SendSseEvent) {
-
         val emitters = emitters.findAllBy(platformEvent.sessionId)
             ?: return logger.debug { "No emitters found on this instance for session: ${platformEvent.sessionId}" }
 

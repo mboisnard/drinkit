@@ -10,9 +10,8 @@ import kotlin.reflect.KClass
 
 @Primary
 @Repository
-internal class CachedConfigurationsRepository(
-    private val delegate: JooqConfigurationsRepository
-): Configurations by delegate {
+internal class CachedConfigurationsRepository(private val delegate: JooqConfigurationsRepository) :
+    Configurations by delegate {
 
     @Cacheable(value = ["configurations"], key = "#key.key")
     override fun <T : Any> get(key: ConfigurationKey<T>, type: KClass<T>): T? = delegate.get(key, type)

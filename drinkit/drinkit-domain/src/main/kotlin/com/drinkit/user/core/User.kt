@@ -27,7 +27,7 @@ data class User(
     private fun apply(event: ProfileCompleted) = this.copy(
         profile = event.profile,
         status = UserStatus.ACTIVE,
-        roles = Roles(setOf(ROLE_USER))
+        roles = Roles(setOf(ROLE_USER)),
     )
 
     private fun apply(_event: Verified) = this.copy(
@@ -35,7 +35,7 @@ data class User(
     )
 
     private fun apply(_event: PromotedAsAdmin) = this.copy(
-        roles = roles + ROLE_ADMIN
+        roles = roles + ROLE_ADMIN,
     )
 
     private fun apply(_event: Deleted) = this.copy(
@@ -45,7 +45,7 @@ data class User(
     companion object {
         fun from(history: UserHistory): User {
             val reducer = EventsReducer<User, UserEvent, Initialized>(
-                factory = User::applyInitialization
+                factory = User::applyInitialization,
             )
                 .register<ProfileCompleted>(User::apply)
                 .register<Verified>(User::apply)
@@ -73,4 +73,3 @@ enum class UserStatus {
     ACTIVE,
     DELETED,
 }
-

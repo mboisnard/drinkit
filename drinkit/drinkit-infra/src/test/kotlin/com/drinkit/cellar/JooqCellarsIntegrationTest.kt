@@ -4,9 +4,9 @@ import com.drinkit.cellar.spi.Cellars
 import com.drinkit.cellar.spi.CellarsTestContract
 import com.drinkit.generated.jooq.DrinkitApplication
 import com.drinkit.jooq.JooqIntegrationTest
-import tools.jackson.databind.json.JsonMapper
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
+import tools.jackson.databind.json.JsonMapper
 
 @JooqIntegrationTest(schemas = [DrinkitApplication::class])
 internal class JooqCellarsIntegrationTest : CellarsTestContract() {

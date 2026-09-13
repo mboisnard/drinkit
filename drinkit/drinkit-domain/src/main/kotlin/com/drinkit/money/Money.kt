@@ -7,10 +7,7 @@ import com.drinkit.utils.addIfNotMatch
 import java.math.BigDecimal
 
 @CoreDomain
-data class Money private constructor(
-    val amount: BigDecimal,
-    val currency: Currency,
-) {
+data class Money private constructor(val amount: BigDecimal, val currency: Currency) {
     companion object {
         // Cents as scale
         const val MONEY_SCALE_PRECISION = 2

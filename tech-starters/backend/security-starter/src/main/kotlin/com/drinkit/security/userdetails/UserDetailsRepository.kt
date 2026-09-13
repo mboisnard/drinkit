@@ -11,9 +11,7 @@ internal fun interface UserDetailsRepository {
 }
 
 @JooqRepository
-internal class JooqUserDetailsRepository(
-    private val dslContext: DSLContext,
-) : UserDetailsRepository {
+internal class JooqUserDetailsRepository(private val dslContext: DSLContext) : UserDetailsRepository {
 
     override fun findByEmail(email: String): InternalUserDetails? {
         val query = dslContext.selectFrom(USER)
@@ -22,12 +20,11 @@ internal class JooqUserDetailsRepository(
         return query.fetchOne { it.toSecurityUser() }
     }
 
-    private fun UserRecord.toSecurityUser(): InternalUserDetails =
-        InternalUserDetails(
-            id = id,
-            username = email,
-            password = password,
-            authorities = roles.mapNotNull { it?.let { SimpleGrantedAuthority(it) } }.toSet(),
-            enabled = enabled,
-        )
+    private fun UserRecord.toSecurityUser(): InternalUserDetails = InternalUserDetails(
+        id = id,
+        username = email,
+        password = password,
+        authorities = roles.mapNotNull { it?.let { SimpleGrantedAuthority(it) } }.toSet(),
+        enabled = enabled,
+    )
 }

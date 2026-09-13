@@ -15,7 +15,7 @@ internal class SequenceIdTest {
     }
 
     @Test
-    fun `should increment sequenceId value leaving an interval between the two values in case of adding an event between the two`() {
+    fun `should leave an interval between two sequenceIds, so that an event can be inserted in between`() {
         // Given
         val sequenceId = SequenceId(10)
 

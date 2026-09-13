@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
  */
 @Component(value = "loggingRetryListener")
 @TechStarterTool
-internal class LoggingRetryListener: RetryListener {
+internal class LoggingRetryListener : RetryListener {
 
     private val logger = KotlinLogging.logger {}
 

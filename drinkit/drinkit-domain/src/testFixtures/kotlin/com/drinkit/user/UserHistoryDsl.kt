@@ -10,24 +10,23 @@ import java.time.OffsetDateTime
 
 fun UserId.toConnectedAuthor() = Author.Connected(this)
 
-inline fun UserHistory.appendRemainingEvent(
-    eventSupplier: (UserHistory) -> List<UserEvent>,
-): UserHistory = this.copy(
+inline fun UserHistory.appendRemainingEvent(eventSupplier: (UserHistory) -> List<UserEvent>): UserHistory = this.copy(
     remainingEvents = this.remainingEvents + eventSupplier(this),
 )
 
-fun UserHistory.withProfileInformationCompleted(command: CompleteProfileInformationCommand) = this.appendRemainingEvent {
-    val decision = ProfileCompletionDecider.invoke(
-        decision = UserDecision.from(it),
-        command = command,
-        date = OffsetDateTime.now(),
-    )
+fun UserHistory.withProfileInformationCompleted(command: CompleteProfileInformationCommand) =
+    this.appendRemainingEvent {
+        val decision = ProfileCompletionDecider.invoke(
+            decision = UserDecision.from(it),
+            command = command,
+            date = OffsetDateTime.now(),
+        )
 
-    when (decision) {
-        is ProfileCompletionDecider.Decision.EventToPersist -> listOf(decision.event)
-        else -> emptyList()
+        when (decision) {
+            is ProfileCompletionDecider.Decision.EventToPersist -> listOf(decision.event)
+            else -> emptyList()
+        }
     }
-}
 
 fun UserHistory.withPromotedAsAdmin(command: PromoteAsAdminCommand) = this.appendRemainingEvent {
     val decision = AdminPromotionDecider.decide(
@@ -63,9 +62,9 @@ fun UserHistory.withVerified(command: ConfirmVerificationTokenCommand) = this.ap
         foundToken = VerificationToken(
             userId = userDecision.id,
             value = command.token,
-            expiryDate = OffsetDateTime.now().plusHours(1)
+            expiryDate = OffsetDateTime.now().plusHours(1),
         ),
-        date = OffsetDateTime.now()
+        date = OffsetDateTime.now(),
     )
 
     when (decision) {

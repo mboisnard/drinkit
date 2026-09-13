@@ -30,7 +30,7 @@ internal class CompleteProfileInformationTest {
     private val userEvents = userFixtures.userEvents
 
     @Test
-    fun `save profile information completion for an existing user and change his role to be able to access more features`() {
+    fun `save profile information for an existing user and upgrade their role to ROLE_USER`() {
         // Given
         val user = userFixtures.givenAnInitializedUser()
         val command = CompleteProfileInformationCommand(
@@ -143,7 +143,7 @@ internal class CompleteProfileInformationTest {
                 profileInformation = ProfileInformation(
                     firstName = FirstName("a"),
                     lastName = LastName("lastname".repeat(20)),
-                    birthDate = BirthDate(LocalDate.of(1805, 1, 1))
+                    birthDate = BirthDate(LocalDate.of(1805, 1, 1)),
                 ),
             )
 

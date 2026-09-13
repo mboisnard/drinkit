@@ -5,7 +5,8 @@ enum class Currency {
     USD,
     GBP,
     JPY,
-    CNY;
+    CNY,
+    ;
 
     val code: String = this.name
 

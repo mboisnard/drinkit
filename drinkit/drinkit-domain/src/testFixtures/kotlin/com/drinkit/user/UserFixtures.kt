@@ -10,15 +10,15 @@ import com.drinkit.messaging.SpyPlatformEventPublisher
 import com.drinkit.test.ControlledClock
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.EncodedPassword
-import com.drinkit.user.core.Password
-import com.drinkit.user.core.User
-import com.drinkit.user.core.UserId
 import com.drinkit.user.core.Initialized
+import com.drinkit.user.core.Password
 import com.drinkit.user.core.ProfileInformation
+import com.drinkit.user.core.User
 import com.drinkit.user.core.UserHistory
-import com.drinkit.user.spi.InMemoryVerificationTokens
+import com.drinkit.user.core.UserId
 import com.drinkit.user.spi.InMemoryUserEventsStore
 import com.drinkit.user.spi.InMemoryUsersRepository
+import com.drinkit.user.spi.InMemoryVerificationTokens
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
@@ -132,7 +132,7 @@ class UserFixtures(
             },
             birthDate = faker.randomProvider.randomClassInstance {
                 typeGenerator<LocalDate> { faker.person.birthDate(faker.random.nextLong(25)) }
-            }
+            },
         )
     }
 }

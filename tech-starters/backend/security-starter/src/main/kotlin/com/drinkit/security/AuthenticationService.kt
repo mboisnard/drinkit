@@ -40,7 +40,7 @@ internal class InternalAuthenticationService(
     override fun authenticate(username: String, password: String) {
         try {
             val authentication = authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(username, password)
+                UsernamePasswordAuthenticationToken(username, password),
             )
 
             val securityContext = securityContextHolderStrategy.createEmptyContext()
@@ -68,7 +68,7 @@ internal class InternalAuthenticationService(
         securityContext.authentication = PreAuthenticatedAuthenticationToken(
             requireNotNull(oldAuthentication.principal) { "Authentication has no principal" },
             oldAuthentication.credentials,
-            recentlyUpdatedUser.authorities
+            recentlyUpdatedUser.authorities,
         )
 
         securityContextHolderStrategy.context = securityContext

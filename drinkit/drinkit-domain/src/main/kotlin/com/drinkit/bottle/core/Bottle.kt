@@ -8,7 +8,7 @@ import com.drinkit.utils.doesntContainsInvisibleCharacters
 import java.math.BigDecimal
 import java.time.Year
 
-data class BottleId(override val value: String): AbstractId(value)
+data class BottleId(override val value: String) : AbstractId(value)
 
 data class Vintage(val value: Year)
 
@@ -32,7 +32,7 @@ data class Description(val value: String) {
         addIfNotMatch(value.isNotBlank(), "Description must not be blank")
         addIfNotMatch(
             value.doesntContainsInvisibleCharacters(),
-            "Description should not contains invisible characters, $value"
+            "Description should not contains invisible characters, $value",
         )
     }
 }

@@ -13,14 +13,9 @@ data class SendMessageCommand(
     }
 }
 
-data class Recipient(
-    val value: String,
-)
+data class Recipient(val value: String)
 
-data class MessageContent(
-    val title: String,
-    val content: String,
-)
+data class MessageContent(val title: String, val content: String)
 
 fun interface MessageSender {
 

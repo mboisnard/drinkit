@@ -21,13 +21,15 @@ interface DomainEvent {
  *
  */
 @TechStarterTool
-data class History<Event : DomainEvent, InitEvent: Event>(
+data class History<Event : DomainEvent, InitEvent : Event>(
     val initEvent: InitEvent,
     val remainingEvents: List<Event> = emptyList(),
 ) {
 
     companion object {
-        inline fun <Event : DomainEvent, reified InitEvent : Event> from(events: List<Event>): History<Event, InitEvent> {
+        inline fun <Event : DomainEvent, reified InitEvent : Event> from(
+            events: List<Event>,
+        ): History<Event, InitEvent> {
             val initEvent = events.firstOrNull()
                 ?: throw IllegalArgumentException("Events list cannot be empty")
 

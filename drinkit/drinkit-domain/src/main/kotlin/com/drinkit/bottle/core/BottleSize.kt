@@ -1,8 +1,6 @@
 package com.drinkit.bottle.core
 
-enum class BottleSize(
-    val capacityInLiters: Double,
-) {
+enum class BottleSize(val capacityInLiters: Double) {
     // Little formats
     FLACON(0.1),
     PICCOLO(0.2), // Also named Split
@@ -29,9 +27,8 @@ enum class BottleSize(
     SOLOMON(20.0),
     SOVEREIGN(25.0), // Souverain in French
     PRIMAT(27.0),
-    MELCHIZEDEK(30.0);
+    MELCHIZEDEK(30.0),
+    ;
 
-    fun inStandardBottles(): Double {
-        return capacityInLiters / STANDARD.capacityInLiters
-    }
+    fun inStandardBottles(): Double = capacityInLiters / STANDARD.capacityInLiters
 }

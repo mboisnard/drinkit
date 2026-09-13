@@ -11,8 +11,7 @@ import kotlin.streams.asSequence
 
 const val DEFAULT_FETCH_SIZE = 1000
 
-inline fun <reified R : Record> allFields(table: Table<R>) =
-    row(*table.fields()).convertFrom { it.into(R::class.java) }
+inline fun <reified R : Record> allFields(table: Table<R>) = row(*table.fields()).convertFrom { it.into(R::class.java) }
 
 inline fun <reified R : Record, T> Select<R>.fetchSequence(
     fetchSize: Int = DEFAULT_FETCH_SIZE,
@@ -25,5 +24,5 @@ inline fun <reified R : Record, T> Select<R>.fetchSequence(
 fun DataAccessException.isEventSourcingSequenceException(primaryKeyName: String): Boolean {
     val mostSpecificCause = this.mostSpecificCause
     return mostSpecificCause is PSQLException &&
-            mostSpecificCause.serverErrorMessage?.constraint == primaryKeyName
+        mostSpecificCause.serverErrorMessage?.constraint == primaryKeyName
 }

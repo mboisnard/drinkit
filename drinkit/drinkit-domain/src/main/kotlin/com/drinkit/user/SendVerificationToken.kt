@@ -28,14 +28,12 @@ import org.springframework.stereotype.Service
 import java.util.Locale
 
 @Command
-data class SendVerificationTokenCommand(
-    val author: Author,
-    val locale: Locale,
-)
+data class SendVerificationTokenCommand(val author: Author, val locale: Locale)
 
 @Service
 @RetryableTransactional
-@Usecase @ImperativeShell
+@Usecase
+@ImperativeShell
 class SendVerificationToken(
     private val userEvents: UserEvents,
     private val generateVerificationToken: GenerateVerificationToken,
@@ -43,7 +41,7 @@ class SendVerificationToken(
     private val messageSender: MessageSender,
 ) {
     sealed interface Result {
-        data class Success(val token: VerificationToken): Result
+        data class Success(val token: VerificationToken) : Result
         object AlreadyVerified : Result
         object UserNotFound : Result
         object Forbidden : Result
@@ -73,14 +71,16 @@ class SendVerificationToken(
                         content = MessageContent("Verification code", token.value),
                         locale = command.locale,
                         recipient = Recipient(decision.email.value),
-                    )
+                    ),
                 )
 
                 logger.debug { "Verification token sent to user: ${decision.userId}, email: ${decision.email}" }
 
                 Success(token)
             }
+
             AlreadyVerified -> Result.AlreadyVerified
+
             Unauthorized -> Forbidden
         }
     }
@@ -95,10 +95,7 @@ internal object VerificationTokenSendingDecider {
         object Unauthorized : Decision
     }
 
-    fun decide(
-        decision: UserDecision,
-        command: SendVerificationTokenCommand
-    ): Decision {
+    fun decide(decision: UserDecision, command: SendVerificationTokenCommand): Decision {
         if (!decision.canEdit(command.author)) {
             return Unauthorized
         }

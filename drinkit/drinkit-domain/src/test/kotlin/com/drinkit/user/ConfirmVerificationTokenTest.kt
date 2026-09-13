@@ -107,7 +107,7 @@ internal class ConfirmVerificationTokenTest {
                 userId = unknownUser.userId,
                 value = "verification-token",
                 expiryDate = userFixtures.givenANewDate.plusHours(1),
-            )
+            ),
         )
         val command = ConfirmVerificationTokenCommand(
             author = unknownUser,
@@ -184,7 +184,7 @@ internal class ConfirmVerificationTokenTest {
             val userId = userFixtures.givenAUserId
             val command = ConfirmVerificationTokenCommand(
                 author = userId.toConnectedAuthor(),
-                token = "verification-token"
+                token = "verification-token",
             )
             val date = userFixtures.givenANewDate
             val userDecision = userFixtures.givenAUserHistory(userId = userId)
@@ -198,7 +198,7 @@ internal class ConfirmVerificationTokenTest {
                 foundToken = VerificationToken(
                     userId = userDecision.id,
                     value = command.token,
-                    expiryDate = date.plusHours(1)
+                    expiryDate = date.plusHours(1),
                 ),
                 date = date,
             )
@@ -214,7 +214,7 @@ internal class ConfirmVerificationTokenTest {
                 .toUserDecision()
             val command = ConfirmVerificationTokenCommand(
                 author = userDecision.id.toConnectedAuthor(),
-                token = "verification-token"
+                token = "verification-token",
             )
             val date = userFixtures.givenANewDate
 
@@ -225,9 +225,9 @@ internal class ConfirmVerificationTokenTest {
                 foundToken = VerificationToken(
                     userId = userDecision.id,
                     value = command.token,
-                    expiryDate = date.plusHours(1)
+                    expiryDate = date.plusHours(1),
                 ),
-                date = date
+                date = date,
             )
 
             // Then

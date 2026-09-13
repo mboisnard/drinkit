@@ -1,10 +1,10 @@
 package com.drinkit.user
 
-import com.drinkit.user.PromoteAsAdmin.Result.Success
-import com.drinkit.user.PromoteAsAdmin.Result.UserNotFound
 import com.drinkit.user.AdminPromotionDecider.Decision.AlreadyAdmin
 import com.drinkit.user.AdminPromotionDecider.Decision.EventToPersist
 import com.drinkit.user.AdminPromotionDecider.Decision.Unauthorized
+import com.drinkit.user.PromoteAsAdmin.Result.Success
+import com.drinkit.user.PromoteAsAdmin.Result.UserNotFound
 import com.drinkit.user.UserFixtures.Companion.VALID_PROFILE_INFORMATION
 import com.drinkit.user.core.Roles.Role.ROLE_ADMIN
 import io.kotest.matchers.collections.shouldContain
@@ -31,11 +31,11 @@ internal class PromoteAsAdminTest {
                 CompleteProfileInformationCommand(
                     author = userId.toConnectedAuthor(),
                     profileInformation = VALID_PROFILE_INFORMATION,
-                )
+                ),
             )
         }
         val command = PromoteAsAdminCommand(
-            author = user.id.toConnectedAuthor()
+            author = user.id.toConnectedAuthor(),
         )
 
         // When
@@ -93,14 +93,14 @@ internal class PromoteAsAdminTest {
             // Given
             val userId = userFixtures.givenAUserId
             val command = PromoteAsAdminCommand(
-                author = userId.toConnectedAuthor()
+                author = userId.toConnectedAuthor(),
             )
             val userDecision = userFixtures.givenAUserHistory(userId = userId)
                 .withProfileInformationCompleted(
                     CompleteProfileInformationCommand(
                         author = userId.toConnectedAuthor(),
                         profileInformation = VALID_PROFILE_INFORMATION,
-                    )
+                    ),
                 )
                 .withPromotedAsAdmin(command)
                 .toUserDecision()
@@ -121,14 +121,14 @@ internal class PromoteAsAdminTest {
             // Given
             val userId = userFixtures.givenAUserId
             val command = PromoteAsAdminCommand(
-                author = userId.toConnectedAuthor()
+                author = userId.toConnectedAuthor(),
             )
             val userDecision = userFixtures.givenAUserHistory(userId)
                 .withProfileInformationCompleted(
                     CompleteProfileInformationCommand(
                         author = userId.toConnectedAuthor(),
-                        profileInformation = UserFixtures.VALID_PROFILE_INFORMATION
-                    )
+                        profileInformation = UserFixtures.VALID_PROFILE_INFORMATION,
+                    ),
                 ).toUserDecision()
 
             // When
