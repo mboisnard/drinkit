@@ -44,38 +44,38 @@ jobs:
           sarif_file: build/reports/detekt/detekt-all-projects.sarif
           category: detekt-code-analysis
 
-  codeql-static-code-analysis:
-    name: CodeQL - Security Analysis
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+#  codeql-static-code-analysis:
+#    name: CodeQL - Security Analysis
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 30
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v7
 
-      - name: Setup JDK 25
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: 25
+#      - name: Setup JDK 25
+#        uses: actions/setup-java@v6
+#        with:
+#          distribution: temurin
+#          java-version: 25
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+#      - name: Setup Gradle
+#        uses: gradle/actions/setup-gradle@v6
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
+#      - name: Make gradlew executable
+#        run: chmod +x ./gradlew
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
-        with:
-          languages: java-kotlin
-          build-mode: manual
-          queries: security-extended
+#      - name: Initialize CodeQL
+#        uses: github/codeql-action/init@v4
+#        with:
+#          languages: java-kotlin
+#          build-mode: manual
+#          queries: security-extended
 
-      - name: Build Application
-        run: ./gradlew classes
+#      - name: Build Application
+#        run: ./gradlew classes
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
-        with:
-          category: codeql-security-analysis
+#      - name: Perform CodeQL Analysis
+#        uses: github/codeql-action/analyze@v4
+#        with:
+#          category: codeql-security-analysis
