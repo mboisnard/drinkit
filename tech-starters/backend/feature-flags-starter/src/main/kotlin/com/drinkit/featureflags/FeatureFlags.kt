@@ -18,8 +18,7 @@ interface FeatureFlags {
 
     fun isDisabled(flag: String): Boolean = !isEnabled(flag)
 
-    fun isEnabledForUser(flag: String, userId: String): Boolean =
-        isEnabled(flag, FeatureFlagContext(userId = userId))
+    fun isEnabledForUser(flag: String, userId: String): Boolean = isEnabled(flag, FeatureFlagContext(userId = userId))
 }
 
 const val USER_ID_ATTRIBUTE_KEY = "userId"

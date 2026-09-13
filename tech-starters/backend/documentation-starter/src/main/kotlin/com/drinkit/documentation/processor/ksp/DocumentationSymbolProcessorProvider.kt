@@ -26,9 +26,12 @@ internal class DocumentationSymbolProcessorProvider : SymbolProcessorProvider {
             createTechStarterDocumentation = CreateTechStarterDocumentation(
                 outputFolderPath = techStartersOutputPath,
                 moduleSourceDir = moduleSourceDir,
-                logger = logger
+                logger = logger,
             ),
-            createTechStartersOverviewDocumentation = CreateTechStartersOverviewDocumentation(techStartersOutputPath, logger),
+            createTechStartersOverviewDocumentation = CreateTechStartersOverviewDocumentation(
+                techStartersOutputPath,
+                logger,
+            ),
             logger = logger,
             moduleName = moduleName,
         )

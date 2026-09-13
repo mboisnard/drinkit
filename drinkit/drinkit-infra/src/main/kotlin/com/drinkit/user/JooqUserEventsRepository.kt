@@ -4,8 +4,8 @@ import com.drinkit.common.Author
 import com.drinkit.event.sourcing.transaction.DuplicateSequenceException
 import com.drinkit.generated.jooq.keys.USER_EVENT_PKEY
 import com.drinkit.generated.jooq.tables.references.USER_EVENT
-import com.drinkit.postgresql.jooq.JooqRepository
 import com.drinkit.postgresql.jooq.JSONBToJacksonConverter
+import com.drinkit.postgresql.jooq.JooqRepository
 import com.drinkit.postgresql.jooq.fetchSequence
 import com.drinkit.postgresql.jooq.isEventSourcingSequenceException
 import com.drinkit.user.core.Initialized
@@ -15,9 +15,9 @@ import com.drinkit.user.core.UserHistory
 import com.drinkit.user.core.UserId
 import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.Users
-import tools.jackson.databind.json.JsonMapper
 import org.jooq.DSLContext
 import org.springframework.dao.DataAccessException
+import tools.jackson.databind.json.JsonMapper
 
 @JooqRepository
 internal class JooqUserEventsRepository(
@@ -28,15 +28,13 @@ internal class JooqUserEventsRepository(
 
     private val authorConverter = JSONBToJacksonConverter(Author::class.java, jsonMapper)
 
-    override fun findAllBy(userId: UserId): UserHistory? {
-        return dsl.selectFrom(USER_EVENT)
-            .where(USER_EVENT.USER_ID.eq(userId.value))
-            .orderBy(USER_EVENT.SEQUENCE_ID.asc())
-            .fetchSequence { it.toEvent(jsonMapper) }
-            .toList()
-            .takeIf { it.isNotEmpty() }
-            ?.let { UserHistory.from<UserEvent, Initialized>(it) }
-    }
+    override fun findAllBy(userId: UserId): UserHistory? = dsl.selectFrom(USER_EVENT)
+        .where(USER_EVENT.USER_ID.eq(userId.value))
+        .orderBy(USER_EVENT.SEQUENCE_ID.asc())
+        .fetchSequence { it.toEvent(jsonMapper) }
+        .toList()
+        .takeIf { it.isNotEmpty() }
+        ?.let { UserHistory.from<UserEvent, Initialized>(it) }
 
     override fun save(event: UserEvent): User {
         val (eventName, payload) = event.toEventNameWithPayload(jsonMapper)

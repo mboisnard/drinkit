@@ -9,9 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional(readOnly = true)
-class FindCellars(
-    private val cellars: Cellars,
-) {
+class FindCellars(private val cellars: Cellars) {
     private val logger = KotlinLogging.logger { }
 
     fun byOwnerId(owner: UserId): Sequence<Cellar> {

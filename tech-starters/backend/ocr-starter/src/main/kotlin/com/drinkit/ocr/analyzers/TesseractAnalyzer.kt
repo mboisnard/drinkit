@@ -38,15 +38,16 @@ internal class TesseractAnalyzer : OCRAnalyzer {
         }
     }
 
-    private fun Locale.toModelLanguage(): SupportedModelLanguage =
-        when (this.language) {
-            "en" -> SupportedModelLanguage.ENGLISH
-            "fr" -> SupportedModelLanguage.FRENCH
-            else -> {
-                logger.info { "Not supported locale for OCR Model, $this, defaulting to english model" }
-                SupportedModelLanguage.ENGLISH
-            }
+    private fun Locale.toModelLanguage(): SupportedModelLanguage = when (this.language) {
+        "en" -> SupportedModelLanguage.ENGLISH
+
+        "fr" -> SupportedModelLanguage.FRENCH
+
+        else -> {
+            logger.info { "Not supported locale for OCR Model, $this, defaulting to english model" }
+            SupportedModelLanguage.ENGLISH
         }
+    }
 
     companion object {
         // 1, 2, 3, 4, 11

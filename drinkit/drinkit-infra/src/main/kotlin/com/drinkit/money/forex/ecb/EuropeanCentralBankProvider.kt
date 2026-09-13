@@ -3,20 +3,20 @@ package com.drinkit.money.forex.ecb
 import com.drinkit.money.Currency
 import com.drinkit.money.forex.core.ExchangeRate
 import com.drinkit.money.forex.spi.ExchangeRateProvider
-import org.springframework.web.client.RestClientException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestClientException
 
 @Service
-internal class EuropeanCentralBankProvider(
-    private val ecbClient: EuropeanCentralBankClient,
-) : ExchangeRateProvider {
+internal class EuropeanCentralBankProvider(private val ecbClient: EuropeanCentralBankClient) : ExchangeRateProvider {
 
     private val logger = KotlinLogging.logger {}
 
     override fun fetchRates(baseCurrencies: Set<Currency>): List<ExchangeRate> {
         if (Currency.EUR !in baseCurrencies) {
-            logger.warn { "ECB only provides EUR-based rates, but EUR was not in requested currencies: $baseCurrencies" }
+            logger.warn {
+                "ECB only provides EUR-based rates, but EUR was not in requested currencies: $baseCurrencies"
+            }
             return emptyList()
         }
 

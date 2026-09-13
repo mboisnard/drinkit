@@ -6,7 +6,6 @@ import com.drinkit.configuration.get
 import com.drinkit.money.Currency
 import com.drinkit.money.forex.core.ExchangeRate
 import com.drinkit.money.forex.spi.ExchangeRateProvider
-import org.springframework.web.client.RestClientException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +13,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestClientException
 import java.math.BigDecimal
 
 internal object ExchangeRateApiConfiguration {
@@ -49,11 +49,13 @@ internal class ExchangeRateApiProvider(
                     try {
                         val apiResponse = exchangeRateApiClient.fetchLatestRates(
                             apiKey = apiKey,
-                            baseCurrency = baseCurrency.code
+                            baseCurrency = baseCurrency.code,
                         )
 
                         if (apiResponse.result != "success") {
-                            logger.error { "ExchangeRate API returned error for ${baseCurrency.code}: ${apiResponse.errorType}" }
+                            logger.error {
+                                "ExchangeRate API returned error for ${baseCurrency.code}: ${apiResponse.errorType}"
+                            }
                             return@async emptyList()
                         }
 
@@ -64,18 +66,22 @@ internal class ExchangeRateApiProvider(
                             ExchangeRate.from(
                                 source = baseCurrency,
                                 target = targetCurrency,
-                                value = BigDecimal(rate.toString())
+                                value = BigDecimal(rate.toString()),
                             )
                         }
                     } catch (ex: RestClientException) {
-                        logger.error(ex) { "Failed to fetch exchange rates from ExchangeRate API for ${baseCurrency.code}" }
+                        logger.error(
+                            ex,
+                        ) { "Failed to fetch exchange rates from ExchangeRate API for ${baseCurrency.code}" }
                         emptyList()
                     }
                 }
             }.awaitAll().flatten()
         }
 
-        logger.info { "Fetched ${allRates.size} exchange rates from ExchangeRate API across ${baseCurrencies.size} base currencies" }
+        logger.info {
+            "Fetched ${allRates.size} exchange rates from ExchangeRate API across ${baseCurrencies.size} base currencies"
+        }
 
         return allRates
     }

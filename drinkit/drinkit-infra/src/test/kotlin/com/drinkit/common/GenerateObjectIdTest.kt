@@ -9,7 +9,7 @@ internal class GenerateObjectIdTest {
 
     private val generateObjectId = GenerateObjectId()
 
-    internal class TestId(override val value: String): AbstractId(value)
+    internal class TestId(override val value: String) : AbstractId(value)
 
     @Test
     fun `should generate a valid ObjectId for the given Id class`() {

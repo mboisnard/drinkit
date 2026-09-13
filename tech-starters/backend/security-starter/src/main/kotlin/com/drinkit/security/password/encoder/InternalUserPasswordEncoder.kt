@@ -9,8 +9,7 @@ internal class InternalUserPasswordEncoder : PasswordEncoder {
 
     private val bCryptPasswordEncoder = BCryptPasswordEncoder()
 
-    override fun encode(rawPassword: CharSequence?): String? =
-        bCryptPasswordEncoder.encode(rawPassword)
+    override fun encode(rawPassword: CharSequence?): String? = bCryptPasswordEncoder.encode(rawPassword)
 
     override fun matches(rawPassword: CharSequence?, encodedPassword: String?): Boolean =
         bCryptPasswordEncoder.matches(rawPassword, encodedPassword)

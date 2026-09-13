@@ -12,11 +12,7 @@ import com.drinkit.utils.isBetween
 import java.time.Clock
 import java.time.LocalDate
 
-data class ProfileInformation(
-    val firstName: FirstName,
-    val lastName: LastName,
-    val birthDate: BirthDate?,
-) {
+data class ProfileInformation(val firstName: FirstName, val lastName: LastName, val birthDate: BirthDate?) {
     fun validate() = buildList {
         addAll(firstName.validate())
         addAll(lastName.validate())
@@ -24,45 +20,39 @@ data class ProfileInformation(
     }
 }
 
-data class FirstName(
-    val value: String,
-) {
+data class FirstName(val value: String) {
     fun validate() = buildList {
         addIfNotMatch(value.isNotBlank(), "FirstName should not be blank")
         addIfNotMatch(
             value.doesntContainsInvisibleCharacters(),
-            "FirstName should not contains invisible characters, $value"
+            "FirstName should not contains invisible characters, $value",
         )
         addIfNotMatch(
             value.hasLengthBetween(MIN_FIRSTNAME_LENGTH, MAX_FIRSTNAME_LENGTH),
-            "FirstName should have size between $MIN_FIRSTNAME_LENGTH and $MAX_FIRSTNAME_LENGTH, $value"
+            "FirstName should have size between $MIN_FIRSTNAME_LENGTH and $MAX_FIRSTNAME_LENGTH, $value",
         )
     }
 }
 
-data class LastName(
-    val value: String,
-) {
+data class LastName(val value: String) {
     fun validate() = buildList {
         addIfNotMatch(value.isNotBlank(), "LastName should not be blank")
         addIfNotMatch(
             value.doesntContainsInvisibleCharacters(),
-            "LastName should not contains invisible characters, $value"
+            "LastName should not contains invisible characters, $value",
         )
         addIfNotMatch(
             value.hasLengthBetween(MIN_LASTNAME_LENGTH, MAX_LASTNAME_LENGTH),
-            "LastName should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH, $value"
+            "LastName should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH, $value",
         )
     }
 }
 
-data class BirthDate(
-        val value: LocalDate,
-) {
+data class BirthDate(val value: LocalDate) {
     fun validate() = buildList {
         addIfNotMatch(
             value.isBetween(MIN_BIRTH_DATE, LocalDate.now(Clock.systemUTC())),
-            "Birthdate should be between $MIN_BIRTH_DATE and now, $value"
+            "Birthdate should be between $MIN_BIRTH_DATE and now, $value",
         )
     }
 }

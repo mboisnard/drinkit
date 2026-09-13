@@ -24,10 +24,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 
 @JooqRepository
-internal class JooqUsersRepository(
-    private val dsl: DSLContext,
-    private val clock: Clock,
-): Users {
+internal class JooqUsersRepository(private val dsl: DSLContext, private val clock: Clock) : Users {
 
     private val logger = KotlinLogging.logger {}
 
@@ -75,21 +72,21 @@ internal class JooqUsersRepository(
         return count != 0
     }
 
-    private fun UserRecord.toDomain() =
-        User(
-            id = UserId(id),
-            email = Email(email),
-            password = EncodedPassword(password),
-            profile = toProfile(firstname, lastname, birthdate),
-            lastConnection = lastconnection,
-            roles = toRoles(roles),
-            status = toStatus(status),
-            verified = verified,
-        )
+    private fun UserRecord.toDomain() = User(
+        id = UserId(id),
+        email = Email(email),
+        password = EncodedPassword(password),
+        profile = toProfile(firstname, lastname, birthdate),
+        lastConnection = lastconnection,
+        roles = toRoles(roles),
+        status = toStatus(status),
+        verified = verified,
+    )
 
     private fun toProfile(firstname: String?, lastname: String?, birthdate: LocalDate?): ProfileInformation? {
-        if (firstname == null || lastname == null)
+        if (firstname == null || lastname == null) {
             return null
+        }
 
         return ProfileInformation(
             firstName = FirstName(firstname),
@@ -102,10 +99,13 @@ internal class JooqUsersRepository(
         val roles = rolesAsString.mapNotNull {
             when (it) {
                 ROLE_REGISTRATION_IN_PROGRESS.name -> ROLE_REGISTRATION_IN_PROGRESS
+
                 ROLE_USER.name -> ROLE_USER
+
                 ROLE_ADMIN.name -> ROLE_ADMIN
+
                 else -> {
-                    logger.warn { "Unknown role: $it, skipping it"}
+                    logger.warn { "Unknown role: $it, skipping it" }
                     null
                 }
             }

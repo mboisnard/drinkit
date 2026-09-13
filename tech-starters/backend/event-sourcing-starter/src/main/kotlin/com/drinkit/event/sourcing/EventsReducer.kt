@@ -25,7 +25,7 @@ import kotlin.reflect.KClass
 @TechStarterTool
 class EventsReducer<Projection, Event : DomainEvent, InitialEvent : Event>(
     private val factory: (InitialEvent) -> Projection,
-    private val defaultHandler: (Projection, Event) -> Projection = {projection, _ -> projection },
+    private val defaultHandler: (Projection, Event) -> Projection = { projection, _ -> projection },
 ) {
     private var handlers: Map<KClass<out Event>, (Projection, Event) -> Projection> = emptyMap()
 
@@ -47,7 +47,9 @@ class EventsReducer<Projection, Event : DomainEvent, InitialEvent : Event>(
      */
     inline fun <reified T : Event> register(
         noinline handler: Projection.(T) -> Projection,
-    ): EventsReducer<Projection, Event, InitialEvent> = register(T::class) { projection, event -> projection.handler(event) }
+    ): EventsReducer<Projection, Event, InitialEvent> = register(
+        T::class,
+    ) { projection, event -> projection.handler(event) }
 
     private fun apply(projection: Projection, event: Event): Projection {
         val handler = handlers[event::class] ?: defaultHandler

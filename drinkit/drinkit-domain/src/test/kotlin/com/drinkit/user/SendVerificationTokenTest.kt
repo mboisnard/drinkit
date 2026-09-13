@@ -3,8 +3,8 @@ package com.drinkit.user
 import com.drinkit.user.SendVerificationToken.Result.Success
 import com.drinkit.user.SendVerificationToken.Result.UserNotFound
 import com.drinkit.user.UserFixtures.Companion.VALID_EMAIL
-import com.drinkit.user.VerificationTokenSendingDecider.Decision.CanSendToken
 import com.drinkit.user.VerificationTokenSendingDecider.Decision.AlreadyVerified
+import com.drinkit.user.VerificationTokenSendingDecider.Decision.CanSendToken
 import com.drinkit.user.VerificationTokenSendingDecider.Decision.Unauthorized
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
@@ -90,10 +90,12 @@ internal class SendVerificationTokenTest {
                 locale = Locale.FRANCE,
             )
             val userDecision = userFixtures.givenAUserHistory(userId)
-                .withVerified( ConfirmVerificationTokenCommand(
-                    author = userId.toConnectedAuthor(),
-                    token = "token",
-                ))
+                .withVerified(
+                    ConfirmVerificationTokenCommand(
+                        author = userId.toConnectedAuthor(),
+                        token = "token",
+                    ),
+                )
                 .toUserDecision()
 
             // When

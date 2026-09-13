@@ -37,14 +37,11 @@ interface Configurations {
 
 // Extension functions with reified type parameters for easier usage and avoid passing KClass objects
 
-inline fun <reified T : Any> Configurations.get(key: ConfigurationKey<T>): T? =
-    get(key, T::class)
+inline fun <reified T : Any> Configurations.get(key: ConfigurationKey<T>): T? = get(key, T::class)
 
 inline fun <reified T : Any> Configurations.getOrSetDefault(key: ConfigurationKey<T>, default: T): T =
     getOrSetDefault(key, default, T::class)
 
-inline fun <reified T : Any> Configurations.getOrThrow(key: ConfigurationKey<T>): T =
-    getOrThrow(key, T::class)
+inline fun <reified T : Any> Configurations.getOrThrow(key: ConfigurationKey<T>): T = getOrThrow(key, T::class)
 
-inline fun <reified T : Any> Configurations.set(key: ConfigurationKey<T>, value: T) =
-    set(key, value, T::class)
+inline fun <reified T : Any> Configurations.set(key: ConfigurationKey<T>, value: T) = set(key, value, T::class)

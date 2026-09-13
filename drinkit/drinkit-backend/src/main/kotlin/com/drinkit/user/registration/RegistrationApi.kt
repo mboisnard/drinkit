@@ -43,10 +43,10 @@ internal class RegistrationApi(
 
     private val passwordEncoder: PasswordEncoder,
     private val authenticationService: AuthenticationService,
-) : RegistrationApiDelegate, AbstractApi() {
+) : AbstractApi(),
+    RegistrationApiDelegate {
 
     override fun createNewUser(createUserRequest: CreateUserRequest): ResponseEntity<UserId> {
-
         require(createUserRequest.password == createUserRequest.confirmedPassword) {
             "Password and Password confirmation are not equals"
         }
@@ -61,7 +61,7 @@ internal class RegistrationApi(
                     requireNotNull(passwordEncoder.encode(raw)) { "Password encoder returned no value" }
                 },
                 locale = request.locale,
-            )
+            ),
         )
 
         return when (result) {
@@ -69,6 +69,7 @@ internal class RegistrationApi(
                 authenticationService.authenticate(createUserRequest.email, createUserRequest.password)
                 ResponseEntity.status(HttpStatus.CREATED).body(result.user.id)
             }
+
             UserAlreadyExists -> ResponseEntity.status(HttpStatus.CONFLICT).build()
         }
     }
@@ -80,7 +81,7 @@ internal class RegistrationApi(
             command = ConfirmVerificationTokenCommand(
                 author = Author.Connected(userId),
                 token = confirmEmailRequest.validationToken,
-            )
+            ),
         )
 
         return when (result) {
@@ -99,7 +100,7 @@ internal class RegistrationApi(
             command = SendVerificationTokenCommand(
                 author = Author.Connected(userId),
                 locale = request.locale,
-            )
+            ),
         )
 
         return when (result) {
@@ -111,7 +112,7 @@ internal class RegistrationApi(
     }
 
     override fun completeUserInformation(
-        completeUserInformationRequest: CompleteUserInformationRequest
+        completeUserInformationRequest: CompleteUserInformationRequest,
     ): ResponseEntity<Unit> {
         val userId = connectedUserIdOrFail()
         val command = with(completeUserInformationRequest) {
@@ -121,7 +122,7 @@ internal class RegistrationApi(
                     firstName = FirstName(firstname),
                     lastName = LastName(lastname),
                     birthDate = BirthDate(birthdate),
-                )
+                ),
             )
         }
 
@@ -132,7 +133,9 @@ internal class RegistrationApi(
                 authenticationService.refreshContext()
                 ResponseEntity.ok().build()
             }
+
             CompleteProfileInformation.Result.Forbidden -> ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+
             CompleteProfileInformation.Result.UserNotFound -> ResponseEntity.notFound().build()
         }
     }

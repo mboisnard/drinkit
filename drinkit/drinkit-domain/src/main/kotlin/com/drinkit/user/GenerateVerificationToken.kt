@@ -8,22 +8,17 @@ import java.time.OffsetDateTime
 import kotlin.random.Random
 
 @Component
-class GenerateVerificationToken(
-    private val clock: Clock,
-    private val random: Random = Random.Default,
-) {
+class GenerateVerificationToken(private val clock: Clock, private val random: Random = Random.Default) {
     companion object {
         private const val TOKEN_VALIDITY_IN_HOURS = 3
         private const val TOKEN_LENGTH = 6
     }
 
-    fun invoke(userId: UserId): VerificationToken {
-        return VerificationToken(
-            userId = userId,
-            value = generateRandomString(TOKEN_LENGTH),
-            expiryDate = calculateExpirationFromNow(),
-        )
-    }
+    fun invoke(userId: UserId): VerificationToken = VerificationToken(
+        userId = userId,
+        value = generateRandomString(TOKEN_LENGTH),
+        expiryDate = calculateExpirationFromNow(),
+    )
 
     private fun generateRandomString(length: Int): String {
         val characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"

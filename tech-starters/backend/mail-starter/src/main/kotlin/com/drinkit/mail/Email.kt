@@ -12,50 +12,38 @@ data class Email(
     val hasAttachments: Boolean = !attachments.isEmpty
 }
 
-data class Sender(
-    val value: String,
-) {
+data class Sender(val value: String) {
     init {
         require(value.isEmail())
     }
 }
 
-data class Recipients(
-    val values: Set<Recipient>,
-) {
+data class Recipients(val values: Set<Recipient>) {
     init {
         require(values.isNotEmpty())
     }
 
     fun allAsString(): Set<String> = values.map { it.value }.toSet()
 
-    data class Recipient(
-        val value: String,
-    ) {
+    data class Recipient(val value: String) {
         init {
             require(value.isEmail())
         }
     }
 }
 
-data class Subject(
-    val value: String,
-)
+data class Subject(val value: String)
 
-data class Content(
-    val format: TextFormat,
-    val value: String,
-) {
+data class Content(val format: TextFormat, val value: String) {
     val isHtmlFormat: Boolean = format == TextFormat.HTML
 
     enum class TextFormat {
-        TXT, HTML
+        TXT,
+        HTML,
     }
 }
 
-data class Attachments(
-    val values: Set<Attachment>,
-) {
+data class Attachments(val values: Set<Attachment>) {
     val isEmpty: Boolean = values.isEmpty()
 
     data class Attachment(

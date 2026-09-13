@@ -10,7 +10,7 @@ internal interface ExchangeRateApiClient {
     @GetExchange("/{apiKey}/latest/{baseCurrency}")
     fun fetchLatestRates(
         @PathVariable apiKey: String,
-        @PathVariable baseCurrency: String
+        @PathVariable baseCurrency: String,
     ): ExchangeRateApiResponse
 }
 
@@ -25,5 +25,5 @@ internal data class ExchangeRateApiResponse(
     val conversionRates: Map<String, BigDecimal>,
 
     @field:JsonProperty("error-type")
-    val errorType: String? = null
+    val errorType: String? = null,
 )

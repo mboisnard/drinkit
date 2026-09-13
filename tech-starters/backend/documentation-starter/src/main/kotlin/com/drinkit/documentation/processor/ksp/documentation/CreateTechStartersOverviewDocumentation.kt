@@ -20,15 +20,16 @@ internal class CreateTechStartersOverviewDocumentation(
             .sortedBy { it.moduleName }
 
         outputFile.writeText(
-            generateMarkdown(updatedEntries)
+            generateMarkdown(updatedEntries),
         )
 
         logger.warn("    Updated overview with module: $moduleName")
     }
 
     private fun fetchExistingEntries(): List<ModuleEntry> {
-        if (!outputFile.exists())
+        if (!outputFile.exists()) {
             return emptyList()
+        }
 
         return outputFile.readLines()
             .filter { it.startsWith("- [") }
@@ -62,8 +63,5 @@ internal class CreateTechStartersOverviewDocumentation(
         appendLine("*Generated automatically from code analysis*")
     }
 
-    private data class ModuleEntry(
-        val moduleName: String,
-        val toolsCount: Int,
-    )
+    private data class ModuleEntry(val moduleName: String, val toolsCount: Int)
 }

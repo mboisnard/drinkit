@@ -22,10 +22,10 @@ internal class CreateCoreDomainDocumentationTest {
     fun `generate markdown file with domain name and description`() {
         // Given
         val domain = CoreDomainInfo(
-                packageName = "com.drinkit.user",
-                className = "UserManagement",
-                customName = null,
-                description = "This is a user management domain"
+            packageName = "com.drinkit.user",
+            className = "UserManagement",
+            customName = null,
+            description = "This is a user management domain",
         )
 
         // When
@@ -45,10 +45,10 @@ internal class CreateCoreDomainDocumentationTest {
     fun `generate markdown file without description when not provided`() {
         // Given
         val domain = CoreDomainInfo(
-                packageName = "com.drinkit.user",
-                className = "User",
-                customName = null,
-                description = null
+            packageName = "com.drinkit.user",
+            className = "User",
+            customName = null,
+            description = null,
         )
 
         // When
@@ -65,31 +65,31 @@ internal class CreateCoreDomainDocumentationTest {
     fun `generate markdown file with use cases sorted by display name`() {
         // Given
         val domain = CoreDomainInfo(
-                packageName = "com.drinkit.user",
-                className = "User",
-                customName = null,
-                description = "User domain"
+            packageName = "com.drinkit.user",
+            className = "User",
+            customName = null,
+            description = "User domain",
         )
 
         val useCases = listOf(
-                UseCaseInfo(
-                        packageName = "com.drinkit.user",
-                        className = "UpdateUser",
-                        customName = null,
-                        description = "Updates an existing user"
-                ),
-                UseCaseInfo(
-                        packageName = "com.drinkit.user",
-                        className = "CreateUser",
-                        customName = null,
-                        description = "Creates a new user"
-                ),
-                UseCaseInfo(
-                        packageName = "com.drinkit.user",
-                        className = "DeleteUser",
-                        customName = null,
-                        description = null
-                )
+            UseCaseInfo(
+                packageName = "com.drinkit.user",
+                className = "UpdateUser",
+                customName = null,
+                description = "Updates an existing user",
+            ),
+            UseCaseInfo(
+                packageName = "com.drinkit.user",
+                className = "CreateUser",
+                customName = null,
+                description = "Creates a new user",
+            ),
+            UseCaseInfo(
+                packageName = "com.drinkit.user",
+                className = "DeleteUser",
+                customName = null,
+                description = null,
+            ),
         )
 
         // When
@@ -127,19 +127,19 @@ internal class CreateCoreDomainDocumentationTest {
     fun `should generate markdown file with use case without description`() {
         // Given
         val domain = CoreDomainInfo(
-                packageName = "com.drinkit.user",
-                className = "User",
-                customName = null,
-                description = null
+            packageName = "com.drinkit.user",
+            className = "User",
+            customName = null,
+            description = null,
         )
 
         val useCases = listOf(
-                UseCaseInfo(
-                        packageName = "com.drinkit.user",
-                        className = "CreateUser",
-                        customName = null,
-                        description = null
-                )
+            UseCaseInfo(
+                packageName = "com.drinkit.user",
+                className = "CreateUser",
+                customName = null,
+                description = null,
+            ),
         )
 
         // When
@@ -160,10 +160,10 @@ internal class CreateCoreDomainDocumentationTest {
         val createFile = CreateCoreDomainDocumentation(nonExistentDir.absolutePath, logger)
 
         val domain = CoreDomainInfo(
-                packageName = "com.drinkit.user",
-                className = "User",
-                customName = null,
-                description = null
+            packageName = "com.drinkit.user",
+            className = "User",
+            customName = null,
+            description = null,
         )
 
         // When
@@ -179,10 +179,10 @@ internal class CreateCoreDomainDocumentationTest {
     fun `should use custom name in title when provided`() {
         // Given
         val domain = CoreDomainInfo(
-                packageName = "com.drinkit.user",
-                className = "UserManagement",
-                customName = "Custom User Domain",
-                description = null
+            packageName = "com.drinkit.user",
+            className = "UserManagement",
+            customName = "Custom User Domain",
+            description = null,
         )
 
         // When

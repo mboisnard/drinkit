@@ -5,7 +5,6 @@ import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.google.devtools.ksp.isInternal
 import com.google.devtools.ksp.isPrivate
-import com.google.devtools.ksp.isPublic
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 
@@ -55,26 +54,24 @@ internal fun KSClassDeclaration.toTechStarterTool(annotation: KSAnnotation): Tec
 
 private fun KSAnnotation.getStringArgument(argName: String): String? =
     (arguments.find { it.name?.asString() == argName }?.value as? String)
-            ?.takeIf { it.isNotBlank() }
+        ?.takeIf { it.isNotBlank() }
 
-private fun KSClassDeclaration.extractMethods(): List<MethodInfo> =
-    getAllFunctions()
-        .filter { !it.isPrivate() && !it.isInternal() }
-        .filter { !it.simpleName.asString().startsWith("component") }
-        .filter { !it.simpleName.asString().startsWith("copy") }
-        .filter { !listOf("<init>", "equals", "hashCode", "toString").contains(it.simpleName.asString()) }
-        .map { function ->
-            MethodInfo(
-                name = function.simpleName.asString(),
-                description = function.docString?.sanitizeMarkdown(),
-            )
-        }
-        .toList()
+private fun KSClassDeclaration.extractMethods(): List<MethodInfo> = getAllFunctions()
+    .filter { !it.isPrivate() && !it.isInternal() }
+    .filter { !it.simpleName.asString().startsWith("component") }
+    .filter { !it.simpleName.asString().startsWith("copy") }
+    .filter { !listOf("<init>", "equals", "hashCode", "toString").contains(it.simpleName.asString()) }
+    .map { function ->
+        MethodInfo(
+            name = function.simpleName.asString(),
+            description = function.docString?.sanitizeMarkdown(),
+        )
+    }
+    .toList()
 
 /**
  * Escapes special Markdown characters to prevent them from being interpreted as markup.
  */
-private fun String.sanitizeMarkdown(): String =
-    this.trim().replace("\\", "\\\\")
-        .replace("<", "\\<")
-        .replace(">", "\\>")
+private fun String.sanitizeMarkdown(): String = this.trim().replace("\\", "\\\\")
+    .replace("<", "\\<")
+    .replace(">", "\\>")

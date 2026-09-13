@@ -17,10 +17,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 
 @ConfigurationProperties(prefix = "starters.feature-flags.flipt")
-internal data class FliptProperties(
-    val url: String,
-    val namespace: String,
-)
+internal data class FliptProperties(val url: String, val namespace: String)
 
 @Configuration
 @EnableConfigurationProperties(FliptProperties::class)
@@ -45,10 +42,7 @@ internal class FeatureFlagsConfig {
     }
 
     @Bean
-    fun openFeatureFliptClient(
-        properties: FliptProperties,
-        openFeatureAPI: OpenFeatureAPI,
-    ): Client {
+    fun openFeatureFliptClient(properties: FliptProperties, openFeatureAPI: OpenFeatureAPI): Client {
         val fliptDomainName = "flipt"
         val providerConfig = FliptProviderConfig.builder()
             .fliptClientBuilder(FliptClient.builder().url(properties.url))

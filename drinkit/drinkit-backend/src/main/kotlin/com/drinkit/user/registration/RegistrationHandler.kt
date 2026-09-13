@@ -8,9 +8,7 @@ import com.drinkit.user.spi.UserCreated
 import org.springframework.stereotype.Component
 
 @Component
-internal class RegistrationHandler(
-    private val sendVerificationToken: SendVerificationToken,
-) {
+internal class RegistrationHandler(private val sendVerificationToken: SendVerificationToken) {
 
     @PlatformEventHandler("send.verification.token.to.created.user.queue")
     fun sendVerificationTokenToTheCreatedUser(event: UserCreated) {
@@ -19,7 +17,7 @@ internal class RegistrationHandler(
             command = SendVerificationTokenCommand(
                 author = Author.Connected(event.userId), // TODO
                 locale = event.locale,
-            )
+            ),
         )
     }
 }

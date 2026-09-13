@@ -23,17 +23,13 @@ import java.time.Clock
 import java.time.OffsetDateTime
 
 @Command
-data class DeleteUserCommand(
-    val author: Author.Connected,
-)
+data class DeleteUserCommand(val author: Author.Connected)
 
 @Service
 @RetryableTransactional
-@Usecase @ImperativeShell
-class DeleteUser(
-    private val userEvents: UserEvents,
-    private val clock: Clock,
-) {
+@Usecase
+@ImperativeShell
+class DeleteUser(private val userEvents: UserEvents, private val clock: Clock) {
     sealed interface Result {
         object Success : Result
         object UserNotFound : Result
@@ -61,7 +57,9 @@ class DeleteUser(
                 logger.info { "User $userId has been deleted by ${command.author}" }
                 Success
             }
+
             AlreadyDeleted -> Success
+
             Unauthorized -> Forbidden
         }
     }
@@ -76,11 +74,7 @@ internal object UserDeletionDecider {
         object Unauthorized : Decision
     }
 
-    fun decide(
-        decision: UserDecision,
-        command: DeleteUserCommand,
-        date: OffsetDateTime,
-    ): Decision {
+    fun decide(decision: UserDecision, command: DeleteUserCommand, date: OffsetDateTime): Decision {
         if (!decision.canEdit(command.author)) {
             return Unauthorized
         }
@@ -95,7 +89,7 @@ internal object UserDeletionDecider {
                 date = date,
                 author = command.author,
                 sequenceId = decision.nextSequenceId,
-            )
+            ),
         )
     }
 }

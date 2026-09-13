@@ -1,20 +1,17 @@
 package com.drinkit.money.forex
 
-import com.drinkit.money.Currency
-import com.drinkit.money.forex.spi.ExchangeRates
 import com.drinkit.generated.jooq.tables.ExchangeRate.Companion.EXCHANGE_RATE
 import com.drinkit.generated.jooq.tables.records.ExchangeRateRecord
+import com.drinkit.money.Currency
 import com.drinkit.money.forex.core.ExchangeRate
+import com.drinkit.money.forex.spi.ExchangeRates
 import com.drinkit.postgresql.jooq.JooqRepository
 import org.jooq.DSLContext
 import java.time.Clock
 import java.time.OffsetDateTime
 
 @JooqRepository
-internal class JooqExchangeRatesRepository(
-    private val dsl: DSLContext,
-    private val clock: Clock,
-) : ExchangeRates {
+internal class JooqExchangeRatesRepository(private val dsl: DSLContext, private val clock: Clock) : ExchangeRates {
 
     override fun find(source: Currency, target: Currency): ExchangeRate? {
         val query = dsl.selectFrom(EXCHANGE_RATE)

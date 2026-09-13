@@ -79,7 +79,7 @@ internal class DeleteUserTest {
             val userDecision = userFixtures.givenAUserHistory()
                 .toUserDecision()
             val command = DeleteUserCommand(
-                author = userFixtures.givenAConnectedAuthor
+                author = userFixtures.givenAConnectedAuthor,
             )
 
             // When
@@ -98,7 +98,7 @@ internal class DeleteUserTest {
             // Given
             val userId = userFixtures.givenAUserId
             val command = DeleteUserCommand(
-                author = userId.toConnectedAuthor()
+                author = userId.toConnectedAuthor(),
             )
             val userDecision = userFixtures.givenAUserHistory(userId = userId)
                 .withDeleted(command)
@@ -108,7 +108,7 @@ internal class DeleteUserTest {
             val decision = UserDeletionDecider.decide(
                 decision = userDecision,
                 command = command,
-                date = userFixtures.givenANewDate
+                date = userFixtures.givenANewDate,
             )
 
             // Then
@@ -129,7 +129,7 @@ internal class DeleteUserTest {
             val decision = UserDeletionDecider.decide(
                 decision = userDecision,
                 command = command,
-                date = userFixtures.givenANewDate
+                date = userFixtures.givenANewDate,
             )
 
             // Then

@@ -1,7 +1,11 @@
 package com.drinkit.bottle.core
 
 enum class WineColor {
-    RED, WHITE, ROSE, ORANGE, CLAIRET
+    RED,
+    WHITE,
+    ROSE,
+    ORANGE,
+    CLAIRET,
 }
 
 data class Wine(
@@ -14,7 +18,7 @@ data class Wine(
     val vintage: Vintage,
     val grapes: Grapes,
     val winery: WineryId?,
-): Bottle {
+) : Bottle {
 
     fun validate() = buildList {
         addAll(alcoholContent.validate())

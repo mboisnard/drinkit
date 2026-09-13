@@ -9,14 +9,20 @@ import org.jooq.Schema
 import org.jooq.conf.Settings
 import org.jooq.impl.DefaultConfiguration
 import org.jooq.impl.DefaultDSLContext
-import org.junit.jupiter.api.extension.*
+import org.junit.jupiter.api.extension.AfterAllCallback
+import org.junit.jupiter.api.extension.AfterEachCallback
+import org.junit.jupiter.api.extension.BeforeAllCallback
+import org.junit.jupiter.api.extension.ExtensionContext
+import org.junit.jupiter.api.extension.ParameterContext
+import org.junit.jupiter.api.extension.ParameterResolver
+import org.testcontainers.lifecycle.Startables
 import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
-import org.testcontainers.lifecycle.Startables
 import org.testcontainers.utility.TestcontainersConfiguration
 import java.sql.Connection
 import java.sql.DriverManager
-import java.util.*
+import java.util.Objects
+import java.util.UUID
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.createType
@@ -27,7 +33,11 @@ import kotlin.reflect.full.memberProperties
 private const val PG_IMAGE_NAME = "postgres:18.6"
 private const val DB_NAME = "TEST_DB"
 
-class JooqPostgresExtension : BeforeAllCallback, AfterEachCallback, AfterAllCallback, ParameterResolver {
+class JooqPostgresExtension :
+    BeforeAllCallback,
+    AfterEachCallback,
+    AfterAllCallback,
+    ParameterResolver {
 
     private val logger = KotlinLogging.logger { }
 
@@ -103,7 +113,7 @@ class JooqPostgresExtension : BeforeAllCallback, AfterEachCallback, AfterAllCall
     private fun createADedicatedDatabaseForTestClass() {
         container.createConnection("").use {
             it.createStatement().execute(
-                "CREATE DATABASE \"$dbName\";"
+                "CREATE DATABASE \"$dbName\";",
             )
         }
     }
@@ -112,7 +122,7 @@ class JooqPostgresExtension : BeforeAllCallback, AfterEachCallback, AfterAllCall
         val connection = DriverManager.getConnection(
             containerJdbcUpdatedName(),
             container.username,
-            container.password
+            container.password,
         )
         connection.autoCommit = false
         return connection
@@ -125,7 +135,7 @@ class JooqPostgresExtension : BeforeAllCallback, AfterEachCallback, AfterAllCall
             .set(
                 Settings()
                     .withExecuteWithOptimisticLocking(true)
-                    .withExecuteWithOptimisticLockingExcludeUnversioned(true)
+                    .withExecuteWithOptimisticLockingExcludeUnversioned(true),
             )
         return DefaultDSLContext(jooqConfiguration)
     }
@@ -136,10 +146,10 @@ class JooqPostgresExtension : BeforeAllCallback, AfterEachCallback, AfterAllCall
                 // Prevent new connections to the database
                 "REVOKE CONNECT ON DATABASE \"$dbName\" FROM public;" +
                     // Kill existing connections to the database
-                    "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$dbName';"
+                    "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$dbName';",
             )
             it.createStatement().execute(
-                "DROP DATABASE \"$dbName\""
+                "DROP DATABASE \"$dbName\"",
             )
         }
     }

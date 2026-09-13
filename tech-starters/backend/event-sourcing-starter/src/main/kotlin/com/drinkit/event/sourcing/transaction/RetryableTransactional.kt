@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Propagation.NESTED
 import org.springframework.transaction.annotation.Transactional
 import kotlin.annotation.AnnotationTarget.CLASS
 
-
 class DuplicateSequenceException(override val message: String, override val cause: Throwable?) :
     RuntimeException(message, cause)
 

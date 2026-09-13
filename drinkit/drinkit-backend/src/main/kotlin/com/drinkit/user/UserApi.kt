@@ -9,12 +9,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 @Component
-internal class UserApi(
-    private val users: Users
-) : UserApiDelegate, AbstractApi() {
+internal class UserApi(private val users: Users) :
+    AbstractApi(),
+    UserApiDelegate {
 
     override fun getConnectedUserInfo(): ResponseEntity<ConnectedUserInformation> {
-
         users.findEnabledBy(connectedUserIdOrFail())
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build()

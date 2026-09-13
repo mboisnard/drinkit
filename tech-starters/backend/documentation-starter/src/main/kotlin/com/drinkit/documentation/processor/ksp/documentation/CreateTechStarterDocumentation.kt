@@ -19,7 +19,7 @@ internal class CreateTechStarterDocumentation(
         val readmeContent = readReadmeIfExists()
         val outputFile = File(outputDirectory, "$moduleName.md")
         outputFile.writeText(
-            generateMarkdown(moduleName, tools, readmeContent)
+            generateMarkdown(moduleName, tools, readmeContent),
         )
 
         logger.warn("    Generated: ${outputFile.name} (${tools.size} tool(s))")
@@ -35,67 +35,64 @@ internal class CreateTechStarterDocumentation(
         }
     }
 
-    private fun generateMarkdown(
-        moduleName: String,
-        tools: List<TechStarterToolInfo>,
-        readmeContent: String?
-    ) = buildString {
-        if (readmeContent != null) {
-            appendLine(readmeContent)
-            appendLine()
-
-            if (tools.isNotEmpty()) {
-                appendLine("---")
-                appendLine()
-                appendLine("## API Reference")
-                appendLine()
-            }
-        } else {
-            appendLine("# $moduleName")
-            appendLine()
-        }
-
-        // Tools details
-        if (tools.isNotEmpty()) {
-            tools.sortedBy { it.displayName }.forEach { tool ->
-                appendLine("### ${tool.displayName}")
+    private fun generateMarkdown(moduleName: String, tools: List<TechStarterToolInfo>, readmeContent: String?) =
+        buildString {
+            if (readmeContent != null) {
+                appendLine(readmeContent)
                 appendLine()
 
-                // Description
-                tool.description?.let { description ->
-                    description.lines().forEach { line ->
-                        appendLine("> $line")
-                    }
+                if (tools.isNotEmpty()) {
+                    appendLine("---")
+                    appendLine()
+                    appendLine("## API Reference")
                     appendLine()
                 }
-
-                // Class info
-                appendLine("**Class**: `${tool.qualifiedName}`")
+            } else {
+                appendLine("# $moduleName")
                 appendLine()
+            }
 
-                // Methods in a collapsible section if there are any
-                if (tool.methods.isNotEmpty()) {
-                    appendLine("<details>")
-                    appendLine("<summary><strong>Methods (${tool.methods.size})</strong></summary>")
+            // Tools details
+            if (tools.isNotEmpty()) {
+                tools.sortedBy { it.displayName }.forEach { tool ->
+                    appendLine("### ${tool.displayName}")
                     appendLine()
 
-                    tool.methods.sortedBy { it.name }.forEach { method ->
-                        append("- **`${method.name}()`**")
-                        method.description?.let { description ->
-                            val inlineDescription = description.lines().joinToString(" ") { it.trim() }
-                            append(" - $inlineDescription")
+                    // Description
+                    tool.description?.let { description ->
+                        description.lines().forEach { line ->
+                            appendLine("> $line")
                         }
                         appendLine()
                     }
 
+                    // Class info
+                    appendLine("**Class**: `${tool.qualifiedName}`")
                     appendLine()
-                    appendLine("</details>")
-                    appendLine()
+
+                    // Methods in a collapsible section if there are any
+                    if (tool.methods.isNotEmpty()) {
+                        appendLine("<details>")
+                        appendLine("<summary><strong>Methods (${tool.methods.size})</strong></summary>")
+                        appendLine()
+
+                        tool.methods.sortedBy { it.name }.forEach { method ->
+                            append("- **`${method.name}()`**")
+                            method.description?.let { description ->
+                                val inlineDescription = description.lines().joinToString(" ") { it.trim() }
+                                append(" - $inlineDescription")
+                            }
+                            appendLine()
+                        }
+
+                        appendLine()
+                        appendLine("</details>")
+                        appendLine()
+                    }
                 }
             }
-        }
 
-        appendLine("---")
-        appendLine("*Generated automatically from code annotations*")
-    }
+            appendLine("---")
+            appendLine("*Generated automatically from code annotations*")
+        }
 }

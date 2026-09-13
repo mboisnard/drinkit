@@ -26,10 +26,7 @@ internal data class OCRAnalyzers(
 
 private const val EXECUTION_ORDER_HIGHER_LEVEL = 999
 
-internal enum class OCRAvailableAnalyzer(
-    val computeStatus: (Environment) -> AnalyzerStatus,
-    val executionOrder: Int,
-) {
+internal enum class OCRAvailableAnalyzer(val computeStatus: (Environment) -> AnalyzerStatus, val executionOrder: Int) {
     GOOGLE_CLOUD_VISION(
         computeStatus = { env ->
             val cloudVisionEnabled = env.getProperty("ocr.cloud.google.cloud-vision.enabled", "false").toBoolean()

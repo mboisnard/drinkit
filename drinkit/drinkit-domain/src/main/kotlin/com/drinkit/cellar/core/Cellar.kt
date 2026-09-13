@@ -12,41 +12,33 @@ import com.drinkit.utils.addIfNotMatch
 import com.drinkit.utils.doesntContainsInvisibleCharacters
 import com.drinkit.utils.hasLengthBetween
 
-data class CellarId(
-    override val value: String,
-) : AbstractId(value) {
+data class CellarId(override val value: String) : AbstractId(value) {
     init {
         require(value.isId())
     }
 }
 
-data class CellarName(
-    val value: String,
-) {
+data class CellarName(val value: String) {
     fun validate() = buildList {
         addIfNotMatch(value.isNotBlank(), "Cellar name should not be blank")
         addIfNotMatch(
             value.doesntContainsInvisibleCharacters(),
-            "Cellar name should not contains invisible characters, $value"
+            "Cellar name should not contains invisible characters, $value",
         )
         addIfNotMatch(
             value.hasLengthBetween(1, MAX_CELLAR_NAME_LENGTH),
-            "Cellar name should have size between 1 and $MAX_CELLAR_NAME_LENGTH, $value"
+            "Cellar name should have size between 1 and $MAX_CELLAR_NAME_LENGTH, $value",
         )
     }
 }
 
-data class CellarRooms(
-    val values: Set<CellarRoom>,
-) {
-    data class CellarRoom(
-        val name: String,
-    ) {
+data class CellarRooms(val values: Set<CellarRoom>) {
+    data class CellarRoom(val name: String) {
         init {
             require(
                 name.isNotBlank() &&
                     name.doesntContainsInvisibleCharacters() &&
-                    name.hasLengthBetween(1, MAX_CELLAR_ROOM_LENGTH)
+                    name.hasLengthBetween(1, MAX_CELLAR_ROOM_LENGTH),
             ) {
                 "Cellar room should not be blank, contains invisible chars or have more " +
                     "than $MAX_CELLAR_ROOM_LENGTH characters. Given value: $name"
@@ -70,6 +62,5 @@ data class Cellar(
     val owner: UserId,
 ) {
 
-    fun canBeSeenBy(user: User): Boolean =
-        user.id == owner
+    fun canBeSeenBy(user: User): Boolean = user.id == owner
 }

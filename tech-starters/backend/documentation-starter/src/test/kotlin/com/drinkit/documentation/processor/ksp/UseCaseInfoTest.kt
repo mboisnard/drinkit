@@ -12,14 +12,14 @@ internal class UseCaseInfoTest {
             packageName = "com.drinkit.user",
             className = "User",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCase = UseCaseInfo(
             packageName = "com.drinkit.application",
             className = "CreateUserProfile",
             customName = null,
-            description = null
+            description = null,
         )
 
         // When
@@ -36,14 +36,14 @@ internal class UseCaseInfoTest {
             packageName = "com.drinkit.user",
             className = "User",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCase = UseCaseInfo(
             packageName = "com.drinkit.application",
             className = "CreateOrder",
             customName = null,
-            description = null
+            description = null,
         )
 
         // When
@@ -60,14 +60,14 @@ internal class UseCaseInfoTest {
             packageName = "com.drinkit.user",
             className = "User",
             customName = null,
-            description = null
+            description = null,
         )
 
         val useCase = UseCaseInfo(
             packageName = "com.drinkit.application",
             className = "UpdateUSER",
             customName = null,
-            description = null
+            description = null,
         )
 
         // When
@@ -84,7 +84,7 @@ internal class UseCaseInfoTest {
             packageName = "com.drinkit.user",
             className = "CreateUser",
             customName = null,
-            description = null
+            description = null,
         )
 
         // Then
@@ -98,7 +98,7 @@ internal class UseCaseInfoTest {
             packageName = "com.drinkit.user",
             className = "CreateUser",
             customName = "Create New User Account",
-            description = null
+            description = null,
         )
 
         // Then

@@ -7,9 +7,7 @@ import com.drinkit.utils.containsASpecialCharacter
 import com.drinkit.utils.doesntContainsInvisibleCharacters
 import com.drinkit.utils.hasMinLength
 
-data class EncodedPassword(
-    val value: String,
-) {
+data class EncodedPassword(val value: String) {
     init {
         require(value.isNotBlank() && value.doesntContainsInvisibleCharacters()) {
             "Encoded password should not be blank or contains invisible characters. Given value: $value"
@@ -17,15 +15,12 @@ data class EncodedPassword(
     }
 
     companion object {
-        fun from(password: Password, encoder: (String) -> String): EncodedPassword {
-            return EncodedPassword(encoder(password.value))
-        }
+        fun from(password: Password, encoder: (String) -> String): EncodedPassword =
+            EncodedPassword(encoder(password.value))
     }
 }
 
-data class Password(
-    val value: String,
-) {
+data class Password(val value: String) {
     init {
         require(
             value.isNotBlank() &&
@@ -33,7 +28,7 @@ data class Password(
                 value.doesntContainsInvisibleCharacters() &&
                 value.containsACapitalLetter() &&
                 value.containsANumber() &&
-                value.containsASpecialCharacter()
+                value.containsASpecialCharacter(),
         )
     }
 }

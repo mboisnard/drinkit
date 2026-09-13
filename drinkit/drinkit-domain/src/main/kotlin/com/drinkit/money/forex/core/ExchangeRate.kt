@@ -6,11 +6,7 @@ import com.drinkit.utils.SAFE_ROUNDING_MODE
 import java.math.BigDecimal
 
 @CoreDomain
-data class ExchangeRate private constructor(
-    val source: Currency,
-    val target: Currency,
-    val value: BigDecimal,
-) {
+data class ExchangeRate private constructor(val source: Currency, val target: Currency, val value: BigDecimal) {
     init {
         require(value > BigDecimal.ZERO) { "Exchange rate must be positive" }
         require(source != target) { "Source and target currencies must be different" }
@@ -23,7 +19,7 @@ data class ExchangeRate private constructor(
         fun from(source: Currency, target: Currency, value: BigDecimal) = ExchangeRate(
             source = source,
             target = target,
-            value = value.setScale(EXCHANGE_RATE_SCALE_PRECISION, SAFE_ROUNDING_MODE)
+            value = value.setScale(EXCHANGE_RATE_SCALE_PRECISION, SAFE_ROUNDING_MODE),
         )
     }
 }

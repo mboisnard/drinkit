@@ -9,10 +9,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @ConfigurationProperties(prefix = "meilisearch")
-internal data class MeilisearchProperties(
-    val url: String,
-    val apiKey: String,
-)
+internal data class MeilisearchProperties(val url: String, val apiKey: String)
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(MeilisearchProperties::class)

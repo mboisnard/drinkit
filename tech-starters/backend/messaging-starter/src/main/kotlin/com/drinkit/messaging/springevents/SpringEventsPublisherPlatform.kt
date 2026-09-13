@@ -7,9 +7,8 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 
 @Service
-internal class SpringEventsPublisherPlatform(
-    private val applicationEventPublisher: ApplicationEventPublisher,
-) : PlatformEventPublisher {
+internal class SpringEventsPublisherPlatform(private val applicationEventPublisher: ApplicationEventPublisher) :
+    PlatformEventPublisher {
 
     private val logger = KotlinLogging.logger { }
 

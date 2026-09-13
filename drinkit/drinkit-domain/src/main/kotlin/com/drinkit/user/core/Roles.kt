@@ -1,10 +1,10 @@
 package com.drinkit.user.core
 
-data class Roles(
-    val values: Set<Role>
-) {
+data class Roles(val values: Set<Role>) {
     enum class Role {
-        ROLE_REGISTRATION_IN_PROGRESS, ROLE_USER, ROLE_ADMIN
+        ROLE_REGISTRATION_IN_PROGRESS,
+        ROLE_USER,
+        ROLE_ADMIN,
     }
 
     init {

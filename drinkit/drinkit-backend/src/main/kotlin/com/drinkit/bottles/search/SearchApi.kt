@@ -4,7 +4,6 @@ import com.drinkit.api.generated.api.SearchApiDelegate
 import com.drinkit.config.AbstractApi
 import com.drinkit.ocr.OCRAnalysis
 import com.drinkit.ocr.OCRResponse
-import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.HeadersBuilder
@@ -14,9 +13,9 @@ import org.springframework.web.multipart.MultipartFile
 
 @Component
 @PreAuthorize("isAuthenticated()")
-internal class SearchApi(
-    private val ocrAnalysis: OCRAnalysis,
-) : SearchApiDelegate, AbstractApi() {
+internal class SearchApi(private val ocrAnalysis: OCRAnalysis) :
+    AbstractApi(),
+    SearchApiDelegate {
 
     override fun searchByPhotoUpload(file: MultipartFile): ResponseEntity<Unit> {
         val ocrResponse = ocrAnalysis.extractText(file.resource, locale())
@@ -29,6 +28,4 @@ internal class SearchApi(
     }
 }
 
-fun forbidden(): HeadersBuilder<*> {
-    return ResponseEntity.status(FORBIDDEN)
-}
+fun forbidden(): HeadersBuilder<*> = ResponseEntity.status(FORBIDDEN)

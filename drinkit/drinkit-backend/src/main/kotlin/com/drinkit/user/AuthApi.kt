@@ -9,9 +9,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 @Component
-internal class AuthApi(
-    private val authenticationService: AuthenticationService,
-) : AuthApiDelegate {
+internal class AuthApi(private val authenticationService: AuthenticationService) : AuthApiDelegate {
 
     override fun authenticateUser(signInRequest: SignInRequest): ResponseEntity<Unit> {
         try {

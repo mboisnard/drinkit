@@ -67,7 +67,7 @@ internal abstract class ConfigurationsTestContract {
         val complexConfig = TestComplexConfig(
             host = "localhost",
             port = 5432,
-            enabled = true
+            enabled = true,
         )
         repository.set(TestKey.ComplexConfig, complexConfig)
 
@@ -142,9 +142,5 @@ internal abstract class ConfigurationsTestContract {
         object ComplexConfig : ConfigurationKey<TestComplexConfig>
     }
 
-    data class TestComplexConfig(
-        val host: String,
-        val port: Int,
-        val enabled: Boolean
-    )
+    data class TestComplexConfig(val host: String, val port: Int, val enabled: Boolean)
 }

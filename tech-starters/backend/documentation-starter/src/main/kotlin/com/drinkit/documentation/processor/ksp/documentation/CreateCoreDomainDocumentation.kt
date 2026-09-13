@@ -5,10 +5,7 @@ import com.drinkit.documentation.processor.ksp.UseCaseInfo
 import com.google.devtools.ksp.processing.KSPLogger
 import java.io.File
 
-internal class CreateCoreDomainDocumentation(
-    private val outputFolderPath: String,
-    private val logger: KSPLogger,
-) {
+internal class CreateCoreDomainDocumentation(private val outputFolderPath: String, private val logger: KSPLogger) {
     private val outputDirectory: File by lazy {
         File(outputFolderPath).apply { mkdirs() }
     }
@@ -22,10 +19,7 @@ internal class CreateCoreDomainDocumentation(
         logger.warn("    Generated: ${outputFile.name} (${useCases.size} use case(s))")
     }
 
-    private fun generateMarkdown(
-        domain: CoreDomainInfo,
-        useCases: List<UseCaseInfo>
-    ) = buildString {
+    private fun generateMarkdown(domain: CoreDomainInfo, useCases: List<UseCaseInfo>) = buildString {
         appendLine("# ${domain.displayName}")
         appendLine()
 

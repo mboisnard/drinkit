@@ -8,8 +8,7 @@ import org.springframework.stereotype.Component
 
 // @Scope("session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
-class ConnectedUser(
-) {
+class ConnectedUser {
     // private var user: User? = null
 
     fun getOrFail(): User {

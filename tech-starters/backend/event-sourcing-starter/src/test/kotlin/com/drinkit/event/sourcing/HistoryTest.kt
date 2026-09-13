@@ -1,7 +1,7 @@
 package com.drinkit.event.sourcing
 
-import io.kotest.matchers.shouldBe
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -21,7 +21,7 @@ internal class HistoryTest {
             id = UUID.randomUUID(),
             sequenceId = SequenceId(),
             date = OffsetDateTime.now(),
-            name = "Mercedes-Benz 300 SL"
+            name = "Mercedes-Benz 300 SL",
         )
 
         // When
@@ -39,24 +39,24 @@ internal class HistoryTest {
             id = UUID.randomUUID(),
             sequenceId = SequenceId(),
             date = OffsetDateTime.now(),
-            name = "Mercedes-Benz 300 SL"
+            name = "Mercedes-Benz 300 SL",
         )
         val event1 = CarPurchased(
             id = initEvent.id,
             sequenceId = SequenceId(10),
             date = OffsetDateTime.now(),
-            owner = "James Bond"
+            owner = "James Bond",
         )
         val event2 = MaintenanceCarriedOut(
             id = initEvent.id,
             sequenceId = SequenceId(20),
-            date = OffsetDateTime.now()
+            date = OffsetDateTime.now(),
         )
 
         // When
         val history = CarHistory(
             initEvent = initEvent,
-            remainingEvents = listOf(event1, event2)
+            remainingEvents = listOf(event1, event2),
         )
 
         // Then
@@ -71,18 +71,18 @@ internal class HistoryTest {
             id = UUID.randomUUID(),
             sequenceId = SequenceId(),
             date = OffsetDateTime.now(),
-            name = "Mercedes-Benz 300 SL"
+            name = "Mercedes-Benz 300 SL",
         )
         val event1 = CarPurchased(
             id = initEvent.id,
             sequenceId = SequenceId(10),
             date = OffsetDateTime.now(),
-            owner = "James Bond"
+            owner = "James Bond",
         )
         val event2 = MaintenanceCarriedOut(
             id = initEvent.id,
             sequenceId = SequenceId(20),
-            date = OffsetDateTime.now()
+            date = OffsetDateTime.now(),
         )
         val events = listOf(initEvent, event1, event2)
 
@@ -102,12 +102,12 @@ internal class HistoryTest {
             id = carId,
             sequenceId = SequenceId(),
             date = OffsetDateTime.now(),
-            owner = "James Bond"
+            owner = "James Bond",
         )
         val event2 = MaintenanceCarriedOut(
             id = carId,
             sequenceId = SequenceId(10),
-            date = OffsetDateTime.now()
+            date = OffsetDateTime.now(),
         )
         val events = listOf(event1, event2)
 
@@ -124,18 +124,18 @@ internal class HistoryTest {
             id = UUID.randomUUID(),
             sequenceId = SequenceId(),
             date = OffsetDateTime.now(),
-            name = "Mercedes-Benz 300 SL"
+            name = "Mercedes-Benz 300 SL",
         )
         val event1 = CarPurchased(
             id = initEvent.id,
             sequenceId = SequenceId(20),
             date = OffsetDateTime.now(),
-            owner = "James Bond"
+            owner = "James Bond",
         )
         val event2 = MaintenanceCarriedOut(
             id = initEvent.id,
             sequenceId = SequenceId(10),
-            date = OffsetDateTime.now()
+            date = OffsetDateTime.now(),
         )
         val events = listOf(initEvent, event1, event2)
 

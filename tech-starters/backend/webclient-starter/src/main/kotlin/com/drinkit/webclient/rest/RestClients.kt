@@ -26,19 +26,18 @@ internal class SafeRequestRetryInterceptor : ClientHttpRequestInterceptor {
             .maxRetries(3)
             .delay(Duration.ofMillis(100))
             .maxDelay(Duration.ofSeconds(3))
-            .build()
+            .build(),
     )
 
     override fun intercept(
         request: HttpRequest,
         body: ByteArray,
         execution: ClientHttpRequestExecution,
-    ): ClientHttpResponse =
-        if (request.method in SAFE_METHODS) {
-            retryTemplate.execute { execution.execute(request, body) }
-        } else {
-            execution.execute(request, body)
-        }
+    ): ClientHttpResponse = if (request.method in SAFE_METHODS) {
+        retryTemplate.execute { execution.execute(request, body) }
+    } else {
+        execution.execute(request, body)
+    }
 
     private companion object {
         val SAFE_METHODS = setOf(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)

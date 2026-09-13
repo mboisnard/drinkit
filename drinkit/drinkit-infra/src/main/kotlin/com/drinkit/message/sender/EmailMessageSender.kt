@@ -11,9 +11,7 @@ import com.drinkit.mail.Subject
 import org.springframework.stereotype.Service
 
 @Service
-internal class EmailMessageSender(
-    private val emailSender: EmailSender,
-) : MessageSender {
+internal class EmailMessageSender(private val emailSender: EmailSender) : MessageSender {
 
     override fun send(command: SendMessageCommand): Boolean = with(command) {
         val email = Email(

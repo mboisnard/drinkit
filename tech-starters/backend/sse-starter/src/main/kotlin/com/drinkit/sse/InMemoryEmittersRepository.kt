@@ -5,10 +5,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
-internal data class Emitter(
-    val eventName: String,
-    val emitter: SseEmitter,
-)
+internal data class Emitter(val eventName: String, val emitter: SseEmitter)
 
 /**
  * Thread-safe repository for managing SSE emitters.

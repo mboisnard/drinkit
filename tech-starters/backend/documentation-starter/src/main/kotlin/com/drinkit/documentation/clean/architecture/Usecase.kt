@@ -27,7 +27,4 @@ package com.drinkit.documentation.clean.architecture
  */
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class Usecase(
-    val name: String = "",
-    val description: String = "",
-)
+annotation class Usecase(val name: String = "", val description: String = "")

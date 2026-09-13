@@ -12,12 +12,9 @@ import dev.openfeature.sdk.Value
 import org.springframework.stereotype.Service
 
 @Service
-internal class OpenFeatureFeatureFlags(
-    private val client: Client,
-) : FeatureFlags {
+internal class OpenFeatureFeatureFlags(private val client: Client) : FeatureFlags {
 
-    override fun isEnabled(flag: String): Boolean =
-        client.getBooleanValue(flag, false)
+    override fun isEnabled(flag: String): Boolean = client.getBooleanValue(flag, false)
 
     override fun isEnabled(flag: String, context: FeatureFlagContext): Boolean =
         client.getBooleanValue(flag, false, context.toEvaluationContext())

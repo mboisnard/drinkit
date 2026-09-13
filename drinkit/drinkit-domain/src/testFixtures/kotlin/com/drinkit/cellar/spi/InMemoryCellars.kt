@@ -17,9 +17,7 @@ class InMemoryCellars : Cellars {
         return cellar.id
     }
 
-    override fun delete(cellarId: CellarId): Int {
-        return if (cellars.remove(cellarId) != null) 1 else 0
-    }
+    override fun delete(cellarId: CellarId): Int = if (cellars.remove(cellarId) != null) 1 else 0
 
     override fun findById(cellarId: CellarId): Cellar? = cellars[cellarId]
 

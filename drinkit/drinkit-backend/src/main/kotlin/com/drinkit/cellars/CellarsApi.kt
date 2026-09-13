@@ -7,13 +7,13 @@ import com.drinkit.api.generated.model.CityLocation
 import com.drinkit.api.generated.model.Country
 import com.drinkit.api.generated.model.CreateCellarRequest
 import com.drinkit.api.generated.model.Point
-import com.drinkit.cellar.core.Cellar
-import com.drinkit.cellar.core.CellarId
-import com.drinkit.cellar.core.CellarName
 import com.drinkit.cellar.CreateCellar
 import com.drinkit.cellar.CreateCellarCommand
 import com.drinkit.cellar.DeleteCellar
 import com.drinkit.cellar.FindCellars
+import com.drinkit.cellar.core.Cellar
+import com.drinkit.cellar.core.CellarId
+import com.drinkit.cellar.core.CellarName
 import com.drinkit.config.AbstractApi
 import com.drinkit.config.ConnectedUser
 import org.springframework.http.HttpStatus
@@ -28,7 +28,8 @@ internal class CellarsApi(
     private val deleteCellar: DeleteCellar,
     private val findCellars: FindCellars,
     private val connectedUser: ConnectedUser,
-) : CellarsApiDelegate, AbstractApi() {
+) : AbstractApi(),
+    CellarsApiDelegate {
 
     override fun createCellar(createCellarRequest: CreateCellarRequest): ResponseEntity<CellarId> {
         val command = createCellarRequest.toCommand()
@@ -54,43 +55,39 @@ internal class CellarsApi(
 
     private fun connectedUser() = connectedUser.getOrFail()
 
-    private fun CreateCellarRequest.toCommand() =
-        CreateCellarCommand(
-            name = CellarName(name),
-            location = location.toDomain(),
-            ownerId = connectedUser().id,
-        )
+    private fun CreateCellarRequest.toCommand() = CreateCellarCommand(
+        name = CellarName(name),
+        location = location.toDomain(),
+        ownerId = connectedUser().id,
+    )
 
-    private fun CityLocation.toDomain() =
-        com.drinkit.common.CityLocation(
-            city = city,
-            country = com.drinkit.common.Country(
-                name = country.name,
-                code = country.code,
-            ),
-            point = com.drinkit.common.Point(
-                latitude = point.latitude,
-                longitude = point.longitude
-            )
-        )
+    private fun CityLocation.toDomain() = com.drinkit.common.CityLocation(
+        city = city,
+        country = com.drinkit.common.Country(
+            name = country.name,
+            code = country.code,
+        ),
+        point = com.drinkit.common.Point(
+            latitude = point.latitude,
+            longitude = point.longitude,
+        ),
+    )
 
-    private fun com.drinkit.common.CityLocation.toResponse() =
-        CityLocation(
-            city = city,
-            country = Country(
-                name = country.name,
-                code = country.code,
-            ),
-            point = Point(
-                latitude = point.latitude,
-                longitude = point.longitude
-            )
-        )
+    private fun com.drinkit.common.CityLocation.toResponse() = CityLocation(
+        city = city,
+        country = Country(
+            name = country.name,
+            code = country.code,
+        ),
+        point = Point(
+            latitude = point.latitude,
+            longitude = point.longitude,
+        ),
+    )
 
-    private fun Cellar.toResponse() =
-        CellarResponse(
-            id = id,
-            name = name.value,
-            location = location.toResponse(),
-        )
+    private fun Cellar.toResponse() = CellarResponse(
+        id = id,
+        name = name.value,
+        location = location.toResponse(),
+    )
 }

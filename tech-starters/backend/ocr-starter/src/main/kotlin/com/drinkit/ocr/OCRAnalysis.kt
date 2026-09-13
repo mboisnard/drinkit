@@ -23,9 +23,7 @@ interface OCRAnalysis {
 }
 
 @Service
-internal class InternalOCRAnalysis(
-    private val ocrAnalyzers: OCRAnalyzers
-) : OCRAnalysis {
+internal class InternalOCRAnalysis(private val ocrAnalyzers: OCRAnalyzers) : OCRAnalysis {
 
     override fun featureAvailable(): Boolean = ocrAnalyzers.instances.isNotEmpty()
 

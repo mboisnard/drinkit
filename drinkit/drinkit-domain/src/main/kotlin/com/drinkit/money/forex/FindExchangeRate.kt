@@ -13,9 +13,7 @@ import java.math.BigDecimal
 
 @Service
 @Usecase
-class FindExchangeRate(
-    private val exchangeRates: ExchangeRates,
-) {
+class FindExchangeRate(private val exchangeRates: ExchangeRates) {
     private val logger = KotlinLogging.logger {}
 
     @Transactional(readOnly = true)
@@ -24,12 +22,11 @@ class FindExchangeRate(
             "Source and target currency must be different"
         }
 
-       return exchangeRates.find(source, target)
-           ?: crossRateCalculationFromEuro(source, target)
+        return exchangeRates.find(source, target)
+            ?: crossRateCalculationFromEuro(source, target)
     }
 
     private fun crossRateCalculationFromEuro(source: Currency, target: Currency): ExchangeRate? {
-
         val euroToSource = exchangeRates.find(Currency.EUR, source) ?: run {
             logger.warn { "Missing exchange rate for EUR -> $source" }
             return null
@@ -39,7 +36,7 @@ class FindExchangeRate(
             return ExchangeRate.from(
                 source = source,
                 target = Currency.EUR,
-                value = BigDecimal.ONE.safelyDivide(euroToSource.value, EXCHANGE_RATE_SCALE_PRECISION)
+                value = BigDecimal.ONE.safelyDivide(euroToSource.value, EXCHANGE_RATE_SCALE_PRECISION),
             )
         }
 
@@ -51,7 +48,7 @@ class FindExchangeRate(
         return ExchangeRate.from(
             source = source,
             target = target,
-            value = euroToTarget.value.safelyDivide(euroToSource.value, EXCHANGE_RATE_SCALE_PRECISION)
+            value = euroToTarget.value.safelyDivide(euroToSource.value, EXCHANGE_RATE_SCALE_PRECISION),
         )
     }
 }
