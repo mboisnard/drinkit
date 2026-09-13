@@ -1,0 +1,6 @@
+# Revisions to skip when running git blame, because they only ever moved
+# whitespace around. Enable them once per clone with:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# [DETEKT] Apply detekt auto-correction across the codebase
+152ddb31409b09e96fe2815811031627880443b0
