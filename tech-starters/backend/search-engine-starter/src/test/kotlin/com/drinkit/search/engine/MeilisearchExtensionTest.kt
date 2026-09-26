@@ -10,7 +10,7 @@ internal class MeilisearchExtensionTest {
 
     @Test
     fun `should provide a client connected to the container`(client: Client) {
-        client.createIndex("cellars")
+        client.waitForTask(client.createIndex("cellars").taskUid)
 
         client.indexes.results.map { it.uid } shouldBe listOf("cellars")
     }
