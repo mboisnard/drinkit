@@ -16,7 +16,7 @@ services:
       POSTGRES_PASSWORD: admin
 
   meilisearch:
-    image: getmeili/meilisearch:v1.53.2
+    image: getmeili/meilisearch:v1.54.0
     ports:
       - "7700:7700"
     volumes:
@@ -27,7 +27,7 @@ services:
       MEILI_UPGRADE_DB: true
 
   flipt:
-    image: flipt/flipt:v2.12.0
+    image: flipt/flipt:v2.13.0
     ports:
       - "8082:8080"
     volumes:
