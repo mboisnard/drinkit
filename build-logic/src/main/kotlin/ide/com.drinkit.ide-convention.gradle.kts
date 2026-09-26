@@ -1,4 +1,6 @@
-import name.remal.gradle_plugins.idea_settings.IdeaRunOnSaveSettings.ReformatMode
+// Commented out: on Gradle 9.8.0, name.remal.idea-settings 4.0.9 makes every build that stores the configuration
+// cache exit 1 without output. Restore it and apply it from the root build once a fixed plugin version is out.
+/*import name.remal.gradle_plugins.idea_settings.IdeaRunOnSaveSettings.ReformatMode
 
 plugins {
     id("name.remal.idea-settings")
@@ -29,3 +31,4 @@ ideaSettings {
 tasks.matching { it.name == "processIdeaSettings" }.configureEach {
     notCompatibleWithConfigurationCache("org.jetbrains.gradle.ext keeps a Project reference in the task")
 }
+*/
