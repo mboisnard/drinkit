@@ -74,8 +74,8 @@ It reformats the staged Kotlin files and re-stages them, and refuses to run on a
 partially staged rather than sweeping unstaged work into the commit. `git commit --no-verify`
 skips it.
 
-On the first Gradle sync, IntelliJ offers to install the detekt plugin, pointed at the project's
-own config by `.idea/detekt.xml`, so the editor reports what the build reports. It annotates as you
+Install the detekt IntelliJ plugin: `.idea/detekt.xml` points it at the project's own config, so
+the editor reports what the build reports. It annotates as you
 type and offers `Refactor -> AutoCorrect by detekt rules`, but it does not format on save — which
 is why `.editorconfig` is still there, to keep IntelliJ's own formatter aligned.
 

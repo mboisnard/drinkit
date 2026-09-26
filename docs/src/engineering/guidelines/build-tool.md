@@ -129,7 +129,15 @@ Declares the IntelliJ settings in the build instead of committing `.idea`, which
 IntelliJ regenerates them at every Gradle sync: the detekt and EditorConfig plugins are marked as
 required, the SQL dialect is set to PostgreSQL, and Build/Run actions are delegated to Gradle.
 
-It is applied by the root `build.gradle.kts`, which exists for exactly this: `idea-ext` configures
+::: warning Disabled
+The convention is kept in `build-logic`, commented out and applied nowhere. On Gradle 9.8.0, `name.remal.idea-settings`
+4.0.9 makes every build that stores the configuration cache exit 1 without output, so any first run of
+a command, and every CI build, would fail. Applying it only during an IntelliJ sync was tried and
+rejected: IntelliJ then asks for a system property that a newcomer cannot guess. It comes back once a
+fixed plugin version is released. Until then, install the detekt IntelliJ plugin by hand.
+:::
+
+Once re-enabled, it belongs to the root `build.gradle.kts`, which exists for exactly this: `idea-ext` configures
 `idea.project`, an extension that lives only on the root project. Gradle's own guidance calls the
 root build file *"the place to configure some settings and conventions that apply globally to the
 entire build, that are not configured via Settings"* — IDE settings being precisely that. What does
