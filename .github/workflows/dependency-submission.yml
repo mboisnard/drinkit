@@ -9,6 +9,7 @@ permissions:
   contents: write
 
 jobs:
+  # The workflow name and this job id form the snapshot correlator: renaming either leaves the previous graph on GitHub
   dependency-submission:
     runs-on: ubuntu-latest
     steps:
@@ -21,11 +22,8 @@ jobs:
           distribution: temurin
           java-version: 25
 
-      - name: Setup Gradle to generate and submit dependency graphs
-        uses: gradle/actions/setup-gradle@v6
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      - name: Execute Gradle build
-        run: ./gradlew classes
+      - name: Generate and submit the dependency graph
+        uses: gradle/actions/dependency-submission@v6
+        with:
+          # A build that reuses the configuration cache writes no graph, and the run still passes
+          additional-arguments: --no-configuration-cache

@@ -47,7 +47,7 @@ Enabled once per clone with `git config core.hooksPath .githooks`.
 | `build` | Compiles and tests the backend on every pull request and on master. Required | [`build.yml`][build-yml] | 2024-03-03, on pull requests since 2026-09-27 |
 | `Detekt - Static Code Analysis` | Runs `detektAll` and publishes the findings to code scanning. Required | [`code-analysis.yml`][code-analysis-yml] | 2024-03-25 |
 | `CodeQL - Security Analysis` | Looks for security flaws in the Kotlin and Java code, results in code scanning. Not required | [`code-analysis.yml`][code-analysis-yml] | 2024-03-25, off from 2026-09-13 to 2026-09-26 |
-| Dependency submission | Sends the Gradle dependency graph to GitHub, which feeds vulnerability alerts | [`dependency-submission.yml`][dependency-submission-yml] | 2024-03-25 |
+| Dependency submission | Sends the Gradle dependency graph to GitHub, which feeds Dependabot alerts and Renovate security updates | [`dependency-submission.yml`][dependency-submission-yml] | 2024-03-25, nothing sent from 2025-01-25 to 2026-09-27 |
 | Gradle wrapper validation | Checks that a changed Gradle wrapper is an official release | [`gradle-wrapper-validation.yml`][wrapper-validation-yml] | 2024-03-25 |
 
 ## GitHub configuration
