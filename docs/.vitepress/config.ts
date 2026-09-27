@@ -79,6 +79,8 @@ export default withMermaid(
                 ],
               },
 
+              { text: 'Harness', link: 'harness' },
+
               {
                 text: 'Tech Radars',
                 base: '/engineering/tech-radars/',
