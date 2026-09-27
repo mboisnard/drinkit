@@ -97,6 +97,21 @@ npm run dev
 
 * Frontend application available on: `http://localhost:3000/cellars`
 
+## Contributing
+
+master only changes through a pull request, for humans and coding agents alike. The ruleset in
+`.github/rulesets/master.json` has no bypass, owner included: it requires `build` and
+`Detekt - Static Code Analysis` to pass on a branch up to date with master, every conversation
+resolved and a rebase merge, and it blocks force pushes and deletion. After editing the file,
+apply it with (`gh api repos/mboisnard/drinkit/rulesets` gives the id):
+
+```
+gh api --method PUT repos/mboisnard/drinkit/rulesets/<id> --input .github/rulesets/master.json
+```
+
+The pre-push hook, enabled by the same `git config core.hooksPath .githooks`, refuses a push to
+master before anything is sent. `git push --no-verify` skips the hook, never the ruleset.
+
 ## Global view of this project
 
 <img src="docs/files/DrinkIt.png" alt="DrinkIt Global View" width="1000" height="1000">
