@@ -46,3 +46,4 @@ Even if you don't strictly follow **Test-Driven Development (TDD)**, always cons
 This mindset is a powerful tool that naturally shapes your design for the better. Code that is easy to test is almost always loosely coupled, modular, and well-structured. It forces you to think about dependencies and separate concerns.
 
 If you think of new edge cases or scenarios to test while in the middle of coding, don't let the idea slip away. While writing code you may come up with more cases to test. Write them down as `TODO` comments, and make sure you write tests for them when you are ready.
+
