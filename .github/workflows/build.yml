@@ -2,10 +2,17 @@ name: Build DrinkIt backend projects
 
 on:
   push:
+    branches:
+      - master
     paths-ignore:
-      - 'drinkit/drinkit-front/**'
+      - 'drinkit/drinkit-frontend/**'
       - 'tech-starters/frontend/**'
       - 'docs/**'
+  # No path filter: build is a required check of the master ruleset, and a filtered-out check never reports
+  pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   build:
