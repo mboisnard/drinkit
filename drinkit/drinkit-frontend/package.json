@@ -11,7 +11,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.13.2",
+    "@openapitools/openapi-generator-cli": "^2.41.0",
     "nuxt": "^3.11.2",
     "nuxt-primevue": "^0.2.2",
     "vue": "^3.4.6",
