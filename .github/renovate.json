@@ -1,30 +1,66 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "schedule:earlyMondays",
+    ":timezone(Europe/Paris)",
+    ":assignee(mboisnard)"
+  ],
   "labels": ["dependencies"],
   "commitMessagePrefix": "[VERSION-UPDATE]",
-  "extends": [
-    "config:recommended",
-    ":assignee(mboisnard)"
+  "osvVulnerabilityAlerts": true,
+  "dependencyDashboardOSVVulnerabilitySummary": "unresolved",
+  "vulnerabilityAlerts": {
+    "labels": ["dependencies", "area:security"]
+  },
+  "lockFileMaintenance": {
+    "description": "A refresh pulls transitive versions without the 7-day delay, so it waits for approval",
+    "dependencyDashboardApproval": true
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Testcontainers images, updated along with compose",
+      "managerFilePatterns": ["/src/testFixtures/kotlin/.+\\.kt$/"],
+      "matchStrings": ["IMAGE_NAME = \"(?<depName>[^:\"]+):(?<currentValue>[^\"]+)\""],
+      "datasourceTemplate": "docker"
+    }
   ],
   "packageRules": [
     {
-      "matchCategories": ["gradle"],
+      "description": "Supply chain: a release waits 7 days, security fixes do not",
+      "matchUpdateTypes": ["major", "minor", "patch", "digest"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Some releases come undated (JDK, large Docker Hub images such as postgres), which would block them forever",
+      "matchDatasources": ["docker", "java-version"],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    },
+    {
+      "description": "Test images keep plain tags: Testcontainers rejects image:tag@digest",
+      "matchManagers": ["custom.regex"],
+      "pinDigests": false
+    },
+    {
+      "description": "Majors need code changes: open them from the Dependency Dashboard",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "matchCategories": ["java"],
       "addLabels": ["gradle"]
     },
     {
-      "matchCategories": ["gradle-wrapper"],
-      "addLabels": ["gradle"]
-    },
-    {
-      "matchCategories": ["npm"],
+      "matchCategories": ["js"],
       "addLabels": ["javascript"]
     },
     {
-      "matchCategories": ["github-action"],
+      "matchCategories": ["ci"],
       "addLabels": ["github-action"]
     },
     {
-      "matchCategories": ["docker"],
+      "matchDatasources": ["docker"],
       "addLabels": ["docker"]
     }
   ]
