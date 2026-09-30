@@ -58,7 +58,7 @@ Enabled once per clone with `git config core.hooksPath .githooks`.
 | Merge settings | Rebase is the only merge method, "Update branch" is offered, merged branches are deleted | Repository settings | 2026-09-27 |
 | Workflow token | Read-only by default, each workflow asks for what it needs | Repository settings | Not recorded |
 | Fork pull requests | Workflows of a first-time contributor wait for approval | Repository settings | Not recorded |
-| Renovate | Opens dependency update pull requests | [`.github/renovate.json`][renovate] | 2024-04-11 |
+| Renovate | Opens dependency update pull requests a week after a release, on Monday mornings, and pins GitHub Actions and compose images by digest. Security fixes and undated releases (JDK, large Docker Hub images) skip the wait. Majors and lock file refreshes wait for a checkbox on the Dependency Dashboard | [`.github/renovate.json`][renovate] | 2024-04-11, delayed since 2026-09-30 |
 | Dependabot security updates | Opens a pull request when a dependency has a known vulnerability | Repository settings | Not recorded |
 
 ## Not covered yet
@@ -66,7 +66,7 @@ Enabled once per clone with `git config core.hooksPath .githooks`.
 - An agent session holds the owner's token, which can still edit the ruleset: [#405][i405], then [#407][i407]
 - Security analysis of the workflows and actions pinned by commit: [#406][i406]
 - Secret scanning and dependency verification: [#402][i402]
-- Delayed and grouped dependency updates: [#386][i386]
+- A single dependency bot, and the pending updates cleared: [#386][i386]
 - A repeatable agent workflow from issue to pull request, with a judge: [#382][i382]
 
 [claude-md]: https://github.com/mboisnard/drinkit/blob/master/CLAUDE.md
