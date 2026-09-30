@@ -39,6 +39,7 @@ Enabled once per clone with `git config core.hooksPath .githooks`.
 | detekt convention plugin | Applies detekt with type resolution to every module, skips generated code, makes `check` run `detektAll` | [`com.drinkit.code-analysis-convention`][detekt-convention] | 2024-03-17, fails the build since 2026-09-13 |
 | detekt configuration | This project's deviations from detekt's defaults, formatting rules included | [`code-analysis/detekt/detekt.yml`][detekt-yml] | 2024-03-17 |
 | detekt baseline | Findings older than the switch to failing builds. They no longer block, new ones do | [`code-analysis/detekt/baseline.xml`][detekt-baseline] | 2024-03-17 |
+| Wrapper checksum | The wrapper refuses a Gradle distribution whose SHA-256 differs from the committed one. Renovate updates it with each Gradle version | [`gradle-wrapper.properties`][wrapper-properties] | 2026-09-30 |
 
 ## Continuous integration
 
@@ -78,6 +79,7 @@ Enabled once per clone with `git config core.hooksPath .githooks`.
 [detekt-convention]: https://github.com/mboisnard/drinkit/blob/master/build-logic/src/main/kotlin/quality/com.drinkit.code-analysis-convention.gradle.kts
 [detekt-yml]: https://github.com/mboisnard/drinkit/blob/master/code-analysis/detekt/detekt.yml
 [detekt-baseline]: https://github.com/mboisnard/drinkit/blob/master/code-analysis/detekt/baseline.xml
+[wrapper-properties]: https://github.com/mboisnard/drinkit/blob/master/gradle/wrapper/gradle-wrapper.properties
 [build-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/build.yml
 [code-analysis-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/code-analysis.yml
 [dependency-submission-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/dependency-submission.yml
