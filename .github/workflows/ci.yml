@@ -1,0 +1,133 @@
+# Entry point of the CI. `decision` maps the changed files to lanes (config/ci-lanes.yml), each lane runs
+# from its own ci-<lane>.yml file when it changed, deployments run from cd-<target>.yml files, and `gate` is
+# the only check the master ruleset requires. docs/src/engineering/ci-cd.md explains the choices
+name: CI
+
+on:
+  # No paths filter on either trigger: a workflow skipped by paths leaves the required gate pending
+  pull_request:
+  push:
+    branches:
+      - master
+  # By hand, or weekly from weekly.yml: every lane runs
+  workflow_dispatch:
+
+# Each lane below grants a ceiling, and the jobs of its file take only what they need
+permissions: {}
+
+concurrency:
+  # A new push to a pull request cancels its run in progress, every other run gets a group of its own
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  decision:
+    name: Decision
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    env:
+      LANES: .github/workflows/config/ci-lanes.yml
+    outputs:
+      lanes: ${{ steps.every-lane.outputs.lanes || steps.filter.outputs.changes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Map the changed files to lanes
+        id: filter
+        if: github.event_name != 'workflow_dispatch'
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4
+        with:
+          filters: ${{ env.LANES }}
+
+      # On a run by hand, or when a changed file is in no list of ci-lanes.yml
+      - name: Select every lane
+        id: every-lane
+        if: github.event_name == 'workflow_dispatch' || steps.filter.outputs.changed_count != steps.filter.outputs.known_count
+        run: |
+          lanes=$(yq -o json -I 0 'keys' "$LANES")
+          echo "lanes=$lanes" >> "$GITHUB_OUTPUT"
+
+  backend:
+    name: Backend
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.lanes), 'backend')
+    uses: ./.github/workflows/ci-backend.yml
+    permissions:
+      contents: read
+      security-events: write
+    secrets:
+      GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+  # Not in the gate: its alerts show on the pull request and in the Security tab, the merge does not wait for it
+  codeql:
+    name: CodeQL
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.lanes), 'backend')
+    uses: ./.github/workflows/ci-codeql.yml
+    permissions:
+      contents: read
+      security-events: write
+
+  frontend:
+    name: Frontend
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.lanes), 'frontend')
+    uses: ./.github/workflows/ci-frontend.yml
+    permissions:
+      contents: read
+
+  ops:
+    name: Ops
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.lanes), 'ops')
+    uses: ./.github/workflows/ci-ops.yml
+    permissions:
+      contents: read
+
+  docs:
+    name: Docs
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.lanes), 'docs')
+    uses: ./.github/workflows/ci-docs.yml
+    permissions:
+      contents: read
+
+  dependencies:
+    name: Dependencies
+    needs: decision
+    # Every master commit needs a snapshot of its dependencies, a pull request only when it changes them
+    if: github.event_name != 'pull_request' || contains(fromJSON(needs.decision.outputs.lanes), 'dependencies')
+    uses: ./.github/workflows/ci-dependencies.yml
+    permissions:
+      contents: write
+
+  # Continuous deployment: not in the gate, a failed deployment shows on its own job
+  deploy-docs:
+    name: Deploy docs
+    needs: docs
+    if: github.ref == 'refs/heads/master'
+    uses: ./.github/workflows/cd-docs.yml
+    permissions:
+      pages: write
+      id-token: write
+
+  gate:
+    name: CI gate
+    needs: [decision, backend, frontend, ops, docs, dependencies]
+    # always(), not !cancelled(): a gate skipped in a cancelled run would count as passed
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions: {}
+    steps:
+      - name: Fail when a lane failed or was cancelled
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        # A skipped lane was not needed by this change
+        run: |
+          echo "Lane results: $RESULTS"
+          [[ "$RESULTS" != *failure* && "$RESULTS" != *cancelled* ]]

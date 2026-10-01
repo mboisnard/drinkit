@@ -1,0 +1,25 @@
+# A file of its own: GitHub disables a scheduled workflow after 60 days without activity, and a disabled
+# ci.yml would leave every pull request waiting for its gate. A dispatch is a plain ci.yml run, so code
+# scanning keeps one configuration instead of two
+name: CI weekly
+
+on:
+  schedule:
+    # Off the hour: GitHub delays runs scheduled at :00, and sometimes drops them
+    - cron: '17 4 * * 1'
+
+permissions: {}
+
+jobs:
+  full-run:
+    name: Start a full CI run
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch ci.yml on master
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh workflow run ci.yml --ref master

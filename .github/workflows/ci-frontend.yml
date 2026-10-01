@@ -1,0 +1,35 @@
+name: Frontend
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: drinkit/drinkit-frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: drinkit/drinkit-frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The client is gitignored and the pages import it. The generator runs on the runner's own JDK
+      - name: Generate the API client
+        run: npm run generate:client-api
+
+      - name: Build
+        run: npm run build

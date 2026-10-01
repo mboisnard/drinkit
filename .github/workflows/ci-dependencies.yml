@@ -1,0 +1,50 @@
+name: Dependencies
+
+on:
+  workflow_call:
+
+jobs:
+  submission:
+    name: Submit the dependency graph
+    # On a pull request the branch's build runs with a write token: never for forks, which get none
+    if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      # The key GitHub replaces on each submission, derived from the former workflow and job names.
+      # A new key would leave the previous graph on GitHub for good
+      GITHUB_DEPENDENCY_GRAPH_JOB_CORRELATOR: dependency_submission-dependency-submission
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK and Gradle
+        uses: ./.github/actions/setup-gradle-jdk
+
+      - name: Generate and submit the dependency graph
+        uses: gradle/actions/dependency-submission@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6
+        with:
+          # A build that reuses the configuration cache writes no graph, and the run still passes
+          additional-arguments: --no-configuration-cache
+
+  review:
+    name: Review the added dependencies
+    needs: submission
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Review the added dependencies
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5
+        with:
+          # Nuxt, Vue and the docs site are devDependencies, yet they end up in what is served
+          fail-on-scopes: runtime, development
+          # The base commit's snapshot comes from its own master run, which may still be going
+          retry-on-snapshot-warnings: true
+          retry-on-snapshot-warnings-timeout: 300
