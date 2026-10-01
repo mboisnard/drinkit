@@ -8,6 +8,7 @@
   ],
   "labels": ["dependencies"],
   "commitMessagePrefix": "[VERSION-UPDATE]",
+  "rebaseWhen": "conflicted",
   "osvVulnerabilityAlerts": true,
   "dependencyDashboardOSVVulnerabilitySummary": "unresolved",
   "vulnerabilityAlerts": {
