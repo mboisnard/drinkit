@@ -80,6 +80,7 @@ export default withMermaid(
               },
 
               { text: 'Harness', link: 'harness' },
+              { text: 'CI/CD', link: 'ci-cd' },
 
               {
                 text: 'Tech Radars',
