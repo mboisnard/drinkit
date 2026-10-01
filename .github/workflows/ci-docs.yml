@@ -1,0 +1,45 @@
+name: Docs
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: Generate and build the site
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up JDK and Gradle
+        uses: ./.github/actions/setup-gradle-jdk
+
+      # The processor writes its pages outside the task outputs, so a cache hit would leave them out.
+      # --rerun forces the kspKotlin tasks only, what they need still comes from the cache
+      - name: Generate the living documentation
+        run: ./gradlew kspKotlin --rerun
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          # Not docs/: the pages generated above change on every run
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install dependencies
+        working-directory: docs
+        run: npm ci
+
+      - name: Build the site
+        working-directory: docs
+        run: npm run docs:build
+
+      - name: Keep the site for the deployment
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: docs/.vitepress/dist

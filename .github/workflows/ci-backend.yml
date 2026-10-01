@@ -1,0 +1,48 @@
+name: Backend
+
+on:
+  workflow_call:
+    secrets:
+      GRADLE_ENCRYPTION_KEY:
+        required: false
+
+jobs:
+  build:
+    name: Build, test and analyse
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up JDK and Gradle
+        uses: ./.github/actions/setup-gradle-jdk
+        with:
+          # The only job that saves the Gradle cache: it holds what the other Gradle jobs restore,
+          # and a single writer keeps the cache within its 10 GB
+          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      # One Gradle run: `check` already runs detekt on every module, detektAll adds the analysis of
+      # the Gradle scripts at the root, --continue reports test and detekt failures together
+      - name: Build, test and analyse
+        run: ./gradlew build detektAll --continue
+
+      - name: Publish the detekt findings
+        if: (success() || failure()) && hashFiles('build/reports/detekt/detekt-all-projects.sarif') != ''
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        with:
+          sarif_file: build/reports/detekt/detekt-all-projects.sarif
+          category: detekt-code-analysis
+
+      - name: Keep the test reports
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: test-reports
+          path: '**/build/reports/tests/'
+          if-no-files-found: ignore
+          retention-days: 7

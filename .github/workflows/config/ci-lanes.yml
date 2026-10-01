@@ -1,0 +1,59 @@
+# The lanes of ci.yml: a lane runs when a changed file matches one of its paths. A changed file no list below
+# matches, a change to the CI included, runs every lane. No '!' pattern: it would match every other file
+
+backend: &backend
+  - 'build-logic/**'
+  - 'code-analysis/**'
+  - 'gradle/**'
+  - 'gradlew*'
+  - 'gradle.properties'
+  - '**/*.gradle.kts'
+  - 'drinkit/drinkit-api-contract/contract/**'
+  - 'drinkit/drinkit-backend/src/**'
+  - 'drinkit/drinkit-domain/src/**'
+  - 'drinkit/drinkit-infra/src/**'
+  - 'tech-starters/backend/*/src/**'
+  - 'deployment/updater/src/**'
+
+frontend: &frontend
+  - '.nvmrc'
+  - 'drinkit/drinkit-frontend/**'
+  - 'drinkit/drinkit-api-contract/contract/**' # the TypeScript client is generated from it
+
+docs: &docs
+  - *backend # the domain and tech starter pages are generated from its sources
+  - '.nvmrc'
+  - 'docs/**'
+  - 'tech-starters/backend/*/README.md' # copied into the tech starter pages
+
+ops: &ops
+  - 'deployment/local/**'
+
+dependencies: &dependencies
+  - '**/*.gradle.kts'
+  - 'gradle/**'
+  - '**/package.json'
+  - '**/package-lock.json'
+
+# Files no job reads
+none: &none
+  - '**/*.md'
+  - '.claude/**'
+  - '.editorconfig'
+  - '.githooks/**'
+  - '.idea/**'
+  - '.gitignore'
+  - '.git-blame-ignore-revs'
+  - '.github/renovate.json'
+  - '.github/rulesets/**'
+
+# ci.yml runs every lane when their counts differ
+changed:
+  - '**'
+known:
+  - *backend
+  - *frontend
+  - *docs
+  - *ops
+  - *dependencies
+  - *none
