@@ -100,8 +100,8 @@ npm run dev
 ## Contributing
 
 master only changes through a pull request, for humans and coding agents alike. The ruleset in
-`.github/rulesets/master.json` has no bypass, owner included: it requires `build` and
-`Detekt - Static Code Analysis` to pass on a branch up to date with master, every conversation
+`.github/rulesets/master.json` has no bypass, owner included: it requires `CI gate` to pass on a
+branch up to date with master, every conversation
 resolved and a rebase merge, and it blocks force pushes and deletion. After editing the file,
 apply it with (`gh api repos/mboisnard/drinkit/rulesets` gives the id):
 
