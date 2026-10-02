@@ -13,10 +13,12 @@ jobs:
       security-events: write
     steps:
       - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up JDK and Gradle
-        uses: ./.github/actions/setup-gradle-jdk
+        uses: $/.github/actions/setup-gradle-jdk
 
       # Compiled before CodeQL starts watching, the build conventions and their generated accessors
       # stay out of the database: about 70 s less, and only application code gets analysed
@@ -24,7 +26,7 @@ jobs:
         run: ./gradlew help --no-daemon
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
           languages: java-kotlin
           build-mode: manual
@@ -36,6 +38,6 @@ jobs:
         run: ./gradlew classes --no-daemon --no-build-cache
 
       - name: Analyse
-        uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
           category: codeql-security-analysis

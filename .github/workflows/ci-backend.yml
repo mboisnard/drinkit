@@ -16,10 +16,12 @@ jobs:
       security-events: write
     steps:
       - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up JDK and Gradle
-        uses: ./.github/actions/setup-gradle-jdk
+        uses: $/.github/actions/setup-gradle-jdk
         with:
           # The only job that saves the Gradle cache: it holds what the other Gradle jobs restore,
           # and a single writer keeps the cache within its 10 GB
@@ -33,14 +35,14 @@ jobs:
 
       - name: Publish the detekt findings
         if: (success() || failure()) && hashFiles('build/reports/detekt/detekt-all-projects.sarif') != ''
-        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
           sarif_file: build/reports/detekt/detekt-all-projects.sarif
           category: detekt-code-analysis
 
       - name: Keep the test reports
         if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-reports
           path: '**/build/reports/tests/'
