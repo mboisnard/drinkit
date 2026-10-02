@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# Claude Code PreToolUse hook on Bash, wired in .claude/settings.json: refuses writes to rulesets, branch protection
+# and push protection bypasses. It reads the command as text, so a command built indirectly (variable, script) passes
+
+if ! command -v jq >/dev/null 2>&1; then
+    echo "guard-github-protections: jq not found, GitHub protection writes go unchecked" >&2
+    exit 0
+fi
+
+blocked=$(jq -r '.tool_input.command // empty' | awk '
+    { text = text $0 "\n" }
+    END {
+        gsub(/\\\n/, " ", text)
+        gsub(/&&|\|\||;/, "\n", text)
+        count = split(text, segments, "\n")
+        for (i = 1; i <= count; i++) {
+            s = tolower(segments[i])
+            endpoint = s ~ /repos\/[^[:space:]\/]+\/[^[:space:]\/]+\/(rulesets|branches\/[^[:space:]]+\/protection|secret-scanning\/push-protection-bypasses)/
+            mutation = s ~ /(create|update|delete)(repositoryruleset|branchprotectionrule)/
+            write = s ~ /(-[a-z]*x|--method|--request)[[:space:]=]*["\047]?(post|put|patch|delete)/
+            read = s ~ /(-[a-z]*x|--method|--request)[[:space:]=]*["\047]?get|(^|[[:space:]])--get([[:space:]]|$)/ || segments[i] ~ /(^|[[:space:]])-G([[:space:]]|$)/
+            body = segments[i] ~ /(^|[[:space:]])(-[A-Za-z]*[dFT]|-f[^[:space:]]*=)/ || s ~ /(^|[[:space:]])(-f|--field|--raw-field|--input|--data[a-z-]*|--json|--form|--upload-file)([[:space:]=]|$)/
+            if (mutation || (endpoint && (write || (body && !read)))) {
+                print segments[i]
+                exit
+            }
+        }
+    }')
+
+[ -z "$blocked" ] && exit 0
+
+jq -n --arg command "$blocked" '{
+    hookSpecificOutput: {
+        hookEventName: "PreToolUse",
+        permissionDecision: "deny",
+        permissionDecisionReason: ("guard-github-protections: coding agents never change rulesets, branch protection or push protection bypasses. Ask the maintainer to run it: " + $command)
+    }
+}'
