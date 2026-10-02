@@ -1,0 +1,88 @@
+#!/bin/sh
+#
+# Feeds sample commands to the guard hook and checks which ones it refuses: ./.claude/hooks/guard-github-protections.test
+
+hook="$(dirname "$0")/guard-github-protections"
+failures=0
+
+check() {
+    expected=$1
+    command=$2
+    output=$(jq -n --arg command "$command" '{tool_name: "Bash", tool_input: {command: $command}}' | "$hook")
+    if [ -z "$output" ]; then
+        actual=allow
+    elif printf '%s' "$output" | jq -e '.hookSpecificOutput.permissionDecision == "deny"' >/dev/null; then
+        actual=deny
+    else
+        actual="invalid output: $output"
+    fi
+    if [ "$actual" = "$expected" ]; then
+        echo "ok    $expected  $command"
+    else
+        echo "FAIL  expected $expected, got $actual  $command"
+        failures=$((failures + 1))
+    fi
+}
+
+check deny 'gh api --method DELETE repos/mboisnard/drinkit/rulesets/0'
+check deny 'gh api -X DELETE repos/mboisnard/drinkit/rulesets/24070575'
+check deny 'gh api -X "PATCH" repos/mboisnard/drinkit/rulesets/24070575 -f enforcement=disabled'
+check deny 'gh api -X delete repos/mboisnard/drinkit/rulesets/24070575'
+check deny 'gh api --method=PUT repos/mboisnard/drinkit/rulesets/24070575 --input .github/rulesets/master.json'
+check deny 'gh api repos/mboisnard/drinkit/rulesets/24070575 --input .github/rulesets/master.json'
+check deny 'gh api repos/{owner}/{repo}/rulesets -f name=open -f enforcement=disabled'
+check deny 'gh api -X PUT repos/mboisnard/drinkit/branches/master/protection --input protection.json'
+check deny 'gh api -X DELETE /repos/mboisnard/drinkit/branches/master/protection/enforce_admins'
+check deny "gh api graphql -f query='mutation { deleteRepositoryRuleset(input: {repositoryRulesetId: \"x\"}) { clientMutationId } }'"
+check deny "gh api graphql -f query='mutation { updateBranchProtectionRule(input: {}) { clientMutationId } }'"
+check deny 'gh api repos/mboisnard/drinkit/secret-scanning/push-protection-bypasses -f reason=false_positive -f placeholder_id=x'
+# shellcheck disable=SC2016
+check deny 'curl -X DELETE -H "Authorization: Bearer $(gh auth token)" https://api.github.com/repos/mboisnard/drinkit/rulesets/1'
+check deny 'curl -d @master.json https://api.github.com/repos/mboisnard/drinkit/rulesets'
+check deny 'git status && gh api -X PATCH repos/mboisnard/drinkit/rulesets/1 -f enforcement=disabled'
+check deny 'cd docs
+gh api --method DELETE repos/mboisnard/drinkit/rulesets/1'
+check deny 'gh api \
+  --method PUT \
+  -H "Accept: application/vnd.github+json" \
+  /repos/OWNER/REPO/rulesets/RULESET_ID \
+  -f "enforcement=disabled"'
+check deny 'gh api \
+  --method POST \
+  /repos/OWNER/REPO/secret-scanning/push-protection-bypasses \
+  -f "reason=used_in_tests" -f "placeholder_id=x"'
+check deny 'curl -L \
+  -X PUT \
+  https://api.github.com/repos/OWNER/REPO/rulesets/1 \
+  -d @master.json'
+check deny 'curl -sSX DELETE https://api.github.com/repos/mboisnard/drinkit/rulesets/1'
+check deny 'curl -sSd @body.json https://api.github.com/repos/mboisnard/drinkit/secret-scanning/push-protection-bypasses'
+check deny 'curl -d@master.json https://api.github.com/repos/mboisnard/drinkit/rulesets'
+check deny 'curl -T master.json https://api.github.com/repos/mboisnard/drinkit/rulesets/1'
+check deny 'curl -g -d @master.json https://api.github.com/repos/mboisnard/drinkit/rulesets'
+check deny 'gh api repos/mboisnard/drinkit/rulesets -fname=open -fenforcement=disabled'
+
+check allow 'gh api repos/mboisnard/drinkit/rulesets'
+check allow "gh api repos/mboisnard/drinkit/rulesets/24070575 --jq '.rules[].type'"
+check allow 'gh api -X GET repos/mboisnard/drinkit/rulesets -f per_page=100'
+check allow 'gh api repos/mboisnard/drinkit/branches/master/protection'
+check allow 'gh api repos/mboisnard/drinkit/secret-scanning/alerts'
+check allow 'gh ruleset list'
+check allow 'gh ruleset view 24070575'
+check allow 'gh api -X POST repos/mboisnard/drinkit/pulls -f title=x -f head=y -f base=master'
+check allow "gh api --method PATCH repos/mboisnard/drinkit -f 'security_and_analysis[secret_scanning][status]=enabled'"
+check allow 'gh api --method PUT repos/mboisnard/drinkit/private-vulnerability-reporting'
+check allow 'git add .github/rulesets/master.json && git commit -F message.txt'
+check allow 'gh api repos/mboisnard/drinkit/rulesets --jq length && gh issue comment 1 -F body.md'
+check allow 'jq . .github/rulesets/master.json'
+check allow 'gh api \
+  /repos/OWNER/REPO/rulesets \
+  --paginate'
+check allow 'curl -sSL https://api.github.com/repos/mboisnard/drinkit/rulesets'
+check allow 'curl -sS -D headers.txt https://api.github.com/repos/mboisnard/drinkit/rulesets'
+check allow 'curl -G -d per_page=100 https://api.github.com/repos/mboisnard/drinkit/rulesets'
+
+if [ "$failures" -ne 0 ]; then
+    echo "$failures failing"
+    exit 1
+fi
