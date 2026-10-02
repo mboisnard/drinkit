@@ -114,3 +114,5 @@ The documentation site is the only thing deployed today. Publishing the backend 
 [weekly-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/weekly.yml
 [setup-action]: https://github.com/mboisnard/drinkit/blob/master/.github/actions/setup-gradle-jdk/action.yml
 [paths-filter]: https://github.com/dorny/paths-filter
+
+<!-- probe for #397 -->
