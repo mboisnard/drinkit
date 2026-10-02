@@ -42,6 +42,7 @@ Enabled once per clone with `git config core.hooksPath .githooks`.
 | detekt configuration | This project's deviations from detekt's defaults, formatting rules included | [`code-analysis/detekt/detekt.yml`][detekt-yml] | 2024-03-17 |
 | detekt baseline | Findings older than the switch to failing builds. They no longer block, new ones do | [`code-analysis/detekt/baseline.xml`][detekt-baseline] | 2024-03-17 |
 | Wrapper checksum | The wrapper refuses a Gradle distribution whose SHA-256 differs from the committed one. Renovate updates it with each Gradle version | [`gradle-wrapper.properties`][wrapper-properties] | 2026-09-30 |
+| Dependency verification | The build refuses a dependency or plugin whose SHA-256 differs from the committed one, or has none. Renovate regenerates the file in its own pull requests. Sources, javadoc and two artifacts that plugins resolve on their own are trusted, each with its reason | [`verification-metadata.xml`][verification-metadata] | 2026-10-02 |
 
 ## Continuous integration
 
@@ -73,12 +74,13 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 | Pinned actions | A workflow that references an action by tag or branch does not start: every action is pinned by commit SHA, in-repo ones with `$/` | Repository settings | 2026-10-02 |
 | Renovate | Opens dependency update pull requests a week after a release, on Monday mornings, and pins GitHub Actions and compose images by digest. Security fixes and undated releases (JDK, large Docker Hub images) skip the wait. Majors and lock file refreshes wait for a checkbox on the Dependency Dashboard. A pull request is rebased only on conflict | [`.github/renovate.json`][renovate] | 2024-04-11, delayed since 2026-09-30, rebased on conflict only since 2026-10-01 |
 | Dependabot alerts | Flag dependencies with a known vulnerability, which Renovate turns into security updates. Dependabot opens no pull request of its own | Repository settings | Not recorded, its security updates off since 2026-10-01 |
+| Secret scanning and push protection | GitHub refuses a push that contains a known secret format, from git, the web interface or the API, and scans the whole history for secrets already pushed | Repository settings | 2026-10-02 |
+| Private vulnerability reporting | A vulnerability can be reported from the Security tab, without a public issue | Repository settings | 2026-10-02 |
 | Gradle configuration cache key | The `GRADLE_ENCRYPTION_KEY` secret lets `Backend` keep Gradle's configuration cache between runs | Repository secrets | 2026-10-01 |
 
 ## Not covered yet
 
 - An agent session holds the owner's admin token: only the guard hook keeps it from editing the ruleset
-- Secret scanning and dependency verification: [#402][i402]
 - Container images and a deployment for the backend and frontend: [#421][i421]
 - Detekt and coverage reports on every pull request: [#404][i404]
 - Documentation generation as part of the build: [#395][i395]
@@ -96,6 +98,7 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [detekt-yml]: https://github.com/mboisnard/drinkit/blob/master/code-analysis/detekt/detekt.yml
 [detekt-baseline]: https://github.com/mboisnard/drinkit/blob/master/code-analysis/detekt/baseline.xml
 [wrapper-properties]: https://github.com/mboisnard/drinkit/blob/master/gradle/wrapper/gradle-wrapper.properties
+[verification-metadata]: https://github.com/mboisnard/drinkit/blob/master/gradle/verification-metadata.xml
 [ci-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci.yml
 [ci-lanes]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/config/ci-lanes.yml
 [ci-ci-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-ci.yml
@@ -110,7 +113,6 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [setup-action]: https://github.com/mboisnard/drinkit/blob/master/.github/actions/setup-gradle-jdk/action.yml
 [ruleset]: https://github.com/mboisnard/drinkit/blob/master/.github/rulesets/master.json
 [renovate]: https://github.com/mboisnard/drinkit/blob/master/.github/renovate.json
-[i402]: https://github.com/mboisnard/drinkit/issues/402
 [i421]: https://github.com/mboisnard/drinkit/issues/421
 [i404]: https://github.com/mboisnard/drinkit/issues/404
 [i395]: https://github.com/mboisnard/drinkit/issues/395
