@@ -6,3 +6,4 @@
 <script setup lang="ts">
   import {NuxtPage} from "#components";
 </script>
+<!-- probe for #397 -->
