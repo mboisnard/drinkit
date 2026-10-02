@@ -34,12 +34,14 @@ jobs:
       lanes: ${{ steps.every-lane.outputs.lanes || steps.filter.outputs.changes }}
     steps:
       - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Map the changed files to lanes
         id: filter
         if: github.event_name != 'workflow_dispatch'
-        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         with:
           filters: ${{ env.LANES }}
 
@@ -55,7 +57,7 @@ jobs:
     name: Backend
     needs: decision
     if: contains(fromJSON(needs.decision.outputs.lanes), 'backend')
-    uses: ./.github/workflows/ci-backend.yml
+    uses: $/.github/workflows/ci-backend.yml
     permissions:
       contents: read
       security-events: write
@@ -67,7 +69,7 @@ jobs:
     name: CodeQL
     needs: decision
     if: contains(fromJSON(needs.decision.outputs.lanes), 'backend')
-    uses: ./.github/workflows/ci-codeql.yml
+    uses: $/.github/workflows/ci-codeql.yml
     permissions:
       contents: read
       security-events: write
@@ -76,7 +78,7 @@ jobs:
     name: Frontend
     needs: decision
     if: contains(fromJSON(needs.decision.outputs.lanes), 'frontend')
-    uses: ./.github/workflows/ci-frontend.yml
+    uses: $/.github/workflows/ci-frontend.yml
     permissions:
       contents: read
 
@@ -84,7 +86,7 @@ jobs:
     name: Ops
     needs: decision
     if: contains(fromJSON(needs.decision.outputs.lanes), 'ops')
-    uses: ./.github/workflows/ci-ops.yml
+    uses: $/.github/workflows/ci-ops.yml
     permissions:
       contents: read
 
@@ -92,7 +94,7 @@ jobs:
     name: Docs
     needs: decision
     if: contains(fromJSON(needs.decision.outputs.lanes), 'docs')
-    uses: ./.github/workflows/ci-docs.yml
+    uses: $/.github/workflows/ci-docs.yml
     permissions:
       contents: read
 
@@ -101,7 +103,7 @@ jobs:
     needs: decision
     # Every master commit needs a snapshot of its dependencies, a pull request only when it changes them
     if: github.event_name != 'pull_request' || contains(fromJSON(needs.decision.outputs.lanes), 'dependencies')
-    uses: ./.github/workflows/ci-dependencies.yml
+    uses: $/.github/workflows/ci-dependencies.yml
     permissions:
       contents: write
 
@@ -110,7 +112,7 @@ jobs:
     name: Deploy docs
     needs: docs
     if: github.ref == 'refs/heads/master'
-    uses: ./.github/workflows/cd-docs.yml
+    uses: $/.github/workflows/cd-docs.yml
     permissions:
       pages: write
       id-token: write

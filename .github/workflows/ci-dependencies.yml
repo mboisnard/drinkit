@@ -18,15 +18,15 @@ jobs:
       GITHUB_DEPENDENCY_GRAPH_JOB_CORRELATOR: dependency_submission-dependency-submission
     steps:
       - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Set up JDK and Gradle
-        uses: ./.github/actions/setup-gradle-jdk
+        uses: $/.github/actions/setup-gradle-jdk
 
       - name: Generate and submit the dependency graph
-        uses: gradle/actions/dependency-submission@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6
+        uses: gradle/actions/dependency-submission@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
         with:
           # A build that reuses the configuration cache writes no graph, and the run still passes
           additional-arguments: --no-configuration-cache
@@ -41,7 +41,7 @@ jobs:
       contents: read
     steps:
       - name: Review the added dependencies
-        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
           # Nuxt, Vue and the docs site are devDependencies, yet they end up in what is served
           fail-on-scopes: runtime, development
