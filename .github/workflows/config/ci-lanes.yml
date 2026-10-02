@@ -1,7 +1,12 @@
-# The lanes of ci.yml: a lane runs when a changed file matches one of its paths. A changed file no list below
-# matches, a change to the CI included, runs every lane. No '!' pattern: it would match every other file
+# The lanes of ci.yml: a lane runs when a changed file matches one of its paths, and a changed file no list
+# below matches runs every lane. No '!' pattern: it would match every other file
+
+# Every lane lists the CI itself, so a change to it proves they all still run
+ci: &ci
+  - '.github/**'
 
 backend: &backend
+  - *ci
   - 'build-logic/**'
   - 'code-analysis/**'
   - 'gradle/**'
@@ -16,20 +21,24 @@ backend: &backend
   - 'deployment/updater/src/**'
 
 frontend: &frontend
+  - *ci
   - '.nvmrc'
   - 'drinkit/drinkit-frontend/**'
   - 'drinkit/drinkit-api-contract/contract/**' # the TypeScript client is generated from it
 
 docs: &docs
+  - *ci
   - *backend # the domain and tech starter pages are generated from its sources
   - '.nvmrc'
   - 'docs/**'
   - 'tech-starters/backend/*/README.md' # copied into the tech starter pages
 
 ops: &ops
+  - *ci
   - 'deployment/local/**'
 
 dependencies: &dependencies
+  - *ci
   - '**/*.gradle.kts'
   - 'gradle/**'
   - '**/package.json'
@@ -44,13 +53,12 @@ none: &none
   - '.idea/**'
   - '.gitignore'
   - '.git-blame-ignore-revs'
-  - '.github/renovate.json'
-  - '.github/rulesets/**'
 
 # ci.yml runs every lane when their counts differ
 changed:
   - '**'
 known:
+  - *ci
   - *backend
   - *frontend
   - *docs

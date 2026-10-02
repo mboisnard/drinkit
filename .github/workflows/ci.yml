@@ -53,6 +53,14 @@ jobs:
           lanes=$(yq -o json -I 0 'keys' "$LANES")
           echo "lanes=$lanes" >> "$GITHUB_OUTPUT"
 
+  ci:
+    name: CI files
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.lanes), 'ci')
+    uses: $/.github/workflows/ci-ci.yml
+    permissions:
+      contents: read
+
   backend:
     name: Backend
     needs: decision
@@ -119,7 +127,7 @@ jobs:
 
   gate:
     name: CI gate
-    needs: [decision, backend, frontend, ops, docs, dependencies]
+    needs: [decision, ci, backend, frontend, ops, docs, dependencies]
     # always(), not !cancelled(): a gate skipped in a cancelled run would count as passed
     if: always()
     runs-on: ubuntu-latest

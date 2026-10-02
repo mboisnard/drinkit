@@ -1,0 +1,6 @@
+paths:
+  # Lane lists, not a workflow: only the checks of a workflow's top-level keys are skipped
+  .github/workflows/config/ci-lanes.yml:
+    ignore:
+      - '"(jobs|on)" section is missing in workflow'
+      - 'unexpected key ".+" for "workflow" section'
