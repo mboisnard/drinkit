@@ -123,6 +123,26 @@ release commit, with the version as a comment, `uses: owner/action@<sha> # v1.2.
 action of this repository with `uses: $/.github/actions/<name>`. Renovate keeps the SHA and the
 comment up to date, and actionlint and zizmor check every workflow change.
 
+Gradle checks every dependency and plugin against the SHA-256 checksums in
+`gradle/verification-metadata.xml`, and fails the build on a mismatch or on an artifact the file
+does not list. After adding or bumping a dependency, regenerate the file, review its diff and
+build:
+
+```
+./gradlew --write-verification-metadata sha256 --refresh-dependencies dependencies
+git diff gradle/verification-metadata.xml
+./gradlew build
+```
+
+`--refresh-dependencies` makes Gradle fetch the metadata a warm local cache would skip, the BOMs
+and parent POMs a fresh CI runner downloads. Renovate regenerates the file in its own pull
+requests with the same task, on a fresh cache. The command only adds entries: the checksums of a
+version no longer used stay in the file. Each artifact trusted without a checksum carries its
+reason in the file.
+
+GitHub refuses a push that contains a known secret format. Report a vulnerability privately from
+the Security tab, through "Report a vulnerability", rather than in a public issue.
+
 ## Global view of this project
 
 <img src="docs/files/DrinkIt.png" alt="DrinkIt Global View" width="1000" height="1000">
