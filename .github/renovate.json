@@ -4,7 +4,8 @@
     "config:best-practices",
     "schedule:earlyMondays",
     ":timezone(Europe/Paris)",
-    ":assignee(mboisnard)"
+    ":assignee(mboisnard)",
+    "helpers:pinGitHubActionDigestsToSemver"
   ],
   "labels": ["dependencies"],
   "commitMessagePrefix": "[VERSION-UPDATE]",
