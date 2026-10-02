@@ -109,6 +109,12 @@ apply it with (`gh api repos/mboisnard/drinkit/rulesets` gives the id):
 gh api --method PUT repos/mboisnard/drinkit/rulesets/<id> --input .github/rulesets/master.json
 ```
 
+Claude Code refuses that command, so run it in a terminal: the guard hook
+`.claude/hooks/guard-github-protections`, wired in `.claude/settings.json`, refuses writes to
+rulesets, branch protection and push protection bypasses, and lets `gh` reads through. It reads the
+command as text, so a command built indirectly, through a variable or a script, still passes.
+`.claude/hooks/guard-github-protections.test` checks which commands it refuses.
+
 The pre-push hook, enabled by the same `git config core.hooksPath .githooks`, refuses a push to
 master before anything is sent. `git push --no-verify` skips the hook, never the ruleset.
 

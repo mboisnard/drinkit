@@ -6,6 +6,7 @@ The harness is the set of guardrails that lets humans and coding agents change D
 flowchart LR
   edit[Edit] --> commit[Commit] --> push[Push] --> pr[Pull request] --> merge[Merge on master]
   edit -.- claude[Claude Code hook<br/>detekt after each edit]
+  edit -.- guard[Claude Code hook<br/>no ruleset write]
   commit -.- precommit[pre-commit<br/>format and detekt]
   push -.- prepush[pre-push<br/>no push to master]
   pr -.- ci[CI<br/>the lanes a change touches]
@@ -20,6 +21,7 @@ Local layers can be skipped with `--no-verify`. The GitHub layers cannot, owner 
 |---|---|---|---|
 | Conventions | Stack, commands and patterns an agent reads when a session starts | [`CLAUDE.md`][claude-md] | 2026-05-01 |
 | Lint hook | Runs detekt with auto-correct after every file Claude Code writes, so it sees its findings at once | [`.claude/settings.json`][claude-settings] | 2026-09-13 |
+| Guard hook | Refuses a command that writes to a ruleset, to branch protection or to a push protection bypass, through `gh api` or `curl`, before it runs. Reads pass. It reads the command as text, so one built indirectly, through a variable or a script, passes, and a harmless command that names one of those endpoints next to a body flag can be refused | [`.claude/hooks/guard-github-protections`][guard-hook] | 2026-10-02 |
 | Skill `new-backend-tech-starter` | Guides the creation of a backend tech starter, or its alignment with the conventions | [`.claude/skills/new-backend-tech-starter`][skill-starter] | 2026-09-19 |
 
 ## Git hooks
@@ -75,7 +77,7 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 
 ## Not covered yet
 
-- An agent session holds the owner's token, which can still edit the ruleset: [#405][i405], then [#407][i407]
+- An agent session holds the owner's admin token: only the guard hook keeps it from editing the ruleset
 - Secret scanning and dependency verification: [#402][i402]
 - Container images and a deployment for the backend and frontend: [#421][i421]
 - Detekt and coverage reports on every pull request: [#404][i404]
@@ -85,6 +87,7 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 
 [claude-md]: https://github.com/mboisnard/drinkit/blob/master/CLAUDE.md
 [claude-settings]: https://github.com/mboisnard/drinkit/blob/master/.claude/settings.json
+[guard-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/guard-github-protections
 [skill-starter]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-backend-tech-starter/SKILL.md
 [lint-kotlin]: https://github.com/mboisnard/drinkit/blob/master/.githooks/lint-kotlin
 [pre-commit]: https://github.com/mboisnard/drinkit/blob/master/.githooks/pre-commit
@@ -107,8 +110,6 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [setup-action]: https://github.com/mboisnard/drinkit/blob/master/.github/actions/setup-gradle-jdk/action.yml
 [ruleset]: https://github.com/mboisnard/drinkit/blob/master/.github/rulesets/master.json
 [renovate]: https://github.com/mboisnard/drinkit/blob/master/.github/renovate.json
-[i405]: https://github.com/mboisnard/drinkit/issues/405
-[i407]: https://github.com/mboisnard/drinkit/issues/407
 [i402]: https://github.com/mboisnard/drinkit/issues/402
 [i421]: https://github.com/mboisnard/drinkit/issues/421
 [i404]: https://github.com/mboisnard/drinkit/issues/404
