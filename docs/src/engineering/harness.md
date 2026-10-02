@@ -48,7 +48,8 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 | Part | What it does | Where | Since |
 |---|---|---|---|
 | `CI gate` | The only required check. Fails when a lane failed or was cancelled, passes when a lane was not needed | [`ci.yml`][ci-yml] | 2026-10-01 |
-| `Decision` | Maps the changed files to the backend, frontend, docs, ops and dependencies lanes. A file no list knows runs every lane | [`ci-lanes.yml`][ci-lanes] | 2026-10-01 |
+| `Decision` | Maps the changed files to the ci, backend, frontend, docs, ops and dependencies lanes. A file no list knows runs every lane | [`ci-lanes.yml`][ci-lanes] | 2026-10-01 |
+| `CI files` | actionlint checks that the workflows are valid and zizmor audits their security, whenever they change. A finding blocks the merge | [`ci-ci.yml`][ci-ci-yml] | 2026-10-02 |
 | `Backend` | Compiles and tests the backend and runs detekt in one Gradle run, findings in code scanning | [`ci-backend.yml`][ci-backend-yml] | 2024-03-03 as `build`, detekt in the same run since 2026-10-01 |
 | `CodeQL` | Looks for security flaws in the Kotlin and Java code, results in code scanning. Not required | [`ci-codeql.yml`][ci-codeql-yml] | 2024-03-25, off from 2026-09-13 to 2026-09-26 |
 | `Frontend` | Generates the API client and builds the Nuxt app | [`ci-frontend.yml`][ci-frontend-yml] | 2026-10-01 |
@@ -66,7 +67,8 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 | master ruleset | No bypass, owner and agents included. Pull request required, `CI gate` green on a branch up to date with master, conversations resolved, no force push, no deletion | [`.github/rulesets/master.json`][ruleset] | 2026-09-27 |
 | Merge settings | Rebase is the only merge method, "Update branch" is offered, merged branches are deleted | Repository settings | 2026-09-27 |
 | Workflow token | Read-only by default, each workflow asks for what it needs | Repository settings | Not recorded |
-| Fork pull requests | Workflows of a first-time contributor wait for approval | Repository settings | Not recorded |
+| Fork pull requests | Workflows of every external contributor wait for approval | Repository settings | 2026-10-02, first-time contributors only before |
+| Pinned actions | A workflow that references an action by tag or branch does not start: every action is pinned by commit SHA, in-repo ones with `$/` | Repository settings | 2026-10-02 |
 | Renovate | Opens dependency update pull requests a week after a release, on Monday mornings, and pins GitHub Actions and compose images by digest. Security fixes and undated releases (JDK, large Docker Hub images) skip the wait. Majors and lock file refreshes wait for a checkbox on the Dependency Dashboard. A pull request is rebased only on conflict | [`.github/renovate.json`][renovate] | 2024-04-11, delayed since 2026-09-30, rebased on conflict only since 2026-10-01 |
 | Dependabot alerts | Flag dependencies with a known vulnerability, which Renovate turns into security updates. Dependabot opens no pull request of its own | Repository settings | Not recorded, its security updates off since 2026-10-01 |
 | Gradle configuration cache key | The `GRADLE_ENCRYPTION_KEY` secret lets `Backend` keep Gradle's configuration cache between runs | Repository secrets | 2026-10-01 |
@@ -74,7 +76,6 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 ## Not covered yet
 
 - An agent session holds the owner's token, which can still edit the ruleset: [#405][i405], then [#407][i407]
-- Security analysis of the workflows and actions pinned by commit: [#406][i406]
 - Secret scanning and dependency verification: [#402][i402]
 - Container images and a deployment for the backend and frontend: [#421][i421]
 - Detekt and coverage reports on every pull request: [#404][i404]
@@ -94,6 +95,7 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [wrapper-properties]: https://github.com/mboisnard/drinkit/blob/master/gradle/wrapper/gradle-wrapper.properties
 [ci-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci.yml
 [ci-lanes]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/config/ci-lanes.yml
+[ci-ci-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-ci.yml
 [ci-backend-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-backend.yml
 [ci-codeql-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-codeql.yml
 [ci-frontend-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-frontend.yml
@@ -107,7 +109,6 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [renovate]: https://github.com/mboisnard/drinkit/blob/master/.github/renovate.json
 [i405]: https://github.com/mboisnard/drinkit/issues/405
 [i407]: https://github.com/mboisnard/drinkit/issues/407
-[i406]: https://github.com/mboisnard/drinkit/issues/406
 [i402]: https://github.com/mboisnard/drinkit/issues/402
 [i421]: https://github.com/mboisnard/drinkit/issues/421
 [i404]: https://github.com/mboisnard/drinkit/issues/404

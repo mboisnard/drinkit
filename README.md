@@ -112,6 +112,11 @@ gh api --method PUT repos/mboisnard/drinkit/rulesets/<id> --input .github/rulese
 The pre-push hook, enabled by the same `git config core.hooksPath .githooks`, refuses a push to
 master before anything is sent. `git push --no-verify` skips the hook, never the ruleset.
 
+A workflow only runs actions pinned by commit SHA: reference a new action by the full SHA of its
+release commit, with the version as a comment, `uses: owner/action@<sha> # v1.2.3`, and an
+action of this repository with `uses: $/.github/actions/<name>`. Renovate keeps the SHA and the
+comment up to date, and actionlint and zizmor check every workflow change.
+
 ## Global view of this project
 
 <img src="docs/files/DrinkIt.png" alt="DrinkIt Global View" width="1000" height="1000">
