@@ -4,25 +4,34 @@ The harness is the set of guardrails that lets humans and coding agents change D
 
 ```mermaid
 flowchart LR
-  edit[Edit] --> commit[Commit] --> push[Push] --> pr[Pull request] --> merge[Merge on master]
-  edit -.- claude[Claude Code hook<br/>detekt after each edit]
-  edit -.- guard[Claude Code hook<br/>no ruleset write]
+  edit[Edit] --> commit[Commit] --> judge[Judge] --> push[Push] --> pr[Pull request] --> merge[Merge on master]
+  edit -.- claude[Claude Code hook<br/>detekt after each Kotlin edit]
+  edit -.- guard[Claude Code hook<br/>no ruleset write, no merge]
   commit -.- precommit[pre-commit<br/>format and detekt]
+  judge -.- issuejudge[issue-judge<br/>spec and design]
   push -.- prepush[pre-push<br/>no push to master]
   pr -.- ci[CI<br/>the lanes a change touches]
   merge -.- ruleset[master ruleset<br/>PR and green CI gate]
 ```
 
-Local layers can be skipped with `--no-verify`. The GitHub layers cannot, owner included.
+A person can skip the local git hooks with `--no-verify`, a Claude Code session cannot skip pre-push. The GitHub layers cannot be skipped, owner included.
 
 ## Coding agent
+
+`/implement-issue <number>` takes a Ready issue to a pull request: a worktree of its own, the code test first, the lanes CI would run, a fresh judge, then the pull request and the board moves. The maintainer merges.
 
 | Part | What it does | Where | Since |
 |---|---|---|---|
 | Conventions | Commands, structure, code patterns and traps a coding agent reads when a session starts. Claude Code, Codex, Copilot and Cursor all read the file | [`AGENTS.md`][agents-md] | 2026-05-01 as `CLAUDE.md`, `AGENTS.md` since 2026-10-03 |
-| Lint hook | Runs detekt with auto-correct after every file Claude Code writes, so it sees its findings at once | [`.claude/settings.json`][claude-settings] | 2026-09-13 |
-| Guard hook | Refuses a command that writes to a ruleset, to branch protection or to a push protection bypass, through `gh api` or `curl`, before it runs. Reads pass. It reads the command as text, so one built indirectly, through a variable or a script, passes, and a harmless command that names one of those endpoints next to a body flag can be refused | [`.claude/hooks/guard-github-protections`][guard-hook] | 2026-10-02 |
+| Skill `implement-issue` | Takes a Ready issue to an open pull request that closes it. Run by the maintainer only, never started by Claude on its own | [`.claude/skills/implement-issue`][skill-issue] | 2026-10-03 |
+| Skill `test-driven-development` | Drives a backend or frontend change from a test list in business language, one red-green cycle per behavior, then a required technical and functional refactor. A reshape of older code never shares a commit with new behavior | [`.claude/skills/test-driven-development`][skill-tdd] | 2026-10-03 |
+| Agent `issue-judge` | A fresh subagent that sees the issue and the branch, not the author's account of it. It reruns the tests it relies on and returns two verdicts: Spec, each acceptance criterion met, and Design, the refactor done and the guidelines followed. Two rounds at most, then the maintainer decides | [`.claude/agents/issue-judge.md`][issue-judge] | 2026-10-03 |
+| Lint hook | Once Claude Code writes a Kotlin source or a Gradle script, runs `lint-kotlin` from its worktree, and shows Claude the findings when detekt fails | [`.claude/hooks/detekt-after-edit`][detekt-hook] | 2026-09-13, Kotlin only and findings shown since 2026-10-03 |
+| Guard hook | Refuses, before it runs, a command that writes to a ruleset, to branch protection or to a push protection bypass, or that merges a pull request, through `gh`, `gh api`, GraphQL or `curl`. Also refuses any way around pre-push: `--no-verify`, an overridden or unset `core.hooksPath`, a push from a clone without the git hooks. Reads pass. It reads the command as text, so one built indirectly, through a variable or a script, passes, and a harmless command that names one of those endpoints next to a body flag can be refused | [`.claude/hooks/guard-github-protections`][guard-hook] | 2026-10-02, merges and pre-push since 2026-10-03 |
+| Tab title hook | In the cmux terminal, names the session's tab after its issue and step: `#382 implement`, `#382 judge`, `#382 PR #450`. Does nothing elsewhere | [`.claude/hooks/tab-title`][tab-title] | 2026-10-03 |
 | Skill `new-backend-tech-starter` | Guides the creation of a backend tech starter, or its alignment with the conventions | [`.claude/skills/new-backend-tech-starter`][skill-starter] | 2026-09-19 |
+
+Each hook has a test next to it, `<hook>.test`, run by hand for now. Claude Code also loads the personal configuration of whoever runs it, from `~/.claude`, on top of these parts, and a project cannot turn it off.
 
 ## Git hooks
 
@@ -89,11 +98,16 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 - Detekt and coverage reports on every pull request: [#404][i404]
 - Documentation generation as part of the build: [#395][i395]
 - Frontend upgrade, then its linting and tests in the frontend lane: [#388][i388], then [#400][i400]
-- A repeatable agent workflow from issue to pull request, with a judge: [#382][i382]
+- The judge is required by `/implement-issue`, not by a hook: the pull request shows its verdict line, which the maintainer checks before merging
+- The hook tests run by hand, not in CI: [#434][i434]
 
 [agents-md]: https://github.com/mboisnard/drinkit/blob/master/AGENTS.md
-[claude-settings]: https://github.com/mboisnard/drinkit/blob/master/.claude/settings.json
+[skill-issue]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/implement-issue/SKILL.md
+[skill-tdd]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/test-driven-development/SKILL.md
+[issue-judge]: https://github.com/mboisnard/drinkit/blob/master/.claude/agents/issue-judge.md
+[detekt-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/detekt-after-edit
 [guard-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/guard-github-protections
+[tab-title]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/tab-title
 [skill-starter]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-backend-tech-starter/SKILL.md
 [lint-kotlin]: https://github.com/mboisnard/drinkit/blob/master/.githooks/lint-kotlin
 [pre-commit]: https://github.com/mboisnard/drinkit/blob/master/.githooks/pre-commit
@@ -127,4 +141,4 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [i395]: https://github.com/mboisnard/drinkit/issues/395
 [i388]: https://github.com/mboisnard/drinkit/issues/388
 [i400]: https://github.com/mboisnard/drinkit/issues/400
-[i382]: https://github.com/mboisnard/drinkit/issues/382
+[i434]: https://github.com/mboisnard/drinkit/issues/434

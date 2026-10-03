@@ -1,39 +1,113 @@
 #!/bin/sh
 #
-# Claude Code PreToolUse hook on Bash, wired in .claude/settings.json: refuses writes to rulesets, branch protection
-# and push protection bypasses. It reads the command as text, so a command built indirectly (variable, script) passes
+# Claude Code PreToolUse hook on Bash: refuses what only the maintainer does (ruleset, branch protection and push
+# protection writes, merges) and any way around pre-push. It reads the command as text: one built indirectly passes
 
 if ! command -v jq >/dev/null 2>&1; then
     echo "guard-github-protections: jq not found, GitHub protection writes go unchecked" >&2
     exit 0
 fi
 
-blocked=$(jq -r '.tool_input.command // empty' | awk '
+input=$(cat)
+
+found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
+    function command_of(text) {
+        sub(/^[[:space:]{!]+/, "", text)
+        while (match(text, /^([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*|env|command|exec|nohup|nice|time|sudo|xargs|sh|bash|zsh|if|elif|then|else|do|while|until|!|timeout([[:space:]]+-[^[:space:]]*)*[[:space:]]+[0-9.]+[smhd]?)([[:space:]]+-[^[:space:]]*)*([[:space:]]+|$)/))
+            text = substr(text, RLENGTH + 1)
+        sub(/^\\/, "", text)
+        sub(/^[^[:space:]]*\//, "", text)
+        return text
+    }
+    function git_subcommand(text) {
+        text = substr(text, 4)
+        while (match(text, /^[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--[a-z-]+(=[^[:space:]]+)?|-[A-Za-z])/))
+            text = substr(text, RLENGTH + 1)
+        sub(/^[[:space:]]+/, "", text)
+        return text
+    }
     { text = text $0 "\n" }
     END {
         gsub(/\\\n/, " ", text)
+        gsub(/["\047]/, "", text)
         gsub(/&&|\|\||;/, "\n", text)
         count = split(text, segments, "\n")
         for (i = 1; i <= count; i++) {
             s = tolower(segments[i])
-            endpoint = s ~ /repos\/[^[:space:]\/]+\/[^[:space:]\/]+\/(rulesets|branches\/[^[:space:]]+\/protection|secret-scanning\/push-protection-bypasses)/
-            mutation = s ~ /(create|update|delete)(repositoryruleset|branchprotectionrule)/
-            write = s ~ /(-[a-z]*x|--method|--request)[[:space:]=]*["\047]?(post|put|patch|delete)/
-            read = s ~ /(-[a-z]*x|--method|--request)[[:space:]=]*["\047]?get|(^|[[:space:]])--get([[:space:]]|$)/ || segments[i] ~ /(^|[[:space:]])-G([[:space:]]|$)/
+            endpoint = s ~ /repos\/[^[:space:]\/]+\/[^[:space:]\/]+\/(rulesets|branches\/[^[:space:]]+\/protection|secret-scanning\/push-protection-bypasses|pulls\/[^[:space:]\/]+\/merge)/
+            mutation = s ~ /(create|update|delete)(repositoryruleset|branchprotectionrule)|mergepullrequest|enablepullrequestautomerge|enqueuepullrequest/
+            write = s ~ /(-[a-z]*x|--method|--request)[[:space:]=]*(post|put|patch|delete)/
+            read = s ~ /(-[a-z]*x|--method|--request)[[:space:]=]*get|(^|[[:space:]])--get([[:space:]]|$)/ || segments[i] ~ /(^|[[:space:]])-G([[:space:]]|$)/
             body = segments[i] ~ /(^|[[:space:]])(-[A-Za-z]*[dFT]|-f[^[:space:]]*=)/ || s ~ /(^|[[:space:]])(-f|--field|--raw-field|--input|--data[a-z-]*|--json|--form|--upload-file)([[:space:]=]|$)/
             if (mutation || (endpoint && (write || (body && !read)))) {
-                print segments[i]
+                print (s ~ /pulls\/[^[:space:]\/]+\/merge|mergepullrequest|enablepullrequestautomerge|enqueuepullrequest/ ? "merge" : "protection") "\t" segments[i]
                 exit
             }
+            if (s ~ /git_config_/ && s ~ /hookspath/) {
+                print "hooks-path\t" segments[i]
+                exit
+            }
+            if (s ~ /graphql/ && s ~ /(--input|[[:space:]=]@)/) {
+                print "hidden-query\t" segments[i]
+                exit
+            }
+            parts = split(segments[i], commands, /\$\(|`|\(|\||&/)
+            for (j = 1; j <= parts; j++) {
+                command = command_of(commands[j])
+                lower = tolower(command)
+                if (lower ~ /^gh([[:space:]]+(-r|--repo)([[:space:]]+|=)[^[:space:]]+)*[[:space:]]+pr([[:space:]]+(-r|--repo)([[:space:]]+|=)[^[:space:]]+)*[[:space:]]+merge([[:space:]]|$)/) {
+                    print "merge\t" segments[i]
+                    exit
+                }
+                if (lower ~ /^gh[[:space:]]+alias[[:space:]]+(set|import)([[:space:]]|$)/) {
+                    print "alias\t" segments[i]
+                    exit
+                }
+                if (lower !~ /^git([[:space:]]|$)/)
+                    continue
+                subcommand = git_subcommand(command)
+                if ((lower ~ /core\.hookspath/ && tolower(subcommand) !~ /^config[[:space:]]+((--local|--get|get)[[:space:]]+)?core\.hookspath([[:space:]]+\.githooks)?([[:space:]]*\).*)?[[:space:]]*$/) || tolower(commands[j]) ~ /git_config_/) {
+                    print "hooks-path\t" segments[i]
+                    exit
+                }
+                if (subcommand ~ /^push([[:space:]]|$)/) {
+                    if (subcommand ~ /[[:space:]]--no-v/) {
+                        print "no-verify\t" segments[i]
+                        exit
+                    }
+                    push = segments[i]
+                }
+            }
         }
+        if (push != "")
+            print "push\t" push
     }')
 
-[ -z "$blocked" ] && exit 0
+[ -z "$found" ] && exit 0
 
-jq -n --arg command "$blocked" '{
+rule=$(printf '%s' "$found" | head -n 1 | cut -f 1)
+command=$(printf '%s' "$found" | cut -f 2-)
+
+if [ "$rule" = push ]; then
+    cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
+    [ "$(git -C "${cwd:-.}" config core.hooksPath 2>/dev/null)" = .githooks ] && exit 0
+    rule=hooks-off
+fi
+
+case $rule in
+    protection) reason="coding agents never change rulesets, branch protection or push protection bypasses. Ask the maintainer to run it" ;;
+    merge) reason="coding agents never merge a pull request, the maintainer does. Leave it open for review" ;;
+    hidden-query) reason="a GraphQL query read from a file or stdin cannot be checked. Pass it inline with -f query=..." ;;
+    alias) reason="a gh alias can hide a merge. Run the gh command itself" ;;
+    hooks-path) reason="the git hooks keep master safe, so core.hooksPath stays .githooks. Never override or unset it" ;;
+    no-verify) reason="pre-push keeps master safe. Push without --no-verify" ;;
+    hooks-off) reason="git hooks are not enabled in this clone. Run git config core.hooksPath .githooks, then push again" ;;
+esac
+
+jq -n --arg reason "$reason" --arg command "$command" '{
     hookSpecificOutput: {
         hookEventName: "PreToolUse",
         permissionDecision: "deny",
-        permissionDecisionReason: ("guard-github-protections: coding agents never change rulesets, branch protection or push protection bypasses. Ask the maintainer to run it: " + $command)
+        permissionDecisionReason: ("guard-github-protections: " + $reason + ": " + $command)
     }
 }'

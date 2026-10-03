@@ -39,6 +39,14 @@ npm run build
 Documentation site: `./gradlew kspKotlin --rerun` first, which writes the generated pages, then from
 `docs`: `npm ci && npm run docs:build`.
 
+Compose file and workflows, from the root, with Docker:
+
+```
+docker compose -f deployment/local/compose.yml config --quiet
+docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/kjanat/actionlint
+docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/zizmorcore/zizmor --offline .
+```
+
 ## Structure
 
 - `drinkit/`: the application. `drinkit-domain` holds use cases, entities in `<context>/core` and ports in
@@ -159,8 +167,10 @@ same command fixes it.
   lists runs them all.
 - A workflow references an action by commit SHA with its version as a comment,
   `uses: owner/action@<sha> # v1.2.3`, or one of this repository with `uses: $/.github/actions/<name>`.
-- Rulesets, branch protection and push protection bypasses are the maintainer's: a Claude Code hook refuses
-  those writes.
+- Merging a pull request, rulesets, branch protection and push protection bypasses are the maintainer's: a
+  Claude Code hook refuses them, and any way around pre-push.
+- `/implement-issue <issue>` takes a Ready issue to a pull request: its own worktree, test first, a fresh
+  judge before the pull request is opened.
 - An issue's scope lists possibilities, not instructions. Analyze the current state first, and treat only
   the acceptance criteria as binding. The pull request explains the choices made.
 - A person reads every issue and pull request: follow "Writing issues and pull requests" in

@@ -1,0 +1,66 @@
+#!/bin/sh
+#
+# Feeds edited files to detekt-after-edit with a fake lint-kotlin and checks when it runs and what Claude is shown:
+# ./.claude/hooks/detekt-after-edit.test
+
+hook="$(cd "$(dirname "$0")" && pwd)/detekt-after-edit"
+failures=0
+
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+mkdir -p "$work/repo/.githooks" "$work/repo/src" "$work/outside"
+git -C "$work/repo" init -q
+cat >"$work/repo/.githooks/lint-kotlin" <<EOF
+#!/bin/sh
+echo run >>"$work/runs"
+if [ -f "$work/fail" ]; then
+    echo "> Task :drinkit-domain:detekt"
+    echo "w: file://\$PWD/src/Money.kt:10:18 Non-public primary constructor is exposed via the generated 'copy()' method"
+    echo "e: \$PWD/src/Cellar.kt:12:5 Missing newline before the closing brace [Wrapping]"
+    echo "BUILD FAILED"
+    exit 1
+fi
+EOF
+chmod +x "$work/repo/.githooks/lint-kotlin"
+
+check() {
+    expected_exit=$1
+    expected_runs=$2
+    label=$3
+    file=$4
+    rm -f "$work/runs"
+    stderr=$(jq -n --arg file "$file" '{tool_name: "Edit", tool_input: {file_path: $file}}' | "$hook" 2>&1 >/dev/null)
+    actual_exit=$?
+    actual_runs=0
+    [ -f "$work/runs" ] && actual_runs=$(grep -c run "$work/runs")
+    if [ "$actual_exit" -eq "$expected_exit" ] && [ "$actual_runs" -eq "$expected_runs" ]; then
+        echo "ok    $label"
+    else
+        echo "FAIL  $label: exit $actual_exit, lint ran $actual_runs times"
+        failures=$((failures + 1))
+    fi
+}
+
+check 0 0 "a Markdown file is left alone" "$work/repo/README.md"
+check 0 1 "a clean Kotlin file passes" "$work/repo/src/Cellar.kt"
+check 0 1 "a Gradle script is linted" "$work/repo/build.gradle.kts"
+check 0 0 "a Kotlin file outside a repository is left alone" "$work/outside/Script.kt"
+
+touch "$work/fail"
+check 2 1 "a detekt failure blocks" "$work/repo/src/Cellar.kt"
+case $stderr in
+    *"Money.kt"*)
+        echo "FAIL  a compiler warning is shown: $stderr"
+        failures=$((failures + 1))
+        ;;
+    *"Cellar.kt:12:5 Missing newline"*) echo "ok    the finding is shown to Claude, compiler warnings left out" ;;
+    *)
+        echo "FAIL  the finding is not shown: $stderr"
+        failures=$((failures + 1))
+        ;;
+esac
+
+if [ "$failures" -ne 0 ]; then
+    echo "$failures failing"
+    exit 1
+fi
