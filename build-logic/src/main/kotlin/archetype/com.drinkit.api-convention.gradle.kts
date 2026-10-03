@@ -31,3 +31,7 @@ gitProperties {
     gitPropertiesName = "git.properties"
     keys = listOf("git.branch", "git.commit.id", "git.commit.time", "git.commit.message.short")
 }
+
+dependencyLocking {
+    lockAllConfigurations()
+}
