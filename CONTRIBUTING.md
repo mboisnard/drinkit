@@ -47,16 +47,23 @@ From a terminal, the `psql` command in [AGENTS.md](AGENTS.md#database-and-jooq) 
 Branch names, commit subjects, the pull request title, how a pull request links its issue and how it gets
 merged are in [AGENTS.md](AGENTS.md#git-and-pull-requests). The template prefills the body.
 
-## Writing issues and pull requests
+## Writing issues, pull requests and comments
 
 The reader is a person who may stop after two lines. That holds for text an agent writes too.
 
 - Put the conclusion first: the outcome of an issue, or what a pull request changes and why.
 - Aim for under 400 words for an issue, its prefilled text aside, and under 300 for a pull request, code
   blocks and `<details>` aside. Link rather than repeat.
+- Keep to the subject: a paragraph that changes nothing the text decides or asks goes, even when it is
+  accurate.
+- Give each concept one word, the one of the issue or the code, and keep it from the first line to the last.
 - Describe outcomes, not a file-by-file list: the diff already shows the files.
 - Quote the commands you ran with what they showed, and put long output in `<details>`.
 - Write in English.
+
+Leave out the tics of generated text: an em dash for an aside, "not X but Y" constructions, empty
+transitions such as "it is worth noting", bold on random words. The text also leaves no trace of how it was
+drafted: no placeholder, no restated instruction, no comment on the text itself.
 
 ## AI-assisted contributions
 

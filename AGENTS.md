@@ -181,9 +181,9 @@ same command fixes it.
 - A structuring choice is the maintainer's: a new module or dependency, a change to the API contract, to the
   schema or to a security rule. Ask before making one: the facts with their real names, one question, two to
   four options of one line, your recommendation first.
-- A person reads every issue and pull request: follow "Writing issues and pull requests" in
-  `CONTRIBUTING.md`. `gh` and the API skip the issue forms, so an issue follows the matching form in
-  `.github/ISSUE_TEMPLATE/` by hand: each field's `label` as a `###` heading in the form's order, its
+- A person reads every issue, pull request and comment: follow "Writing issues, pull requests and
+  comments" in `CONTRIBUTING.md`. `gh` and the API skip the issue forms, so an issue follows the matching
+  form in `.github/ISSUE_TEMPLATE/` by hand: each field's `label` as a `###` heading in the form's order, its
   prefilled `value` verbatim, an empty optional field left out, and the form's `title` prefix, `labels` and
   project passed to `gh issue create`. A pull request body follows `.github/pull_request_template.md`
   without its comments, and goes in with `--body-file`. It links its issue with `Closes #<issue>`, with
