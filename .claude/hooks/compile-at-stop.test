@@ -3,29 +3,44 @@
 # Plays a session against compile-at-stop with a fake gradlew and a fake npm, and checks when it compiles or type
 # checks and what Claude is told: ./.claude/hooks/compile-at-stop.test
 
+export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
+export GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.com
+unset CLAUDE_PROJECT_DIR
 hook="$(cd "$(dirname "$0")" && pwd)/compile-at-stop"
 failures=0
 
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
+export GIT_CEILING_DIRECTORIES="$work"
 repo=$work/repo
-mkdir -p "$work/bin" "$repo/src" "$repo/front/src" "$repo/front/node_modules" "$repo/docs"
-git -C "$repo" init -q
+mkdir -p "$work/bin" "$work/tools" "$work/outside" "$repo/src" "$repo/front/src" "$repo/front/node_modules" "$repo/admin/node_modules" "$repo/docs"
+git init -q "$repo"
 echo 'node_modules/' >"$repo/.gitignore"
 echo 'class Cellar' >"$repo/src/Cellar.kt"
 echo 'export const cellar = 1' >"$repo/front/src/cellar.ts"
 echo '{"scripts": {"typecheck": "vue-tsc"}}' >"$repo/front/package.json"
+echo '{"scripts": {"typecheck": "vue-tsc"}}' >"$repo/admin/package.json"
 echo '{"scripts": {"build": "vitepress build"}}' >"$repo/docs/package.json"
 cat >"$repo/gradlew" <<EOF
 #!/bin/sh
-echo gradle >>"$work/runs"
+echo "gradle \$(basename "\$PWD")" >>"$work/runs"
 if [ -f "$work/kotlin-broken" ]; then
-    echo "e: file://$repo/src/Cellar.kt:1:7 Unresolved reference 'Bottle'."
+    echo "e: file://\$PWD/src/Cellar.kt:1:7 Unresolved reference 'Bottle'."
     exit 1
+fi
+if [ -f "$work/gradle-crash" ]; then
+    echo "FAILURE: Build failed with an exception."
+    echo "Could not resolve all files for configuration ':compileClasspath'."
+    exit 1
+fi
+if [ -f "$work/gradle-slow" ]; then
+    echo \$\$ >"$work/gradle.pid"
+    exec sleep 30
 fi
 EOF
 cat >"$work/bin/npm" <<EOF
 #!/bin/sh
+cat >/dev/null
 echo "npm \$(basename "\$PWD") \$*" >>"$work/runs"
 if [ -f "$work/typescript-broken" ]; then
     echo "src/cellar.ts(1,14): error TS2322: Type 'string' is not assignable to type 'number'."
@@ -33,11 +48,14 @@ if [ -f "$work/typescript-broken" ]; then
 fi
 EOF
 chmod +x "$repo/gradlew" "$work/bin/npm"
-git -C "$repo" add . && git -C "$repo" -c user.name=test -c user.email=test@example.com commit -q -m init
+git -C "$repo" add . && git -C "$repo" commit -q -m init
+for tool in cat cksum dirname git grep head jq mkdir tail xargs; do
+    ln -s "$(command -v "$tool")" "$work/tools/$tool"
+done
 
 send() {
-    jq -n --arg event "$1" --arg source "${2:-}" --arg cwd "$repo" '{hook_event_name: $event, source: $source, cwd: $cwd}' |
-        PATH="$work/bin:$PATH" "$hook"
+    jq -n --arg event "$1" --arg source "${2:-}" --arg cwd "${3:-$repo}" \
+        '{hook_event_name: $event, source: $source, cwd: $cwd}' | PATH="$work/bin:$PATH" "$hook"
 }
 
 check() {
@@ -67,8 +85,23 @@ shown() {
     esac
 }
 
+silent() {
+    if [ -z "$output" ]; then
+        echo "ok    $1"
+    else
+        echo "FAIL  $1: printed $output"
+        failures=$((failures + 1))
+    fi
+}
+
 output=$(send SessionStart startup)
-check "session start records the sources without checking" "" no
+silent "a new session prints nothing, which would become context"
+check "a new session records the sources without checking" "" no
+
+echo 'class Cellar(val label: String)' >"$repo/src/Cellar.kt"
+output=$(send SessionStart startup)
+output=$(send Stop)
+check "a new session takes the changes of a previous one as checked" "" no
 
 output=$(send Stop)
 check "a turn without source changes checks nothing" "" no
@@ -79,12 +112,12 @@ check "a turn that changed only Markdown checks nothing" "" no
 
 echo 'class Cellar(val name: String)' >"$repo/src/Cellar.kt"
 output=$(send Stop)
-check "a Kotlin change compiles once" "gradle," no
+check "a Kotlin change compiles once" "gradle repo," no
 
 touch "$work/kotlin-broken"
 echo 'class Cellar(val bottle: Bottle)' >"$repo/src/Cellar.kt"
 output=$(send Stop)
-check "a compile failure blocks the end of the turn" "gradle," yes
+check "a compile failure blocks the end of the turn" "gradle repo," yes
 shown "Unresolved reference 'Bottle'"
 
 output=$(send Stop)
@@ -92,28 +125,92 @@ check "the same state is not checked twice, so it cannot loop" "" no
 
 echo 'export const cellar = 2' >"$repo/front/src/cellar.ts"
 output=$(send Stop)
-check "a frontend change runs the type check of the app that has one" "npm front run --silent typecheck," no
+check "a frontend change runs the type check of every app that has one" "npm admin run --silent typecheck,npm front run --silent typecheck," no
 
 touch "$work/typescript-broken"
 echo "export const cellar: number = 'two'" >"$repo/front/src/cellar.ts"
 output=$(send Stop)
-check "a type check failure blocks the end of the turn" "npm front run --silent typecheck," yes
+check "a type check failure blocks the end of the turn" "npm admin run --silent typecheck,npm front run --silent typecheck," yes
 shown "error TS2322"
+rm "$work/typescript-broken"
 
 rm -rf "$repo/front/node_modules"
 echo "export const cellar: number = 'three'" >"$repo/front/src/cellar.ts"
 output=$(send Stop)
-check "an app without its dependencies installed is not type checked" "" no
+check "an app without its dependencies installed is not type checked" "npm admin run --silent typecheck," no
+mkdir "$repo/front/node_modules"
+
+echo "export const cellar = 4" >"$repo/front/src/cellar.ts"
+output=$(echo '{"hook_event_name": "Stop", "cwd": "'"$repo"'"}' | PATH="$work/tools" "$hook")
+check "without npm installed, nothing is type checked" "" no
+output=$(send Stop)
+check "once npm is installed, the change left unchecked is type checked" "npm admin run --silent typecheck,npm front run --silent typecheck," no
 
 echo 'class Bottle' >"$repo/src/Bottle.kt"
 output=$(send Stop)
-check "a new untracked Kotlin file counts as a change" "gradle," yes
-
+check "a new untracked Kotlin file counts as a change" "gradle repo," yes
 rm "$work/kotlin-broken"
-echo 'class Bottle(val name: String)' >"$repo/src/Bottle.kt"
-output=$(send SessionStart compact)
+
+for source in compact resume clear fork; do
+    echo "class Bottle(val $source: String)" >"$repo/src/Bottle.kt"
+    output=$(send SessionStart "$source")
+    silent "a $source session start prints nothing"
+    output=$(send Stop)
+    check "a change made before a $source session start is still checked" "gradle repo," no
+done
+
+rm "$repo/src/Bottle.kt"
 output=$(send Stop)
-check "a change made before a compaction is still checked" "gradle," no
+check "a deleted Kotlin file counts as a change" "gradle repo," no
+
+echo 'class Cellar(val vintage: Int)' >"$repo/src/Cellar.kt"
+git -C "$repo" add src/Cellar.kt
+output=$(send Stop)
+check "a staged Kotlin change is checked" "gradle repo," no
+
+touch "$work/gradle-crash"
+echo 'class Cellar(val region: String)' >"$repo/src/Cellar.kt"
+output=$(send Stop)
+check "a build failure without compiler errors blocks" "gradle repo," yes
+shown "Could not resolve all files for configuration ':compileClasspath'."
+rm "$work/gradle-crash"
+
+chmod -x "$repo/gradlew"
+echo 'class Cellar(val country: String)' >"$repo/src/Cellar.kt"
+output=$(send Stop)
+check "a repository without an executable gradlew compiles nothing" "" no
+chmod +x "$repo/gradlew"
+
+echo 'class Cellar(val owner: String)' >"$repo/src/Cellar.kt"
+output=$(send Stop "" "$work/outside")
+check "a turn ending outside the repository, without CLAUDE_PROJECT_DIR, checks nothing" "" no
+output=$(CLAUDE_PROJECT_DIR=$repo send Stop "" "$work/outside")
+check "a turn ending outside the repository checks the project of CLAUDE_PROJECT_DIR" "gradle repo," no
+
+touch "$work/gradle-slow"
+echo 'class Cellar(val grape: String)' >"$repo/src/Cellar.kt"
+jq -n --arg cwd "$repo" '{hook_event_name: "Stop", cwd: $cwd}' >"$work/stop.json"
+PATH="$work/bin:$PATH" "$hook" <"$work/stop.json" >/dev/null 2>&1 &
+hook_pid=$!
+tries=0
+while [ ! -s "$work/gradle.pid" ] && [ "$tries" -lt 100 ]; do
+    sleep 0.1
+    tries=$((tries + 1))
+done
+kill "$hook_pid"
+wait "$hook_pid" 2>/dev/null
+kill "$(cat "$work/gradle.pid")"
+rm -f "$work/gradle-slow" "$work/runs"
+output=$(send Stop)
+check "a check killed by the hook timeout runs again at the next turn" "gradle repo," no
+
+git -C "$repo" add -A && git -C "$repo" commit -q -m sources
+git -C "$repo" worktree add -q "$work/linked" -b 400-cellar-label
+output=$(send Stop "" "$work/linked")
+check "the first turn in a fresh worktree compiles nothing" "" no
+echo 'class Cellar(val label: String)' >"$work/linked/src/Cellar.kt"
+output=$(send Stop "" "$work/linked")
+check "a change in that worktree compiles it" "gradle linked," no
 
 git -C "$repo" switch -q -c pr-451
 echo 'class Bottle(val size: Int)' >"$repo/src/Bottle.kt"

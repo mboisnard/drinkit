@@ -1,22 +1,32 @@
 #!/bin/sh
 #
-# Claude Code hook: in cmux, names the session's tab after its issue and step ("#382 judge", "#382 PR #450"), and shows
-# the judge's verdict and the CI gate of the pull request as sidebar pills. Does nothing outside cmux, never blocks
+# Claude Code hook: in cmux, names the tab after the issue and its step ("#382 judge", "#382 PR #450") and shows the
+# judge's verdict and the pull request's CI gate as sidebar pills. Does nothing outside cmux, never blocks.
 
 [ -n "$CMUX_SURFACE_ID" ] || exit 0
 command -v cmux >/dev/null 2>&1 || exit 0
 command -v jq >/dev/null 2>&1 || exit 0
 
 input=$(cat)
+
 field() {
     printf '%s' "$input" | jq -r "$1 // empty"
 }
+
+# A Bash command that exits non-zero, as gh pr checks does on a failing or pending check, comes as
+# PostToolUseFailure, its output in .error.
+tool_output() {
+    field '.tool_response.stdout // .error'
+}
+
 pill() {
     cmux set-status "drinkit_$1" "$2" --color "$3" >/dev/null 2>&1
 }
 
 event=$(field .hook_event_name)
-[ "$event" = PostToolUse ] && [ -n "$(field .agent_id)" ] && exit 0
+case $event in
+    PostToolUse | PostToolUseFailure) [ -n "$(field .agent_id)" ] && exit 0 ;;
+esac
 
 cwd=$(field .cwd)
 branch=$(git -C "${cwd:-.}" branch --show-current 2>/dev/null)
@@ -25,20 +35,25 @@ case $issue in
     '' | *[!0-9]*) exit 0 ;;
 esac
 
-state=$(git -C "${cwd:-.}" rev-parse --path-format=absolute --git-path claude/tab 2>/dev/null) || exit 0
-mkdir -p "$(dirname "$state")"
-step=$(sed -n 1p "$state" 2>/dev/null)
-shown=$(sed -n 2p "$state" 2>/dev/null)
+cache=$(git -C "${cwd:-.}" rev-parse --path-format=absolute --git-path claude/cmux 2>/dev/null) || exit 0
+mkdir -p "$cache" || exit 0
+step_file=$cache/step-$issue
+shown_file=$cache/shown-$CMUX_SURFACE_ID
+step=$(cat "$step_file" 2>/dev/null)
 
 case $event in
-    PostToolUse)
+    PostToolUse | PostToolUseFailure)
         case $(field .tool_input.command) in
             *"gh pr create"*)
-                pr=$(field .tool_response.stdout | grep -o 'pull/[0-9]*' | head -n 1 | cut -d / -f 2)
-                [ -n "$pr" ] && step="PR #$pr" && pill ci "CI running" "#ff9500"
+                pr=$(tool_output | grep -o 'pull/[0-9][0-9]*' | head -n 1 | cut -d / -f 2)
+                if [ -n "$pr" ]; then
+                    step="PR #$pr"
+                    printf '%s\n' "$step" >"$step_file"
+                    pill ci "CI running" "#ff9500"
+                fi
                 ;;
             *"gh pr checks"*)
-                case $(field .tool_response.stdout | awk -F '\t' '$1 == "CI gate" { print $2 }') in
+                case $(tool_output | awk -F '\t' '$1 == "CI gate" { print $2 }' | tail -n 1) in
                     pass) pill ci "CI green" "#34c759" ;;
                     fail) pill ci "CI red" "#ff3b30" ;;
                     pending) pill ci "CI running" "#ff9500" ;;
@@ -51,16 +66,16 @@ case $event in
         case $(field .last_assistant_message | head -n 1) in
             "VERDICT: OK"*) pill judge "judge OK" "#34c759" ;;
             "VERDICT: NEEDS_WORK"*) pill judge "judge: needs work" "#ff3b30" ;;
+            *) cmux clear-status drinkit_judge >/dev/null 2>&1 ;;
         esac
         ;;
 esac
 
 title="#$issue ${step:-implement}"
 [ "$event" = SubagentStart ] && title="#$issue judge"
+[ "$title" = "$(cat "$shown_file" 2>/dev/null)" ] && exit 0
 
-printf '%s\n%s\n' "$step" "$title" >"$state"
-[ "$title" = "$shown" ] && exit 0
 set -- --surface "$CMUX_SURFACE_ID"
 [ -n "$CMUX_WORKSPACE_ID" ] && set -- --workspace "$CMUX_WORKSPACE_ID" "$@"
-cmux rename-tab "$@" "$title" >/dev/null 2>&1
+cmux rename-tab "$@" "$title" >/dev/null 2>&1 && printf '%s\n' "$title" >"$shown_file"
 exit 0

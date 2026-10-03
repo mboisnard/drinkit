@@ -2,20 +2,35 @@
 #
 # Feeds sample commands to the guard hook and checks which ones it refuses: ./.claude/hooks/guard-github-protections.test
 
-hook="$(dirname "$0")/guard-github-protections"
+export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
+hook="$(cd "$(dirname "$0")" && pwd)/guard-github-protections"
 failures=0
 
-hooks_on=$(mktemp -d)
-hooks_off=$(mktemp -d)
-trap 'rm -rf "$hooks_on" "$hooks_off"' EXIT
-git -C "$hooks_on" init -q && git -C "$hooks_on" config core.hooksPath .githooks
-git -C "$hooks_off" init -q
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+export GIT_CEILING_DIRECTORIES="$work" HOME="$work"
+hooks_on=$work/on
+hooks_off=$work/off
+outside=$work/outside
+mkdir "$outside" "$work/no-jq" "$work/no-git"
+git init -q "$hooks_on" && git -C "$hooks_on" config core.hooksPath .githooks
+git init -q "$hooks_off"
+for tool in awk cat git; do
+    ln -s "$(command -v "$tool")" "$work/no-jq/$tool"
+done
+for tool in awk cat jq; do
+    ln -s "$(command -v "$tool")" "$work/no-git/$tool"
+done
+
+run() {
+    jq -n --arg command "$1" --arg cwd "$2" '{tool_name: "Bash", cwd: $cwd, tool_input: {command: $command}}' |
+        PATH="${3:-$PATH}" "$hook" 2>"$work/stderr"
+}
 
 check() {
     expected=$1
     command=$2
-    cwd=${3:-$hooks_on}
-    output=$(jq -n --arg command "$command" --arg cwd "$cwd" '{tool_name: "Bash", cwd: $cwd, tool_input: {command: $command}}' | "$hook")
+    output=$(run "$command" "${3:-$hooks_on}")
     if [ -z "$output" ]; then
         actual=allow
     elif printf '%s' "$output" | jq -e '.hookSpecificOutput.permissionDecision == "deny"' >/dev/null; then
@@ -23,10 +38,11 @@ check() {
     else
         actual="invalid output: $output"
     fi
+    label=$(printf '%s' "$command" | tr '\n' ' ')
     if [ "$actual" = "$expected" ]; then
-        echo "ok    $expected  $command"
+        echo "ok    $expected  $label"
     else
-        echo "FAIL  expected $expected, got $actual  $command"
+        echo "FAIL  expected $expected, got $actual  $label"
         failures=$((failures + 1))
     fi
 }
@@ -127,8 +143,23 @@ check deny 'git config --unset core.hooksPath'
 check deny 'git config core.hooksPath /dev/null'
 check deny 'GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=/dev/null git push'
 check deny 'export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=/dev/null; git push origin HEAD:master'
+check deny "GIT_CONFIG_PARAMETERS=\"'core.hooksPath'='/dev/null'\" git push origin HEAD:master"
+check deny 'git push --no-verif origin HEAD:master'
+check deny 'git config --global core.hooksPath /dev/null'
+check deny 'git config --global --unset core.hooksPath'
+check deny 'git config -f .git/config core.hooksPath /dev/null'
+check deny 'git config set core.hooksPath /dev/null'
 check deny 'git push origin HEAD:master' "$hooks_off"
-check deny 'git -C ../drinkit push -u origin HEAD' "$hooks_off"
+check deny 'git push origin HEAD:master' "$outside"
+check deny 'git -C ../off push -u origin HEAD'
+check deny "git -C $hooks_off push -u origin HEAD"
+check deny 'git -C .. -C off push -u origin HEAD'
+check deny "git --git-dir=$hooks_off/.git push origin HEAD"
+check deny 'cd ../off && git push -u origin HEAD'
+check deny "cd $hooks_off; git push -u origin HEAD"
+check deny 'cd ~/off && git push -u origin HEAD'
+check deny 'cd .. && git -C off push -u origin HEAD'
+check deny "git push origin HEAD && git -C $hooks_off push origin HEAD"
 
 check allow 'gh pr view 450'
 check allow 'gh pr create --base master --title x --body-file body.md'
@@ -138,11 +169,20 @@ check allow "gh api graphql -f query='query { viewer { login } }'"
 check allow 'gh alias list'
 check allow 'git push -u origin HEAD'
 check allow 'git push --force-with-lease --force-if-includes'
-check allow 'git -C ../drinkit-worktrees/382 push --force-with-lease origin 382-implement-issue'
+check allow 'git -C ../on push --force-with-lease origin 382-implement-issue' "$hooks_off"
+check allow "git -C $hooks_on push -u origin HEAD" "$outside"
+check allow 'cd ../on && git push -u origin HEAD' "$hooks_off"
+check allow 'cd ~/on && git push -u origin HEAD' "$outside"
+check allow 'cd ../off && cd ../on && git push -u origin HEAD'
 check allow 'git config core.hooksPath'
 check allow 'git config core.hooksPath .githooks'
+check allow 'git config --local core.hooksPath .githooks'
 check allow 'git config --get core.hooksPath'
 check allow 'git config get core.hooksPath'
+check allow 'git config --global core.hooksPath'
+check allow 'git config --system core.hooksPath'
+check allow 'git config --show-origin core.hooksPath'
+check allow 'git config --show-scope --get core.hooksPath'
 check allow 'git -C /path/to/worktree config core.hooksPath'
 # shellcheck disable=SC2016
 check allow 'test "$(git config core.hooksPath)" = .githooks'
@@ -150,9 +190,93 @@ check allow 'test "$(git config core.hooksPath)" = .githooks'
 check allow '[ "$(git config core.hooksPath)" = .githooks ] || echo off'
 check allow './gradlew build 2>&1 | tail -n 20'
 check allow 'git commit -m "Refuse gh pr merge from agent sessions"'
+check allow 'git commit -m "Refuse merges; gh pr merge is for the maintainer"'
+check allow 'git commit -m "Never chain git status && gh pr merge 450"'
 check allow 'git log --grep "gh pr merge"'
 check allow 'grep -rn "core.hooksPath" AGENTS.md'
 check allow 'git status' "$hooks_off"
+check allow 'git status' "$outside"
+check allow 'gh pr merge --help'
+check allow 'gh pr merge -h'
+
+check deny 'gh pr merge --help && gh pr merge 450'
+check deny 'gh pr merge 450 -h --rebase'
+check deny "bash -c 'git status; gh pr merge 450'"
+# shellcheck disable=SC2016
+check deny 'echo "$(gh pr merge 450)"'
+check deny 'gh pr merge 450' "$outside"
+
+check allow "git commit -F - <<'EOF'
+Refuse merges from agent sessions
+
+- \`gh pr merge\` stays with the maintainer
+- git push --no-verify is refused too
+EOF"
+# shellcheck disable=SC2016
+check allow 'git commit -m "$(cat <<'"'"'EOF'"'"'
+Refuse merges from agent sessions
+
+- `gh pr merge` stays with the maintainer; so do rulesets
+EOF
+)"'
+# shellcheck disable=SC2016
+check allow 'gh pr create --title x --body "$(cat <<EOF
+Never run \`git config core.hooksPath /dev/null\` or gh pr merge
+EOF
+)"'
+check allow "cat >notes.md <<-EOF
+	gh pr merge 450
+	EOF"
+check deny "gh pr merge 450 <<'EOF'
+y
+EOF"
+check deny "cat >notes.md <<'EOF'
+merge notes
+EOF
+gh pr merge 450"
+check deny "bash <<'EOF'
+gh pr merge 450
+EOF"
+check deny "cat <<'EOF' | sh
+gh pr merge 450
+EOF"
+# shellcheck disable=SC2016
+check allow "cat >notes.md <<'EOF'
+\$(gh pr merge 450)
+EOF"
+check allow "cat >notes.md <<EOF
+gh pr merge 450 stays with the maintainer
+EOF"
+# shellcheck disable=SC2016
+check deny 'cat >notes.md <<EOF
+$(gh pr merge 450)
+EOF'
+check deny "cat >notes.md <<EOF
+merged: \`gh pr merge 450\`
+EOF"
+# shellcheck disable=SC2016
+check deny 'gh api graphql -f query="$(cat <<EOF
+mutation { mergePullRequest(input: {pullRequestId: "x"}) { clientMutationId } }
+EOF
+)"'
+
+output=$(run 'gh pr merge 450' "$hooks_on" "$work/no-jq")
+status=$?
+if [ "$status" -eq 0 ] && [ -z "$output" ] && grep -q 'jq not found' "$work/stderr"; then
+    echo "ok    allow  without jq, with a warning on stderr"
+else
+    echo "FAIL  without jq: exit $status, output '$output', stderr '$(cat "$work/stderr")'"
+    failures=$((failures + 1))
+fi
+
+output=$(jq -n --arg cwd "$hooks_off" '{tool_name: "Bash", cwd: $cwd, tool_input: {command: "git push origin HEAD"}}' |
+    PATH="$work/no-git" "$hook")
+if [ -z "$output" ]; then
+    echo "ok    allow  a push without git installed"
+else
+    echo "FAIL  a push without git installed was refused: $output"
+    failures=$((failures + 1))
+fi
 
 if [ "$failures" -ne 0 ]; then
     echo "$failures failing"

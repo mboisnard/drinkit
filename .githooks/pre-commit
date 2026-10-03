@@ -5,14 +5,19 @@
 
 set -e
 
-git diff --cached --name-only --diff-filter=AM | while IFS= read -r f; do
+# Without quotePath=false, a non-ASCII name comes quoted and matches no file.
+staged() {
+    git -c core.quotePath=false diff --cached --name-only "$@"
+}
+
+staged --no-renames --diff-filter=AM | while IFS= read -r f; do
     if [ "$(git cat-file -s ":$f")" -gt 5242880 ]; then
         echo "pre-commit: $f is over 5 MB, keep large files out of the repository" >&2
         exit 1
     fi
 done
 
-for manifest in $(git diff --cached --name-only --diff-filter=AM -- '*package.json'); do
+staged --diff-filter=AM -- '*package.json' | while IFS= read -r manifest; do
     lock="$(dirname "$manifest")/package-lock.json"
     [ -f "$lock" ] || continue
     git diff --cached --quiet -- "$lock" || continue
@@ -22,22 +27,23 @@ for manifest in $(git diff --cached --name-only --diff-filter=AM -- '*package.js
     fi
 done
 
-staged=$(git diff --cached --name-only --diff-filter=ACMR -- '*.kt' '*.kts')
-[ -z "$staged" ] && exit 0
+kotlin=$(staged --diff-filter=ACMR -- '*.kt' '*.kts')
+[ -n "$kotlin" ] || exit 0
 
 # Recorded before formatting: staging one of these afterwards would carry its unstaged edits into
 # the commit too, so they are reformatted on disk but left for you to stage yourself.
-# shellcheck disable=SC2086
-partly_staged=$(git diff --name-only -- $staged)
+partly_staged=$(git -c core.quotePath=false diff --name-only)
 
 "$(dirname "$0")/lint-kotlin"
 
-# shellcheck disable=SC2086
-for f in $(git diff --name-only -- $staged); do
-    if printf '%s\n' "$partly_staged" | grep -qxF "$f"; then
+# Listed before the loop: a git diff still running can hold the index lock that git add needs.
+reformatted=$(git -c core.quotePath=false diff --name-only)
+printf '%s\n' "$reformatted" | while IFS= read -r f; do
+    printf '%s\n' "$kotlin" | grep -qxF -- "$f" || continue
+    if printf '%s\n' "$partly_staged" | grep -qxF -- "$f"; then
         echo "pre-commit: $f reformatted, left unstaged (it had other unstaged changes)"
     else
-        git add "$f"
+        git add -- "$f"
         echo "pre-commit: $f reformatted and staged"
     fi
 done

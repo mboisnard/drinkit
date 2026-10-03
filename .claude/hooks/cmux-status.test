@@ -3,32 +3,55 @@
 # Feeds hook events to cmux-status with a fake cmux and checks the tab titles and sidebar pills it sets:
 # ./.claude/hooks/cmux-status.test
 
+export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
+export GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.com
 hook="$(cd "$(dirname "$0")" && pwd)/cmux-status"
 failures=0
 
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
-mkdir "$work/bin" "$work/repo"
+mkdir "$work/bin" "$work/tools"
+touch "$work/calls" "$work/stdout"
 cat >"$work/bin/cmux" <<EOF
 #!/bin/sh
 case \$1 in
-    rename-tab) for last; do :; done; printf 'title %s\n' "\$last" >>"$work/calls" ;;
+    rename-tab)
+        [ -f "$work/rename-fails" ] && exit 1
+        shift
+        printf 'args %s\n' "\$*" >>"$work/calls"
+        for title; do :; done
+        printf 'title %s\n' "\$title" >>"$work/calls"
+        ;;
     set-status) printf 'pill %s %s\n' "\$2" "\$3" >>"$work/calls" ;;
+    clear-status) printf 'pill %s cleared\n' "\$2" >>"$work/calls" ;;
 esac
 EOF
 chmod +x "$work/bin/cmux"
-git -C "$work/repo" init -q -b master
-git -C "$work/repo" -c user.name=test -c user.email=test@example.com commit -q --allow-empty -m init
+for tool in cat cut git grep head jq mkdir tail; do
+    ln -s "$(command -v "$tool")" "$work/tools/$tool"
+done
+git init -q -b master "$work/repo"
+git -C "$work/repo" commit -q --allow-empty -m init
+
+surface='surface-1'
+workspace='workspace-1'
 
 send() {
-    jq -n --arg cwd "$work/repo" "$1 + {cwd: \$cwd}" | PATH="$work/bin:$PATH" CMUX_SURFACE_ID=surface CMUX_WORKSPACE_ID=workspace "$hook"
+    jq -n --arg cwd "$work/repo" "$1 + {cwd: \$cwd}" |
+        PATH="$work/bin:$PATH" CMUX_SURFACE_ID=$surface CMUX_WORKSPACE_ID=$workspace "$hook" >>"$work/stdout"
+}
+
+checks() {
+    jq -n --arg event "$1" --arg output "$2" '
+        {hook_event_name: $event, tool_input: {command: "gh pr checks 450"}}
+        + if $event == "PostToolUse" then {tool_response: {stdout: $output}} else {error: $output} end'
 }
 
 check() {
     kind=$1
     expected=$2
     label=$3
-    actual=$(grep "^$kind " "$work/calls" 2>/dev/null | tail -n 1 | cut -d ' ' -f 2-)
+    actual=$(grep "^$kind " "$work/calls" | tail -n 1 | cut -d ' ' -f 2-)
     if [ "$actual" = "$expected" ]; then
         echo "ok    $label: $expected"
     else
@@ -37,12 +60,24 @@ check() {
     fi
 }
 
+unchanged() {
+    label=$1
+    if [ "$(wc -l <"$work/calls")" -eq "$calls" ]; then
+        echo "ok    $label"
+    else
+        echo "FAIL  $label: cmux was called: $(tail -n 2 "$work/calls")"
+        failures=$((failures + 1))
+    fi
+}
+
+calls=$(wc -l <"$work/calls")
 send '{hook_event_name: "SessionStart"}'
-check title "" "no title on master"
+unchanged "no title on master"
 
 git -C "$work/repo" switch -q -c 382-implement-issue
 send '{hook_event_name: "SessionStart"}'
 check title "#382 implement" "an issue branch"
+check args "--workspace workspace-1 --surface surface-1 #382 implement" "the tab of this session is renamed"
 
 send '{hook_event_name: "SubagentStart", agent_type: "issue-judge"}'
 check title "#382 judge" "the judge starts"
@@ -55,35 +90,92 @@ check pill "drinkit_judge judge: needs work" "a NEEDS_WORK verdict"
 send '{hook_event_name: "SubagentStop", agent_type: "issue-judge", last_assistant_message: "VERDICT: OK 5d6e7f8"}'
 check pill "drinkit_judge judge OK" "an OK verdict"
 
-send '{hook_event_name: "PostToolUse", agent_id: "a1", tool_input: {command: "gh pr create --title x"}, tool_response: {stdout: "https://github.com/mboisnard/drinkit/pull/451"}}'
-check title "#382 implement" "a subagent tool call is ignored"
-
-send '{hook_event_name: "PostToolUse", tool_input: {command: "gh pr create --base master --title x --body-file b.md"}, tool_response: {stdout: "https://github.com/mboisnard/drinkit/pull/450\n"}}'
-check title "#382 PR #450" "the pull request is opened"
-check pill "drinkit_ci CI running" "CI starts with the pull request"
-
-send '{hook_event_name: "PostToolUse", tool_input: {command: "gh pr checks 450"}, tool_response: {stdout: "Backend\tfail\t2m\thttps://x\nCI gate\tfail\t3s\thttps://y\n"}}'
-check pill "drinkit_ci CI red" "a failing CI gate"
-
-send '{hook_event_name: "PostToolUse", tool_input: {command: "gh pr checks 450"}, tool_response: {stdout: "Backend\tskipping\t0\thttps://x\nCI gate\tpass\t3s\thttps://y\n"}}'
-check pill "drinkit_ci CI green" "a passing CI gate"
+send '{hook_event_name: "SubagentStop", agent_type: "issue-judge", last_assistant_message: "I could not finish the review."}'
+check pill "drinkit_judge cleared" "a judge without a verdict clears the pill"
 
 calls=$(wc -l <"$work/calls")
-send '{hook_event_name: "PostToolUse", tool_input: {command: "git status"}, tool_response: {stdout: ""}}'
-if [ "$(wc -l <"$work/calls")" -eq "$calls" ]; then
-    echo "ok    an unchanged title calls cmux once"
+send '{hook_event_name: "PostToolUse", agent_id: "a1", tool_input: {command: "gh pr create --title x"}, tool_response: {stdout: "https://github.com/mboisnard/drinkit/pull/451"}}'
+unchanged "a subagent tool call is ignored"
+send '{hook_event_name: "PostToolUseFailure", agent_id: "a1", tool_input: {command: "gh pr checks 451"}, error: "Exit code 1\nCI gate\tfail\t3s\thttps://y"}'
+unchanged "a failed subagent tool call is ignored"
+
+send '{hook_event_name: "PostToolUse", tool_input: {command: "git push -u origin HEAD && gh pr create --base master --title x --body-file b.md"}, tool_response: {stdout: "remote: https://github.com/mboisnard/drinkit/pull/new/382-implement-issue\nhttps://github.com/mboisnard/drinkit/pull/450\n"}}'
+check title "#382 PR #450" "the pull request is opened, its number past a pull/new link"
+check pill "drinkit_ci CI running" "CI starts with the pull request"
+
+send "$(checks PostToolUse "Backend	skipping	0	https://x
+CI gate	pass	3s	https://y")"
+check pill "drinkit_ci CI green" "a passing CI gate"
+
+send "$(checks PostToolUseFailure "Exit code 8
+Backend	pending	0	https://x
+CI gate	pending	0	https://y")"
+check pill "drinkit_ci CI running" "a pending CI gate, which gh reports with exit code 8"
+
+send "$(checks PostToolUseFailure "Exit code 1
+Backend	fail	2m	https://x
+CI gate	fail	3s	https://y")"
+check pill "drinkit_ci CI red" "a failing CI gate, which gh reports with exit code 1"
+
+send "$(checks PostToolUse "Refreshing checks status every 10 seconds. Press Ctrl+C to quit.
+
+Backend	pending	0	https://x
+CI gate	pending	0	https://y
+
+Backend	pass	4m	https://x
+CI gate	pass	3s	https://y")"
+check pill "drinkit_ci CI green" "gh pr checks --watch keeps the last table"
+
+calls=$(wc -l <"$work/calls")
+send '{hook_event_name: "PostToolUse", tool_input: {command: "gh pr view 450"}, tool_response: {stdout: ""}}'
+unchanged "an unchanged title calls cmux once"
+
+surface='surface-2'
+workspace=
+send '{hook_event_name: "SessionStart"}'
+check title "#382 PR #450" "a new tab on the same worktree is renamed"
+check args "--surface surface-2 #382 PR #450" "without CMUX_WORKSPACE_ID only the surface is named"
+
+surface='surface-3'
+touch "$work/rename-fails"
+send '{hook_event_name: "SessionStart"}'
+rm "$work/rename-fails"
+send '{hook_event_name: "SessionStart"}'
+check args "--surface surface-3 #382 PR #450" "a rename that failed is tried again"
+
+calls=$(wc -l <"$work/calls")
+jq -n --arg cwd "$work/repo" '{hook_event_name: "SessionStart", cwd: $cwd}' |
+    PATH="$work/bin:$PATH" CMUX_SURFACE_ID='' "$hook" >>"$work/stdout"
+unchanged "outside cmux nothing happens"
+
+surface='surface-4'
+jq -n --arg cwd "$work/repo" '{hook_event_name: "SessionStart", cwd: $cwd}' |
+    PATH="$work/tools" CMUX_SURFACE_ID=$surface "$hook" >>"$work/stdout"
+status=$?
+if [ "$status" -eq 0 ]; then
+    echo "ok    without cmux installed the hook exits 0"
 else
-    echo "FAIL  an unchanged title called cmux again"
+    echo "FAIL  without cmux installed the hook exits $status"
     failures=$((failures + 1))
 fi
 
-before=$(wc -l <"$work/calls")
-jq -n --arg cwd "$work/repo" '{hook_event_name: "SessionStart", cwd: $cwd}' | PATH="$work/bin:$PATH" CMUX_SURFACE_ID='' "$hook"
-if [ "$(wc -l <"$work/calls")" -eq "$before" ]; then
-    echo "ok    outside cmux nothing happens"
-else
-    echo "FAIL  outside cmux the tab was renamed"
+git -C "$work/repo" switch -q master
+send '{hook_event_name: "SessionStart"}'
+unchanged "back on master after an issue branch, the tab is left alone"
+
+git -C "$work/repo" switch -q --detach 382-implement-issue
+send '{hook_event_name: "SessionStart"}'
+unchanged "a detached HEAD leaves the tab alone"
+
+git -C "$work/repo" switch -q -c 401-bottle-label
+send '{hook_event_name: "SessionStart"}'
+check title "#401 implement" "another issue does not inherit the pull request of the first"
+
+if [ -s "$work/stdout" ]; then
+    echo "FAIL  the hook printed to stdout: $(cat "$work/stdout")"
     failures=$((failures + 1))
+else
+    echo "ok    nothing is ever printed to stdout"
 fi
 
 if [ "$failures" -ne 0 ]; then

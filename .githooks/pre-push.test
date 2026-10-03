@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+# Feeds the refs git hands to pre-push on stdin and checks which pushes it refuses: ./.githooks/pre-push.test
+
+hook="$(cd "$(dirname "$0")" && pwd)/pre-push"
+failures=0
+sha=1111111111111111111111111111111111111111
+zero=0000000000000000000000000000000000000000
+
+check() {
+    expected=$1
+    label=$2
+    refs=$3
+    if printf '%s\n' "$refs" | "$hook" origin git@github.com:mboisnard/drinkit.git 2>/dev/null; then
+        actual=accepted
+    else
+        actual=refused
+    fi
+    if [ "$actual" = "$expected" ]; then
+        echo "ok    $expected  $label"
+    else
+        echo "FAIL  expected $expected, got $actual  $label"
+        failures=$((failures + 1))
+    fi
+}
+
+check refused "a push to master" "refs/heads/master $sha refs/heads/master $zero"
+check refused "a push of another branch onto master" "refs/heads/382-implement-issue $sha refs/heads/master $sha"
+check refused "a deletion of master" "(delete) $zero refs/heads/master $sha"
+check refused "master among several refs" "refs/heads/382-implement-issue $sha refs/heads/382-implement-issue $zero
+refs/heads/master $sha refs/heads/master $sha"
+check accepted "a branch push" "refs/heads/382-implement-issue $sha refs/heads/382-implement-issue $zero"
+check accepted "a branch deletion" "(delete) $zero refs/heads/382-implement-issue $sha"
+check accepted "a branch whose name contains master" "refs/heads/master-fix $sha refs/heads/master-fix $zero"
+check accepted "a tag named master" "refs/tags/master $sha refs/tags/master $zero"
+check accepted "nothing to push" ""
+
+if [ "$failures" -ne 0 ]; then
+    echo "$failures failing"
+    exit 1
+fi
