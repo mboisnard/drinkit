@@ -1,0 +1,55 @@
+#!/bin/sh
+#
+# Commits sample changes in a scratch repository and checks which ones pre-commit refuses: ./.githooks/pre-commit.test
+# Kotlin formatting runs Gradle, so it is left out here.
+
+hooks="$(cd "$(dirname "$0")" && pwd)"
+failures=0
+
+repo=$(mktemp -d)
+trap 'rm -rf "$repo"' EXIT
+git -C "$repo" init -q
+git -C "$repo" config core.hooksPath "$hooks"
+git -C "$repo" config user.name test
+git -C "$repo" config user.email test@example.com
+mkdir "$repo/front"
+printf '{\n  "scripts": {\n    "build": "nuxt build"\n  },\n  "dependencies": {\n    "vue": "^3.5.0"\n  }\n}\n' >"$repo/front/package.json"
+echo '{}' >"$repo/front/package-lock.json"
+git -C "$repo" add . && git -C "$repo" commit -q --no-verify -m init
+
+check() {
+    expected=$1
+    label=$2
+    if git -C "$repo" commit -q -m "$label" >/dev/null 2>&1; then actual=accepted; else actual=refused; fi
+    if [ "$actual" = "$expected" ]; then
+        echo "ok    $expected  $label"
+    else
+        echo "FAIL  expected $expected, got $actual  $label"
+        failures=$((failures + 1))
+    fi
+    git -C "$repo" reset -q --hard HEAD
+}
+
+echo notes >"$repo/notes.md" && git -C "$repo" add notes.md
+check accepted "a small file"
+
+dd if=/dev/zero of="$repo/big.bin" bs=1048576 count=6 2>/dev/null && git -C "$repo" add big.bin
+check refused "a file over 5 MB"
+
+sed -i.bak 's/\^3.5.0/^3.6.0/' "$repo/front/package.json" && rm "$repo/front/package.json.bak"
+git -C "$repo" add front/package.json
+check refused "a dependency bump without the lock file"
+
+sed -i.bak 's/\^3.5.0/^3.6.0/' "$repo/front/package.json" && rm "$repo/front/package.json.bak"
+echo '{"lockfileVersion": 3}' >"$repo/front/package-lock.json"
+git -C "$repo" add front
+check accepted "a dependency bump with its lock file"
+
+sed -i.bak 's/nuxt build/nuxt build --prerender/' "$repo/front/package.json" && rm "$repo/front/package.json.bak"
+git -C "$repo" add front/package.json
+check accepted "a script change without the lock file"
+
+if [ "$failures" -ne 0 ]; then
+    echo "$failures failing"
+    exit 1
+fi

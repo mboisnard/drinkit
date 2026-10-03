@@ -5,15 +5,34 @@
 
 set -e
 
+git diff --cached --name-only --diff-filter=AM | while IFS= read -r f; do
+    if [ "$(git cat-file -s ":$f")" -gt 5242880 ]; then
+        echo "pre-commit: $f is over 5 MB, keep large files out of the repository" >&2
+        exit 1
+    fi
+done
+
+for manifest in $(git diff --cached --name-only --diff-filter=AM -- '*package.json'); do
+    lock="$(dirname "$manifest")/package-lock.json"
+    [ -f "$lock" ] || continue
+    git diff --cached --quiet -- "$lock" || continue
+    if git diff --cached -U0 -- "$manifest" | grep -qE '^[+-][[:space:]]*"[^"]+": "([~^<>=*0-9]|latest|npm:|file:|git|https?:|workspace:)'; then
+        echo "pre-commit: $manifest changes a dependency but $lock is not staged. Run npm install, then stage both" >&2
+        exit 1
+    fi
+done
+
 staged=$(git diff --cached --name-only --diff-filter=ACMR -- '*.kt' '*.kts')
 [ -z "$staged" ] && exit 0
 
 # Recorded before formatting: staging one of these afterwards would carry its unstaged edits into
 # the commit too, so they are reformatted on disk but left for you to stage yourself.
+# shellcheck disable=SC2086
 partly_staged=$(git diff --name-only -- $staged)
 
 "$(dirname "$0")/lint-kotlin"
 
+# shellcheck disable=SC2086
 for f in $(git diff --name-only -- $staged); do
     if printf '%s\n' "$partly_staged" | grep -qxF "$f"; then
         echo "pre-commit: $f reformatted, left unstaged (it had other unstaged changes)"
