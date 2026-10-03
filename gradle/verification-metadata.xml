@@ -7,6 +7,8 @@
          <trust group="com.google.devtools.ksp" name="symbol-processing-aa-embeddable" reason="The KSP plugin resolves it in a detached configuration, which Renovate's regeneration never sees"/>
          <trust file=".*-javadoc[.]jar" regex="true" reason="IntelliJ downloads it, the build never resolves it"/>
          <trust file=".*-sources[.]jar" regex="true" reason="IntelliJ downloads it, the build never resolves it"/>
+         <trust group="gradle" name="gradle" reason="IntelliJ downloads the Gradle distribution sources to edit build scripts, the build never resolves them"/>
+         <trust group="org[.]apache[.]groovy" name="groovy(-(?!bom$).*)?" version="4[.].*" regex="true" reason="IntelliJ fetches the Groovy 4 modules that Gradle embeds to edit build scripts, the build itself resolves Groovy 5 and only the Groovy 4 BOM"/>
          <trust group="org.graalvm.buildtools" name="graalvm-reachability-metadata" file=".*-repository[.]zip" regex="true" reason="The GraalVM plugin resolves it in a detached configuration, which Renovate's regeneration never sees"/>
       </trusted-artifacts>
    </configuration>
