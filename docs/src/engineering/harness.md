@@ -52,8 +52,8 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 | Part | What it does | Where | Since |
 |---|---|---|---|
 | `CI gate` | The only required check. Fails when a lane failed or was cancelled, passes when a lane was not needed | [`ci.yml`][ci-yml] | 2026-10-01 |
-| `Decision` | Maps the changed files to the ci, backend, frontend, docs, ops and dependencies lanes. A file no list knows runs every lane | [`ci-lanes.yml`][ci-lanes] | 2026-10-01 |
-| `CI files` | actionlint checks that the workflows are valid and zizmor audits their security, whenever they change. A finding blocks the merge | [`ci-ci.yml`][ci-ci-yml] | 2026-10-02 |
+| `Decision` | Maps the changed files to the workflows, backend, frontend, docs, ops and dependencies lanes. A file no list knows runs every lane | [`ci-lanes.yml`][ci-lanes] | 2026-10-01 |
+| `CI files` | actionlint checks that the workflows are valid and zizmor audits their security, whenever they change. A finding blocks the merge | [`ci-workflows.yml`][ci-workflows-yml] | 2026-10-02 |
 | `Backend` | Compiles and tests the backend and runs detekt in one Gradle run, findings in code scanning | [`ci-backend.yml`][ci-backend-yml] | 2024-03-03 as `build`, detekt in the same run since 2026-10-01 |
 | `CodeQL` | Looks for security flaws in the Kotlin and Java code, results in code scanning. Not required | [`ci-codeql.yml`][ci-codeql-yml] | 2024-03-25, off from 2026-09-13 to 2026-09-26 |
 | `Frontend` | Generates the API client and builds the Nuxt app | [`ci-frontend.yml`][ci-frontend-yml] | 2026-10-01 |
@@ -106,7 +106,7 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [api-convention]: https://github.com/mboisnard/drinkit/blob/master/build-logic/src/main/kotlin/archetype/com.drinkit.api-convention.gradle.kts
 [ci-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci.yml
 [ci-lanes]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/config/ci-lanes.yml
-[ci-ci-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-ci.yml
+[ci-workflows-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-workflows.yml
 [ci-backend-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-backend.yml
 [ci-codeql-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-codeql.yml
 [ci-frontend-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-frontend.yml

@@ -29,7 +29,7 @@ flowchart LR
 |---|---|---|
 | [`ci.yml`][ci-yml] | Entry point: triggers, decision, lanes, gate | on pull requests, master pushes, by hand |
 | [`config/ci-lanes.yml`][ci-lanes] | The paths of each lane, in a subfolder since GitHub reads every file at the top as a workflow | by the decision job |
-| `ci-ci.yml`, `ci-backend.yml`, `ci-frontend.yml`, `ci-ops.yml`, `ci-docs.yml`, `ci-dependencies.yml` | One lane each: what it checks | by `ci.yml`, when the lane changed |
+| `ci-workflows.yml`, `ci-backend.yml`, `ci-frontend.yml`, `ci-ops.yml`, `ci-docs.yml`, `ci-dependencies.yml` | One lane each: what it checks | by `ci.yml`, when the lane changed |
 | `ci-codeql.yml` | The security analysis, outside the gate | by `ci.yml`, with the backend lane |
 | `cd-docs.yml` | A deployment: publishes what a lane built | by `ci.yml`, on master |
 | [`weekly.yml`][weekly-yml] | Starts a full run of `ci.yml` every Monday | on a schedule |
@@ -43,7 +43,7 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 
 | Change | Lanes | Why |
 |---|---|---|
-| `.github/**` | every lane, CI files included | Every list includes the `ci` list: a change to the CI proves every lane still runs, and actionlint and zizmor check it. The Renovate configuration and the ruleset run every lane too, rather than a rule of their own |
+| `.github/workflows/**`, `.github/actions/**`, `.github/actionlint.yaml` | every lane, CI files included | Every list includes the `workflows` list: a change to the CI proves every lane still runs, and actionlint and zizmor check it |
 | The sources of a backend module or tech starter, build logic, Gradle setup and lock files, detekt configuration, `deployment/updater` | Backend, CodeQL, Docs | The domain and tech starter pages are generated from the backend sources, so the docs lane lists the backend paths too |
 | `drinkit/drinkit-api-contract/contract/**` | Backend, CodeQL, Frontend, Docs | The Kotlin delegates and the TypeScript client are both generated from it |
 | `drinkit/drinkit-frontend/**` | Frontend | |
@@ -51,7 +51,7 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 | `.nvmrc` | Frontend, Docs | The Node version both use |
 | A Gradle script or lock file, anything under `gradle/`, a `package.json` or `package-lock.json` | Dependencies, plus the lane the file belongs to | |
 | `deployment/local/**` | Ops | |
-| Any other `*.md`, `.claude/**`, `.editorconfig`, `.githooks/**`, `.idea/**`, `.gitignore`, `.git-blame-ignore-revs`, `LICENSE` | none | No job reads them: the `none` list |
+| Any other `*.md`, `.claude/**`, `.editorconfig`, `.githooks/**`, `.idea/**`, `.gitignore`, `.git-blame-ignore-revs`, `LICENSE`, `.github/ISSUE_TEMPLATE/**`, `.github/renovate.json`, `.github/rulesets/**` | none | No job reads them: the `none` list. Renovate reads its configuration itself, and the ruleset is applied by hand |
 | Anything else: a new folder or module | every lane | No list knows the file, so any lane could depend on it |
 
 ## Jobs
