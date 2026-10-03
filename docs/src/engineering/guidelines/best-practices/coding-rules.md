@@ -34,10 +34,10 @@ Avoid adding technical pattern suffixes like `UseCase`, `Service`, `Repository`,
 
 ## ✅ Write Concise and Meaningful Test Names
 
-Keep your test names focused on the specific behavior being tested. Omit filler words like `should`, `when`, `given`, or `returns` if they don't add real value. The test's structure and assertions often make these words redundant and just add noise.
+Keep your test names focused on the specific behavior being tested, written as a sentence in backticks. Omit filler words like `should`, `when`, `given`, or `returns` if they don't add real value. The test's structure and assertions often make these words redundant and just add noise.
 
-- **Good**: `throws_error_if_password_is_too_short`
-- **Less good**: `test_that_it_should_return_an_error_if_the_password_is_too_short`
+- **Good**: ``fun `throws an error if the password is too short`()``
+- **Less good**: ``fun `test that it should return an error if the password is too short`()``
 
 ## 🛠️ Let Testability Drive Your Design
 
@@ -45,4 +45,4 @@ Even if you don't strictly follow **Test-Driven Development (TDD)**, always cons
 
 This mindset is a powerful tool that naturally shapes your design for the better. Code that is easy to test is almost always loosely coupled, modular, and well-structured. It forces you to think about dependencies and separate concerns.
 
-If you think of new edge cases or scenarios to test while in the middle of coding, don't let the idea slip away. While writing code you may come up with more cases to test. Write them down as `TODO` comments, and make sure you write tests for them when you are ready.
+If you think of new edge cases or scenarios to test while in the middle of coding, don't let the idea slip away. While writing code you may come up with more cases to test. Write them down in your test list rather than as `TODO` comments, and make sure you write tests for them when you are ready.

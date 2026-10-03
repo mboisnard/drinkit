@@ -9,16 +9,20 @@ Liquibase is an essential tool for tracking, managing, and applying database sch
 
 ### 📜 Structure of Liquibase Scripts
 
-Each SQL migration script must follow a specific format to be correctly interpreted by Liquibase.
+The changelogs live in `deployment/updater/src/main/resources/db/changelog/base/`, and `db.changelog-master.yml` picks up every file of that folder with `includeAll`.
+There is **one file per schema**, and each file holds **a single changeset** that is re-executed whenever its content changes.
+A schema change therefore edits the file of its schema in place: it never adds a new changeset or a new file of its own.
+
+Each SQL script must follow a specific format to be correctly interpreted by Liquibase.
 
 1.  **Liquibase Header**: The script must begin with the following line:
     ```sql
     --liquibase formatted sql
     ```
 
-2.  **Changeset Description**: Immediately after, you must define the changeset with a unique identifier and a description. The `logicalFilePath` must be fixed to prevent errors if the file is ever moved.
+2.  **Changeset Description**: Immediately after, you must define the single changeset of the file, named after the file. The `logicalFilePath` must be fixed to prevent errors if the file is ever moved.
     ```sql
-    --changeset dev-team:00012-my-migration logicalFilePath:fixed
+    --changeset mboisnard:01-initial-schema logicalFilePath:fixed splitStatements:false runInTransaction:false runOnChange:true
     ```
 
 ### 🧰 Useful Changeset Options
@@ -28,7 +32,7 @@ Several options can be added to the `--changeset` line to control its behavior:
 -   `logicalFilePath:fixed`: **Mandatory**. Prevents Liquibase from complaining if you move the changeset file.
 -   `runInTransaction:false`: Necessary for operations that cannot run inside a transaction, such as creating an index with the `CONCURRENTLY` option.
 -   `splitStatements:false`: Essential when using `DO` blocks with custom delimiters (e.g., `$do$`).
--   `runOnChange:true`: Used for scripts that should be re-executed if their content changes (e.g., views, stored functions).
+-   `runOnChange:true`: **Set on every changeset of this project**. The whole file is re-executed when its content changes, which is what allows editing it in place.
 -   `--validCheckSum: ANY`: Added on a separate line, it prevents Liquibase from raising an error if the file's checksum has changed. Useful in specific cases, like updating views via custom mechanisms.
 -   `labels:local`: Allows you to run a script only in a specific environment (e.g., `local` for development).
 
@@ -58,7 +62,12 @@ To achieve this, use SQL constructs that check for existence before creating or 
 -   `ALTER TABLE ... ADD COLUMN IF NOT EXISTS ...`
 -   `CREATE INDEX IF NOT EXISTS ...`
 
-Idempotency is required for all changes to ensure that migrations can be re-applied without causing errors.
+Idempotency is required for all changes to ensure that migrations can be re-applied without causing errors: every change to a file re-executes all of its statements.
+
+A new database and an existing one must end up with the same schema once the file has run:
+-   To change an existing table, add a statement after its `CREATE TABLE`, such as `ALTER TABLE ... ADD COLUMN IF NOT EXISTS ...`. Editing the `CREATE TABLE` alone only reaches a new database.
+-   To remove an object, add a `DROP ... IF EXISTS ...` statement. Deleting a statement from the file leaves existing databases unchanged.
+-   When a statement has no `IF NOT EXISTS` form (`ADD CONSTRAINT` for instance), wrap it in a `DO` block that checks the catalog first.
 
 ### Handling Complex Schema Changes (Without Locking) ⚠️
 
@@ -68,17 +77,22 @@ Certain database operations can lock tables for a long time (`ACCESS EXCLUSIVE l
 
 A standard index creation or deletion rewrites the table and locks it.
 
--   **Creation**: Use `CREATE INDEX CONCURRENTLY`. This operation is slower but does not block writes to the table. It requires being run outside a transaction (`runInTransaction:false`).
--   **Deletion**: Use `DROP INDEX CONCURRENTLY`.
+-   **Creation**: Use `CREATE INDEX CONCURRENTLY IF NOT EXISTS` on a table that already holds data. This operation is slower but does not block writes to the table. It cannot run inside a transaction block, and a changeset with `splitStatements:false` sends its whole file as one statement, so it needs a changeset of its own: decide where with the maintainer. On a new table, `CREATE INDEX IF NOT EXISTS` is enough.
+-   **Deletion**: Use `DROP INDEX CONCURRENTLY IF EXISTS`, which has the same constraint as the creation: a changeset of its own, decided with the maintainer.
 -   **Tip**: Before dropping a column (`DROP COLUMN`), it is better to first drop any associated indexes using `DROP INDEX CONCURRENTLY` to minimize the duration of the `ACCESS EXCLUSIVE` lock on the table.
 
 #### NOT NULL Constraint 🚫
 
-Adding a `NOT NULL` constraint on a large table locks it while it scans all rows. To avoid this, proceed in three steps (in separate transactions/changesets):
+Adding a `NOT NULL` constraint on a large table locks it while it scans all rows. To avoid this, proceed in three steps (in separate changes of the file, each applied before the next):
 
-1.  **Add a non-validated `CHECK` constraint**: It is added instantly because the database does not check existing data.
+1.  **Add a non-validated `CHECK` constraint**: It is added instantly because the database does not check existing data. The `DO` block keeps it idempotent.
     ```sql
-    ALTER TABLE my_table ADD CONSTRAINT my_column_not_null CHECK (my_column IS NOT NULL) NOT VALID;
+    DO $$
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'my_column_not_null' AND conrelid = 'my_table'::regclass) THEN
+            ALTER TABLE my_table ADD CONSTRAINT my_column_not_null CHECK (my_column IS NOT NULL) NOT VALID;
+        END IF;
+    END $$;
     ```
 2.  **Manually verify** that there are no longer any `NULL` values in the column.
 3.  **Validate the constraint**: This operation only requires a light lock to update metadata.
@@ -92,7 +106,7 @@ In most cases, changing a column's type rewrites the entire table. A safer appro
 1.  Create a **new column** with the desired type.
 2.  Use a **trigger** to copy and synchronize data from the old column to the new one during `INSERT` and `UPDATE` operations.
 3.  Update the **application code** to use the new column.
-4.  Once the code is deployed and stable, drop the old column and the trigger in a subsequent migration.
+4.  Once the code is deployed and stable, drop the old column and the trigger in a later change of the file.
 
 ::: tip
 More best practices [here](https://medium.com/paypal-tech/postgresql-at-scale-database-schema-changes-without-downtime-20d3749ed680)
@@ -110,7 +124,7 @@ We commit the jOOQ-generated files to our code repository. The main reason is to
 3.  Generate the jOOQ code from this newly created database.
 4.  Compile and test the application.
 
-Committing the code avoids this overhead and complexity in the CI process.
+Committing the code avoids this overhead and complexity in the CI process. After a changelog change, apply it locally and regenerate the classes as the "Database and jOOQ" section of `AGENTS.md` describes.
 
 ## 🧪 Integration Testing
 

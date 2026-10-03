@@ -65,7 +65,7 @@ This module contains the **secondary adapters**. It provides the technical imple
 - ⚙️ Handle any other technical aspects (file system, message bus, etc.).
 
 **Dependency Rules:**  
-This module only depends on `drinkit-domain`.
+This module depends on `drinkit-domain` and on the tech starters that bring its technologies (e.g., PostgreSQL, mail, HTTP clients), never on `drinkit-backend`.
 
 ---
 
