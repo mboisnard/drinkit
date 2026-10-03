@@ -149,7 +149,7 @@ open class User(
     /**
      * Create an aliased <code>drinkit_application.user</code> table reference
      */
-    constructor(alias: Name): this(alias, null)
+    constructor(alias: Name): this(alias, USER)
 
     /**
      * Create a <code>drinkit_application.user</code> table reference

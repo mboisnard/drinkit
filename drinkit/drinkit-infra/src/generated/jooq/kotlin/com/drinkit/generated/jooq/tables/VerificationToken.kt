@@ -108,7 +108,7 @@ open class VerificationToken(
      * Create an aliased <code>drinkit_application.verification_token</code>
      * table reference
      */
-    constructor(alias: Name): this(alias, null)
+    constructor(alias: Name): this(alias, VERIFICATION_TOKEN)
 
     /**
      * Create a <code>drinkit_application.verification_token</code> table

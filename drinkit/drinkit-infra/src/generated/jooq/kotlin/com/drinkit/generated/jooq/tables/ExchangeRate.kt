@@ -109,7 +109,7 @@ open class ExchangeRate(
      * Create an aliased <code>drinkit_application.exchange_rate</code> table
      * reference
      */
-    constructor(alias: Name): this(alias, null)
+    constructor(alias: Name): this(alias, EXCHANGE_RATE)
 
     /**
      * Create a <code>drinkit_application.exchange_rate</code> table reference
