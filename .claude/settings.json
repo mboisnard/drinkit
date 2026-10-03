@@ -1,5 +1,8 @@
 {
   "permissions": {
+    "additionalDirectories": [
+      "../drinkit-worktrees"
+    ],
     "deny": [
       "Bash(gh pr merge *)",
       "Bash(git push --no-verify *)"

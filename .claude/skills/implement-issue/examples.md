@@ -19,7 +19,11 @@ gh pr list --state merged --head <branch> --json number,url
 ```
 
 A branch without a worktree gets one: `git -C "$main" fetch origin <branch>`, then
-`git -C "$main" worktree add "$main/../drinkit-worktrees/<branch>" <branch>`.
+`git -C "$main" worktree add "$main/../drinkit-worktrees/<branch>" <branch>`. Resume and follow-up work from it:
+
+```
+cd "$main/../drinkit-worktrees/<branch>"
+```
 
 ## Issue
 
@@ -36,6 +40,7 @@ gh api 'repos/{owner}/{repo}/issues/<issue>/parent' --jq .number
 main=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
 git -C "$main" fetch origin master
 git -C "$main" worktree add --no-track -b <branch> "$main/../drinkit-worktrees/<branch>" origin/master
+cd "$main/../drinkit-worktrees/<branch>"
 url=$(gh issue view <issue> --json url --jq .url)
 gh project item-edit <number> --owner <owner> --url "$url" --field Status --value "In progress"
 gh issue view <issue> --json projectItems --jq '.projectItems[].status.name'
