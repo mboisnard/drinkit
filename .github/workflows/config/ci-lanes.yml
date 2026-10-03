@@ -55,6 +55,7 @@ none: &none
   - '.idea/**'
   - '.gitignore'
   - '.git-blame-ignore-revs'
+  - 'LICENSE'
 
 # ci.yml runs every lane when their counts differ
 changed:

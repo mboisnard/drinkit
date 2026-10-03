@@ -2,7 +2,7 @@
   "name": "drinkit",
   "version": "0.0.1",
   "description": "Drink It Manage your cellar",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "private": true,
   "type": "module",
   "scripts": {

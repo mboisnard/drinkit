@@ -68,3 +68,8 @@ holds the commands, the structure and the code conventions, for people and codin
 Explore
 jlink / jdeps
 
+## License
+
+DrinkIt is licensed under the [Apache License 2.0](LICENSE). Copyright 2024-2026 Mathieu Boisnard.
+
+The OCR starter bundles `fra.traineddata` from [tesseract-ocr/tessdata_best](https://github.com/tesseract-ocr/tessdata_best), also under the Apache License 2.0.
