@@ -61,6 +61,11 @@ docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/zizmorcore/zizmor --offline 
   schema, as Liquibase changelogs.
 - `docs/src/engineering/guidelines/`: the guidelines. The sections below say which one to read before which
   change.
+- `.claude/skills/`: how to carry out a kind of change, one folder each. Its `SKILL.md` says when it applies:
+  read it before that change, whatever the agent. A skill names its model files by class: find one with
+  `git grep -nwE '(class|interface|object) <Name>'`. `.claude/agents/`: the reviewers that check a branch.
+- An agent's working files, drafts, test lists, reports, go under `git rev-parse --git-path claude/<file>`
+  or in the session's scratch directory: never in the tree, never elsewhere on the machine.
 
 A folder directly under `drinkit/` or `tech-starters/backend/` that holds a `build.gradle.kts` becomes a
 Gradle project named after the folder.
@@ -173,6 +178,9 @@ same command fixes it.
   judge before the pull request is opened.
 - An issue's scope lists possibilities, not instructions. Analyze the current state first, and treat only
   the acceptance criteria as binding. The pull request explains the choices made.
+- A structuring choice is the maintainer's: a new module or dependency, a change to the API contract, to the
+  schema or to a security rule. Ask before making one: the facts with their real names, one question, two to
+  four options of one line, your recommendation first.
 - A person reads every issue and pull request: follow "Writing issues and pull requests" in
   `CONTRIBUTING.md`. `gh` and the API skip the issue forms, so an issue follows the matching form in
   `.github/ISSUE_TEMPLATE/` by hand: each field's `label` as a `###` heading in the form's order, its
