@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# Claude Code hook: in cmux, names the session's tab after its issue and step, such as "#382 judge" or "#382 PR #450".
-# Does nothing outside cmux, never blocks and prints nothing
+# Claude Code hook: in cmux, names the session's tab after its issue and step ("#382 judge", "#382 PR #450"), and shows
+# the judge's verdict and the CI gate of the pull request as sidebar pills. Does nothing outside cmux, never blocks
 
 [ -n "$CMUX_SURFACE_ID" ] || exit 0
 command -v cmux >/dev/null 2>&1 || exit 0
@@ -10,6 +10,9 @@ command -v jq >/dev/null 2>&1 || exit 0
 input=$(cat)
 field() {
     printf '%s' "$input" | jq -r "$1 // empty"
+}
+pill() {
+    cmux set-status "drinkit_$1" "$2" --color "$3" >/dev/null 2>&1
 }
 
 event=$(field .hook_event_name)
@@ -32,8 +35,22 @@ case $event in
         case $(field .tool_input.command) in
             *"gh pr create"*)
                 pr=$(field .tool_response.stdout | grep -o 'pull/[0-9]*' | head -n 1 | cut -d / -f 2)
-                [ -n "$pr" ] && step="PR #$pr"
+                [ -n "$pr" ] && step="PR #$pr" && pill ci "CI running" "#ff9500"
                 ;;
+            *"gh pr checks"*)
+                case $(field .tool_response.stdout | awk -F '\t' '$1 == "CI gate" { print $2 }') in
+                    pass) pill ci "CI green" "#34c759" ;;
+                    fail) pill ci "CI red" "#ff3b30" ;;
+                    pending) pill ci "CI running" "#ff9500" ;;
+                esac
+                ;;
+        esac
+        ;;
+    SubagentStart) pill judge "judging" "#ff9500" ;;
+    SubagentStop)
+        case $(field .last_assistant_message | head -n 1) in
+            "VERDICT: OK"*) pill judge "judge OK" "#34c759" ;;
+            "VERDICT: NEEDS_WORK"*) pill judge "judge: needs work" "#ff3b30" ;;
         esac
         ;;
 esac
