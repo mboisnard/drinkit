@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tab-title",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/cmux-status",
             "timeout": 5
           },
           {
@@ -60,7 +60,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tab-title",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/cmux-status",
             "timeout": 5
           }
         ]
@@ -84,7 +84,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tab-title",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/cmux-status",
             "timeout": 5
           }
         ]
@@ -96,7 +96,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tab-title",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/cmux-status",
             "timeout": 5
           }
         ]
