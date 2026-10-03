@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# Claude Code PreToolUse hook on Bash: refuses what only the maintainer does (ruleset, branch protection and push
-# protection writes, merges) and any way around pre-push. It reads the command as text: one built indirectly passes
+# Claude Code PreToolUse hook on Bash: refuses what only the maintainer does, a merge or a write to a ruleset, a branch
+# protection or a push protection bypass, and any way around pre-push. It reads the command as text, not as a shell.
 
 if ! command -v jq >/dev/null 2>&1; then
     echo "guard-github-protections: jq not found, GitHub protection writes go unchecked" >&2
@@ -9,105 +9,298 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 input=$(cat)
+cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
 
 found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
-    function command_of(text) {
+    BEGIN {
+        PIECE = "\001"
+        MERGE_MUTATION = "mergepullrequest|enablepullrequestautomerge|enqueuepullrequest"
+        MUTATION = "(create|update|delete)(repositoryruleset|branchprotectionrule)|" MERGE_MUTATION
+        MERGE = "pulls/[^[:space:]/]+/merge|" MERGE_MUTATION
+        ENDPOINT = "repos/[^[:space:]/]+/[^[:space:]/]+/(rulesets|branches/[^[:space:]]+/protection|secret-scanning/push-protection-bypasses|pulls/[^[:space:]/]+/merge)"
+        METHOD = "(-[a-z]*x|--method|--request)[[:space:]=]*"
+        WRITE = METHOD "(post|put|patch|delete)"
+        READ = METHOD "get|(^|[[:space:]])--get([[:space:]]|$)"
+        SHORT_READ = "(^|[[:space:]])-G([[:space:]]|$)"
+        SHORT_BODY = "(^|[[:space:]])(-[A-Za-z]*[dFT]|-f[^[:space:]]*=)"
+        LONG_BODY = "(^|[[:space:]])(-f|--field|--raw-field|--input|--data[a-z-]*|--json|--form|--upload-file)([[:space:]=]|$)"
+        REPO_FLAG = "([[:space:]]+(-r|--repo)([[:space:]]+|=)[^[:space:]]+)*"
+        PR_MERGE = "^gh" REPO_FLAG "[[:space:]]+pr" REPO_FLAG "[[:space:]]+merge([[:space:]]|$)"
+        PR_MERGE_HELP = "^gh" REPO_FLAG "[[:space:]]+pr" REPO_FLAG "[[:space:]]+merge[[:space:]]+(-h|--help)[[:space:]]*$"
+        WRAPPER = "^([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*|env|command|exec|nohup|nice|time|sudo|xargs|eval|sh|bash|zsh|dash|ksh|if|elif|then|else|do|while|until|!|timeout([[:space:]]+-[^[:space:]]*)*[[:space:]]+[0-9.]+[smhd]?)([[:space:]]+-[^[:space:]]*)*([[:space:]]+|$)"
+        SHELL = "^(eval|sh|bash|zsh|dash|ksh)([[:space:]]|$)"
+        SHELL_WORD = "(^|[[:space:]/|&;(])(sh|bash|zsh|dash|ksh)([[:space:]|&;)]|$)"
+        GIT_OPTION = "^[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--(git-dir|work-tree|namespace|config-env)[[:space:]]+[^[:space:]]+|--[a-z-]+(=[^[:space:]]+)?|-[A-Za-z])"
+        HOOKS_PATH_KEPT = "^config([[:space:]]+(--local|--global|--system|--worktree|--show-origin|--show-scope|--get|get|set))*[[:space:]]+core\\.hookspath([[:space:]]+\\.githooks)?[[:space:]]*$"
+    }
+
+    function deny(rule, command) {
+        print rule "\t" command
+        exit
+    }
+
+    # Cuts the command into segments on ; && || and line ends, and segments into pieces on | & ( ) $( and backquotes,
+    # outside quotes. Quote characters are dropped. A here-document body is skipped unless it can run a command.
+    function scan(    c, next_char) {
+        size = length(command_text)
+        line_start = 1
+        for (i = 1; i <= size; i++) {
+            c = substr(command_text, i, 1)
+            next_char = substr(command_text, i + 1, 1)
+            if (quote == "\047") {
+                if (c == "\047") quote = ""
+                else current = current c
+            } else if (c == "\\") {
+                if (next_char != "\n") current = current next_char
+                i++
+            } else if (c == "$" && next_char == "(") {
+                open_paren(quote)
+                i++
+            } else if (quote == "\"") {
+                in_double_quotes(c)
+            } else if (c == "\047" || c == "\"") {
+                quote = c
+            } else if (c == "(") {
+                open_paren("")
+            } else if (c == ")") {
+                close_paren()
+            } else if ((c == "&" || c == "|") && next_char == c) {
+                cut_segment()
+                i++
+            } else if (c == ";") {
+                cut_segment()
+            } else if (c == "&" || c == "|" || c == "`") {
+                current = current PIECE
+            } else if (c == "\n") {
+                end_line()
+            } else {
+                if (c == "<") start_heredoc()
+                current = current c
+            }
+        }
+        cut_segment()
+    }
+
+    function in_double_quotes(c) {
+        if (c == "\"") quote = ""
+        else if (c == "`") current = current PIECE
+        else current = current c
+    }
+
+    function open_paren(quote_outside) {
+        outer_quote[++depth] = quote_outside
+        quote = ""
+        current = current PIECE
+    }
+
+    function close_paren() {
+        if (depth > 0) quote = outer_quote[depth--]
+        current = current PIECE
+    }
+
+    function cut_segment() {
+        if (current != "") segment[++segments] = current
+        current = ""
+    }
+
+    function start_heredoc(    rest) {
+        if (delimiter != "" || substr(command_text, i + 1, 1) != "<" || substr(command_text, i + 2, 1) == "<" || substr(command_text, i - 1, 1) == "<")
+            return
+        rest = substr(command_text, i + 2)
+        strip_tabs = sub(/^-/, "", rest)
+        sub(/^[ \t]+/, "", rest)
+        match(rest, /^[^[:space:];&|<>()]*/)
+        delimiter = substr(rest, 1, RLENGTH)
+        quoted_delimiter = gsub(/["\047\\]/, "", delimiter)
+    }
+
+    # An unquoted delimiter leaves $( and backquotes live in the body: such a body is read as commands.
+    function end_line(    opener, body_end) {
+        cut_segment()
+        opener = substr(command_text, line_start, i - line_start)
+        if (delimiter != "" && opener !~ SHELL_WORD) {
+            body_end = heredoc_end()
+            if (quoted_delimiter || heredoc_body !~ /`|\$\(/) {
+                heredoc_bodies = heredoc_bodies heredoc_body
+                heredoc_opener = opener
+                i = body_end
+            }
+        }
+        delimiter = ""
+        line_start = i + 1
+    }
+
+    function heredoc_end(    position, line, stop) {
+        heredoc_body = ""
+        position = i
+        while (position < size) {
+            stop = index(substr(command_text, position + 1), "\n")
+            line = stop ? substr(command_text, position + 1, stop - 1) : substr(command_text, position + 1)
+            position += stop ? stop : size - position
+            if (strip_tabs) sub(/^\t+/, "", line)
+            if (line == delimiter) break
+            heredoc_body = heredoc_body line "\n"
+        }
+        return position
+    }
+
+    function check_segment(text,    flat, lower, count, pieces, j) {
+        flat = text
+        gsub(PIECE "|\n", " ", flat)
+        sub(/^[[:space:]]+/, "", flat)
+        lower = tolower(flat)
+        if (lower ~ MUTATION || (lower ~ ENDPOINT && (lower ~ WRITE || (has_body(flat) && !is_read(flat)))))
+            deny(lower ~ MERGE ? "merge" : "protection", flat)
+        if (lower ~ /git_config_/ && lower ~ /hookspath/)
+            deny("hooks-path", flat)
+        if (lower ~ /graphql/ && lower ~ /(--input|[[:space:]=]@)/)
+            deny("hidden-query", flat)
+        count = split(text, pieces, PIECE)
+        for (j = 1; j <= count; j++)
+            check_piece(pieces[j], flat)
+    }
+
+    function has_body(flat) {
+        return flat ~ SHORT_BODY || tolower(flat) ~ LONG_BODY
+    }
+
+    function is_read(flat) {
+        return tolower(flat) ~ READ || flat ~ SHORT_READ
+    }
+
+    # Quotes are gone by now, so the script of sh -c is split again on every separator.
+    function check_piece(piece, flat,    command, count, parts, k) {
+        command = command_of(piece)
+        if (!via_shell) {
+            check_command(command, piece, flat)
+            return
+        }
+        count = split(command, parts, /[;|&()`\n]/)
+        for (k = 1; k <= count; k++)
+            check_command(command_of(parts[k]), parts[k], flat)
+    }
+
+    function command_of(text,    word) {
+        via_shell = 0
         sub(/^[[:space:]{!]+/, "", text)
-        while (match(text, /^([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*|env|command|exec|nohup|nice|time|sudo|xargs|sh|bash|zsh|if|elif|then|else|do|while|until|!|timeout([[:space:]]+-[^[:space:]]*)*[[:space:]]+[0-9.]+[smhd]?)([[:space:]]+-[^[:space:]]*)*([[:space:]]+|$)/))
+        while (match(text, WRAPPER)) {
+            word = substr(text, 1, RLENGTH)
+            if (word ~ SHELL) via_shell = 1
             text = substr(text, RLENGTH + 1)
+        }
         sub(/^\\/, "", text)
         sub(/^[^[:space:]]*\//, "", text)
         return text
     }
-    function git_subcommand(text) {
+
+    function check_command(command, piece, flat,    lower, subcommand) {
+        lower = tolower(command)
+        if (command ~ /^cd([[:space:]]|$)/) {
+            cd_dir = joined(cd_dir, cd_target(command))
+            return
+        }
+        if (lower ~ PR_MERGE && lower !~ PR_MERGE_HELP)
+            deny("merge", flat)
+        if (lower ~ /^gh[[:space:]]+alias[[:space:]]+(set|import)([[:space:]]|$)/)
+            deny("alias", flat)
+        if (lower !~ /^git([[:space:]]|$)/)
+            return
+        subcommand = git_subcommand(command)
+        if ((lower ~ /core\.hookspath/ && tolower(subcommand) !~ HOOKS_PATH_KEPT) || tolower(piece) ~ /git_config_/)
+            deny("hooks-path", flat)
+        if (subcommand ~ /^push([[:space:]]|$)/) {
+            if (subcommand ~ /[[:space:]]--no-v/)
+                deny("no-verify", flat)
+            push_dir[++pushes] = joined(cd_dir, git_dir)
+            push_command[pushes] = flat
+        }
+    }
+
+    function cd_target(command) {
+        sub(/^cd([[:space:]]+-[LPe@]+)*[[:space:]]*/, "", command)
+        if (command == "") return "~"
+        match(command, /^[^[:space:]]+/)
+        return substr(command, 1, RLENGTH)
+    }
+
+    function git_subcommand(text,    option) {
+        git_dir = ""
         text = substr(text, 4)
-        while (match(text, /^[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--[a-z-]+(=[^[:space:]]+)?|-[A-Za-z])/))
+        while (match(text, GIT_OPTION)) {
+            option = substr(text, 1, RLENGTH)
             text = substr(text, RLENGTH + 1)
+            sub(/^[[:space:]]+/, "", option)
+            if (option ~ /^(-C[[:space:]]|--git-dir[[:space:]=]|--work-tree[[:space:]=])/) {
+                sub(/^[^[:space:]=]+[[:space:]=]+/, "", option)
+                git_dir = joined(git_dir, option)
+            }
+        }
         sub(/^[[:space:]]+/, "", text)
         return text
     }
-    { text = text $0 "\n" }
+
+    function joined(base, path) {
+        if (path == "") return base
+        if (base == "" || path ~ /^[\/~]/) return path
+        return base "/" path
+    }
+
+    { command_text = command_text $0 "\n" }
+
     END {
-        gsub(/\\\n/, " ", text)
-        gsub(/["\047]/, "", text)
-        gsub(/&&|\|\||;/, "\n", text)
-        count = split(text, segments, "\n")
-        for (i = 1; i <= count; i++) {
-            s = tolower(segments[i])
-            endpoint = s ~ /repos\/[^[:space:]\/]+\/[^[:space:]\/]+\/(rulesets|branches\/[^[:space:]]+\/protection|secret-scanning\/push-protection-bypasses|pulls\/[^[:space:]\/]+\/merge)/
-            mutation = s ~ /(create|update|delete)(repositoryruleset|branchprotectionrule)|mergepullrequest|enablepullrequestautomerge|enqueuepullrequest/
-            write = s ~ /(-[a-z]*x|--method|--request)[[:space:]=]*(post|put|patch|delete)/
-            read = s ~ /(-[a-z]*x|--method|--request)[[:space:]=]*get|(^|[[:space:]])--get([[:space:]]|$)/ || segments[i] ~ /(^|[[:space:]])-G([[:space:]]|$)/
-            body = segments[i] ~ /(^|[[:space:]])(-[A-Za-z]*[dFT]|-f[^[:space:]]*=)/ || s ~ /(^|[[:space:]])(-f|--field|--raw-field|--input|--data[a-z-]*|--json|--form|--upload-file)([[:space:]=]|$)/
-            if (mutation || (endpoint && (write || (body && !read)))) {
-                print (s ~ /pulls\/[^[:space:]\/]+\/merge|mergepullrequest|enablepullrequestautomerge|enqueuepullrequest/ ? "merge" : "protection") "\t" segments[i]
-                exit
-            }
-            if (s ~ /git_config_/ && s ~ /hookspath/) {
-                print "hooks-path\t" segments[i]
-                exit
-            }
-            if (s ~ /graphql/ && s ~ /(--input|[[:space:]=]@)/) {
-                print "hidden-query\t" segments[i]
-                exit
-            }
-            parts = split(segments[i], commands, /\$\(|`|\(|\||&/)
-            for (j = 1; j <= parts; j++) {
-                command = command_of(commands[j])
-                lower = tolower(command)
-                if (lower ~ /^gh([[:space:]]+(-r|--repo)([[:space:]]+|=)[^[:space:]]+)*[[:space:]]+pr([[:space:]]+(-r|--repo)([[:space:]]+|=)[^[:space:]]+)*[[:space:]]+merge([[:space:]]|$)/) {
-                    print "merge\t" segments[i]
-                    exit
-                }
-                if (lower ~ /^gh[[:space:]]+alias[[:space:]]+(set|import)([[:space:]]|$)/) {
-                    print "alias\t" segments[i]
-                    exit
-                }
-                if (lower !~ /^git([[:space:]]|$)/)
-                    continue
-                subcommand = git_subcommand(command)
-                if ((lower ~ /core\.hookspath/ && tolower(subcommand) !~ /^config[[:space:]]+((--local|--get|get)[[:space:]]+)?core\.hookspath([[:space:]]+\.githooks)?([[:space:]]*\).*)?[[:space:]]*$/) || tolower(commands[j]) ~ /git_config_/) {
-                    print "hooks-path\t" segments[i]
-                    exit
-                }
-                if (subcommand ~ /^push([[:space:]]|$)/) {
-                    if (subcommand ~ /[[:space:]]--no-v/) {
-                        print "no-verify\t" segments[i]
-                        exit
-                    }
-                    push = segments[i]
-                }
-            }
-        }
-        if (push != "")
-            print "push\t" push
+        scan()
+        if (tolower(heredoc_bodies) ~ MUTATION)
+            deny(tolower(heredoc_bodies) ~ MERGE ? "merge" : "protection", heredoc_opener)
+        for (s = 1; s <= segments; s++)
+            check_segment(segment[s])
+        for (p = 1; p <= pushes; p++)
+            print "push\t" push_dir[p] "\t" push_command[p]
     }')
 
-[ -z "$found" ] && exit 0
+[ -n "$found" ] || exit 0
 
-rule=$(printf '%s' "$found" | head -n 1 | cut -f 1)
-command=$(printf '%s' "$found" | cut -f 2-)
+deny() {
+    case $1 in
+        protection) reason="coding agents never change rulesets, branch protection or push protection bypasses. Ask the maintainer to run it" ;;
+        merge) reason="coding agents never merge a pull request, the maintainer does. Leave it open for review" ;;
+        hidden-query) reason="a GraphQL query read from a file or stdin cannot be checked. Pass it inline with -f query=..." ;;
+        alias) reason="a gh alias can hide a merge. Run the gh command itself" ;;
+        hooks-path) reason="the git hooks keep master safe, so core.hooksPath stays .githooks. Never override or unset it" ;;
+        no-verify) reason="pre-push keeps master safe. Push without --no-verify" ;;
+        hooks-off) reason="git hooks are not enabled in $3. Run git -C $3 config core.hooksPath .githooks, then push again" ;;
+    esac
+    jq -n --arg reason "$reason" --arg command "$2" '{
+        hookSpecificOutput: {
+            hookEventName: "PreToolUse",
+            permissionDecision: "deny",
+            permissionDecisionReason: ("guard-github-protections: " + $reason + ": " + $command)
+        }
+    }'
+}
 
-if [ "$rule" = push ]; then
-    cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
-    [ "$(git -C "${cwd:-.}" config core.hooksPath 2>/dev/null)" = .githooks ] && exit 0
-    rule=hooks-off
+resolved() {
+    case $1 in
+        '') printf '%s' "${cwd:-.}" ;;
+        \~) printf '%s' "$HOME" ;;
+        \~/*) printf '%s/%s' "$HOME" "${1#\~/}" ;;
+        /*) printf '%s' "$1" ;;
+        *) printf '%s/%s' "${cwd:-.}" "$1" ;;
+    esac
+}
+
+tab=$(printf '\t')
+rule=${found%%"$tab"*}
+if [ "$rule" != push ]; then
+    deny "$rule" "${found#*"$tab"}"
+    exit 0
 fi
 
-case $rule in
-    protection) reason="coding agents never change rulesets, branch protection or push protection bypasses. Ask the maintainer to run it" ;;
-    merge) reason="coding agents never merge a pull request, the maintainer does. Leave it open for review" ;;
-    hidden-query) reason="a GraphQL query read from a file or stdin cannot be checked. Pass it inline with -f query=..." ;;
-    alias) reason="a gh alias can hide a merge. Run the gh command itself" ;;
-    hooks-path) reason="the git hooks keep master safe, so core.hooksPath stays .githooks. Never override or unset it" ;;
-    no-verify) reason="pre-push keeps master safe. Push without --no-verify" ;;
-    hooks-off) reason="git hooks are not enabled in this clone. Run git config core.hooksPath .githooks, then push again" ;;
-esac
-
-jq -n --arg reason "$reason" --arg command "$command" '{
-    hookSpecificOutput: {
-        hookEventName: "PreToolUse",
-        permissionDecision: "deny",
-        permissionDecisionReason: ("guard-github-protections: " + $reason + ": " + $command)
-    }
-}'
+command -v git >/dev/null 2>&1 || exit 0
+printf '%s\n' "$found" | while IFS= read -r push; do
+    push=${push#push"$tab"}
+    dir=$(resolved "${push%%"$tab"*}")
+    [ "$(git -C "$dir" config core.hooksPath 2>/dev/null)" = .githooks ] && continue
+    deny hooks-off "${push#*"$tab"}" "$dir"
+    break
+done
+exit 0
