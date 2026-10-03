@@ -5,10 +5,17 @@
 hook="$(dirname "$0")/guard-github-protections"
 failures=0
 
+hooks_on=$(mktemp -d)
+hooks_off=$(mktemp -d)
+trap 'rm -rf "$hooks_on" "$hooks_off"' EXIT
+git -C "$hooks_on" init -q && git -C "$hooks_on" config core.hooksPath .githooks
+git -C "$hooks_off" init -q
+
 check() {
     expected=$1
     command=$2
-    output=$(jq -n --arg command "$command" '{tool_name: "Bash", tool_input: {command: $command}}' | "$hook")
+    cwd=${3:-$hooks_on}
+    output=$(jq -n --arg command "$command" --arg cwd "$cwd" '{tool_name: "Bash", cwd: $cwd, tool_input: {command: $command}}' | "$hook")
     if [ -z "$output" ]; then
         actual=allow
     elif printf '%s' "$output" | jq -e '.hookSpecificOutput.permissionDecision == "deny"' >/dev/null; then
@@ -81,6 +88,71 @@ check allow 'gh api \
 check allow 'curl -sSL https://api.github.com/repos/mboisnard/drinkit/rulesets'
 check allow 'curl -sS -D headers.txt https://api.github.com/repos/mboisnard/drinkit/rulesets'
 check allow 'curl -G -d per_page=100 https://api.github.com/repos/mboisnard/drinkit/rulesets'
+
+check deny 'gh pr merge 450 --rebase'
+check deny 'gh pr merge'
+check deny 'env gh pr merge 450'
+check deny 'GH_REPO=mboisnard/drinkit gh pr merge 450'
+check deny "bash -c 'gh pr merge 450'"
+check deny 'gh "pr" merge 450'
+check deny 'echo 450 | xargs -n1 gh pr merge'
+check deny 'git status && gh pr merge 450 --auto'
+check deny 'gh -R mboisnard/drinkit pr merge 450'
+check deny 'gh --repo mboisnard/drinkit pr merge 450'
+check deny 'gh pr --repo=mboisnard/drinkit merge 450'
+check deny '/opt/homebrew/bin/gh pr merge 450'
+check deny '\gh pr merge 450'
+check deny 'if true; then gh pr merge 450; fi'
+# shellcheck disable=SC2016
+check deny 'for i in 450; do gh pr merge $i; done'
+check deny 'timeout 60 gh pr merge 450'
+check deny 'true & gh pr merge 450'
+check deny "gh api graphql -f query='mutation { enqueuePullRequest(input: {pullRequestId: \"x\"}) { clientMutationId } }'"
+check deny 'gh api --method PUT repos/mboisnard/drinkit/pulls/450/merge'
+check deny 'gh api -X PUT repos/{owner}/{repo}/pulls/450/merge -f merge_method=rebase'
+check deny 'gh api repos/mboisnard/drinkit/pulls/450/merge -f merge_method=rebase'
+# shellcheck disable=SC2016
+check deny 'curl -X PUT -H "Authorization: Bearer $(gh auth token)" https://api.github.com/repos/mboisnard/drinkit/pulls/450/merge'
+check deny "gh api graphql -f query='mutation { mergePullRequest(input: {pullRequestId: \"x\"}) { clientMutationId } }'"
+check deny "gh api graphql -f query='mutation { enablePullRequestAutoMerge(input: {pullRequestId: \"x\"}) { clientMutationId } }'"
+check deny 'gh api graphql -F query=@merge.graphql'
+check deny 'gh api graphql --input query.json'
+check deny "gh alias set land 'pr merge --rebase'"
+check deny 'gh alias import aliases.yml'
+check deny 'git push --no-verify origin HEAD:master'
+check deny 'git push origin 382-implement-issue --no-verify'
+check deny 'git -c core.hooksPath=/dev/null push origin HEAD:master'
+check deny 'git -C . -c core.hookspath= push'
+check deny 'git config --unset core.hooksPath'
+check deny 'git config core.hooksPath /dev/null'
+check deny 'GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=/dev/null git push'
+check deny 'export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=/dev/null; git push origin HEAD:master'
+check deny 'git push origin HEAD:master' "$hooks_off"
+check deny 'git -C ../drinkit push -u origin HEAD' "$hooks_off"
+
+check allow 'gh pr view 450'
+check allow 'gh pr create --base master --title x --body-file body.md'
+check allow 'gh pr checks 450 --watch'
+check allow 'gh api repos/mboisnard/drinkit/pulls/450/merge'
+check allow "gh api graphql -f query='query { viewer { login } }'"
+check allow 'gh alias list'
+check allow 'git push -u origin HEAD'
+check allow 'git push --force-with-lease --force-if-includes'
+check allow 'git -C ../drinkit-worktrees/382 push --force-with-lease origin 382-implement-issue'
+check allow 'git config core.hooksPath'
+check allow 'git config core.hooksPath .githooks'
+check allow 'git config --get core.hooksPath'
+check allow 'git config get core.hooksPath'
+check allow 'git -C /path/to/worktree config core.hooksPath'
+# shellcheck disable=SC2016
+check allow 'test "$(git config core.hooksPath)" = .githooks'
+# shellcheck disable=SC2016
+check allow '[ "$(git config core.hooksPath)" = .githooks ] || echo off'
+check allow './gradlew build 2>&1 | tail -n 20'
+check allow 'git commit -m "Refuse gh pr merge from agent sessions"'
+check allow 'git log --grep "gh pr merge"'
+check allow 'grep -rn "core.hooksPath" AGENTS.md'
+check allow 'git status' "$hooks_off"
 
 if [ "$failures" -ne 0 ]; then
     echo "$failures failing"
