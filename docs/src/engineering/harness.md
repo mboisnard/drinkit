@@ -4,25 +4,57 @@ The harness is the set of guardrails that lets humans and coding agents change D
 
 ```mermaid
 flowchart LR
-  edit[Edit] --> commit[Commit] --> push[Push] --> pr[Pull request] --> merge[Merge on master]
-  edit -.- claude[Claude Code hook<br/>detekt after each edit]
-  edit -.- guard[Claude Code hook<br/>no ruleset write]
-  commit -.- precommit[pre-commit<br/>format and detekt]
+  edit[Edit] --> commit[Commit] --> judge[Judge] --> push[Push] --> pr[Pull request] --> merge[Merge on master]
+  edit -.- claude[Claude Code hook<br/>detekt after each Kotlin edit]
+  edit -.- guard[Claude Code hook<br/>no ruleset write, no merge]
+  edit -.- generated[Claude Code hooks<br/>no hand edit of generated files,<br/>compile and type check at the end of a turn]
+  commit -.- precommit[pre-commit<br/>file size, lock file,<br/>format and detekt]
+  judge -.- issuejudge[issue-judge<br/>spec and design]
   push -.- prepush[pre-push<br/>no push to master]
   pr -.- ci[CI<br/>the lanes a change touches]
   merge -.- ruleset[master ruleset<br/>PR and green CI gate]
 ```
 
-Local layers can be skipped with `--no-verify`. The GitHub layers cannot, owner included.
+A person can skip the local git hooks with `--no-verify`, a Claude Code session cannot skip pre-push. The GitHub layers cannot be skipped, owner included.
 
 ## Coding agent
+
+`/implement-issue <number>` takes a Ready issue to a pull request: a worktree of its own, the code test first, the lanes CI would run, a fresh judge, then the pull request and the board moves. The maintainer merges.
 
 | Part | What it does | Where | Since |
 |---|---|---|---|
 | Conventions | Commands, structure, code patterns and traps a coding agent reads when a session starts. Claude Code, Codex, Copilot and Cursor all read the file | [`AGENTS.md`][agents-md] | 2026-05-01 as `CLAUDE.md`, `AGENTS.md` since 2026-10-03 |
-| Lint hook | Runs detekt with auto-correct after every file Claude Code writes, so it sees its findings at once | [`.claude/settings.json`][claude-settings] | 2026-09-13 |
-| Guard hook | Refuses a command that writes to a ruleset, to branch protection or to a push protection bypass, through `gh api` or `curl`, before it runs. Reads pass. It reads the command as text, so one built indirectly, through a variable or a script, passes, and a harmless command that names one of those endpoints next to a body flag can be refused | [`.claude/hooks/guard-github-protections`][guard-hook] | 2026-10-02 |
-| Skill `new-backend-tech-starter` | Guides the creation of a backend tech starter, or its alignment with the conventions | [`.claude/skills/new-backend-tech-starter`][skill-starter] | 2026-09-19 |
+| Agent `issue-judge` | A fresh subagent that sees the issue and the branch, not the author's account of it. It reruns the tests it relies on and returns two verdicts: Spec, each acceptance criterion met, and Design, the refactor done and the guidelines followed. Two rounds at most, then the maintainer decides | [`.claude/agents/issue-judge.md`][issue-judge] | 2026-10-03 |
+| Agent `security-reviewer` | A fresh, read-only subagent that reviews a branch for security: authorization of each endpoint, CSRF, CORS, headers, input validation, secrets, new dependencies, the frontend's handling of user input. `implement-issue` starts it when the diff touches one of those | [`.claude/agents/security-reviewer.md`][security-reviewer] | 2026-10-03 |
+| Lint hook | Once Claude Code writes a Kotlin source or a Gradle script, runs `lint-kotlin` from its worktree, and shows Claude the findings when detekt fails | [`.claude/hooks/detekt-after-edit`][detekt-hook] | 2026-09-13, Kotlin only and findings shown since 2026-10-03 |
+| Guard hook | Refuses, before it runs, a command that writes to a ruleset, to branch protection or to a push protection bypass, or that merges a pull request, through `gh`, `gh api`, GraphQL or `curl`. Also refuses any way around pre-push: `--no-verify`, an overridden or unset `core.hooksPath`, a push from a clone without the git hooks. Reads pass, and so does text inside quotes or a heredoc that no shell reads. It reads the command as text, so one built indirectly, through a variable or a script, passes. `permissions.deny` in the same settings refuses `gh pr merge` and `git push --no-verify` a second time | [`.claude/hooks/guard-github-protections`][guard-hook] | 2026-10-02, merges and pre-push since 2026-10-03 |
+| cmux status hook | In the cmux terminal, names the session's tab after its issue and step, `#382 implement`, `#382 judge`, `#382 PR #450`, and shows the judge's verdict and the pull request's CI gate as sidebar pills, read from `gh pr checks` whether it passes or fails. Does nothing elsewhere | [`.claude/hooks/cmux-status`][cmux-status] | 2026-10-03 |
+| Generated files hook | Refuses a hand edit of a file a tool writes: jOOQ classes, the generated API client, Gradle's and npm's lock files, the generated documentation pages, and `.env` files. Its message names the command that changes the file instead. A shell command that writes the file passes | [`.claude/hooks/protect-generated-files`][protect-hook] | 2026-10-03 |
+| Compile hook | At the end of a turn that changed Kotlin sources, compiles them with their tests. When frontend sources changed, runs the `typecheck` script of each app that has one and has its dependencies installed. The errors go back to Claude, which keeps working until they are fixed. A state already checked is not checked again, so it cannot loop | [`.claude/hooks/compile-at-stop`][compile-hook] | 2026-10-03 |
+| Session context hook | At start, on resume and after a compaction, tells Claude its branch, its issue, how far it is ahead of master and its uncommitted work | [`.claude/hooks/session-context`][session-hook] | 2026-10-03 |
+
+Each Claude Code hook has a test next to it, `<hook>.test`, and so do `pre-commit` and `pre-push`, run by hand for now. Claude Code also loads the personal configuration of whoever runs it, from `~/.claude`, on top of these parts, and a project cannot turn it off.
+
+### Skills
+
+A skill holds how to carry out one kind of change. Claude loads it when the files it names are touched, or when
+it is asked for, and other agents are told to read it by `AGENTS.md`.
+
+| Skill | When it applies | Started by |
+|---|---|---|
+| [`implement-issue`][skill-issue] | Taking a Ready issue to a pull request | The maintainer, `/implement-issue <number>` |
+| [`new-issue`][skill-new-issue] | Turning an idea, a bug or discovered work into an issue that follows its form | On request, or by `implement-issue` |
+| [`review-pr`][skill-review-pr] | Reviewing a pull request and posting inline comments ranked by severity | The maintainer, `/review-pr <number>` |
+| [`test-driven-development`][skill-tdd] | Adding or changing behavior, backend or frontend: a test list, red-green-tidy cycles, then a technical and functional refactor | Code under `drinkit/` or a backend starter |
+| [`test-existing-code`][skill-test-existing] | Covering code that works but has no tests, each test proven able to fail | On request |
+| [`hexagonal-backend`][skill-hexagonal] | Where each piece of a backend feature goes, from use case to controller and security rule | Backend production code |
+| [`api-contract-change`][skill-contract] | Changing the OpenAPI contract, then both generated sides | The contract and the client generator settings |
+| [`database-change`][skill-database] | Changing the schema in place, idempotently, then the jOOQ classes and their tests | The changelogs and the generated jOOQ code |
+| [`frontend-feature`][skill-frontend] | Shaping a feature of the Nuxt app around the generated client | Frontend sources |
+| [`new-backend-tech-starter`][skill-starter] | Creating a backend tech starter, or aligning one with the conventions | On request |
+| [`new-frontend-tech-starter`][skill-frontend-starter] | Creating the first frontend tech starter, a Nuxt layer, once its layout is agreed | On request |
+| [`pentest`][skill-pentest] | Scanning the running application locally with OWASP ZAP, then triaging the findings | The maintainer, `/pentest` |
+| [`threat-model`][skill-threat-model] | A STRIDE threat model of one feature or flow | The maintainer, `/threat-model` |
 
 ## Git hooks
 
@@ -31,7 +63,7 @@ Enabled once per clone with `git config core.hooksPath .githooks`.
 | Part | What it does | Where | Since |
 |---|---|---|---|
 | `lint-kotlin` | Formats Kotlin sources and Gradle scripts, fails when detekt does. Shared by `pre-commit` and Claude Code | [`.githooks/lint-kotlin`][lint-kotlin] | 2026-09-13 |
-| `pre-commit` | When Kotlin files are staged, runs `lint-kotlin` and re-stages what it reformatted | [`.githooks/pre-commit`][pre-commit] | 2026-09-13 |
+| `pre-commit` | Refuses a staged file over 5 MB, and a dependency change in a `package.json` without its `package-lock.json`. When Kotlin files are staged, runs `lint-kotlin` and re-stages what it reformatted | [`.githooks/pre-commit`][pre-commit] | 2026-09-13, size and lock file checks since 2026-10-03 |
 | `pre-push` | Refuses any push, force push or deletion of master before anything is sent | [`.githooks/pre-push`][pre-push] | 2026-09-27 |
 
 ## Gradle
@@ -89,11 +121,30 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 - Detekt and coverage reports on every pull request: [#404][i404]
 - Documentation generation as part of the build: [#395][i395]
 - Frontend upgrade, then its linting and tests in the frontend lane: [#388][i388], then [#400][i400]
-- A repeatable agent workflow from issue to pull request, with a judge: [#382][i382]
+- The judge is required by `/implement-issue`, not by a hook: the pull request shows its verdict line, which the maintainer checks before merging
+- The hook tests run by hand, not in CI: [#434][i434]
 
 [agents-md]: https://github.com/mboisnard/drinkit/blob/master/AGENTS.md
-[claude-settings]: https://github.com/mboisnard/drinkit/blob/master/.claude/settings.json
+[skill-issue]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/implement-issue/SKILL.md
+[skill-tdd]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/test-driven-development/SKILL.md
+[issue-judge]: https://github.com/mboisnard/drinkit/blob/master/.claude/agents/issue-judge.md
+[security-reviewer]: https://github.com/mboisnard/drinkit/blob/master/.claude/agents/security-reviewer.md
+[skill-new-issue]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-issue/SKILL.md
+[skill-review-pr]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/review-pr/SKILL.md
+[skill-test-existing]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/test-existing-code/SKILL.md
+[skill-hexagonal]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/hexagonal-backend/SKILL.md
+[skill-contract]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/api-contract-change/SKILL.md
+[skill-database]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/database-change/SKILL.md
+[skill-frontend]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/frontend-feature/SKILL.md
+[skill-frontend-starter]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-frontend-tech-starter/SKILL.md
+[skill-pentest]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/pentest/SKILL.md
+[skill-threat-model]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/threat-model/SKILL.md
+[detekt-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/detekt-after-edit
 [guard-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/guard-github-protections
+[cmux-status]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/cmux-status
+[protect-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/protect-generated-files
+[compile-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/compile-at-stop
+[session-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/session-context
 [skill-starter]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-backend-tech-starter/SKILL.md
 [lint-kotlin]: https://github.com/mboisnard/drinkit/blob/master/.githooks/lint-kotlin
 [pre-commit]: https://github.com/mboisnard/drinkit/blob/master/.githooks/pre-commit
@@ -127,4 +178,4 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [i395]: https://github.com/mboisnard/drinkit/issues/395
 [i388]: https://github.com/mboisnard/drinkit/issues/388
 [i400]: https://github.com/mboisnard/drinkit/issues/400
-[i382]: https://github.com/mboisnard/drinkit/issues/382
+[i434]: https://github.com/mboisnard/drinkit/issues/434
