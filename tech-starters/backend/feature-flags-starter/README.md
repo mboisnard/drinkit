@@ -83,73 +83,25 @@ if (featureFlags.isEnabled("new-checkout", context)) {
 }
 ```
 
-### User & Session Shortcuts
+### Shortcuts
 
-Avoid constructing a full `FeatureFlagContext` when you only need to target by user or session:
+Avoid constructing a full `FeatureFlagContext` when you only need to target a user, or to test the opposite:
 
 ```kotlin
 if (featureFlags.isEnabledForUser("beta-feature", userId)) {
     // user-targeted rollout
 }
 
-if (featureFlags.isDisabledForSession("maintenance-mode", sessionId)) {
-    // session-scoped check
+if (featureFlags.isDisabled("maintenance-mode")) {
+    // flag off
 }
 ```
 
-### Automatic Context Injection via Enrichers
+### Per-Request Context
 
-Instead of manually passing a `FeatureFlagContext` to every call, register one or more `FeatureFlagContextEnricher` beans. The starter collects them all and injects their combined output before every evaluation via an OpenFeature before-hook. Errors in one enricher never affect the others.
-
-```mermaid
-sequenceDiagram
-    participant Business as Business Service
-    participant OF as OpenFeature SDK
-    participant Hook as AutoContextHook (before-hook)
-    participant E1 as SecurityEnricher
-    participant E2 as HttpRequestEnricher
-    participant Flipt as Flipt Server
-
-    Business->>OF: isEnabled("feature")
-    OF->>Hook: before()
-    Hook->>E1: enrich()
-    E1-->>Hook: {userId, email, admin}
-    Hook->>E2: enrich()
-    E2-->>Hook: {sessionId, correlationId}
-    Hook-->>OF: MutableContext (merged delta)
-    OF->>Flipt: evaluate with full context
-    Flipt-->>Business: true / false
-```
-
-**Example: Spring Security enricher** (in the consuming application, not the starter):
-
-```kotlin
-@Bean
-fun securityEnricher(): FeatureFlagContextEnricher = FeatureFlagContextEnricher {
-    val auth = SecurityContextHolder.getContext().authentication
-    val principal = auth?.principal as? InternalUserDetails
-    FeatureFlagContext(
-        userId = principal?.id,
-        email = principal?.username,
-        admin = auth?.authorities?.any { it.authority == "ROLE_ADMIN" } == true,
-    )
-}
-
-@Bean
-fun httpRequestEnricher(request: HttpServletRequest): FeatureFlagContextEnricher = FeatureFlagContextEnricher {
-    FeatureFlagContext(
-        sessionId = request.session?.id,
-        correlationId = request.getHeader("X-Correlation-ID"),
-    )
-}
-```
-
-Now `isEnabled("flag")` automatically evaluates with both enrichers' context merged in:
-
-```kotlin
-// No manual context construction — Flipt receives userId, email, admin, sessionId, correlationId
-if (featureFlags.isEnabled("beta-feature")) { ... }
-```
+A servlet filter opens an OpenFeature transaction context for each HTTP request and clears it when the
+request ends (`OpenFeatureTransactionContextFilter`). The context stays empty for now: adding the user and
+the correlation id to it is still to do. Until then, pass a `FeatureFlagContext` to target a user.
 
 ### Health Indicator (Actuator)
 
@@ -158,7 +110,7 @@ When Spring Boot Actuator is on the classpath, the starter exposes the Flipt pro
 ```json
 {
   "components": {
-    "featureFlags": {
+    "openFeature": {
       "status": "UP",
       "details": {
         "provider": "flipt",
@@ -185,14 +137,13 @@ dependencies {
 
 ### 2. Use from Business Code
 
-With a `FeatureFlagContextProvider` bean, context is injected automatically:
+Inject the `FeatureFlags` interface:
 
 ```kotlin
 @Service
 class CheckoutService(private val featureFlags: FeatureFlags) {
 
     fun checkout(cart: Cart): CheckoutResult {
-        // context (userId, email, admin, sessionId) is auto-injected
         return if (featureFlags.isEnabled("new-checkout-flow")) {
             newCheckoutFlow(cart)
         } else {
@@ -202,7 +153,7 @@ class CheckoutService(private val featureFlags: FeatureFlags) {
 }
 ```
 
-You can still pass explicit context when needed (e.g., evaluating for a different user):
+Pass an explicit context to target a user:
 
 ```kotlin
 featureFlags.isEnabled("feature-x", FeatureFlagContext(userId = otherUserId))
@@ -219,9 +170,9 @@ class CheckoutServiceTest {
 
     @Test
     fun `uses new checkout when flag is enabled`() {
-        featureFlags.enableFlag("new-checkout-flow")
+        featureFlags.configure("new-checkout-flow", enabled = true)
 
-        val result = service.checkout("user-1", cart)
+        val result = service.checkout(cart)
 
         result.flow shouldBe "new"
         featureFlags.wasEvaluated("new-checkout-flow") shouldBe true
@@ -230,20 +181,20 @@ class CheckoutServiceTest {
     @Test
     fun `falls back to legacy checkout when flag is disabled`() {
         // flags default to disabled — no configuration needed
-        val result = service.checkout("user-1", cart)
+        val result = service.checkout(cart)
 
         result.flow shouldBe "legacy"
     }
 
     @Test
     fun `inspect mock state`() {
-        featureFlags.enableFlag("feature-a")
-        featureFlags.disableFlag("feature-b")
+        featureFlags.configure("feature-a", enabled = true)
+        featureFlags.configure("feature-b", enabled = false)
 
         featureFlags.enabledFlags() shouldBe setOf("feature-a")
         featureFlags.disabledFlags() shouldBe setOf("feature-b")
 
-        service.checkout("user-1", cart)
+        service.checkout(cart)
 
         featureFlags.evaluationCount() shouldBe 1
         featureFlags.lastEvaluation()?.flag shouldBe "new-checkout-flow"

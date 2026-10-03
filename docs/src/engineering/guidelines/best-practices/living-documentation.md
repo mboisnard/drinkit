@@ -33,10 +33,12 @@ graph TD
     B --> C[DocumentationSymbolProcessor]
     C --> D[Collects @CoreDomain]
     C --> E[Collects @Usecase]
+    C --> T[Collects @TechStarterTool]
     D --> F[Associate UseCases with Domains]
     E --> F
     F --> G[Generate Markdown Files]
-    G --> H[docs/src/engineering/resources/domains/]
+    T --> G
+    G --> H[docs/src/engineering/resources/domains/ and tech-starters/]
     H --> I[VitePress Documentation Site]
 ```
 
@@ -44,11 +46,14 @@ graph TD
 
 **1. Annotations** (`documentation-starter` module)
 
-Two main annotations:
+Three annotations generate pages:
 - `@CoreDomain`: Marks a class as a core domain entity
 - `@Usecase`: Marks a class as a use case (interactor)
+- `@TechStarterTool`: Marks what a tech starter exposes. Its page also copies the starter's `README.md`
 
-Both fall back to KDoc if description is not provided, and use `AnnotationRetention.SOURCE` for zero runtime overhead.
+They fall back to KDoc if description is not provided, and use `AnnotationRetention.SOURCE` for zero runtime overhead.
+The other annotations of the module, `@Command`, `@Query`, `@FunctionalCore`, `@ImperativeShell`, `@Aggregate`
+and `@Projection`, document a pattern in the code itself and generate nothing.
 
 **2. Gradle Integration**
 
@@ -76,8 +81,8 @@ data class User(val id: UserId, val email: Email)
 ```kotlin
 @Usecase(description = "Registers a new user account")
 @Service
-class RegisterUser(private val userRepository: UserRepository) {
-    fun execute(request: RegisterUserRequest): User { ... }
+class RegisterUser(private val users: Users) {
+    operator fun invoke(command: RegisterUserCommand): User { ... }
 }
 ```
 
@@ -88,10 +93,11 @@ You can also use KDoc instead of the `description` parameter. The `name` paramet
 ### Generate Documentation
 
 ```bash
-./gradlew kspKotlin
+./gradlew kspKotlin --rerun
 ```
 
-Generated files are automatically published via CI/CD.
+The processor only runs when `kspKotlin` is asked for explicitly, never as part of `build`. Its output is gitignored:
+CI generates it before building the site, and deploys the site from master.
 
 ## Resources
 
