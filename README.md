@@ -1,124 +1,44 @@
 # DrinkIt
 
-## Technologies
+DrinkIt manages wine and spirit cellars. It is also a sandbox for engineering practices: reusable backend
+tech starters, Gradle conventions, living documentation, and a harness that lets coding agents work on it
+safely.
 
-* Java 25
-* Node 24
-* Gradle
-* Spring Boot 4.1 + Kotlin
-* Nuxt 3 + Vue3 + PrimeVue Components Library
-* OpenApi to generate frontend files and Backend Apis
+## What's inside
 
-## How to run the app
+- `drinkit/`: the application, a Kotlin and Spring Boot backend built along a hexagonal architecture, and a
+  Nuxt frontend.
+- `tech-starters/backend/`: technical libraries, one concern each, with no business code.
+- `build-logic/`: the Gradle convention plugins the modules apply.
+- The [documentation site](https://mboisnard.github.io/drinkit/): architecture, guidelines, the pages
+  generated from the code, and the [harness](docs/src/engineering/harness.md) that guards master.
 
-### Backend
-```
-./gradlew :drinkit-backend:build
-./gradlew :drinkit-backend:bootRun #To start Spring Boot Application 
-```
+## Quick start
 
-* Api available on: `http://localhost:8080/drinkit/api/cellars`
-* OpenApi Documentation available on: `http://localhost:8080/drinkit/openapi/ui` (admin role)
-* Actuator Endpoints available on: `http://localhost:8080/drinkit/actuator` (admin role)
-
-### Code analysis
-
-detekt owns both halves of static analysis: code smells through its own rule sets, and formatting
-through its ktlint ruleset. A single file configures it: `code-analysis/detekt/detekt.yml`, which
-holds only this project's deviations from detekt's defaults.
+[CONTRIBUTING.md](CONTRIBUTING.md#setup) lists what it needs. The backend starts its own containers, but on
+the first run the database has no schema yet: run the updater once, as the same section explains.
 
 ```
-./gradlew detektAll                              #Analyse
-./gradlew detektAll -Pdetekt.autoCorrect=true    #Analyse and fix what can be fixed, formatting included
-./gradlew detektReportMergeSarif                 #Merge the per-module SARIF reports into one
+./gradlew :drinkit-backend:bootRun     # starts deployment/local/compose.yml, then the API
 ```
 
-`detektAll` runs every enabled detekt task of a project, and `check` runs them too. On a module
-those are `detektMain`, `detektTest` and `detektTestFixtures`, the three that resolve types; on the
-root project it is a pass over every `*.gradle.kts`, which belongs to no source set and would
-otherwise never be checked. The CI uses the same command. The plain `detekt` task and the per-source-set ones are
-disabled: they analyse without a compiled classpath, so every rule needing type information
-silently never fires.
+- API: `http://localhost:8080/drinkit/api/cellars`
+- OpenAPI documentation: `http://localhost:8080/drinkit/openapi/ui` (admin role)
+- Actuator: `http://localhost:8080/drinkit/actuator` (admin role)
 
-Fixing is opt-in, and driven by that project property rather than detekt's own `--auto-correct`
-flag: the flag is a per-task Gradle option, so on a command line naming several tasks it binds only
-to the one it follows and leaves the rest silently in report-only mode. The `autoCorrect: true`
-entries in `detekt.yml` only declare which rules are *allowed* to rewrite code; without the
-property detekt reports and touches nothing, which is what CI needs.
-
-detekt **fails the build** on any finding. The 82 that predate that switch sit in
-`code-analysis/detekt/baseline.xml`: they no longer block, and everything new does. Burning one down
-means fixing it and deleting its line.
-
-`.githooks/lint-kotlin` formats every Kotlin source and Gradle script, and fails when detekt does.
-
-The pre-commit hook runs it and stages what got reformatted, so the commit carries the formatted
-version. A file that was only partly staged is reformatted on disk but left for you to stage:
-staging it wholesale would carry its unstaged edits into the commit too.
-
-To have it run before each commit, enable the repository's hook once:
-
-```
-git config core.hooksPath .githooks
-```
-
-Claude Code calls the same script after it edits a file, through the `PostToolUse` hook in
-`.claude/settings.json`, so it sees the findings on what it just wrote.
-
-The build needs JDK 25, and `gradle/gradle-daemon-jvm.properties` is what makes that work outside
-IntelliJ: Gradle picks a matching JDK for its daemon whatever JVM launched the wrapper, so the
-terminal, the hook and CI no longer depend on the shell's `java`. Without it only IntelliJ knew,
-through its own `gradleJvm` setting, and the hook failed on a machine whose default is older.
-
-It reformats the staged Kotlin files and re-stages them, and refuses to run on a file that is only
-partially staged rather than sweeping unstaged work into the commit. `git commit --no-verify`
-skips it.
-
-Install the detekt IntelliJ plugin: `.idea/detekt.xml` points it at the project's own config, so
-the editor reports what the build reports. It annotates as you
-type and offers `Refactor -> AutoCorrect by detekt rules`, but it does not format on save — which
-is why `.editorconfig` is still there, to keep IntelliJ's own formatter aligned.
-
-The reformatting commit is listed in `.git-blame-ignore-revs`; run
-`git config blame.ignoreRevsFile .git-blame-ignore-revs` once to keep `git blame` readable.
-
-### Frontend
-
-**Requirements**
-You need to have the java executable in your path (openapi generator javascript client downloads the Java OpenApi client to execute the task :/)
-
+The frontend needs `java` on the `PATH` to generate its API client:
 
 ```
 cd drinkit/drinkit-frontend
-npm i
+npm ci
 npm run generate:client-api
-npm run dev
+npm run dev                            # http://localhost:3000
 ```
-
-* Frontend application available on: `http://localhost:3000/cellars`
 
 ## Contributing
 
-[AGENTS.md](AGENTS.md) holds the conventions, for humans and coding agents alike: commands, project
-structure, code and test patterns, dependency updates, git and pull request rules.
-
-The ruleset in `.github/rulesets/master.json` has no bypass, owner included: it requires `CI gate` to
-pass on a branch up to date with master, every conversation resolved and a rebase merge, and it blocks
-force pushes and deletion. After editing the file, apply it with
-(`gh api repos/mboisnard/drinkit/rulesets` gives the id):
-
-```
-gh api --method PUT repos/mboisnard/drinkit/rulesets/<id> --input .github/rulesets/master.json
-```
-
-Claude Code refuses that command, so run it in a terminal: the guard hook
-`.claude/hooks/guard-github-protections`, wired in `.claude/settings.json`, refuses writes to
-rulesets, branch protection and push protection bypasses, and lets `gh` reads through. It reads the
-command as text, so a command built indirectly, through a variable or a script, still passes.
-`.claude/hooks/guard-github-protections.test` checks which commands it refuses.
-
-GitHub refuses a push that contains a known secret format. Report a vulnerability privately from
-the Security tab, through "Report a vulnerability", rather than in a public issue.
+[CONTRIBUTING.md](CONTRIBUTING.md) explains how to write issues and pull requests. [AGENTS.md](AGENTS.md)
+holds the commands, the structure and the code conventions, for people and coding agents alike.
 
 ## Global view of this project
 
@@ -147,3 +67,4 @@ the Security tab, through "Report a vulnerability", rather than in a public issu
 
 Explore
 jlink / jdeps
+

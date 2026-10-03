@@ -18,7 +18,8 @@ The JDK of `gradle/gradle-daemon-jvm.properties` must be installed: Gradle finds
 the `PATH`, but never downloads it. Integration tests need Docker.
 
 Nothing in the application creates the database schema: on a new database, apply the changelogs once, as
-shown in [Database and jOOQ](#database-and-jooq), before using the app.
+shown in [Database and jOOQ](#database-and-jooq), before using the app. From an IDE, running
+`UpdaterApplication` in `deployment/updater` does the same through Liquibase.
 
 Local URLs: API under `http://localhost:8080/drinkit/api/`, Swagger UI at `/drinkit/openapi/ui`, health at
 `/drinkit/actuator/health`. Without a session, everything but `POST /api/auth/login` and
@@ -150,8 +151,9 @@ same command fixes it.
   commit that blocks the merge.
 - Run `git config core.hooksPath .githooks` once per clone: pre-commit formats the staged Kotlin, pre-push
   refuses a push to master.
-- A commit subject reads `[TOPIC] Imperative subject (#issue)`, reusing a topic from `git log` when one
-  fits. Group changes by topic, not by micro-step.
+- A branch is named `<issue>-<short-description>`. A commit subject reads `[TOPIC] Imperative subject
+  (#issue)`, reusing a topic from `git log` when one fits, and the pull request title is the first commit
+  subject. Group changes by topic, not by micro-step.
 - Everything written on GitHub is in English: commits, pull requests, issues, comments.
 - CI runs only the lanes a change touches, mapped in `.github/workflows/config/ci-lanes.yml`. A path no lane
   lists runs them all.
@@ -161,6 +163,13 @@ same command fixes it.
   those writes.
 - An issue's scope lists possibilities, not instructions. Analyze the current state first, and treat only
   the acceptance criteria as binding. The pull request explains the choices made.
+- A person reads every issue and pull request: follow "Writing issues and pull requests" in
+  `CONTRIBUTING.md`. `gh` and the API skip the issue forms, so an issue follows the matching form in
+  `.github/ISSUE_TEMPLATE/` by hand: each field's `label` as a `###` heading in the form's order, its
+  prefilled `value` verbatim, an empty optional field left out, and the form's `title` prefix, `labels` and
+  project passed to `gh issue create`. A pull request body follows `.github/pull_request_template.md`
+  without its comments, and goes in with `--body-file`. It links its issue with `Closes #<issue>`, with
+  `Part of #<issue>` when the issue stays open, or with `Follows up #<issue>` when it is already closed.
 
 ## Code style
 
