@@ -72,6 +72,28 @@ start
 says "a detached HEAD is named" "on a detached HEAD."
 says "a detached HEAD is not an issue branch" "Not on an issue branch"
 
+git -C "$repo" switch -q master
+start
+never_says "without worktrees nothing waits for a cleanup" "to clean up"
+
+git -C "$repo" worktree add -q -b 101-merged "$work/merged" master
+echo done >"$work/merged/done.txt"
+git -C "$work/merged" add done.txt
+git -C "$work/merged" commit -q -m done
+git -C "$repo" cherry-pick -x 101-merged >/dev/null
+git -C "$repo" update-ref refs/remotes/origin/master master
+git -C "$repo" worktree add -q -b 102-in-progress "$work/in-progress" master
+echo wip >"$work/in-progress/wip.txt"
+git -C "$work/in-progress" add wip.txt
+git -C "$work/in-progress" commit -q -m wip
+git -C "$repo" worktree add -q -b 103-fresh "$work/fresh" master
+start
+says "a worktree merged by rebase waits for a cleanup" "(101-merged)"
+says "the cleanup is sent to /implement-issue" "to clean up with /implement-issue <issue>"
+never_says "a worktree with a commit not on master is not listed" "(102-in-progress)"
+never_says "a worktree with no commit yet is not listed" "(103-fresh)"
+never_says "the main checkout is not listed" "(master)"
+
 start "$work/outside"
 if [ "$status" -eq 0 ] && [ -z "$output" ]; then
     echo "ok    outside a repository nothing is said"

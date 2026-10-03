@@ -19,7 +19,7 @@ A person can skip the local git hooks with `--no-verify`, a Claude Code session 
 
 ## Coding agent
 
-`/implement-issue <number>` takes a Ready issue to a pull request: a worktree of its own, the code test first, the lanes CI would run, a fresh judge, then the pull request and the board moves. The maintainer merges.
+`/implement-issue <number>` takes an open issue to a pull request, whatever its board status: a worktree of its own, the code test first, the lanes CI would run, a fresh judge, then the pull request and the board moves. The maintainer merges. Run again once the pull request is merged, it removes the worktree and the branch, unless work is left in them, pulls master, and moves the issue to Done once it is closed.
 
 | Part | What it does | Where | Since |
 |---|---|---|---|
@@ -31,7 +31,7 @@ A person can skip the local git hooks with `--no-verify`, a Claude Code session 
 | cmux status hook | In the cmux terminal, names the session's tab after its issue and step, `#382 implement`, `#382 judge`, `#382 PR #450`, and shows the judge's verdict and the pull request's CI gate as sidebar pills, read from `gh pr checks` whether it passes or fails. Does nothing elsewhere | [`.claude/hooks/cmux-status`][cmux-status] | 2026-10-03 |
 | Generated files hook | Refuses a hand edit of a file a tool writes: jOOQ classes, the generated API client, Gradle's and npm's lock files, the generated documentation pages, and `.env` files. Its message names the command that changes the file instead. A shell command that writes the file passes | [`.claude/hooks/protect-generated-files`][protect-hook] | 2026-10-03 |
 | Compile hook | At the end of a turn that changed Kotlin sources, compiles them with their tests. When frontend sources changed, runs the `typecheck` script of each app that has one and has its dependencies installed. The errors go back to Claude, which keeps working until they are fixed. A state already checked is not checked again, so it cannot loop | [`.claude/hooks/compile-at-stop`][compile-hook] | 2026-10-03 |
-| Session context hook | At start, on resume and after a compaction, tells Claude its branch, its issue, how far it is ahead of master and its uncommitted work | [`.claude/hooks/session-context`][session-hook] | 2026-10-03 |
+| Session context hook | At start, on resume and after a compaction, tells Claude its branch, its issue, how far it is ahead of master, its uncommitted work, and the worktrees whose branch is merged into the last fetched master, left for `/implement-issue` to clean up | [`.claude/hooks/session-context`][session-hook] | 2026-10-03 |
 
 Each Claude Code hook has a test next to it, `<hook>.test`, and so do `pre-commit` and `pre-push`, run by hand for now. Claude Code also loads the personal configuration of whoever runs it, from `~/.claude`, on top of these parts, and a project cannot turn it off.
 
@@ -42,8 +42,8 @@ it is asked for, and other agents are told to read it by `AGENTS.md`.
 
 | Skill | When it applies | Started by |
 |---|---|---|
-| [`implement-issue`][skill-issue] | Taking a Ready issue to a pull request | The maintainer, `/implement-issue <number>` |
-| [`new-issue`][skill-new-issue] | Turning an idea, a bug or discovered work into an issue that follows its form | On request, or by `implement-issue` |
+| [`implement-issue`][skill-issue] | Taking an open issue to a pull request, and cleaning up once it is merged | The maintainer, `/implement-issue <number>` |
+| [`new-issue`][skill-new-issue] | Turning an idea, a bug or discovered work into an issue that follows its form, created at once and Ready unless blocked | On request, or by `implement-issue` |
 | [`review-pr`][skill-review-pr] | Reviewing a pull request and posting inline comments ranked by severity | The maintainer, `/review-pr <number>` |
 | [`test-driven-development`][skill-tdd] | Adding or changing behavior, backend or frontend: a test list, red-green-tidy cycles, then a technical and functional refactor | Code under `drinkit/` or a backend starter |
 | [`test-existing-code`][skill-test-existing] | Covering code that works but has no tests, each test proven able to fail | On request |

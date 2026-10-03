@@ -6,12 +6,13 @@ argument-hint: <the idea or the bug, in a few words>
 
 # Create an issue
 
-An issue states an outcome and how to check it, never a step-by-step recipe. Nothing is created on GitHub
-before the maintainer has seen the draft and said yes. The commands are in [examples.md](examples.md).
+An issue states an outcome and how to check it, never a step-by-step recipe. It is created as soon as its draft
+is ready: the maintainer reads it on GitHub and asks for changes afterwards. The commands are in
+[examples.md](examples.md).
 
 ## 1. Check it does not exist
 
-Search the open and closed issues. When one already covers it, propose a comment on that one instead.
+Search the open and closed issues. When one already covers it, add a comment to that one instead.
 
 ## 2. Pick the form
 
@@ -28,14 +29,14 @@ Follow the form as `AGENTS.md` says, and the writing rules of `CONTRIBUTING.md`.
   from it.
 - Context says why now, with links to the issues, files or pull requests that matter.
 
-Write it to `$(git rev-parse --path-format=absolute --git-path claude/issue-draft.md)` and show it to the
-maintainer with its title, labels and, when there are some, its parent epic and blockers.
+Write it to `$(git rev-parse --path-format=absolute --git-path claude/issue-draft.md)`.
 
 ## 4. Create it
 
-Once the maintainer says yes: create the issue with one `kind:` label, the `area:` labels that apply and the
-labels the form sets itself, put it on the board in Backlog, then link its parent epic and its blockers. When it
-belongs to an epic, tick or add its line in the epic's "Possible scope" checklist.
+Create the issue with one `kind:` label, the `area:` labels that apply and the labels the form sets itself, then
+link its parent epic and its blockers. Put it on the board in Ready when it has no open blocker, in Backlog
+otherwise. When it belongs to an epic, tick or add its line in the epic's "Possible scope" checklist.
 
 Read it back: title, labels, board status, parent and blockers are set, and it reads well without the
-conversation that led to it.
+conversation that led to it. Then show the maintainer what was created, for the record rather than for approval:
+its link, title, labels, status, parent and blockers, then its full text. Edit it when they ask.

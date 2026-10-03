@@ -19,8 +19,10 @@ gh label list --json name --jq '.[].name'
 ```
 board=$(gh project view <number> --owner <owner> --format json --jq .title)
 gh issue create --title "<title>" --body-file "$(git rev-parse --path-format=absolute --git-path claude/issue-draft.md)" --label "<kind label>,<area labels>,<labels of the form>" --project "$board"
-gh project item-edit <number> --owner <owner> --url <issue url> --field Status --value "Backlog"
+gh project item-edit <number> --owner <owner> --url <issue url> --field Status --value "Ready"
 ```
+
+With an open blocker, the status is `--value "Backlog"`.
 
 The links take the numeric `id` of an issue, not its number:
 `gh api 'repos/{owner}/{repo}/issues/<number>' --jq .id`.
