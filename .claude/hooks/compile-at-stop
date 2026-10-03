@@ -7,8 +7,15 @@ command -v jq >/dev/null 2>&1 || exit 0
 
 input=$(cat)
 event=$(printf '%s' "$input" | jq -r '.hook_event_name // empty')
+source=$(printf '%s' "$input" | jq -r '.source // empty')
 cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
 root=$(git -C "${cwd:-.}" rev-parse --show-toplevel 2>/dev/null) || exit 0
+
+# A resumed or compacted session keeps the changes not checked yet. A pull request under review runs no build.
+[ "$event" = SessionStart ] && [ "$source" != startup ] && exit 0
+case $(git -C "$root" branch --show-current) in
+    pr-*) exit 0 ;;
+esac
 state=$(git -C "$root" rev-parse --path-format=absolute --git-path claude) || exit 0
 mkdir -p "$state"
 

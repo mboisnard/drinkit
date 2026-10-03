@@ -36,7 +36,8 @@ chmod +x "$repo/gradlew" "$work/bin/npm"
 git -C "$repo" add . && git -C "$repo" -c user.name=test -c user.email=test@example.com commit -q -m init
 
 send() {
-    jq -n --arg event "$1" --arg cwd "$repo" '{hook_event_name: $event, cwd: $cwd}' | PATH="$work/bin:$PATH" "$hook"
+    jq -n --arg event "$1" --arg source "${2:-}" --arg cwd "$repo" '{hook_event_name: $event, source: $source, cwd: $cwd}' |
+        PATH="$work/bin:$PATH" "$hook"
 }
 
 check() {
@@ -66,7 +67,7 @@ shown() {
     esac
 }
 
-output=$(send SessionStart)
+output=$(send SessionStart startup)
 check "session start records the sources without checking" "" no
 
 output=$(send Stop)
@@ -107,6 +108,17 @@ check "an app without its dependencies installed is not type checked" "" no
 echo 'class Bottle' >"$repo/src/Bottle.kt"
 output=$(send Stop)
 check "a new untracked Kotlin file counts as a change" "gradle," yes
+
+rm "$work/kotlin-broken"
+echo 'class Bottle(val name: String)' >"$repo/src/Bottle.kt"
+output=$(send SessionStart compact)
+output=$(send Stop)
+check "a change made before a compaction is still checked" "gradle," no
+
+git -C "$repo" switch -q -c pr-451
+echo 'class Bottle(val size: Int)' >"$repo/src/Bottle.kt"
+output=$(send Stop)
+check "a pull request under review runs no build" "" no
 
 if [ "$failures" -ne 0 ]; then
     echo "$failures failing"

@@ -60,6 +60,9 @@ case $stderr in
         ;;
 esac
 
+git -C "$work/repo" switch -q -c pr-451
+check 0 0 "a pull request under review runs no build" "$work/repo/src/Cellar.kt"
+
 if [ "$failures" -ne 0 ]; then
     echo "$failures failing"
     exit 1

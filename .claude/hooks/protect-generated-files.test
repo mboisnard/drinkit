@@ -33,7 +33,6 @@ check() {
 
 check deny drinkit/drinkit-infra/src/generated/jooq/kotlin/tables/Cellar.kt
 check deny drinkit/drinkit-frontend/src/openapi/apis/CellarsApi.ts
-check deny gradle/verification-metadata.xml
 check deny drinkit/drinkit-backend/gradle.lockfile
 check deny drinkit/drinkit-frontend/package-lock.json
 check deny docs/src/engineering/resources/domains/cellar.md
@@ -42,6 +41,7 @@ check allow drinkit/drinkit-infra/src/main/kotlin/JooqCellars.kt
 check allow drinkit/drinkit-frontend/src/pages/index.vue
 check allow drinkit/drinkit-frontend/package.json
 check allow gradle/libs.versions.toml
+check allow gradle/verification-metadata.xml
 check allow docs/src/engineering/harness.md
 
 if [ "$failures" -ne 0 ]; then
