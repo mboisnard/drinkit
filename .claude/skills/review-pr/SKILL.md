@@ -46,6 +46,7 @@ No praise, no restating of the diff, no taste presented as a rule.
 
 Show the maintainer the findings, each with its `path:line`, severity and one or two sentences. Post only what
 they keep, as a single review of inline comments, the event always `COMMENT`: approving or requesting changes is
-the maintainer's call. A fix of a few lines goes in a `suggestion` block.
+the maintainer's call. A fix of a few lines goes in a `suggestion` block. Each comment follows the writing rules
+of `CONTRIBUTING.md`.
 
 Remove the worktree afterwards.
