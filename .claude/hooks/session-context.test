@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+# Starts sessions in a sample repository and checks what session-context tells Claude: ./.claude/hooks/session-context.test
+
+hook="$(cd "$(dirname "$0")" && pwd)/session-context"
+failures=0
+
+repo=$(mktemp -d)
+trap 'rm -rf "$repo"' EXIT
+git -C "$repo" init -q -b master
+git -C "$repo" -c user.name=test -c user.email=test@example.com commit -q --allow-empty -m init
+
+check() {
+    label=$1
+    expected=$2
+    output=$(jq -n --arg cwd "$repo" '{hook_event_name: "SessionStart", source: "startup", cwd: $cwd}' | "$hook")
+    case $output in
+        *"$expected"*) echo "ok    $label" ;;
+        *)
+            echo "FAIL  $label: expected '$expected' in: $output"
+            failures=$((failures + 1))
+            ;;
+    esac
+}
+
+check "master points to the issue workflow" "Not on an issue branch"
+
+git -C "$repo" switch -q -c 382-implement-issue
+check "an issue branch names its issue" "works on issue #382"
+
+echo draft >"$repo/notes.md"
+check "uncommitted work is listed" "?? notes.md"
+
+if [ "$failures" -ne 0 ]; then
+    echo "$failures failing"
+    exit 1
+fi

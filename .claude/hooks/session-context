@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# Claude Code SessionStart hook: tells Claude where the session stands, at start, on resume and after a compaction:
+# its branch and issue, how far it is ahead of master, and the uncommitted work
+
+command -v jq >/dev/null 2>&1 || exit 0
+
+cwd=$(jq -r '.cwd // empty')
+root=$(git -C "${cwd:-.}" rev-parse --show-toplevel 2>/dev/null) || exit 0
+
+branch=$(git -C "$root" branch --show-current)
+issue=${branch%%-*}
+echo "DrinkIt session in $root, on ${branch:-a detached HEAD}."
+case $issue in
+    '' | *[!0-9]*) echo "Not on an issue branch: an issue is worked with /implement-issue <number>, in a worktree of its own." ;;
+    *) echo "The branch works on issue #$issue: read it with gh issue view $issue." ;;
+esac
+
+ahead=$(git -C "$root" rev-list --count origin/master..HEAD 2>/dev/null)
+[ "${ahead:-0}" -gt 0 ] && echo "$ahead commits ahead of origin/master."
+
+changes=$(git -C "$root" status --short | head -n 15)
+[ -n "$changes" ] && printf 'Uncommitted changes:\n%s\n' "$changes"
+exit 0
