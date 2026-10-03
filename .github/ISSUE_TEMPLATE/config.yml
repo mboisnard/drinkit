@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a vulnerability
+    url: https://github.com/mboisnard/drinkit/security/advisories/new
+    about: Privately, never in a public issue.
+  - name: Documentation
+    url: https://mboisnard.github.io/drinkit/
+    about: Architecture, guidelines and how the harness works.

@@ -1,0 +1,48 @@
+name: Epic
+description: A theme of work that groups several issues
+title: "Epic: "
+labels:
+  - epic
+projects:
+  - mboisnard/2
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What the project can do once the epic is done, in one or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: How to approach this epic
+      description: Keep this text unless the epic calls for a different rule.
+      value: "The scope lists candidate items identified when the epic was written, not a plan to follow. Each item becomes an issue when its phase comes, and is re-evaluated at that moment against the current state of the project."
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: The problem or the opportunity behind the epic.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Possible scope
+      description: Candidate items as a checklist. Each one becomes a sub-issue when its phase comes.
+      placeholder: "- [ ] A candidate item"
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope for now
+      description: What the epic leaves aside, and why.
+  - type: input
+    id: milestone
+    attributes:
+      label: Milestone
+      description: The milestone it belongs to. Set the milestone field of the issue too.
