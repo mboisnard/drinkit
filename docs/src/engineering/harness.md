@@ -111,7 +111,7 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 | Private vulnerability reporting | A vulnerability can be reported from the Security tab, without a public issue. `SECURITY.md` points there | Repository settings, [`SECURITY.md`][security-md] | 2026-10-02, policy since 2026-10-03 |
 | Issue forms | "New issue" offers a work item, an epic and a bug form. Only collaborators can still open a blank issue. Forms only apply on github.com, so `AGENTS.md` tells agents to reuse their headings | [`.github/ISSUE_TEMPLATE`][issue-forms] | 2026-10-03 |
 | Pull request template | Prefills a new pull request: what changes and why, `Closes #`, choices, verification | [`pull_request_template.md`][pr-template] | 2026-10-03 |
-| Contributing guide | How to write issues and pull requests for a human reader, by people and agents alike. GitHub links it when an issue or a pull request is opened | [`CONTRIBUTING.md`][contributing] | 2026-10-03 |
+| Contributing guide | How to write issues, pull requests and comments for a human reader, by people and agents alike. GitHub links it when an issue or a pull request is opened | [`CONTRIBUTING.md`][contributing] | 2026-10-03 |
 | Gradle configuration cache key | The `GRADLE_ENCRYPTION_KEY` secret lets `Backend` keep Gradle's configuration cache between runs | Repository secrets | 2026-10-01 |
 
 ## Not covered yet
