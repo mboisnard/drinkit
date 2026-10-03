@@ -76,7 +76,10 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 | Renovate | Opens dependency update pull requests a week after a release, on Monday mornings, and pins GitHub Actions and compose images by digest. Security fixes and undated releases (JDK, large Docker Hub images) skip the wait. Majors and lock file refreshes wait for a checkbox on the Dependency Dashboard. A pull request is rebased only on conflict | [`.github/renovate.json`][renovate] | 2024-04-11, delayed since 2026-09-30, rebased on conflict only since 2026-10-01 |
 | Dependabot alerts | Flag dependencies with a known vulnerability, which Renovate turns into security updates. Dependabot opens no pull request of its own | Repository settings | Not recorded, its security updates off since 2026-10-01 |
 | Secret scanning and push protection | GitHub refuses a push that contains a known secret format, from git, the web interface or the API, and scans the whole history for secrets already pushed | Repository settings | 2026-10-02 |
-| Private vulnerability reporting | A vulnerability can be reported from the Security tab, without a public issue | Repository settings | 2026-10-02 |
+| Private vulnerability reporting | A vulnerability can be reported from the Security tab, without a public issue. `SECURITY.md` points there | Repository settings, [`SECURITY.md`][security-md] | 2026-10-02, policy since 2026-10-03 |
+| Issue forms | "New issue" offers a work item, an epic and a bug form. Only collaborators can still open a blank issue. Forms only apply on github.com, so `AGENTS.md` tells agents to reuse their headings | [`.github/ISSUE_TEMPLATE`][issue-forms] | 2026-10-03 |
+| Pull request template | Prefills a new pull request: what changes and why, `Closes #`, choices, verification | [`pull_request_template.md`][pr-template] | 2026-10-03 |
+| Contributing guide | How to write issues and pull requests for a human reader, by people and agents alike. GitHub links it when an issue or a pull request is opened | [`CONTRIBUTING.md`][contributing] | 2026-10-03 |
 | Gradle configuration cache key | The `GRADLE_ENCRYPTION_KEY` secret lets `Backend` keep Gradle's configuration cache between runs | Repository secrets | 2026-10-01 |
 
 ## Not covered yet
@@ -115,6 +118,10 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [setup-action]: https://github.com/mboisnard/drinkit/blob/master/.github/actions/setup-gradle-jdk/action.yml
 [ruleset]: https://github.com/mboisnard/drinkit/blob/master/.github/rulesets/master.json
 [renovate]: https://github.com/mboisnard/drinkit/blob/master/.github/renovate.json
+[security-md]: https://github.com/mboisnard/drinkit/blob/master/SECURITY.md
+[issue-forms]: https://github.com/mboisnard/drinkit/tree/master/.github/ISSUE_TEMPLATE
+[pr-template]: https://github.com/mboisnard/drinkit/blob/master/.github/pull_request_template.md
+[contributing]: https://github.com/mboisnard/drinkit/blob/master/CONTRIBUTING.md
 [i421]: https://github.com/mboisnard/drinkit/issues/421
 [i404]: https://github.com/mboisnard/drinkit/issues/404
 [i395]: https://github.com/mboisnard/drinkit/issues/395
