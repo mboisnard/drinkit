@@ -1,6 +1,6 @@
 ---
 name: implement-issue
-description: Takes a Ready DrinkIt issue to an open pull request that closes it, test first, checked by a fresh judge before the pull request is opened. Run it as /implement-issue <number>.
+description: Takes an open DrinkIt issue to a pull request that closes it, test first, checked by a fresh judge before the pull request is opened, and cleans up once it is merged. Run it as /implement-issue <number>.
 disable-model-invocation: true
 argument-hint: <issue number>
 ---
@@ -13,15 +13,18 @@ stop at the open pull request, never merge it, never close the issue. The comman
 
 ## 1. Pick the mode
 
-Look for an open pull request, a worktree and a branch named `$ARGUMENTS-*`.
+Look for an open pull request, a worktree and a branch named `$ARGUMENTS-*`, and for the merged pull request of
+each local branch found.
 
 - An open pull request: follow-up mode, step 10, in the branch's worktree.
+- A worktree or local branch whose pull request is merged: cleanup mode, step 11.
 - A branch without a pull request: resume from the first step not done, in the branch's worktree.
 - Nothing: step 2.
 
 ## 2. Check that the issue can be worked
 
-Stop and tell the maintainer why when the issue is not open, not Ready on the board, or has an open blocker.
+Stop and tell the maintainer why only when the issue is closed. Whatever its board status, running the command
+is the decision to work it: step 4 moves it to In progress. Note an open blocker for the report.
 
 ## 3. Read the issue and seed the test list
 
@@ -96,6 +99,23 @@ Read the checks, the comments and the review comments of the pull request.
 
 A code change gets a new round before it is pushed, and the verdict line of the description follows.
 
+## 11. Clean up after the merge
+
+Leave the worktree and work from the main checkout. Fetch master, then look at what is left of the branch.
+
+- Uncommitted changes in the worktree, or a commit that `git cherry` marks `+`, not on master: remove nothing,
+  report what is left, and stop there.
+- Otherwise remove the worktree, then delete the branch with `-D`: a rebase merge rewrites the commits, so `-d`
+  refuses a branch that is merged.
+
+When no tracked file of the main checkout has changed, switch it to master and pull it, fast-forward only.
+Otherwise leave it as it is and say so: a switch would carry those changes onto master.
+
+When the issue is closed, move it to Done on the board unless it is there already, and read the status back. When
+it stays open, as after a `Part of` pull request, go on to step 2: the rest of the issue is still to do.
+
 ## Report
 
-End with the pull request link, the judge verdict, the CI state, and anything left to the maintainer.
+End with the pull request link and its full description, the judge verdict, the CI state, an open blocker of the
+issue, and anything left to the maintainer. In cleanup mode, end with what was removed, what was left and why,
+and the commit master is on.

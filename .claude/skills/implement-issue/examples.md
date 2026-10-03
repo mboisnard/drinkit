@@ -12,6 +12,12 @@ git -C "$main" worktree list
 git -C "$main" branch --list "<issue>-*"
 ```
 
+For each local branch found, by its name, since a plain merged listing stops at the last 30:
+
+```
+gh pr list --state merged --head <branch> --json number,url
+```
+
 A branch without a worktree gets one: `git -C "$main" fetch origin <branch>`, then
 `git -C "$main" worktree add "$main/../drinkit-worktrees/<branch>" <branch>`.
 
@@ -77,4 +83,30 @@ Run `--watch` in the background, then read the outcome with the plain `gh pr che
 gh pr checks <pr>
 gh pr view <pr> --comments
 gh api 'repos/{owner}/{repo}/pulls/<pr>/comments'
+```
+
+## Cleanup
+
+`<worktree>` is the path `git worktree list` gives for the branch. A line printed by `status` or a line
+starting with `+` printed by `cherry` means work is left: stop there.
+
+```
+main=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
+git -C "$main" fetch origin master
+git -C "<worktree>" status --porcelain
+git -C "$main" cherry origin/master <branch>
+git -C "$main" worktree remove "<worktree>"
+git -C "$main" branch -D <branch>
+```
+
+Then the main checkout, when this `status` prints nothing, and the board, when the issue is closed:
+
+```
+git -C "$main" status --porcelain --untracked-files=no
+git -C "$main" switch master
+git -C "$main" pull --ff-only
+gh issue view <issue> --json state,url --jq '[.state, .url]'
+url=$(gh issue view <issue> --json url --jq .url)
+gh project item-edit <number> --owner <owner> --url "$url" --field Status --value "Done"
+gh issue view <issue> --json projectItems --jq '.projectItems[].status.name'
 ```

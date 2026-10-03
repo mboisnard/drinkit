@@ -174,8 +174,8 @@ same command fixes it.
   `uses: owner/action@<sha> # v1.2.3`, or one of this repository with `uses: $/.github/actions/<name>`.
 - Merging a pull request, rulesets, branch protection and push protection bypasses are the maintainer's: a
   Claude Code hook refuses them, and any way around pre-push.
-- `/implement-issue <issue>` takes a Ready issue to a pull request: its own worktree, test first, a fresh
-  judge before the pull request is opened.
+- `/implement-issue <issue>` takes an open issue to a pull request: its own worktree, test first, a fresh
+  judge before the pull request is opened. Run again after the merge, it removes the worktree and pulls master.
 - An issue's scope lists possibilities, not instructions. Analyze the current state first, and treat only
   the acceptance criteria as binding. The pull request explains the choices made.
 - A structuring choice is the maintainer's: a new module or dependency, a change to the API contract, to the
