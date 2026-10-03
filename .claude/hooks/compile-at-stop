@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# Claude Code hook on SessionStart and Stop: when a turn changed Kotlin sources, compiles them with their tests and
-# hands the errors back to Claude. A state already checked is never checked twice, so it cannot loop
+# Claude Code hook on SessionStart and Stop: when a turn changed Kotlin or frontend sources, compiles or type checks
+# them and hands the errors back to Claude. A state already checked is never checked twice, so it cannot loop
 
 command -v jq >/dev/null 2>&1 || exit 0
 
@@ -9,26 +9,51 @@ input=$(cat)
 event=$(printf '%s' "$input" | jq -r '.hook_event_name // empty')
 cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
 root=$(git -C "${cwd:-.}" rev-parse --show-toplevel 2>/dev/null) || exit 0
-[ -x "$root/gradlew" ] || exit 0
+state=$(git -C "$root" rev-parse --path-format=absolute --git-path claude) || exit 0
+mkdir -p "$state"
 
-checked=$(git -C "$root" rev-parse --path-format=absolute --git-path claude/kotlin-checked) || exit 0
-mkdir -p "$(dirname "$checked")"
+# Records the fingerprint of the files matching the pathspecs, and succeeds when it differs from the last one.
+changed() {
+    file="$state/$1-checked"
+    shift
+    print=$(cd "$root" && {
+        git ls-files --stage -- "$@"
+        git diff -- "$@"
+        git ls-files -z --others --exclude-standard -- "$@" | xargs -0 cat
+    } | cksum)
+    [ "$(cat "$file" 2>/dev/null)" = "$print" ] && return 1
+    printf '%s\n' "$print" >"$file"
+}
 
-sources=$(cd "$root" && {
-    git ls-files --stage -- '*.kt' '*.kts'
-    git diff -- '*.kt' '*.kts'
-    git ls-files -z --others --exclude-standard -- '*.kt' '*.kts' | xargs -0 cat
-} | cksum)
-
-[ "$(cat "$checked" 2>/dev/null)" = "$sources" ] && exit 0
-printf '%s\n' "$sources" >"$checked"
+kotlin_changed=no
+typescript_changed=no
+changed kotlin '*.kt' '*.kts' && kotlin_changed=yes
+changed typescript '*.vue' '*.ts' && typescript_changed=yes
 [ "$event" = SessionStart ] && exit 0
 
-output=$(cd "$root" && ./gradlew compileTestKotlin --console=plain 2>&1) && exit 0
+errors=
+if [ "$kotlin_changed" = yes ] && [ -x "$root/gradlew" ]; then
+    output=$(cd "$root" && ./gradlew compileTestKotlin --console=plain 2>&1) || {
+        found=$(printf '%s\n' "$output" | grep '^e: ' | head -n 30)
+        errors="The Kotlin code no longer compiles:
+${found:-$(printf '%s\n' "$output" | tail -n 30)}
+"
+    }
+fi
 
-errors=$(printf '%s\n' "$output" | grep '^e: ' | head -n 30)
-[ -n "$errors" ] || errors=$(printf '%s\n' "$output" | tail -n 30)
+if [ "$typescript_changed" = yes ] && command -v npm >/dev/null 2>&1; then
+    for manifest in $(git -C "$root" ls-files '*package.json'); do
+        app=$(dirname "$root/$manifest")
+        jq -e '.scripts.typecheck' "$root/$manifest" >/dev/null 2>&1 || continue
+        [ -d "$app/node_modules" ] || continue
+        output=$(cd "$app" && npm run --silent typecheck 2>&1) || errors="${errors}The type check of $manifest fails:
+$(printf '%s\n' "$output" | tail -n 30)
+"
+    done
+fi
+
+[ -n "$errors" ] || exit 0
 jq -n --arg errors "$errors" '{
     decision: "block",
-    reason: ("compile-at-stop: the Kotlin code no longer compiles. Fix it before you finish:\n" + $errors)
+    reason: ("compile-at-stop: fix this before you finish.\n" + $errors)
 }'

@@ -1,80 +1,112 @@
 #!/bin/sh
 #
-# Plays a session against compile-at-stop with a fake gradlew and checks when it compiles and what Claude is told:
-# ./.claude/hooks/compile-at-stop.test
+# Plays a session against compile-at-stop with a fake gradlew and a fake npm, and checks when it compiles or type
+# checks and what Claude is told: ./.claude/hooks/compile-at-stop.test
 
 hook="$(cd "$(dirname "$0")" && pwd)/compile-at-stop"
 failures=0
 
-repo=$(mktemp -d)
-trap 'rm -rf "$repo"' EXIT
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+repo=$work/repo
+mkdir -p "$work/bin" "$repo/src" "$repo/front/src" "$repo/front/node_modules" "$repo/docs"
 git -C "$repo" init -q
-mkdir -p "$repo/src"
+echo 'node_modules/' >"$repo/.gitignore"
 echo 'class Cellar' >"$repo/src/Cellar.kt"
+echo 'export const cellar = 1' >"$repo/front/src/cellar.ts"
+echo '{"scripts": {"typecheck": "vue-tsc"}}' >"$repo/front/package.json"
+echo '{"scripts": {"build": "vitepress build"}}' >"$repo/docs/package.json"
 cat >"$repo/gradlew" <<EOF
 #!/bin/sh
-echo run >>"$repo/.git/gradle-runs"
-if [ -f "$repo/.git/broken" ]; then
-    echo "> Task :drinkit-domain:compileKotlin FAILED"
+echo gradle >>"$work/runs"
+if [ -f "$work/kotlin-broken" ]; then
     echo "e: file://$repo/src/Cellar.kt:1:7 Unresolved reference 'Bottle'."
     exit 1
 fi
 EOF
-chmod +x "$repo/gradlew"
+cat >"$work/bin/npm" <<EOF
+#!/bin/sh
+echo "npm \$(basename "\$PWD") \$*" >>"$work/runs"
+if [ -f "$work/typescript-broken" ]; then
+    echo "src/cellar.ts(1,14): error TS2322: Type 'string' is not assignable to type 'number'."
+    exit 2
+fi
+EOF
+chmod +x "$repo/gradlew" "$work/bin/npm"
 git -C "$repo" add . && git -C "$repo" -c user.name=test -c user.email=test@example.com commit -q -m init
 
 send() {
-    jq -n --arg event "$1" --arg cwd "$repo" '{hook_event_name: $event, cwd: $cwd, stop_hook_active: false}' | "$hook"
+    jq -n --arg event "$1" --arg cwd "$repo" '{hook_event_name: $event, cwd: $cwd}' | PATH="$work/bin:$PATH" "$hook"
 }
 
 check() {
     label=$1
     expected_runs=$2
     expected_block=$3
-    actual_runs=0
-    [ -f "$repo/.git/gradle-runs" ] && actual_runs=$(grep -c run "$repo/.git/gradle-runs")
+    actual_runs=
+    [ -f "$work/runs" ] && actual_runs=$(tr '\n' ',' <"$work/runs")
     actual_block=no
     printf '%s' "$output" | jq -e '.decision == "block"' >/dev/null 2>&1 && actual_block=yes
-    if [ "$actual_runs" -eq "$expected_runs" ] && [ "$actual_block" = "$expected_block" ]; then
+    if [ "$actual_runs" = "$expected_runs" ] && [ "$actual_block" = "$expected_block" ]; then
         echo "ok    $label"
     else
-        echo "FAIL  $label: gradle ran $actual_runs times, blocked: $actual_block"
+        echo "FAIL  $label: ran '$actual_runs', blocked: $actual_block"
         failures=$((failures + 1))
     fi
+    rm -f "$work/runs"
+}
+
+shown() {
+    case $output in
+        *"$1"*) echo "ok    Claude is shown: $1" ;;
+        *)
+            echo "FAIL  Claude is not shown '$1': $output"
+            failures=$((failures + 1))
+            ;;
+    esac
 }
 
 output=$(send SessionStart)
-check "session start records the sources without compiling" 0 no
+check "session start records the sources without checking" "" no
 
 output=$(send Stop)
-check "a turn without Kotlin changes does not compile" 0 no
+check "a turn without source changes checks nothing" "" no
 
 echo 'notes' >"$repo/README.md"
 output=$(send Stop)
-check "a turn that changed only Markdown does not compile" 0 no
+check "a turn that changed only Markdown checks nothing" "" no
 
 echo 'class Cellar(val name: String)' >"$repo/src/Cellar.kt"
 output=$(send Stop)
-check "a turn that changed Kotlin compiles once" 1 no
+check "a Kotlin change compiles once" "gradle," no
 
-touch "$repo/.git/broken"
+touch "$work/kotlin-broken"
 echo 'class Cellar(val bottle: Bottle)' >"$repo/src/Cellar.kt"
 output=$(send Stop)
-check "a compile failure blocks the end of the turn" 2 yes
-case $output in
-    *"Unresolved reference 'Bottle'"*) echo "ok    the compiler error is shown to Claude" ;;
-    *)
-        echo "FAIL  the compiler error is not shown: $output"
-        failures=$((failures + 1))
-        ;;
-esac
+check "a compile failure blocks the end of the turn" "gradle," yes
+shown "Unresolved reference 'Bottle'"
 
 output=$(send Stop)
-check "the same state is not checked twice, so it cannot loop" 2 no
+check "the same state is not checked twice, so it cannot loop" "" no
+
+echo 'export const cellar = 2' >"$repo/front/src/cellar.ts"
+output=$(send Stop)
+check "a frontend change runs the type check of the app that has one" "npm front run --silent typecheck," no
+
+touch "$work/typescript-broken"
+echo "export const cellar: number = 'two'" >"$repo/front/src/cellar.ts"
+output=$(send Stop)
+check "a type check failure blocks the end of the turn" "npm front run --silent typecheck," yes
+shown "error TS2322"
+
+rm -rf "$repo/front/node_modules"
+echo "export const cellar: number = 'three'" >"$repo/front/src/cellar.ts"
+output=$(send Stop)
+check "an app without its dependencies installed is not type checked" "" no
 
 echo 'class Bottle' >"$repo/src/Bottle.kt"
 output=$(send Stop)
-check "a new untracked Kotlin file counts as a change" 3 yes
+check "a new untracked Kotlin file counts as a change" "gradle," yes
 
 if [ "$failures" -ne 0 ]; then
     echo "$failures failing"
