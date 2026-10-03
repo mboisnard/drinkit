@@ -21,7 +21,7 @@ To **centralize and standardize dependency version management**, we use **Versio
 - Contains versions of dependencies used at runtime and for testing.
 - Centralizes versions for `jooq`, `junit`, etc.
 
-### `plugins.versions.toml`
+### `pluginLibs.versions.toml`
 
 - Contains versions of plugins used during compilation (e.g., `kotlin`, `spring-boot`, ...).
 - Allows **clean plugin version management without duplication** across `build.gradle.kts` files.
@@ -34,7 +34,7 @@ To **centralize and standardize dependency version management**, we use **Versio
 
 ## 📈 Internal Dependency Management (BOM)
 
-We use a **Gradle Platform** (`platform`) combined with **Spring Dependency Management Plugin** to ensure consistent dependency versions across all modules.
+We use a **Gradle Platform**, `gradle/platform`, to ensure consistent dependency versions across all modules. It imports the Spring Boot, Spring AI and Spring Cloud GCP BOMs, then pins the versions of the version catalog on top of them.
 
 - Define an **internal BOM** for aligning dependency versions across all modules.
 - Reduce version drift and prevent runtime errors due to incompatibilities.
@@ -44,27 +44,44 @@ We use a **Gradle Platform** (`platform`) combined with **Spring Dependency Mana
 
 To maintain **consistency**, we use **modular Gradle Conventions** to factor shared configurations across modules:
 
+The conventions live in the `build-logic` included build, grouped in folders for readability only:
+a plugin id comes from the file name. Three of them are archetypes, and a Kotlin module applies one
+of them plus the add-ons it needs. The contract module applies `openapi-contract-convention` alone,
+and `gradle/platform` is a Java platform.
+
 ### `common-convention`
 
-- Defines generic shared configurations (e.g., JVM version, Kotlin compilation, encoding, test strategy).
-- **Dependency-free** and included by all other conventions.
+- Applied by every Kotlin module, directly or through the other two archetypes.
+- Sets the Java toolchain and the Kotlin compilation, constrains every source set with the platform,
+  and applies `code-analysis-convention` and `test-convention`.
 
 ### `library-convention`
 
-- Used for **library projects** (domain, infrastructure, ...).
-- Includes `common-no-dep-convention` + tech-starters dependencies.
-- Configures the project as a **internal library**.
+- Used for **library projects** (domain, infrastructure, tech starters).
+- Adds `common-convention`, `documentation-convention`, Spring context and transactions, and the
+  event sourcing and kotlin starters.
 
 ### `api-convention`
 
 - Used for **Spring Boot applications**.
-- Includes `common-no-dep-convention` + necessary dependencies (`spring-boot-starter-web`, tech-starters, etc.).
+- Adds `common-convention`, `documentation-convention`, `spring-boot-starter-webmvc`, the kotlin and
+  monitoring starters, build and git info for Actuator, GraalVM native builds, and dependency locking.
 
 ### `test / test-fixtures-convention`
 
-- Configures **unit and integration test behaviors**.
-- Manages test dependencies (`testcontainers`, `spring-boot-starter-test`, ...).
-- Structures `testFixtures` for modules.
+- `test-convention` runs tests on the JUnit Platform and gives every Kotlin module `test-starter`: JUnit
+  Jupiter, Kotest assertions, kotlin-faker, Spring Boot test and Testcontainers support.
+- `test-fixtures-convention` adds the `testFixtures` source set, where a module shares its test doubles.
+
+### `jooq-codegen-convention`
+
+- Generates the jOOQ classes from a running PostgreSQL into `src/generated/jooq/kotlin`, which is
+  committed. Only an explicit `jooqCodegen` runs it, never the build.
+
+### `documentation-convention`
+
+- Runs the KSP processor of `documentation-starter`, which writes the domain and tech starter pages of
+  this site. Only an explicit `kspKotlin` runs it, never the build.
 
 ### `openapi-contract-convention`
 

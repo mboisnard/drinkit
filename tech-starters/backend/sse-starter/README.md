@@ -1,6 +1,6 @@
 # SSE Starter
 
-A Spring Boot starter that provides a scalable, production-ready implementation of Server-Sent Events (SSE) with multi-instance support.
+A Spring Boot starter that implements Server-Sent Events (SSE): clients subscribe to named event streams, and business code pushes to them through platform events.
 
 ## What is Server-Sent Events (SSE)?
 
@@ -19,7 +19,7 @@ Server-Sent Events (SSE) is a server push technology that enables servers to pus
 
 ## Architecture Overview
 
-This starter implements a scalable SSE solution that separates business logic from technical concerns and supports horizontal scaling across multiple application instances.
+This starter separates business logic from technical concerns. It is designed for several application instances, but delivering an event across instances needs a message broker the project does not have yet, see [Multiple Instances](#multiple-instances).
 
 ### Client Connection Flow
 
@@ -66,83 +66,12 @@ sequenceDiagram
     end
 ```
 
-### Multi-Instance Architecture
+### Multiple Instances
 
-```mermaid
-graph TB
-    subgraph "Client Tier"
-        C1[Client 1<br/>Session A]
-        C2[Client 2<br/>Session B]
-        C3[Client 3<br/>Session C]
-    end
-
-    subgraph "Load Balancer"
-        LB[Load Balancer<br/>Round Robin]
-    end
-
-    subgraph "Application Instance 1"
-        API1[SseApi]
-        REPO1[InMemoryRepository<br/>Sessions: A, C]
-        HANDLER1[Event Handler<br/>oneQueuePerInstance=true]
-        Q1[Auto-created Queue]
-    end
-
-    subgraph "Application Instance 2"
-        API2[SseApi]
-        REPO2[InMemoryRepository<br/>Sessions: B]
-        HANDLER2[Event Handler<br/>oneQueuePerInstance=true]
-        Q2[Auto-created Queue]
-    end
-
-    subgraph "Business Layer"
-        BS[Business Service]
-    end
-
-    subgraph "Message Broker"
-        EXCHANGE[RabbitMQ Exchange<br/>send.sse.event]
-    end
-
-    C1 -->|SSE Connection| LB
-    C2 -->|SSE Connection| LB
-    C3 -->|SSE Connection| LB
-
-    LB -->|Any instance| API1
-    LB -->|Any instance| API2
-
-    API1 <--> REPO1
-    API2 <--> REPO2
-
-    BS -->|Publish SendSseEvent| EXCHANGE
-
-    HANDLER1 -.->|Creates at startup| Q1
-    HANDLER2 -.->|Creates at startup| Q2
-
-    EXCHANGE -->|Broadcast to ALL| Q1
-    EXCHANGE -->|Broadcast to ALL| Q2
-
-    Q1 --> HANDLER1
-    Q2 --> HANDLER2
-
-    HANDLER1 -.->|Only if session exists| API1
-    HANDLER2 -.->|Only if session exists| API2
-
-    style BS fill:#e1f5e1
-    style EXCHANGE fill:#ffe1e1
-    style REPO1 fill:#e1e5ff
-    style REPO2 fill:#e1e5ff
-    style Q1 fill:#fff3e1
-    style Q2 fill:#fff3e1
-```
-
-**How it works:**
-
-1. **Dynamic Routing**: Clients connect through a load balancer to any available instance
-2. **Instance-Local Storage**: Each instance maintains its own in-memory repository of connected emitters for sessions it handles
-3. **Auto-Queue Creation**: Each instance creates its own RabbitMQ queue at startup (via `oneQueuePerInstance=true`)
-4. **Business Event**: A business service publishes a `SendSseEvent` to the exchange, unaware of which instance holds the connection
-5. **Broadcast to All**: The exchange broadcasts the event to ALL instance queues simultaneously
-6. **Smart Filtering**: Every instance receives the event, but only the one with the matching session's emitter processes it (others skip silently)
-7. **No Coordination Needed**: Instances operate independently; the right instance automatically handles its sessions
+The handler is declared with `oneQueuePerInstance = true`, so that a broker-backed `messaging-starter` can
+deliver each event to every instance, where only the one holding the session's emitter sends it. Today
+`messaging-starter` publishes Spring application events within the same process: an event only reaches the
+emitters of the instance that published it.
 
 ## Key Features
 
@@ -163,12 +92,11 @@ eventPublisher.publish(
 
 The SSE infrastructure handles the technical details of delivering the message.
 
-### ✅ Multi-Instance Scalability
+### ✅ Instance-Aware Delivery
 
-- **Async Messaging**: Uses `SendSseEvent` platform event
-- **RabbitMQ Broadcasting**: Messages are sent to ALL instances via exchange
-- **Instance-Aware**: Only the instance holding the emitter sends the message
-- **No Coordination**: Instances operate independently without shared state
+- **Async Messaging**: Uses the `SendSseEvent` platform event
+- **Instance-Aware**: An instance without the session's emitter skips the event silently
+- **Single Instance for Now**: Broadcasting to every instance waits for a broker-backed messaging implementation
 
 ### ✅ Memory Leak Prevention
 
@@ -222,7 +150,7 @@ eventSource.onerror = (error) => {
 ```kotlin
 @Service
 class NotificationService(
-    private val eventPublisher: EventPublisher
+    private val eventPublisher: PlatformEventPublisher
 ) {
     fun notifyUser(sessionId: String, message: String) {
         eventPublisher.publish(

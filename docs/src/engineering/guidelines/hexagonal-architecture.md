@@ -41,7 +41,7 @@ This is the core of the application, the hexagon. It is completely independent o
 **Responsibilities:**
 
 - 🧱 Contain all business logic, organized into bounded contexts.
-- 📜 Define secondary ports as interfaces (SPI - Service Provider Interface) for infrastructure needs (e.g., `UserRepository`, `NotificationService`).
+- 📜 Define secondary ports as interfaces (SPI - Service Provider Interface) in `<context>/spi` packages, named after what they hold or do (e.g., `Users`, `Cellars`). Ports shared by several contexts, such as `MessageSender` or `GenerateId`, live in `common`.
 - 🚪 Expose primary ports (use cases) through services.
 
 **Dependency Rules:**  
@@ -76,12 +76,12 @@ This module contains the primary adapters. It's the application's **entry point*
 **Responsibilities:**
 
 - 🌍 Expose REST APIs (e.g., using OpenAPI generated classes and Spring MVC).
-- 📥 Contain handlers for asynchronous messages (e.g., RabbitMQ Listeners).
+- 📥 Contain handlers for platform events (`@PlatformEventHandler`).
 - 🔁 Translate HTTP requests or messages into calls to the services in `drinkit-domain`.
 
 **Dependency Rules:**  
 This module depends on `drinkit-domain` and `drinkit-infra` (only to register infra services from the dependency injection framework). 
-It does not have access to classes and dependencies of `drinkit-infra`, which ensures that a controller cannot directly call a persistence implementation class.
+Every hand-written class of `drinkit-infra` is `internal`, so a controller cannot directly call a persistence implementation class.
 
 ---
 
