@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# Claude Code hook: in cmux, names the session's tab after its issue and step, such as "#382 judge" or "#382 PR #450".
+# Does nothing outside cmux, never blocks and prints nothing
+
+[ -n "$CMUX_SURFACE_ID" ] || exit 0
+command -v cmux >/dev/null 2>&1 || exit 0
+command -v jq >/dev/null 2>&1 || exit 0
+
+input=$(cat)
+field() {
+    printf '%s' "$input" | jq -r "$1 // empty"
+}
+
+event=$(field .hook_event_name)
+[ "$event" = PostToolUse ] && [ -n "$(field .agent_id)" ] && exit 0
+
+cwd=$(field .cwd)
+branch=$(git -C "${cwd:-.}" branch --show-current 2>/dev/null)
+issue=${branch%%-*}
+case $issue in
+    '' | *[!0-9]*) exit 0 ;;
+esac
+
+state=$(git -C "${cwd:-.}" rev-parse --path-format=absolute --git-path claude/tab 2>/dev/null) || exit 0
+mkdir -p "$(dirname "$state")"
+step=$(sed -n 1p "$state" 2>/dev/null)
+shown=$(sed -n 2p "$state" 2>/dev/null)
+
+case $event in
+    PostToolUse)
+        case $(field .tool_input.command) in
+            *"gh pr create"*)
+                pr=$(field .tool_response.stdout | grep -o 'pull/[0-9]*' | head -n 1 | cut -d / -f 2)
+                [ -n "$pr" ] && step="PR #$pr"
+                ;;
+        esac
+        ;;
+esac
+
+title="#$issue ${step:-implement}"
+[ "$event" = SubagentStart ] && title="#$issue judge"
+
+printf '%s\n%s\n' "$step" "$title" >"$state"
+[ "$title" = "$shown" ] && exit 0
+set -- --surface "$CMUX_SURFACE_ID"
+[ -n "$CMUX_WORKSPACE_ID" ] && set -- --workspace "$CMUX_WORKSPACE_ID" "$@"
+cmux rename-tab "$@" "$title" >/dev/null 2>&1
+exit 0
