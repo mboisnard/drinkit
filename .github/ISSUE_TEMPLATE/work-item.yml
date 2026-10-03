@@ -1,0 +1,54 @@
+name: Work item
+description: Planned work with an outcome and checkable acceptance criteria
+projects:
+  - mboisnard/2
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: The outcome in one or two sentences, as someone would observe it once done.
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: How to approach this issue
+      description: Keep this text unless the work calls for a different rule.
+      value: "The scope below lists possibilities identified when this issue was written, not a prescription. Whoever picks it up, human or agent, first analyzes the current state, chooses what is most relevant at that moment, and explains the choice in the pull request. A structuring choice gets an ADR. Only the acceptance criteria are binding, and they describe outcomes, not implementations."
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What exists today and why it is not enough. Add a blocked-by link for each issue it depends on.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Possible scope
+      description: Options seen when writing the issue, one bullet each. Not a plan.
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: What this issue does not cover, and where it goes instead.
+  - type: textarea
+    id: hints
+    attributes:
+      label: Implementation hints
+      description: Files, classes, commands or similar code worth reading first.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Outcomes, not implementations. Each one can be checked by someone who did not write the code.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: What the pull request shows to prove the criteria, such as commands, output or screenshots.
