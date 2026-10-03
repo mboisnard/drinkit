@@ -1,12 +1,13 @@
 # The lanes of ci.yml: a lane runs when a changed file matches one of its paths, and a changed file no list
 # below matches runs every lane. No '!' pattern: it would match every other file
 
-# Every lane lists the CI itself, so a change to it proves they all still run
-ci: &ci
-  - '.github/**'
+workflows: &workflows
+  - '.github/workflows/**'
+  - '.github/actions/**'
+  - '.github/actionlint.yaml'
 
 backend: &backend
-  - *ci
+  - *workflows
   - 'build-logic/**'
   - 'code-analysis/**'
   - 'gradle/**'
@@ -22,24 +23,24 @@ backend: &backend
   - 'deployment/updater/src/**'
 
 frontend: &frontend
-  - *ci
+  - *workflows
   - '.nvmrc'
   - 'drinkit/drinkit-frontend/**'
   - 'drinkit/drinkit-api-contract/contract/**' # the TypeScript client is generated from it
 
 docs: &docs
-  - *ci
+  - *workflows
   - *backend # the domain and tech starter pages are generated from its sources
   - '.nvmrc'
   - 'docs/**'
   - 'tech-starters/backend/*/README.md' # copied into the tech starter pages
 
 ops: &ops
-  - *ci
+  - *workflows
   - 'deployment/local/**'
 
 dependencies: &dependencies
-  - *ci
+  - *workflows
   - '**/*.gradle.kts'
   - '**/*.lockfile'
   - 'gradle/**'
@@ -56,12 +57,15 @@ none: &none
   - '.gitignore'
   - '.git-blame-ignore-revs'
   - 'LICENSE'
+  - '.github/ISSUE_TEMPLATE/**'
+  - '.github/renovate.json'
+  - '.github/rulesets/**'
 
 # ci.yml runs every lane when their counts differ
 changed:
   - '**'
 known:
-  - *ci
+  - *workflows
   - *backend
   - *frontend
   - *docs
