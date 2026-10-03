@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# Feeds file edits to protect-generated-files and checks which ones it refuses: ./.claude/hooks/protect-generated-files.test
+
+hook="$(cd "$(dirname "$0")" && pwd)/protect-generated-files"
+failures=0
+
+repo=$(mktemp -d)
+trap 'rm -rf "$repo"' EXIT
+git -C "$repo" init -q
+mkdir -p "$repo/drinkit/drinkit-infra/src/generated/jooq/kotlin/tables" "$repo/drinkit/drinkit-infra/src/main/kotlin" \
+    "$repo/drinkit/drinkit-frontend/src/openapi/apis" "$repo/drinkit/drinkit-frontend/src/pages" "$repo/gradle" \
+    "$repo/drinkit/drinkit-backend" "$repo/docs/src/engineering/resources/domains" "$repo/deployment/local"
+
+check() {
+    expected=$1
+    file=$repo/$2
+    output=$(jq -n --arg file "$file" '{tool_name: "Edit", tool_input: {file_path: $file}}' | "$hook")
+    if [ -z "$output" ]; then
+        actual=allow
+    elif printf '%s' "$output" | jq -e '.hookSpecificOutput.permissionDecision == "deny"' >/dev/null; then
+        actual=deny
+    else
+        actual="invalid output: $output"
+    fi
+    if [ "$actual" = "$expected" ]; then
+        echo "ok    $expected  $2"
+    else
+        echo "FAIL  expected $expected, got $actual  $2"
+        failures=$((failures + 1))
+    fi
+}
+
+check deny drinkit/drinkit-infra/src/generated/jooq/kotlin/tables/Cellar.kt
+check deny drinkit/drinkit-frontend/src/openapi/apis/CellarsApi.ts
+check deny gradle/verification-metadata.xml
+check deny drinkit/drinkit-backend/gradle.lockfile
+check deny drinkit/drinkit-frontend/package-lock.json
+check deny docs/src/engineering/resources/domains/cellar.md
+check deny deployment/local/.env
+check allow drinkit/drinkit-infra/src/main/kotlin/JooqCellars.kt
+check allow drinkit/drinkit-frontend/src/pages/index.vue
+check allow drinkit/drinkit-frontend/package.json
+check allow gradle/libs.versions.toml
+check allow docs/src/engineering/harness.md
+
+if [ "$failures" -ne 0 ]; then
+    echo "$failures failing"
+    exit 1
+fi
