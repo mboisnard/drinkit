@@ -102,7 +102,7 @@ open class Configuration(
      * Create an aliased <code>drinkit_application.configuration</code> table
      * reference
      */
-    constructor(alias: Name): this(alias, null)
+    constructor(alias: Name): this(alias, CONFIGURATION)
 
     /**
      * Create a <code>drinkit_application.configuration</code> table reference

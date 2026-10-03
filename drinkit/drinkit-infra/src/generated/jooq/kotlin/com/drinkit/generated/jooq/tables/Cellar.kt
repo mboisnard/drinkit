@@ -117,7 +117,7 @@ open class Cellar(
     /**
      * Create an aliased <code>drinkit_application.cellar</code> table reference
      */
-    constructor(alias: Name): this(alias, null)
+    constructor(alias: Name): this(alias, CELLAR)
 
     /**
      * Create a <code>drinkit_application.cellar</code> table reference
