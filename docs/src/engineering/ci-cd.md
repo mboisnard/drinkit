@@ -44,12 +44,12 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 | Change | Lanes | Why |
 |---|---|---|
 | `.github/**` | every lane, CI files included | Every list includes the `ci` list: a change to the CI proves every lane still runs, and actionlint and zizmor check it. The Renovate configuration and the ruleset run every lane too, rather than a rule of their own |
-| The sources of a backend module or tech starter, build logic, Gradle setup, detekt configuration, `deployment/updater` | Backend, CodeQL, Docs | The domain and tech starter pages are generated from the backend sources, so the docs lane lists the backend paths too |
+| The sources of a backend module or tech starter, build logic, Gradle setup and lock files, detekt configuration, `deployment/updater` | Backend, CodeQL, Docs | The domain and tech starter pages are generated from the backend sources, so the docs lane lists the backend paths too |
 | `drinkit/drinkit-api-contract/contract/**` | Backend, CodeQL, Frontend, Docs | The Kotlin delegates and the TypeScript client are both generated from it |
 | `drinkit/drinkit-frontend/**` | Frontend | |
 | `docs/**`, or a tech starter `README.md` | Docs | A starter README is copied into its page |
 | `.nvmrc` | Frontend, Docs | The Node version both use |
-| A Gradle script, anything under `gradle/`, a `package.json` or `package-lock.json` | Dependencies, plus the lane the file belongs to | |
+| A Gradle script or lock file, anything under `gradle/`, a `package.json` or `package-lock.json` | Dependencies, plus the lane the file belongs to | |
 | `deployment/local/**` | Ops | |
 | Any other `*.md`, `.claude/**`, `.editorconfig`, `.githooks/**`, `.idea/**`, `.gitignore`, `.git-blame-ignore-revs` | none | No job reads them: the `none` list |
 | Anything else: a new folder or module | every lane | No list knows the file, so any lane could depend on it |

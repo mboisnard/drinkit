@@ -13,6 +13,7 @@ backend: &backend
   - 'gradlew*'
   - 'gradle.properties'
   - '**/*.gradle.kts'
+  - '**/*.lockfile'
   - 'drinkit/drinkit-api-contract/contract/**'
   - 'drinkit/drinkit-backend/src/**'
   - 'drinkit/drinkit-domain/src/**'
@@ -40,6 +41,7 @@ ops: &ops
 dependencies: &dependencies
   - *ci
   - '**/*.gradle.kts'
+  - '**/*.lockfile'
   - 'gradle/**'
   - '**/package.json'
   - '**/package-lock.json'
