@@ -13,7 +13,7 @@ import org.testcontainers.utility.DockerImageName
 import org.testcontainers.utility.TestcontainersConfiguration
 
 // Keep in sync with deployment/local/compose.yml
-private const val MEILISEARCH_IMAGE_NAME = "getmeili/meilisearch:v1.54.0"
+private const val MEILISEARCH_IMAGE_NAME = "getmeili/meilisearch:v1.54.3"
 private const val MASTER_KEY = "masterKey"
 
 class MeilisearchExtension :
