@@ -13,6 +13,9 @@ esac
 
 root=$(git -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null) || exit 0
 [ -x "$root/.githooks/lint-kotlin" ] || exit 0
+case $(git -C "$root" branch --show-current) in
+    pr-*) exit 0 ;;
+esac
 
 output=$(cd "$root" && ./.githooks/lint-kotlin 2>&1) && exit 0
 
