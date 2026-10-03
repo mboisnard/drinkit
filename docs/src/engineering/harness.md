@@ -19,7 +19,7 @@ Local layers can be skipped with `--no-verify`. The GitHub layers cannot, owner 
 
 | Part | What it does | Where | Since |
 |---|---|---|---|
-| Conventions | Stack, commands and patterns an agent reads when a session starts | [`CLAUDE.md`][claude-md] | 2026-05-01 |
+| Conventions | Commands, structure, code patterns and traps a coding agent reads when a session starts. Claude Code, Codex, Copilot and Cursor all read the file | [`AGENTS.md`][agents-md] | 2026-05-01 as `CLAUDE.md`, `AGENTS.md` since 2026-10-03 |
 | Lint hook | Runs detekt with auto-correct after every file Claude Code writes, so it sees its findings at once | [`.claude/settings.json`][claude-settings] | 2026-09-13 |
 | Guard hook | Refuses a command that writes to a ruleset, to branch protection or to a push protection bypass, through `gh api` or `curl`, before it runs. Reads pass. It reads the command as text, so one built indirectly, through a variable or a script, passes, and a harmless command that names one of those endpoints next to a body flag can be refused | [`.claude/hooks/guard-github-protections`][guard-hook] | 2026-10-02 |
 | Skill `new-backend-tech-starter` | Guides the creation of a backend tech starter, or its alignment with the conventions | [`.claude/skills/new-backend-tech-starter`][skill-starter] | 2026-09-19 |
@@ -88,7 +88,7 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 - Frontend upgrade, then its linting and tests in the frontend lane: [#388][i388], then [#400][i400]
 - A repeatable agent workflow from issue to pull request, with a judge: [#382][i382]
 
-[claude-md]: https://github.com/mboisnard/drinkit/blob/master/CLAUDE.md
+[agents-md]: https://github.com/mboisnard/drinkit/blob/master/AGENTS.md
 [claude-settings]: https://github.com/mboisnard/drinkit/blob/master/.claude/settings.json
 [guard-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/guard-github-protections
 [skill-starter]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-backend-tech-starter/SKILL.md

@@ -2,10 +2,10 @@
 
 ## Technologies
 
-* Java 23
-* Node 20.11.0
+* Java 25
+* Node 24
 * Gradle
-* Spring Boot 3.2.1 + Kotlin
+* Spring Boot 4.1 + Kotlin
 * Nuxt 3 + Vue3 + PrimeVue Components Library
 * OpenApi to generate frontend files and Backend Apis
 
@@ -18,8 +18,8 @@
 ```
 
 * Api available on: `http://localhost:8080/drinkit/api/cellars`
-* OpenApi Documentation available on: `http://localhost:8080/swagger-ui/index.html`
-* Actuator Endpoints available on: `http://localhost:8080/actuator`
+* OpenApi Documentation available on: `http://localhost:8080/drinkit/openapi/ui` (admin role)
+* Actuator Endpoints available on: `http://localhost:8080/drinkit/actuator` (admin role)
 
 ### Code analysis
 
@@ -89,7 +89,7 @@ You need to have the java executable in your path (openapi generator javascript 
 
 
 ```
-cd drinkit-frontend
+cd drinkit/drinkit-frontend
 npm i
 npm run generate:client-api
 npm run dev
@@ -99,11 +99,13 @@ npm run dev
 
 ## Contributing
 
-master only changes through a pull request, for humans and coding agents alike. The ruleset in
-`.github/rulesets/master.json` has no bypass, owner included: it requires `CI gate` to pass on a
-branch up to date with master, every conversation
-resolved and a rebase merge, and it blocks force pushes and deletion. After editing the file,
-apply it with (`gh api repos/mboisnard/drinkit/rulesets` gives the id):
+[AGENTS.md](AGENTS.md) holds the conventions, for humans and coding agents alike: commands, project
+structure, code and test patterns, dependency updates, git and pull request rules.
+
+The ruleset in `.github/rulesets/master.json` has no bypass, owner included: it requires `CI gate` to
+pass on a branch up to date with master, every conversation resolved and a rebase merge, and it blocks
+force pushes and deletion. After editing the file, apply it with
+(`gh api repos/mboisnard/drinkit/rulesets` gives the id):
 
 ```
 gh api --method PUT repos/mboisnard/drinkit/rulesets/<id> --input .github/rulesets/master.json
@@ -114,40 +116,6 @@ Claude Code refuses that command, so run it in a terminal: the guard hook
 rulesets, branch protection and push protection bypasses, and lets `gh` reads through. It reads the
 command as text, so a command built indirectly, through a variable or a script, still passes.
 `.claude/hooks/guard-github-protections.test` checks which commands it refuses.
-
-The pre-push hook, enabled by the same `git config core.hooksPath .githooks`, refuses a push to
-master before anything is sent. `git push --no-verify` skips the hook, never the ruleset.
-
-A workflow only runs actions pinned by commit SHA: reference a new action by the full SHA of its
-release commit, with the version as a comment, `uses: owner/action@<sha> # v1.2.3`, and an
-action of this repository with `uses: $/.github/actions/<name>`. Renovate keeps the SHA and the
-comment up to date, and actionlint and zizmor check every workflow change.
-
-Gradle checks every dependency and plugin against the SHA-256 checksums in
-`gradle/verification-metadata.xml`, and fails the build on a mismatch or on an artifact the file
-does not list. The application also locks the versions it resolves: `drinkit-backend` resolves
-exactly what its `gradle.lockfile` lists, transitive and test dependencies included, so a release
-upstream never changes it. After adding or bumping a dependency, or adding a tech starter to the
-application, regenerate both files, review their diff and build:
-
-```
-./gradlew --write-verification-metadata sha256 --refresh-dependencies --write-locks dependencies
-git diff gradle/verification-metadata.xml drinkit/drinkit-backend/gradle.lockfile
-./gradlew build
-```
-
-Without `--write-locks`, a new dependency of the application fails with "not part of the dependency
-lock state", and a bumped one silently stays at its locked version there while the libraries move.
-`--write-locks` rewrites the whole lock: to move one dependency only, use
-`--update-locks group:name` instead, as Renovate does in its own pull requests, where it
-regenerates both files on a fresh cache. `--refresh-dependencies` makes Gradle fetch the metadata
-a warm local cache would skip, the BOMs and parent POMs a fresh CI runner downloads. The command
-only adds checksums: those of a version no longer used stay in the file. Each artifact trusted
-without a checksum carries its reason in the file.
-
-The libraries are not locked. When one of their dependencies asks for a version range, as
-cucumber's modules do, a new release inside it fails checksum verification until the command above
-runs again.
 
 GitHub refuses a push that contains a known secret format. Report a vulnerability privately from
 the Security tab, through "Report a vulnerability", rather than in a public issue.
