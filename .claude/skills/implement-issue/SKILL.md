@@ -26,28 +26,31 @@ each local branch found.
 Stop and tell the maintainer why only when the issue is closed. Whatever its board status, running the command
 is the decision to work it: step 4 moves it to In progress. Note an open blocker for the report.
 
-## 3. Read the issue and seed the test list
+## 3. Read the issue
 
 Read the whole issue, its parent epic and the code it touches. The criteria are under "Acceptance criteria", or
 "Expected behavior" for a bug.
-
-Seed the test list, `$(git rev-parse --path-format=absolute --git-path claude/test-list.md)`, from the issue's
-"Verification" field when it has one. Each criterion gets a line and its proof: a test, or for documentation, CI
-or configuration, a check command that fails before the change and passes after it. This one file is the proof
-the judge reads.
 
 Ask the maintainer before going on when a criterion is ambiguous or out of reach, or when the work needs a
 structuring choice. Work discovered on the way becomes an issue through the `new-issue` skill. A small
 improvement to a file you touch goes in a commit of its own.
 
-## 4. Create the worktree
+## 4. Create the worktree and seed the test list
 
-Create it from `origin/master` and enter it with `EnterWorktree`. If that is refused, `cd` into it and use
-absolute paths. Move the issue to In progress on the board and read the status back.
+Create it from `origin/master` with `git worktree add`, then `cd` into it, not `EnterWorktree`: its isolation
+refuses the working files under `--git-path` and any command that runs `git` inside `$(...)`. The project settings
+list the worktrees folder, so the `cd` holds and the hooks follow it. Move the issue to In progress on the board
+and read the status back.
+
+From the worktree, seed the test list, `$(git rev-parse --path-format=absolute --git-path claude/test-list.md)`,
+which points into this worktree's own folder, from the issue's "Verification" field when it has one. Each
+criterion gets a line and its proof: a test, or for documentation, CI or configuration, a check command that fails
+before the change and passes after it. This one file is the proof the judge reads.
 
 ## 5. Implement
 
-Invoke the `test-driven-development` skill now: it drives the code, backend or frontend. A line proven by a check
+Read `.claude/skills/test-driven-development/SKILL.md` and follow it: it drives the code, backend or frontend. The
+Skill tool may not list it yet, since it loads by itself only once a code file is touched. A line proven by a check
 command follows the same rhythm: run it, see it fail, change, see it pass.
 
 ## 6. Verify like CI
