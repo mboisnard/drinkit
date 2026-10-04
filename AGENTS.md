@@ -189,6 +189,16 @@ same command fixes it.
   without its comments, and goes in with `--body-file`. It links its issue with `Closes #<issue>`, with
   `Part of #<issue>` when the issue stays open, or with `Follows up #<issue>` when it is already closed.
 
+## Replies
+
+Every answer to the maintainer in the terminal is in caveman mode, level full, from the first reply, in the
+maintainer's language: answer first, no ceremony, articles optional, every fact, code span, path, number and
+error kept verbatim.
+Plain prose instead, then caveman again: a question to the maintainer, a security warning, an irreversible
+action, steps whose order a fragment could scramble. `.claude/skills/caveman/SKILL.md` holds the rules and the
+levels. "stop caveman" or "normal mode" switches it off. It never shapes what leaves the terminal: issues, pull
+requests, comments and commits follow `CONTRIBUTING.md`.
+
 ## Code style
 
 No comments by default. One or two lines at most, only for what the code cannot say: a trap, an external
