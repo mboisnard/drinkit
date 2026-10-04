@@ -55,6 +55,10 @@ it is asked for, and other agents are told to read it by `AGENTS.md`.
 | [`new-frontend-tech-starter`][skill-frontend-starter] | Creating the first frontend tech starter, a Nuxt layer, once its layout is agreed | On request |
 | [`pentest`][skill-pentest] | Scanning the running application locally with OWASP ZAP, then triaging the findings | The maintainer, `/pentest` |
 | [`threat-model`][skill-threat-model] | A STRIDE threat model of one feature or flow | The maintainer, `/threat-model` |
+| [`ci-workflow-change`][skill-ci-workflow] | Changing a workflow, an action reference or a lane: pinned actions, mapped paths, actionlint and zizmor | The workflows and the in-repo actions |
+| [`harness-change`][skill-harness] | Changing a hook, its test, the settings, a skill or an agent: portable `sh`, tests next to each hook, globs that match | The hooks, the settings, the skills and the agents |
+| [`dependency-change`][skill-dependency] | Adding or bumping a dependency: one version in the catalogs and the BOM, then the verification metadata and the lock | The platform, the build scripts and the `package.json` files |
+| [`build-convention-change`][skill-build-convention] | Changing a convention plugin: its id from its file name, the archetypes, the configuration cache | `build-logic` |
 
 ## Git hooks
 
@@ -139,6 +143,10 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [skill-frontend-starter]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-frontend-tech-starter/SKILL.md
 [skill-pentest]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/pentest/SKILL.md
 [skill-threat-model]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/threat-model/SKILL.md
+[skill-ci-workflow]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/ci-workflow-change/SKILL.md
+[skill-harness]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/harness-change/SKILL.md
+[skill-dependency]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/dependency-change/SKILL.md
+[skill-build-convention]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/build-convention-change/SKILL.md
 [detekt-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/detekt-after-edit
 [guard-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/guard-github-protections
 [cmux-status]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/cmux-status
