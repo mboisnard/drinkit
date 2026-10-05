@@ -267,7 +267,7 @@ deny() {
         alias) reason="a gh alias can hide a merge. Run the gh command itself" ;;
         hooks-path) reason="the git hooks keep master safe, so core.hooksPath stays .hooks/git. Never override or unset it" ;;
         no-verify) reason="pre-push keeps master safe. Push without --no-verify" ;;
-        hooks-off) reason="git hooks are not enabled in $3. Run git -C $3 config core.hooksPath .hooks/git, then push again" ;;
+        hooks-off) reason="the git hooks do not run in $3, then push again" ;;
     esac
     jq -n --arg reason "$reason" --arg command "$2" '{
         hookSpecificOutput: {
@@ -296,11 +296,14 @@ if [ "$rule" != push ]; then
 fi
 
 command -v git >/dev/null 2>&1 || exit 0
+# shellcheck source=../lib/git-hooks.sh
+. "$(dirname "$0")/../lib/git-hooks.sh"
 printf '%s\n' "$found" | while IFS= read -r push; do
     push=${push#push"$tab"}
     dir=$(resolved "${push%%"$tab"*}")
-    [ "$(git -C "$dir" config core.hooksPath 2>/dev/null)" = .hooks/git ] && continue
-    deny hooks-off "${push#*"$tab"}" "$dir"
+    off=$(git_hooks_off "$dir")
+    [ -n "$off" ] || continue
+    deny hooks-off "${push#*"$tab"}" "$dir: $off"
     break
 done
 exit 0

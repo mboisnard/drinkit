@@ -64,7 +64,8 @@ Hooks, from the root, with Node and `jq`: `npm cit --prefix .hooks/tests` runs e
   schema, as Liquibase changelogs.
 - `docs/src/engineering/guidelines/`: the guidelines. The sections below say which one to read before which
   change.
-- `.hooks/`: the git hooks in `git/`, the Claude Code hooks in `claude/`, their bats suites in `tests/`.
+- `.hooks/`: the git hooks in `git/`, the Claude Code hooks in `claude/`, what they share in `lib/`, their bats
+  suites in `tests/`.
 - `.claude/skills/`: how to carry out a kind of change, one folder each. Its `SKILL.md` says when it applies:
   read it before that change, whatever the agent. A skill names its model files by class: find one with
   `git grep -nwE '(class|interface|object) <Name>'`. `.claude/agents/`: the reviewers that check a branch.
