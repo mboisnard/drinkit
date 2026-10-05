@@ -27,7 +27,7 @@ services:
       MEILI_UPGRADE_DB: true
 
   flipt:
-    image: flipt/flipt:v2.13.0@sha256:d96f7cbe499dfa2cb1e626ce0230a9d5e068896975a855000a7a8645826862e4
+    image: flipt/flipt:v2.13.1@sha256:3118adad2f21d2d4793765265e9eb1c99b547019f062ce438430089ba7cea89b
     ports:
       - "8082:8080"
     volumes:
