@@ -47,7 +47,7 @@ docker run --rm -v "$PWD:/repo:ro" -w /repo "$(grep -o 'ghcr.io/[^ ]*actionlint[
 docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/zizmorcore/zizmor --offline .
 ```
 
-Hooks, from the root, with Node and `jq`: `npm cit --prefix .hooks/tests` runs every bats suite under `sh`, and
+Hooks, from the root, with Node and `jq`: `npm cit --prefix .hooks` runs every bats suite under `sh`, and
 `HOOK_SHELL=dash` before it runs the hooks under dash. ShellCheck, with Docker:
 
 ```

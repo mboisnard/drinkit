@@ -10,7 +10,9 @@ safely.
   Nuxt frontend.
 - `tech-starters/backend/`: technical libraries, one concern each, with no business code.
 - `build-logic/`: the Gradle convention plugins the modules apply.
-- `.hooks/`: the git hooks and the Claude Code hooks of the harness, with their bats suites.
+- `.hooks/`: the git hooks and the Claude Code hooks of the harness, with their bats suites, which
+  `npm cit --prefix .hooks` runs. A file there has no extension when it runs on its own, `.sh` when a hook sources
+  it, `.bash` for a bats helper and `.bats` for a suite.
 - The [documentation site](https://mboisnard.github.io/drinkit/): architecture, guidelines, the pages
   generated from the code, and the [harness](docs/src/engineering/harness.md) that guards master.
 
