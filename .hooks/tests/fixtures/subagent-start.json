@@ -1,0 +1,8 @@
+{
+  "session_id": "abc123",
+  "transcript_path": "/home/user/.claude/projects/-home-user-my-project/abc123.jsonl",
+  "cwd": "/home/user/my-project",
+  "hook_event_name": "SubagentStart",
+  "agent_id": "agent-abc123",
+  "agent_type": "issue-judge"
+}

@@ -47,6 +47,9 @@ docker run --rm -v "$PWD:/repo:ro" -w /repo "$(grep -o 'ghcr.io/[^ ]*actionlint[
 docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/zizmorcore/zizmor --offline .
 ```
 
+Hooks, from the root, with Node and `jq`: `npm cit --prefix .hooks/tests` runs every bats suite under `sh`, and
+`HOOK_SHELL=dash` before it runs the hooks under dash.
+
 ## Structure
 
 - `drinkit/`: the application. `drinkit-domain` holds use cases, entities in `<context>/core` and ports in
@@ -61,6 +64,7 @@ docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/zizmorcore/zizmor --offline 
   schema, as Liquibase changelogs.
 - `docs/src/engineering/guidelines/`: the guidelines. The sections below say which one to read before which
   change.
+- `.hooks/`: the git hooks in `git/`, the Claude Code hooks in `claude/`, their bats suites in `tests/`.
 - `.claude/skills/`: how to carry out a kind of change, one folder each. Its `SKILL.md` says when it applies:
   read it before that change, whatever the agent. A skill names its model files by class: find one with
   `git grep -nwE '(class|interface|object) <Name>'`. `.claude/agents/`: the reviewers that check a branch.

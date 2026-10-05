@@ -10,6 +10,7 @@ safely.
   Nuxt frontend.
 - `tech-starters/backend/`: technical libraries, one concern each, with no business code.
 - `build-logic/`: the Gradle convention plugins the modules apply.
+- `.hooks/`: the git hooks and the Claude Code hooks of the harness, with their bats suites.
 - The [documentation site](https://mboisnard.github.io/drinkit/): architecture, guidelines, the pages
   generated from the code, and the [harness](docs/src/engineering/harness.md) that guards master.
 
