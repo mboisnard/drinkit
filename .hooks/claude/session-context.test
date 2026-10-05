@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Starts sessions in a sample repository and checks what session-context tells Claude: ./.claude/hooks/session-context.test
+# Starts sessions in a sample repository and checks what session-context tells Claude: ./.hooks/claude/session-context.test
 
 export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
 export GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.com

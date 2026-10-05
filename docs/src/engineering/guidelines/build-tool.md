@@ -137,8 +137,8 @@ offers a manual auto-correct action, but does not format on save — so the valu
 share, indentation and line length, have to be kept in agreement by hand.
 :::
 
-A `pre-commit` hook under `.githooks/` formats staged Kotlin files, enabled per clone with
-`git config core.hooksPath .githooks`.
+A `pre-commit` hook under `.hooks/git/` formats staged Kotlin files, enabled per clone with
+`git config core.hooksPath .hooks/git`.
 
 ### `ide-convention`
 

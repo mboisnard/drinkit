@@ -51,7 +51,7 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 | `.nvmrc` | Frontend, Docs | The Node version both use |
 | A Gradle script or lock file, anything under `gradle/`, a `package.json` or `package-lock.json` | Dependencies, plus the lane the file belongs to | |
 | `deployment/local/**` | Ops | |
-| Any other `*.md`, `.claude/**`, `.editorconfig`, `.githooks/**`, `.idea/**`, `.gitignore`, `.git-blame-ignore-revs`, `LICENSE`, `.github/ISSUE_TEMPLATE/**`, `.github/renovate.json`, `.github/rulesets/**` | none | No job reads them: the `none` list. Renovate reads its configuration itself, and the ruleset is applied by hand |
+| Any other `*.md`, `.claude/**`, `.editorconfig`, `.hooks/**`, `.idea/**`, `.gitignore`, `.git-blame-ignore-revs`, `LICENSE`, `.github/ISSUE_TEMPLATE/**`, `.github/renovate.json`, `.github/rulesets/**` | none | No job reads them: the `none` list. Renovate reads its configuration itself, and the ruleset is applied by hand |
 | Anything else: a new folder or module | every lane | No list knows the file, so any lane could depend on it |
 
 ## Jobs

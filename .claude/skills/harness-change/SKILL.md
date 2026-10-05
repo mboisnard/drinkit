@@ -2,8 +2,7 @@
 name: harness-change
 description: Changes DrinkIt's agent harness, its Claude Code and git hooks, its settings, its skills and its agents, so that each hook runs on every shell it meets and each skill loads where it should. Use it before adding or changing a hook, its test, the Claude Code settings, a skill or an agent.
 paths:
-  - ".claude/hooks/**"
-  - ".githooks/**"
+  - ".hooks/**"
   - ".claude/settings.json"
   - ".claude/skills/**"
   - ".claude/agents/**"
@@ -38,8 +37,9 @@ skill or an agent has to follow, and what proves them.
 
 ### 3. Register it
 
-A Claude Code hook goes into `.claude/settings.json` as `"$CLAUDE_PROJECT_DIR"/.claude/hooks/<name>`, with a
-`timeout`. A git hook goes into `.githooks/`, which each clone enables with `git config core.hooksPath .githooks`.
+Every hook lives under `.hooks/`. A Claude Code hook goes into `.hooks/claude/` and into `.claude/settings.json`
+as `"$CLAUDE_PROJECT_DIR"/.hooks/claude/<name>`, with a `timeout`. A git hook goes into `.hooks/git/`, which each
+clone enables with `git config core.hooksPath .hooks/git`.
 
 ### 4. Test it
 
@@ -47,7 +47,7 @@ Each hook has a `<hook>.test` next to it, in plain `sh`. It builds a sample repo
 `GIT_CONFIG_GLOBAL=/dev/null`, stubs every external tool, and asserts with the helpers its suite already
 defines, such as `check`, or `says` and `never_says` in `session-context.test`. A new case fails before the
 change. Before pushing, run every suite:
-`for t in .claude/hooks/*.test .githooks/*.test; do sh "$t" || echo "FAILED $t"; done`.
+`for t in .hooks/*/*.test; do sh "$t" || echo "FAILED $t"; done`.
 
 ### 5. Describe it
 

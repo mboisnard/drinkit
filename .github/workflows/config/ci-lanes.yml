@@ -52,7 +52,7 @@ none: &none
   - '**/*.md'
   - '.claude/**'
   - '.editorconfig'
-  - '.githooks/**'
+  - '.hooks/**'
   - '.idea/**'
   - '.gitignore'
   - '.git-blame-ignore-revs'

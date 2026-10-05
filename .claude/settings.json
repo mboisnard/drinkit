@@ -14,17 +14,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/cmux-status",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/cmux-status",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-context",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/session-context",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/compile-at-stop",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/compile-at-stop",
             "timeout": 30
           }
         ]
@@ -36,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-github-protections",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/guard-github-protections",
             "timeout": 10
           }
         ]
@@ -46,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect-generated-files",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/protect-generated-files",
             "timeout": 5
           }
         ]
@@ -58,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/detekt-after-edit",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/detekt-after-edit",
             "statusMessage": "Linting with detekt...",
             "timeout": 120
           }
@@ -70,7 +70,7 @@
           {
             "type": "command",
             "if": "Bash(gh pr *)",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/cmux-status",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/cmux-status",
             "timeout": 5
           }
         ]
@@ -83,7 +83,7 @@
           {
             "type": "command",
             "if": "Bash(gh pr *)",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/cmux-status",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/cmux-status",
             "timeout": 5
           }
         ]
@@ -94,7 +94,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/compile-at-stop",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/compile-at-stop",
             "timeout": 600,
             "statusMessage": "Compiling the Kotlin code..."
           }
@@ -107,7 +107,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/cmux-status",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/cmux-status",
             "timeout": 5
           }
         ]
@@ -119,7 +119,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/cmux-status",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/cmux-status",
             "timeout": 5
           }
         ]

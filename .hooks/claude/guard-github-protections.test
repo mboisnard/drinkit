@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Feeds sample commands to the guard hook and checks which ones it refuses: ./.claude/hooks/guard-github-protections.test
+# Feeds sample commands to the guard hook and checks which ones it refuses: ./.hooks/claude/guard-github-protections.test
 
 export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
 hook="$(cd "$(dirname "$0")" && pwd)/guard-github-protections"
@@ -13,7 +13,7 @@ hooks_on=$work/on
 hooks_off=$work/off
 outside=$work/outside
 mkdir "$outside" "$work/no-jq" "$work/no-git"
-git init -q "$hooks_on" && git -C "$hooks_on" config core.hooksPath .githooks
+git init -q "$hooks_on" && git -C "$hooks_on" config core.hooksPath .hooks/git
 git init -q "$hooks_off"
 for tool in awk cat git; do
     ln -s "$(command -v "$tool")" "$work/no-jq/$tool"
@@ -141,6 +141,7 @@ check deny 'git -c core.hooksPath=/dev/null push origin HEAD:master'
 check deny 'git -C . -c core.hookspath= push'
 check deny 'git config --unset core.hooksPath'
 check deny 'git config core.hooksPath /dev/null'
+check deny 'git config core.hooksPath .githooks'
 check deny 'GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=/dev/null git push'
 check deny 'export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=/dev/null; git push origin HEAD:master'
 check deny "GIT_CONFIG_PARAMETERS=\"'core.hooksPath'='/dev/null'\" git push origin HEAD:master"
@@ -175,8 +176,8 @@ check allow 'cd ../on && git push -u origin HEAD' "$hooks_off"
 check allow 'cd ~/on && git push -u origin HEAD' "$outside"
 check allow 'cd ../off && cd ../on && git push -u origin HEAD'
 check allow 'git config core.hooksPath'
-check allow 'git config core.hooksPath .githooks'
-check allow 'git config --local core.hooksPath .githooks'
+check allow 'git config core.hooksPath .hooks/git'
+check allow 'git config --local core.hooksPath .hooks/git'
 check allow 'git config --get core.hooksPath'
 check allow 'git config get core.hooksPath'
 check allow 'git config --global core.hooksPath'
@@ -185,9 +186,9 @@ check allow 'git config --show-origin core.hooksPath'
 check allow 'git config --show-scope --get core.hooksPath'
 check allow 'git -C /path/to/worktree config core.hooksPath'
 # shellcheck disable=SC2016
-check allow 'test "$(git config core.hooksPath)" = .githooks'
+check allow 'test "$(git config core.hooksPath)" = .hooks/git'
 # shellcheck disable=SC2016
-check allow '[ "$(git config core.hooksPath)" = .githooks ] || echo off'
+check allow '[ "$(git config core.hooksPath)" = .hooks/git ] || echo off'
 check allow './gradlew build 2>&1 | tail -n 20'
 check allow 'git commit -m "Refuse gh pr merge from agent sessions"'
 check allow 'git commit -m "Refuse merges; gh pr merge is for the maintainer"'

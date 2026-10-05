@@ -162,7 +162,7 @@ same command fixes it.
 - master only changes through a pull request with a green `CI gate`, merged by rebase. Resolve a conflict
   with a local rebase and `git push --force-with-lease`: GitHub's "Resolve conflicts" button adds a merge
   commit that blocks the merge.
-- Run `git config core.hooksPath .githooks` once per clone: pre-commit formats the staged Kotlin, pre-push
+- Run `git config core.hooksPath .hooks/git` once per clone: pre-commit formats the staged Kotlin, pre-push
   refuses a push to master.
 - A branch is named `<issue>-<short-description>`. A commit subject reads `[TOPIC] Imperative subject
   (#issue)`, reusing a topic from `git log` when one fits, and the pull request title is the first commit
