@@ -90,6 +90,14 @@ jobs:
     permissions:
       contents: read
 
+  hooks:
+    name: Hooks
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.lanes), 'hooks')
+    uses: $/.github/workflows/ci-hooks.yml
+    permissions:
+      contents: read
+
   ops:
     name: Ops
     needs: decision
@@ -127,7 +135,7 @@ jobs:
 
   gate:
     name: CI gate
-    needs: [decision, workflows, backend, frontend, ops, docs, dependencies]
+    needs: [decision, workflows, backend, frontend, hooks, ops, docs, dependencies]
     # always(), not !cancelled(): a gate skipped in a cancelled run would count as passed
     if: always()
     runs-on: ubuntu-latest

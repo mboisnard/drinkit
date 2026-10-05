@@ -12,11 +12,12 @@ flowchart LR
   decision -- backend --> backend[Backend<br/>build, tests, detekt]
   decision -- backend --> codeql[CodeQL<br/>not blocking]
   decision -- frontend --> frontend[Frontend<br/>Nuxt build]
+  decision -- hooks --> hooks[Hooks<br/>ShellCheck, bats on three shells]
   decision -- docs --> docs[Docs<br/>generate and build]
   decision -- ops --> ops[Ops<br/>compose check]
   decision -- dependencies --> submission[Dependencies<br/>submit the graph]
   submission -- pull request --> review[Dependencies<br/>review the additions]
-  cifiles & backend & frontend & docs & ops & submission & review --> gate[[CI gate<br/>the only required check]]
+  cifiles & backend & frontend & hooks & docs & ops & submission & review --> gate[[CI gate<br/>the only required check]]
   docs -- master only --> pages[Deploy docs<br/>GitHub Pages]
   gate -.->|next, master only| images[Publish images]
 ```
@@ -29,7 +30,7 @@ flowchart LR
 |---|---|---|
 | [`ci.yml`][ci-yml] | Entry point: triggers, decision, lanes, gate | on pull requests, master pushes, by hand |
 | [`config/ci-lanes.yml`][ci-lanes] | The paths of each lane, in a subfolder since GitHub reads every file at the top as a workflow | by the decision job |
-| `ci-workflows.yml`, `ci-backend.yml`, `ci-frontend.yml`, `ci-ops.yml`, `ci-docs.yml`, `ci-dependencies.yml` | One lane each: what it checks | by `ci.yml`, when the lane changed |
+| `ci-workflows.yml`, `ci-backend.yml`, `ci-frontend.yml`, `ci-hooks.yml`, `ci-ops.yml`, `ci-docs.yml`, `ci-dependencies.yml` | One lane each: what it checks | by `ci.yml`, when the lane changed |
 | `ci-codeql.yml` | The security analysis, outside the gate | by `ci.yml`, with the backend lane |
 | `cd-docs.yml` | A deployment: publishes what a lane built | by `ci.yml`, on master |
 | [`weekly.yml`][weekly-yml] | Starts a full run of `ci.yml` every Monday | on a schedule |
@@ -48,10 +49,11 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 | `drinkit/drinkit-api-contract/contract/**` | Backend, CodeQL, Frontend, Docs | The Kotlin delegates and the TypeScript client are both generated from it |
 | `drinkit/drinkit-frontend/**` | Frontend | |
 | `docs/**`, or a tech starter `README.md` | Docs | A starter README is copied into its page |
-| `.nvmrc` | Frontend, Docs | The Node version both use |
+| `.nvmrc` | Frontend, Docs, Hooks | The Node version the three use |
 | A Gradle script or lock file, anything under `gradle/`, a `package.json` or `package-lock.json` | Dependencies, plus the lane the file belongs to | |
 | `deployment/local/**` | Ops | |
-| Any other `*.md`, `.claude/**`, `.editorconfig`, `.hooks/**`, `.idea/**`, `.gitignore`, `.git-blame-ignore-revs`, `LICENSE`, `.github/ISSUE_TEMPLATE/**`, `.github/renovate.json`, `.github/rulesets/**` | none | No job reads them: the `none` list. Renovate reads its configuration itself, and the ruleset is applied by hand |
+| `.hooks/**`, `.claude/**` | Hooks | The hooks live under `.hooks/`, and `.claude/` holds the settings that run them and the skills the harness check reads |
+| Any other `*.md`, `.editorconfig`, `.idea/**`, `.gitignore`, `.git-blame-ignore-revs`, `LICENSE`, `.github/ISSUE_TEMPLATE/**`, `.github/renovate.json`, `.github/rulesets/**` | none | No job reads them: the `none` list. Renovate reads its configuration itself, and the ruleset is applied by hand |
 | Anything else: a new folder or module | every lane | No list knows the file, so any lane could depend on it |
 
 ## Jobs
@@ -63,6 +65,7 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 | `Backend` | backend | `./gradlew build detektAll`: compiles, tests, runs detekt once and publishes its findings to code scanning. Keeps the test reports when it fails | yes |
 | `CodeQL` | backend | Security analysis of the Kotlin and Java code with the `security-extended` queries | no |
 | `Frontend` | frontend | `npm ci`, generates the API client, `nuxt build` | yes |
+| `Hooks` | hooks | ShellCheck on the hooks and their suites. The bats suites of `.hooks/tests` under dash and `bash --posix` on Linux and under `sh` on macOS, the check of the harness files included: a suite for each hook, settings that run existing hooks, skill globs and relative links that lead somewhere | yes |
 | `Ops` | ops | Validates `deployment/local/compose.yml` | yes |
 | `Docs` | docs | Generates the living documentation, builds the VitePress site, keeps it for the deployment on master | yes |
 | `Deploy docs` | docs, on master | Deploys the site the `Docs` job built | no |
@@ -102,6 +105,8 @@ Most of CodeQL's time used to go to two places. The build conventions were compi
 - **Build once, deploy that build.** `Deploy docs` publishes the artifact `Docs` built and checked. Future images follow the same rule.
 - **The weekly run has its own file.** GitHub disables a scheduled workflow after 60 days without activity, and a disabled `ci.yml` would block every pull request.
 - **The Node version lives in `.nvmrc`,** read by the CI, nvm and Renovate alike.
+- **The hook tests run on the shells the hooks meet.** The maintainer's macOS runs a hook with bash 3.2 as `sh`, a Linux agent with dash, so the `Hooks` lane runs every suite under dash, `bash --posix` and macOS `sh`.
+- **ShellCheck runs from an image pinned by digest,** not from the runner, whose copy changes with the runner image. Renovate updates the digest.
 - **Renovate rebases its pull requests only on conflict.** Rebasing every open pull request on each master push started up to 22 runs at once, while the repository can run 20 jobs at a time.
 
 ## How to

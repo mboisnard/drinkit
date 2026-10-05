@@ -51,7 +51,8 @@ Each hook has a bats suite, `.hooks/tests/<hook>.bats`, with the assertions of b
 `helper.bash` and calls `sandbox`, which gives the test a home, a git configuration and a locale of its own. A suite
 stubs every external tool with `stub`, builds a Claude Code input from `fixtures/` with `run_hook_on`, and runs the
 hook with `run_hook`, under the shell of `$HOOK_SHELL`. Each test builds its own state: none relies on the one
-before. A new case fails before the change.
+before. A new case fails before the change. `harness.bats` fails when a hook has no suite, or when a command of
+`.claude/settings.json` runs no hook of `.hooks/claude/` or has no timeout.
 
 From the root, `npm cit --prefix .hooks/tests` installs bats and runs every suite. Before pushing, run the suite of
 each changed hook under dash too: `cd .hooks/tests && HOOK_SHELL=dash npx bats <hook>.bats`.
@@ -66,7 +67,8 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
 - A skill is in English and reads well for a person. It holds rules and pointers, names its model files by class
   for `git grep -nwE '(class|interface|object) <Name>'`, and states no count or version that ages.
 - Each `paths:` glob matches tracked files: `git ls-files -- ':(glob)<pattern>'` lists them. A glob that matches
-  nothing leaves the skill silent, with no error.
+  nothing leaves the skill silent, with no error, so `harness.bats` fails on it, and on a relative link under
+  `.claude/` that leads to no file.
 - A skill with side effects that the maintainer starts sets `disable-model-invocation: true`.
 - Working files go under `git rev-parse --git-path claude`, run from the worktree, or in the session's scratch
   directory.

@@ -33,7 +33,7 @@ A person can skip the local git hooks with `--no-verify`, a Claude Code session 
 | Compile hook | At the end of a turn that changed Kotlin sources, compiles them with their tests. When frontend sources changed, runs the `typecheck` script of each app that has one and has its dependencies installed. The errors go back to Claude, which keeps working until they are fixed. A state already checked is not checked again, so it cannot loop | [`.hooks/claude/compile-at-stop`][compile-hook] | 2026-10-03 |
 | Session context hook | At start, on resume and after a compaction, tells Claude its branch, its issue, how far it is ahead of master, its uncommitted work, the worktrees whose branch is merged into the last fetched master, left for `/implement-issue` to clean up, and how to turn the git hooks back on when they do not run | [`.hooks/claude/session-context`][session-hook] | 2026-10-03, git hooks since 2026-10-05 |
 
-Every hook, git or Claude Code, lives under `.hooks/` and has a bats suite in `.hooks/tests/`: `npm cit --prefix .hooks/tests` runs them all. A file name says how the file runs: no extension for an executable, `.sh` for a file a hook sources, `.bash` for a bats helper, `.bats` for a suite. Claude Code also loads the personal configuration of whoever runs it, from `~/.claude`, on top of these parts, and a project cannot turn it off.
+Every hook, git or Claude Code, lives under `.hooks/` and has a bats suite in `.hooks/tests/`: `npm cit --prefix .hooks/tests` runs them all, and so does the `Hooks` lane of CI, under dash, `bash --posix` and macOS `sh`, with ShellCheck. A file name says how the file runs: no extension for an executable, `.sh` for a file a hook sources, `.bash` for a bats helper, `.bats` for a suite. Claude Code also loads the personal configuration of whoever runs it, from `~/.claude`, on top of these parts, and a project cannot turn it off.
 
 ### Skills
 
@@ -56,7 +56,7 @@ it is asked for, and other agents are told to read it by `AGENTS.md`.
 | [`pentest`][skill-pentest] | Scanning the running application locally with OWASP ZAP, then triaging the findings | The maintainer, `/pentest` |
 | [`threat-model`][skill-threat-model] | A STRIDE threat model of one feature or flow | The maintainer, `/threat-model` |
 | [`ci-workflow-change`][skill-ci-workflow] | Changing a workflow, an action reference or a lane: pinned actions, mapped paths, actionlint and zizmor | The workflows and the in-repo actions |
-| [`harness-change`][skill-harness] | Changing a hook, its test, the settings, a skill or an agent: portable `sh`, tests next to each hook, globs that match | The hooks, the settings, the skills and the agents |
+| [`harness-change`][skill-harness] | Changing a hook, its test, the settings, a skill or an agent: portable `sh`, a bats suite for each hook, globs that match | The hooks, the settings, the skills and the agents |
 | [`dependency-change`][skill-dependency] | Adding or bumping a dependency: one version in the catalogs and the BOM, then the verification metadata and the lock | The platform, the build scripts and the `package.json` files |
 | [`build-convention-change`][skill-build-convention] | Changing a convention plugin: its id from its file name, the archetypes, the configuration cache | `build-logic` |
 | [`caveman`][skill-caveman] | Terse replies to the maintainer, on by default through `AGENTS.md`, with plain prose where clarity needs it | Every session, `/caveman lite`, `full` or `ultra` |
@@ -89,11 +89,12 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 | Part | What it does | Where | Since |
 |---|---|---|---|
 | `CI gate` | The only required check. Fails when a lane failed or was cancelled, passes when a lane was not needed | [`ci.yml`][ci-yml] | 2026-10-01 |
-| `Decision` | Maps the changed files to the workflows, backend, frontend, docs, ops and dependencies lanes. A file no list knows runs every lane | [`ci-lanes.yml`][ci-lanes] | 2026-10-01 |
+| `Decision` | Maps the changed files to the workflows, backend, frontend, hooks, docs, ops and dependencies lanes. A file no list knows runs every lane | [`ci-lanes.yml`][ci-lanes] | 2026-10-01 |
 | `CI files` | actionlint checks that the workflows are valid and zizmor audits their security, whenever they change. A finding blocks the merge | [`ci-workflows.yml`][ci-workflows-yml] | 2026-10-02 |
 | `Backend` | Compiles and tests the backend and runs detekt in one Gradle run, findings in code scanning | [`ci-backend.yml`][ci-backend-yml] | 2024-03-03 as `build`, detekt in the same run since 2026-10-01 |
 | `CodeQL` | Looks for security flaws in the Kotlin and Java code, results in code scanning. Not required | [`ci-codeql.yml`][ci-codeql-yml] | 2024-03-25, off from 2026-09-13 to 2026-09-26 |
 | `Frontend` | Generates the API client and builds the Nuxt app | [`ci-frontend.yml`][ci-frontend-yml] | 2026-10-01 |
+| `Hooks` | ShellCheck on the hooks, their bats suites under dash, `bash --posix` and macOS `sh`, and the harness check: a suite for each hook, settings commands that run an existing hook with a timeout, skill `paths:` globs that match tracked files, relative links under `.claude/` that lead to a file | [`ci-hooks.yml`][ci-hooks-yml], [`harness.bats`][harness-bats] | 2026-10-05 |
 | `Ops` | Validates the local compose file | [`ci-ops.yml`][ci-ops-yml] | 2026-10-01 |
 | `Docs` and `Deploy docs` | Generate the living documentation and build the site on pull requests, deploy that build from master | [`ci-docs.yml`][ci-docs-yml], [`cd-docs.yml`][cd-docs-yml] | deployed since 2025-07-03, built on pull requests since 2026-10-01 |
 | `Dependencies`: graph submission | Sends the Gradle dependency graph to GitHub for every master commit and for pull requests that change dependencies | [`ci-dependencies.yml`][ci-dependencies-yml] | 2024-03-25, nothing sent from 2025-01-25 to 2026-09-27 |
@@ -127,7 +128,6 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 - Documentation generation as part of the build: [#395][i395]
 - Frontend upgrade, then its linting and tests in the frontend lane: [#388][i388], then [#400][i400]
 - The judge is required by `/implement-issue`, not by a hook: the pull request shows its verdict line, which the maintainer checks before merging
-- The hook tests run by hand, not in CI: [#434][i434]
 
 [agents-md]: https://github.com/mboisnard/drinkit/blob/master/AGENTS.md
 [skill-issue]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/implement-issue/SKILL.md
@@ -172,6 +172,8 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [ci-codeql-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-codeql.yml
 [ci-frontend-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-frontend.yml
 [ci-ops-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-ops.yml
+[ci-hooks-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-hooks.yml
+[harness-bats]: https://github.com/mboisnard/drinkit/blob/master/.hooks/tests/harness.bats
 [ci-docs-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-docs.yml
 [cd-docs-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/cd-docs.yml
 [ci-dependencies-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-dependencies.yml
@@ -188,4 +190,3 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [i395]: https://github.com/mboisnard/drinkit/issues/395
 [i388]: https://github.com/mboisnard/drinkit/issues/388
 [i400]: https://github.com/mboisnard/drinkit/issues/400
-[i434]: https://github.com/mboisnard/drinkit/issues/434
