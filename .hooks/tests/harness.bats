@@ -146,3 +146,9 @@ SKILL
     assert_output '.claude/skills/sample/SKILL.md: reference.md
 .claude/skills/sample/SKILL.md: ../../../docs/guide.md'
 }
+
+# Claude Code protects .claude/ but not .hooks/: without the rule, it could rewrite the guard without asking.
+@test "the Claude Code settings ask before Claude edits a file under .hooks/" {
+    run jq -e '.permissions.ask // [] | index("Edit(//**/.hooks/**)") != null' "$repository/.claude/settings.json"
+    assert_success
+}

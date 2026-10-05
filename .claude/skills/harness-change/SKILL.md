@@ -43,7 +43,8 @@ Every hook lives under `.hooks/`. A Claude Code hook goes into `.hooks/claude/` 
 as `"$CLAUDE_PROJECT_DIR"/.hooks/claude/<name>`, with a `timeout`. A git hook goes into `.hooks/git/`, which each
 clone enables with `git config core.hooksPath .hooks/git`.
 Code that two hooks share goes into `.hooks/lib/<name>.sh`, which they source from
-`"$(dirname "$0")/../lib/<name>.sh"`.
+`"$(dirname "$0")/../lib/<name>.sh"`. Claude Code asks the maintainer before each edit under `.hooks/`: the
+`permissions.ask` rule of `.claude/settings.json` stands in for the protection `.claude/` gets on its own.
 
 ### 4. Test it
 

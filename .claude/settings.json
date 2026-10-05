@@ -6,6 +6,9 @@
     "deny": [
       "Bash(gh pr merge *)",
       "Bash(git push --no-verify *)"
+    ],
+    "ask": [
+      "Edit(//**/.hooks/**)"
     ]
   },
   "hooks": {
