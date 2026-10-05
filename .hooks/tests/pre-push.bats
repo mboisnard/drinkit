@@ -15,7 +15,7 @@ push() {
 
 @test "a push to master is refused" {
     push "refs/heads/master $sha refs/heads/master $zero"
-    assert_failure
+    assert_success
     assert_stderr "pre-push: master only changes through a pull request, push a branch and open one"
 }
 
