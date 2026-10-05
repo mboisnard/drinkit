@@ -111,7 +111,7 @@ Most of CodeQL's time used to go to two places. The build conventions were compi
 
 ## How to
 
-- **Add a lane:** write its `ci-<lane>.yml` with an `on: workflow_call` trigger. In `ci-lanes.yml`, add its list with an anchor, starting with `- *ci`, and the anchor to `known`. In `ci.yml`, add a job that calls the file when the lane is in `needs.decision.outputs.lanes`, with the permissions the file needs, then add that job to the gate's `needs`. Then add it to this page.
+- **Add a lane:** write its `ci-<lane>.yml` with an `on: workflow_call` trigger. In `ci-lanes.yml`, add its list with an anchor, starting with `- *workflows`, and the anchor to `known`. In `ci.yml`, add a job that calls the file when the lane is in `needs.decision.outputs.lanes`, with the permissions the file needs, then add that job to the gate's `needs`. Then add it to this page.
 - **Add a folder or a module:** add its paths to its lane in `ci-lanes.yml`, or to `none` if no job reads them. Until then, a change to it runs every lane.
 - **See why a lane ran:** the `Decision` log lists the matching files of each list. When every lane ran, the files under `changed` that are missing under `known` are the unknown ones.
 - **Add an action:** reference it by the full SHA of its release commit, with the version as a comment: `uses: owner/action@<sha> # v1.2.3`. `gh api repos/<owner>/<action>/commits/v1.2.3 --jq .sha` gives the SHA. Renovate then keeps both up to date.
