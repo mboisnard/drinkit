@@ -54,8 +54,8 @@ hook with `run_hook`, under the shell of `$HOOK_SHELL`. Each test builds its own
 before. A new case fails before the change. `harness.bats` fails when a hook has no suite, or when a command of
 `.claude/settings.json` runs no hook of `.hooks/claude/` or has no timeout.
 
-From the root, `npm cit --prefix .hooks/tests` installs bats and runs every suite. Before pushing, run the suite of
-each changed hook under dash too: `cd .hooks/tests && HOOK_SHELL=dash npx bats <hook>.bats`.
+From the root, `npm cit --prefix .hooks` installs bats and runs every suite. Before pushing, run the suite of
+each changed hook under dash too: `cd .hooks && HOOK_SHELL=dash npx bats tests/<hook>.bats`.
 
 ### 5. Describe it
 
@@ -78,6 +78,6 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
 
 - [ ] Every changed hook parses and runs under `sh` on macOS and under dash, and its suite has a case that failed
   before.
-- [ ] `npm cit --prefix .hooks/tests` passes.
+- [ ] `npm cit --prefix .hooks` passes.
 - [ ] Every `paths:` glob matches tracked files.
 - [ ] The harness page describes what changed.

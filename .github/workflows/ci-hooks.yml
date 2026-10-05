@@ -42,7 +42,7 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: .hooks/tests
+        working-directory: .hooks
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -54,7 +54,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-          cache-dependency-path: .hooks/tests/package-lock.json
+          cache-dependency-path: .hooks/package-lock.json
 
       - name: Install bats
         run: npm ci --ignore-scripts

@@ -4,7 +4,7 @@
 
 bats_require_minimum_version 1.5.0
 # Not their load.bash, which spawns a dirname per file: 15 processes in each test, half of its time on macOS
-for library in "$BATS_TEST_DIRNAME"/node_modules/bats-support/src/*.bash "$BATS_TEST_DIRNAME"/node_modules/bats-assert/src/*.bash; do
+for library in "$BATS_TEST_DIRNAME"/../node_modules/bats-support/src/*.bash "$BATS_TEST_DIRNAME"/../node_modules/bats-assert/src/*.bash; do
     # shellcheck source=/dev/null
     source "$library"
 done
