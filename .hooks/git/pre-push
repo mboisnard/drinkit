@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Enable once per clone: git config core.hooksPath .githooks
+# Enable once per clone: git config core.hooksPath .hooks/git
 # Skip once: git push --no-verify (the master ruleset on GitHub still applies)
 
 while read -r _ _ remote_ref _; do

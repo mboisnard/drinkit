@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Feeds file writes to protect-generated-files and checks which ones it refuses: ./.claude/hooks/protect-generated-files.test
+# Feeds file writes to protect-generated-files and checks which ones it refuses: ./.hooks/claude/protect-generated-files.test
 
 export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
 hook="$(cd "$(dirname "$0")" && pwd)/protect-generated-files"

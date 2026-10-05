@@ -31,7 +31,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
         SHELL = "^(eval|sh|bash|zsh|dash|ksh)([[:space:]]|$)"
         SHELL_WORD = "(^|[[:space:]/|&;(])(sh|bash|zsh|dash|ksh)([[:space:]|&;)]|$)"
         GIT_OPTION = "^[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--(git-dir|work-tree|namespace|config-env)[[:space:]]+[^[:space:]]+|--[a-z-]+(=[^[:space:]]+)?|-[A-Za-z])"
-        HOOKS_PATH_KEPT = "^config([[:space:]]+(--local|--global|--system|--worktree|--show-origin|--show-scope|--get|get|set))*[[:space:]]+core\\.hookspath([[:space:]]+\\.githooks)?[[:space:]]*$"
+        HOOKS_PATH_KEPT = "^config([[:space:]]+(--local|--global|--system|--worktree|--show-origin|--show-scope|--get|get|set))*[[:space:]]+core\\.hookspath([[:space:]]+\\.hooks/git)?[[:space:]]*$"
     }
 
     function deny(rule, command) {
@@ -265,9 +265,9 @@ deny() {
         merge) reason="coding agents never merge a pull request, the maintainer does. Leave it open for review" ;;
         hidden-query) reason="a GraphQL query read from a file or stdin cannot be checked. Pass it inline with -f query=..." ;;
         alias) reason="a gh alias can hide a merge. Run the gh command itself" ;;
-        hooks-path) reason="the git hooks keep master safe, so core.hooksPath stays .githooks. Never override or unset it" ;;
+        hooks-path) reason="the git hooks keep master safe, so core.hooksPath stays .hooks/git. Never override or unset it" ;;
         no-verify) reason="pre-push keeps master safe. Push without --no-verify" ;;
-        hooks-off) reason="git hooks are not enabled in $3. Run git -C $3 config core.hooksPath .githooks, then push again" ;;
+        hooks-off) reason="git hooks are not enabled in $3. Run git -C $3 config core.hooksPath .hooks/git, then push again" ;;
     esac
     jq -n --arg reason "$reason" --arg command "$2" '{
         hookSpecificOutput: {
@@ -299,7 +299,7 @@ command -v git >/dev/null 2>&1 || exit 0
 printf '%s\n' "$found" | while IFS= read -r push; do
     push=${push#push"$tab"}
     dir=$(resolved "${push%%"$tab"*}")
-    [ "$(git -C "$dir" config core.hooksPath 2>/dev/null)" = .githooks ] && continue
+    [ "$(git -C "$dir" config core.hooksPath 2>/dev/null)" = .hooks/git ] && continue
     deny hooks-off "${push#*"$tab"}" "$dir"
     break
 done

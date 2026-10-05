@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Feeds the refs git hands to pre-push on stdin and checks which pushes it refuses: ./.githooks/pre-push.test
+# Feeds the refs git hands to pre-push on stdin and checks which pushes it refuses: ./.hooks/git/pre-push.test
 
 hook="$(cd "$(dirname "$0")" && pwd)/pre-push"
 failures=0

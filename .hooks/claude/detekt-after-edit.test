@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Feeds edited files to detekt-after-edit with a fake lint-kotlin and checks when it runs and what Claude is shown:
-# ./.claude/hooks/detekt-after-edit.test
+# ./.hooks/claude/detekt-after-edit.test
 
 export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
 hook="$(cd "$(dirname "$0")" && pwd)/detekt-after-edit"
@@ -10,10 +10,10 @@ failures=0
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 export GIT_CEILING_DIRECTORIES="$work"
-mkdir -p "$work/repo/.githooks" "$work/repo/src" "$work/no-lint/src" "$work/outside"
+mkdir -p "$work/repo/.hooks/git" "$work/repo/src" "$work/no-lint/src" "$work/outside"
 git init -q "$work/repo"
 git init -q "$work/no-lint"
-cat >"$work/repo/.githooks/lint-kotlin" <<EOF
+cat >"$work/repo/.hooks/git/lint-kotlin" <<EOF
 #!/bin/sh
 echo run >>"$work/runs"
 if [ -f "$work/findings" ]; then
@@ -30,7 +30,7 @@ if [ -f "$work/crash" ]; then
     exit 1
 fi
 EOF
-chmod +x "$work/repo/.githooks/lint-kotlin"
+chmod +x "$work/repo/.hooks/git/lint-kotlin"
 
 check() {
     expected_exit=$1

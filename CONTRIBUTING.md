@@ -29,7 +29,7 @@ It needs Docker, the JDK of `gradle/gradle-daemon-jvm.properties`, and the Node 
 per clone:
 
 ```
-git config core.hooksPath .githooks
+git config core.hooksPath .hooks/git
 git config blame.ignoreRevsFile .git-blame-ignore-revs     # skip the reformatting commit in git blame
 ```
 

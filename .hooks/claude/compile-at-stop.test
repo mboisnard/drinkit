@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Plays a session against compile-at-stop with a fake gradlew and a fake npm, and checks when it compiles or type
-# checks and what Claude is told: ./.claude/hooks/compile-at-stop.test
+# checks and what Claude is told: ./.hooks/claude/compile-at-stop.test
 
 export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
 export GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.com

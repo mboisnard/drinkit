@@ -26,12 +26,12 @@ A person can skip the local git hooks with `--no-verify`, a Claude Code session 
 | Conventions | Commands, structure, code patterns and traps a coding agent reads when a session starts. Claude Code, Codex, Copilot and Cursor all read the file | [`AGENTS.md`][agents-md] | 2026-05-01 as `CLAUDE.md`, `AGENTS.md` since 2026-10-03 |
 | Agent `issue-judge` | A fresh subagent that sees the issue and the branch, not the author's account of it. It reruns the tests it relies on and returns two verdicts: Spec, each acceptance criterion met, and Design, the refactor done and the guidelines followed. Two rounds at most, then the maintainer decides | [`.claude/agents/issue-judge.md`][issue-judge] | 2026-10-03 |
 | Agent `security-reviewer` | A fresh, read-only subagent that reviews a branch for security: authorization of each endpoint, CSRF, CORS, headers, input validation, secrets, new dependencies, the frontend's handling of user input. `implement-issue` starts it when the diff touches one of those | [`.claude/agents/security-reviewer.md`][security-reviewer] | 2026-10-03 |
-| Lint hook | Once Claude Code writes a Kotlin source or a Gradle script, runs `lint-kotlin` from its worktree, and shows Claude the findings when detekt fails | [`.claude/hooks/detekt-after-edit`][detekt-hook] | 2026-09-13, Kotlin only and findings shown since 2026-10-03 |
-| Guard hook | Refuses, before it runs, a command that writes to a ruleset, to branch protection or to a push protection bypass, or that merges a pull request, through `gh`, `gh api`, GraphQL or `curl`. Also refuses any way around pre-push: `--no-verify`, an overridden or unset `core.hooksPath`, a push from a clone without the git hooks. Reads pass, and so does text inside quotes or a heredoc that no shell reads. It reads the command as text, so one built indirectly, through a variable or a script, passes. `permissions.deny` in the same settings refuses `gh pr merge` and `git push --no-verify` a second time | [`.claude/hooks/guard-github-protections`][guard-hook] | 2026-10-02, merges and pre-push since 2026-10-03 |
-| cmux status hook | In the cmux terminal, names the session's tab after its issue and step, `#382 implement`, `#382 judge`, `#382 PR #450`, and shows the judge's verdict and the pull request's CI gate as sidebar pills, read from `gh pr checks` whether it passes or fails. Does nothing elsewhere | [`.claude/hooks/cmux-status`][cmux-status] | 2026-10-03 |
-| Generated files hook | Refuses a hand edit of a file a tool writes: jOOQ classes, the generated API client, Gradle's and npm's lock files, the generated documentation pages, and `.env` files. Its message names the command that changes the file instead. A shell command that writes the file passes | [`.claude/hooks/protect-generated-files`][protect-hook] | 2026-10-03 |
-| Compile hook | At the end of a turn that changed Kotlin sources, compiles them with their tests. When frontend sources changed, runs the `typecheck` script of each app that has one and has its dependencies installed. The errors go back to Claude, which keeps working until they are fixed. A state already checked is not checked again, so it cannot loop | [`.claude/hooks/compile-at-stop`][compile-hook] | 2026-10-03 |
-| Session context hook | At start, on resume and after a compaction, tells Claude its branch, its issue, how far it is ahead of master, its uncommitted work, and the worktrees whose branch is merged into the last fetched master, left for `/implement-issue` to clean up | [`.claude/hooks/session-context`][session-hook] | 2026-10-03 |
+| Lint hook | Once Claude Code writes a Kotlin source or a Gradle script, runs `lint-kotlin` from its worktree, and shows Claude the findings when detekt fails | [`.hooks/claude/detekt-after-edit`][detekt-hook] | 2026-09-13, Kotlin only and findings shown since 2026-10-03 |
+| Guard hook | Refuses, before it runs, a command that writes to a ruleset, to branch protection or to a push protection bypass, or that merges a pull request, through `gh`, `gh api`, GraphQL or `curl`. Also refuses any way around pre-push: `--no-verify`, an overridden or unset `core.hooksPath`, a push from a clone without the git hooks. Reads pass, and so does text inside quotes or a heredoc that no shell reads. It reads the command as text, so one built indirectly, through a variable or a script, passes. `permissions.deny` in the same settings refuses `gh pr merge` and `git push --no-verify` a second time | [`.hooks/claude/guard-github-protections`][guard-hook] | 2026-10-02, merges and pre-push since 2026-10-03 |
+| cmux status hook | In the cmux terminal, names the session's tab after its issue and step, `#382 implement`, `#382 judge`, `#382 PR #450`, and shows the judge's verdict and the pull request's CI gate as sidebar pills, read from `gh pr checks` whether it passes or fails. Does nothing elsewhere | [`.hooks/claude/cmux-status`][cmux-status] | 2026-10-03 |
+| Generated files hook | Refuses a hand edit of a file a tool writes: jOOQ classes, the generated API client, Gradle's and npm's lock files, the generated documentation pages, and `.env` files. Its message names the command that changes the file instead. A shell command that writes the file passes | [`.hooks/claude/protect-generated-files`][protect-hook] | 2026-10-03 |
+| Compile hook | At the end of a turn that changed Kotlin sources, compiles them with their tests. When frontend sources changed, runs the `typecheck` script of each app that has one and has its dependencies installed. The errors go back to Claude, which keeps working until they are fixed. A state already checked is not checked again, so it cannot loop | [`.hooks/claude/compile-at-stop`][compile-hook] | 2026-10-03 |
+| Session context hook | At start, on resume and after a compaction, tells Claude its branch, its issue, how far it is ahead of master, its uncommitted work, and the worktrees whose branch is merged into the last fetched master, left for `/implement-issue` to clean up | [`.hooks/claude/session-context`][session-hook] | 2026-10-03 |
 
 Each Claude Code hook has a test next to it, `<hook>.test`, and so do `pre-commit` and `pre-push`, run by hand for now. Claude Code also loads the personal configuration of whoever runs it, from `~/.claude`, on top of these parts, and a project cannot turn it off.
 
@@ -63,13 +63,13 @@ it is asked for, and other agents are told to read it by `AGENTS.md`.
 
 ## Git hooks
 
-Enabled once per clone with `git config core.hooksPath .githooks`.
+Enabled once per clone with `git config core.hooksPath .hooks/git`.
 
 | Part | What it does | Where | Since |
 |---|---|---|---|
-| `lint-kotlin` | Formats Kotlin sources and Gradle scripts, fails when detekt does. Shared by `pre-commit` and Claude Code | [`.githooks/lint-kotlin`][lint-kotlin] | 2026-09-13 |
-| `pre-commit` | Refuses a staged file over 5 MB, and a dependency change in a `package.json` without its `package-lock.json`. When Kotlin files are staged, runs `lint-kotlin` and re-stages what it reformatted | [`.githooks/pre-commit`][pre-commit] | 2026-09-13, size and lock file checks since 2026-10-03 |
-| `pre-push` | Refuses any push, force push or deletion of master before anything is sent | [`.githooks/pre-push`][pre-push] | 2026-09-27 |
+| `lint-kotlin` | Formats Kotlin sources and Gradle scripts, fails when detekt does. Shared by `pre-commit` and Claude Code | [`.hooks/git/lint-kotlin`][lint-kotlin] | 2026-09-13 |
+| `pre-commit` | Refuses a staged file over 5 MB, and a dependency change in a `package.json` without its `package-lock.json`. When Kotlin files are staged, runs `lint-kotlin` and re-stages what it reformatted | [`.hooks/git/pre-commit`][pre-commit] | 2026-09-13, size and lock file checks since 2026-10-03 |
+| `pre-push` | Refuses any push, force push or deletion of master before anything is sent | [`.hooks/git/pre-push`][pre-push] | 2026-09-27 |
 
 ## Gradle
 
@@ -149,16 +149,16 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [skill-dependency]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/dependency-change/SKILL.md
 [skill-build-convention]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/build-convention-change/SKILL.md
 [skill-caveman]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/caveman/SKILL.md
-[detekt-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/detekt-after-edit
-[guard-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/guard-github-protections
-[cmux-status]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/cmux-status
-[protect-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/protect-generated-files
-[compile-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/compile-at-stop
-[session-hook]: https://github.com/mboisnard/drinkit/blob/master/.claude/hooks/session-context
+[detekt-hook]: https://github.com/mboisnard/drinkit/blob/master/.hooks/claude/detekt-after-edit
+[guard-hook]: https://github.com/mboisnard/drinkit/blob/master/.hooks/claude/guard-github-protections
+[cmux-status]: https://github.com/mboisnard/drinkit/blob/master/.hooks/claude/cmux-status
+[protect-hook]: https://github.com/mboisnard/drinkit/blob/master/.hooks/claude/protect-generated-files
+[compile-hook]: https://github.com/mboisnard/drinkit/blob/master/.hooks/claude/compile-at-stop
+[session-hook]: https://github.com/mboisnard/drinkit/blob/master/.hooks/claude/session-context
 [skill-starter]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-backend-tech-starter/SKILL.md
-[lint-kotlin]: https://github.com/mboisnard/drinkit/blob/master/.githooks/lint-kotlin
-[pre-commit]: https://github.com/mboisnard/drinkit/blob/master/.githooks/pre-commit
-[pre-push]: https://github.com/mboisnard/drinkit/blob/master/.githooks/pre-push
+[lint-kotlin]: https://github.com/mboisnard/drinkit/blob/master/.hooks/git/lint-kotlin
+[pre-commit]: https://github.com/mboisnard/drinkit/blob/master/.hooks/git/pre-commit
+[pre-push]: https://github.com/mboisnard/drinkit/blob/master/.hooks/git/pre-push
 [detekt-convention]: https://github.com/mboisnard/drinkit/blob/master/build-logic/src/main/kotlin/quality/com.drinkit.code-analysis-convention.gradle.kts
 [detekt-yml]: https://github.com/mboisnard/drinkit/blob/master/code-analysis/detekt/detekt.yml
 [detekt-baseline]: https://github.com/mboisnard/drinkit/blob/master/code-analysis/detekt/baseline.xml
