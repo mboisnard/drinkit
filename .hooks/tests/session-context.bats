@@ -8,8 +8,12 @@ setup() {
     repo=$work/repo
     mkdir "$work/outside"
     git init -q -b master "$repo"
-    git -C "$repo" commit -q --allow-empty -m init
+    mkdir -p "$repo/.hooks/git"
+    stub "$repo/.hooks/git/pre-push" </dev/null
+    git -C "$repo" add .hooks
+    git -C "$repo" commit -q -m init
     git -C "$repo" update-ref refs/remotes/origin/master HEAD
+    git -C "$repo" config core.hooksPath .hooks/git
 }
 
 # A session starts with its cwd in <folder>, the repository by default.
@@ -129,4 +133,21 @@ worktree_with_commit() {
     starts "$work/outside"
     assert_success
     refute_output
+}
+
+@test "a clone whose git hooks run hears nothing of them" {
+    starts
+    refute_output --partial "git hooks"
+}
+
+@test "a clone whose core.hooksPath is not .hooks/git is told the command that turns the git hooks on" {
+    git -C "$repo" config --unset core.hooksPath
+    starts
+    assert_output --partial "The git hooks do not run here, so pre-push cannot keep master safe: core.hooksPath is not .hooks/git. Run git -C $repo config core.hooksPath .hooks/git."
+}
+
+@test "a branch whose .hooks/git holds no pre-push is told to rebase it" {
+    rm "$repo/.hooks/git/pre-push"
+    starts
+    assert_output --partial "The git hooks do not run here, so pre-push cannot keep master safe: .hooks/git/pre-push is missing or not executable. Rebase the branch on origin/master."
 }

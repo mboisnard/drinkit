@@ -42,6 +42,8 @@ skill or an agent has to follow, and what proves them.
 Every hook lives under `.hooks/`. A Claude Code hook goes into `.hooks/claude/` and into `.claude/settings.json`
 as `"$CLAUDE_PROJECT_DIR"/.hooks/claude/<name>`, with a `timeout`. A git hook goes into `.hooks/git/`, which each
 clone enables with `git config core.hooksPath .hooks/git`.
+Code that two hooks share goes into `.hooks/lib/<name>.sh`, which they source from
+`"$(dirname "$0")/../lib/<name>.sh"`.
 
 ### 4. Test it
 

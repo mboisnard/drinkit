@@ -12,15 +12,18 @@ setup() {
     mkdir "$outside"
     git init -q "$hooks_on"
     git -C "$hooks_on" config core.hooksPath .hooks/git
+    mkdir -p "$hooks_on/.hooks/git"
+    stub "$hooks_on/.hooks/git/pre-push" </dev/null
     git init -q "$hooks_off"
 }
 
-# Claude is about to run <command> from <folder>: on, off or outside.
+# Claude is about to run <command> from <folder>: on, off, outside, or a path.
 runs() {
     local folder
     case $2 in
         off) folder=$hooks_off ;;
         outside) folder=$outside ;;
+        /*) folder=$2 ;;
         *) folder=$hooks_on ;;
     esac
     run_hook_on pre-tool-use-bash '.tool_input.command = $command | .cwd = $cwd' --arg command "$1" --arg cwd "$folder"
@@ -37,8 +40,16 @@ hook_decides() {
     if [ "$expected" = allow ]; then
         refute_output
     else
-        assert_equal "$(jq -r .hookSpecificOutput.permissionDecision <<<"$output")" deny
+        assert_equal "$(decision)" deny
     fi
+}
+
+decision() {
+    jq -r .hookSpecificOutput.permissionDecision <<<"$output"
+}
+
+reason() {
+    jq -r .hookSpecificOutput.permissionDecisionReason <<<"$output"
 }
 
 # Registers a test of hook_decides, named after the decision and the command on one line. bats evaluates the name,
@@ -284,4 +295,35 @@ EOF
     hook_path=$work/no-git runs 'git push origin HEAD' off
     assert_success
     refute_output
+}
+
+# A clone whose core.hooksPath is .hooks/git, with <pre-push>: missing or not-executable.
+clone_with_pre_push() {
+    git init -q "$work/clone"
+    git -C "$work/clone" config core.hooksPath .hooks/git
+    mkdir -p "$work/clone/.hooks/git"
+    [ "$1" = missing ] || touch "$work/clone/.hooks/git/pre-push"
+}
+
+@test "deny  a push from a clone whose .hooks/git holds no pre-push" {
+    clone_with_pre_push missing
+    runs 'git push -u origin HEAD' "$work/clone"
+    assert_equal "$(decision)" deny
+}
+
+@test "deny  a push from a clone whose pre-push is not executable" {
+    clone_with_pre_push not-executable
+    runs 'git push -u origin HEAD' "$work/clone"
+    assert_equal "$(decision)" deny
+}
+
+@test "a push without pre-push is told to rebase the branch" {
+    clone_with_pre_push missing
+    runs 'git push -u origin HEAD' "$work/clone"
+    assert_equal "$(reason)" "guard-github-protections: the git hooks do not run in $work/clone: .hooks/git/pre-push is missing or not executable. Rebase the branch on origin/master, then push again: git push -u origin HEAD"
+}
+
+@test "a push with the git hooks off is told the command that turns them on" {
+    runs 'git push -u origin HEAD' off
+    assert_equal "$(reason)" "guard-github-protections: the git hooks do not run in $hooks_off: core.hooksPath is not .hooks/git. Run git -C $hooks_off config core.hooksPath .hooks/git, then push again: git push -u origin HEAD"
 }

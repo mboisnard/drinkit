@@ -17,6 +17,11 @@ case $prefix in
     *) echo "The branch works on issue #$prefix: read it with gh issue view $prefix." ;;
 esac
 
+# shellcheck source=../lib/git-hooks.sh
+. "$(dirname "$0")/../lib/git-hooks.sh"
+hooks_off=$(git_hooks_off "$root")
+[ -n "$hooks_off" ] && echo "The git hooks do not run here, so pre-push cannot keep master safe: $hooks_off."
+
 ahead=$(git -C "$root" rev-list --count origin/master..HEAD 2>/dev/null)
 [ "${ahead:-0}" -gt 0 ] && echo "$ahead commits ahead of origin/master."
 
