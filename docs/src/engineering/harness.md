@@ -33,7 +33,7 @@ A person can skip the local git hooks with `--no-verify`, a Claude Code session 
 | Compile hook | At the end of a turn that changed Kotlin sources, compiles them with their tests. When frontend sources changed, runs the `typecheck` script of each app that has one and has its dependencies installed. The errors go back to Claude, which keeps working until they are fixed. A state already checked is not checked again, so it cannot loop | [`.hooks/claude/compile-at-stop`][compile-hook] | 2026-10-03 |
 | Session context hook | At start, on resume and after a compaction, tells Claude its branch, its issue, how far it is ahead of master, its uncommitted work, and the worktrees whose branch is merged into the last fetched master, left for `/implement-issue` to clean up | [`.hooks/claude/session-context`][session-hook] | 2026-10-03 |
 
-Each Claude Code hook has a test next to it, `<hook>.test`, and so do `pre-commit` and `pre-push`, run by hand for now. Claude Code also loads the personal configuration of whoever runs it, from `~/.claude`, on top of these parts, and a project cannot turn it off.
+Every hook, git or Claude Code, lives under `.hooks/` and has a bats suite in `.hooks/tests/`: `npm cit --prefix .hooks/tests` runs them all. A file name says how the file runs: no extension for an executable, `.sh` for a file a hook sources, `.bash` for a bats helper, `.bats` for a suite. Claude Code also loads the personal configuration of whoever runs it, from `~/.claude`, on top of these parts, and a project cannot turn it off.
 
 ### Skills
 

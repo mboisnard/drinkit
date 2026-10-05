@@ -1,0 +1,14 @@
+{
+  "session_id": "abc123",
+  "transcript_path": "/home/user/.claude/projects/-home-user-my-project/abc123.jsonl",
+  "cwd": "/home/user/my-project",
+  "permission_mode": "default",
+  "hook_event_name": "SubagentStop",
+  "stop_hook_active": false,
+  "agent_id": "def456",
+  "agent_type": "issue-judge",
+  "agent_transcript_path": "/home/user/.claude/projects/-home-user-my-project/abc123/subagents/agent-def456.jsonl",
+  "last_assistant_message": "VERDICT: OK 5d6e7f8",
+  "background_tasks": [],
+  "session_crons": []
+}

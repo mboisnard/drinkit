@@ -24,6 +24,8 @@ skill or an agent has to follow, and what proves them.
 - awk is BWK awk on macOS and mawk on Ubuntu: no gawk extension.
 - A hook needs `jq` to read its input. Without it, a hook exits 0, so a missing tool never blocks a session. Most
   exit silently, `guard-github-protections` warns on stderr first.
+- A file name says how the file runs: no extension for an executable, since git finds a hook by its exact name,
+  `.sh` for a file a hook sources, which is not executable, `.bash` for a bats helper and `.bats` for a suite.
 
 ### 2. Read and answer Claude Code
 
@@ -43,11 +45,14 @@ clone enables with `git config core.hooksPath .hooks/git`.
 
 ### 4. Test it
 
-Each hook has a `<hook>.test` next to it, in plain `sh`. It builds a sample repository with `mktemp -d` and
-`GIT_CONFIG_GLOBAL=/dev/null`, stubs every external tool, and asserts with the helpers its suite already
-defines, such as `check`, or `says` and `never_says` in `session-context.test`. A new case fails before the
-change. Before pushing, run every suite:
-`for t in .hooks/*/*.test; do sh "$t" || echo "FAILED $t"; done`.
+Each hook has a bats suite, `.hooks/tests/<hook>.bats`, with the assertions of bats-assert. Its `setup` sources
+`helper.bash` and calls `sandbox`, which gives the test a home, a git configuration and a locale of its own. A suite
+stubs every external tool with `stub`, builds a Claude Code input from `fixtures/` with `run_hook_on`, and runs the
+hook with `run_hook`, under the shell of `$HOOK_SHELL`. Each test builds its own state: none relies on the one
+before. A new case fails before the change.
+
+From the root, `npm cit --prefix .hooks/tests` installs bats and runs every suite. Before pushing, run the suite of
+each changed hook under dash too: `cd .hooks/tests && HOOK_SHELL=dash npx bats <hook>.bats`.
 
 ### 5. Describe it
 
@@ -67,7 +72,8 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
 
 ## Before you finish
 
-- [ ] Every changed hook parses and runs under `sh` on macOS, and its test has a case that failed before.
-- [ ] Every hook test suite passes.
+- [ ] Every changed hook parses and runs under `sh` on macOS and under dash, and its suite has a case that failed
+  before.
+- [ ] `npm cit --prefix .hooks/tests` passes.
 - [ ] Every `paths:` glob matches tracked files.
 - [ ] The harness page describes what changed.
