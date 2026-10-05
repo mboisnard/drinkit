@@ -3,6 +3,7 @@ name: harness-change
 description: Changes DrinkIt's agent harness, its Claude Code and git hooks, its settings, its skills and its agents, so that each hook runs on every shell it meets and each skill loads where it should. Use it before adding or changing a hook, its test, the Claude Code settings, a skill or an agent.
 paths:
   - ".hooks/**"
+  - ".githooks/**"
   - ".claude/settings.json"
   - ".claude/skills/**"
   - ".claude/agents/**"
