@@ -35,6 +35,12 @@ docs: &docs
   - 'docs/**'
   - 'tech-starters/backend/*/README.md' # copied into the tech starter pages
 
+hooks: &hooks
+  - *workflows
+  - '.nvmrc' # the Node version that runs bats
+  - '.hooks/**'
+  - '.claude/**'
+
 ops: &ops
   - *workflows
   - 'deployment/local/**'
@@ -50,9 +56,7 @@ dependencies: &dependencies
 # Files no job reads
 none: &none
   - '**/*.md'
-  - '.claude/**'
   - '.editorconfig'
-  - '.hooks/**'
   - '.idea/**'
   - '.gitignore'
   - '.git-blame-ignore-revs'
@@ -68,6 +72,7 @@ known:
   - *workflows
   - *backend
   - *frontend
+  - *hooks
   - *docs
   - *ops
   - *dependencies

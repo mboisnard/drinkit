@@ -1,0 +1,3 @@
+# The hooks and their tests read helpers through source: follow them, from the folder of the file that sources them
+external-sources=true
+source-path=SCRIPTDIR

@@ -1,0 +1,65 @@
+name: Hooks
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    name: Lint the hooks with ShellCheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The alpine variant has a shell to expand the globs. The .shellcheckrc files of .hooks/ apply
+      - name: Lint the hooks and their tests
+        uses: docker://koalaman/shellcheck-alpine:v0.11.0@sha256:9955be09ea7f0dbf7ae942ac1f2094355bb30d96fffba0ec09f5432207544002
+        with:
+          entrypoint: sh
+          args: -c "shellcheck .hooks/git/* .hooks/claude/* .hooks/lib/*.sh .hooks/tests/*.bats .hooks/tests/*.bash"
+
+  test:
+    name: Test the hooks under ${{ matrix.shell }} on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # The maintainer's macOS runs the hooks with bash 3.2 as sh, a Linux agent with dash
+        include:
+          - os: ubuntu-latest
+            shell: dash
+          - os: ubuntu-latest
+            shell: bash --posix
+          - os: macos-latest
+            shell: sh
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: .hooks/tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: .hooks/tests/package-lock.json
+
+      - name: Install bats
+        run: npm ci --ignore-scripts
+
+      - name: Test the hooks and the harness files
+        env:
+          HOOK_SHELL: ${{ matrix.shell }}
+        run: npm test

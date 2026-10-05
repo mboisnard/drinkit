@@ -1,0 +1,6 @@
+# Same as ../.shellcheckrc, since ShellCheck reads the closest file only
+external-sources=true
+source-path=SCRIPTDIR
+
+# The jq filters of the suites sit in single quotes on purpose: jq expands their $variables, not the shell
+disable=SC2016
