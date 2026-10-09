@@ -60,6 +60,7 @@ it is asked for, and other agents are told to read it by `AGENTS.md`.
 | [`harness-change`][skill-harness] | Changing a hook, its test, the settings, a skill or an agent: portable `sh`, a bats suite for each hook, globs that match | The hooks, the settings, the skills and the agents |
 | [`dependency-change`][skill-dependency] | Adding or bumping a dependency: one version in the catalogs and the BOM, then the verification metadata and the lock | The platform, the build scripts and the `package.json` files |
 | [`build-convention-change`][skill-build-convention] | Changing a convention plugin: its id from its file name, the archetypes, the configuration cache | `build-logic` |
+| [`jdk-change`][skill-jdk] | Moving to another JDK: Gradle, Kotlin and CodeQL support checked first, then the catalog, the daemon JVM and the CI action together | The daemon JVM file and the CI setup action |
 | [`caveman`][skill-caveman] | Terse replies to the maintainer, on by default through `AGENTS.md`, with plain prose where clarity needs it | Every session, `/caveman lite`, `full` or `ultra` |
 
 ## Git hooks
@@ -150,6 +151,7 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [skill-harness]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/harness-change/SKILL.md
 [skill-dependency]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/dependency-change/SKILL.md
 [skill-build-convention]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/build-convention-change/SKILL.md
+[skill-jdk]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/jdk-change/SKILL.md
 [skill-caveman]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/caveman/SKILL.md
 [detekt-hook]: https://github.com/mboisnard/drinkit/blob/master/.hooks/claude/detekt-after-edit
 [guard-hook]: https://github.com/mboisnard/drinkit/blob/master/.hooks/claude/guard-github-protections
