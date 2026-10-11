@@ -5,6 +5,7 @@ graalvm-buildtools-native = "1.1.14"
 gradle-git-properties = "4.0.1"
 idea-settings = "4.0.9"
 jooq = "3.21.9"
+konture = "1.0.2"
 kotlin = "2.4.20"
 ksp = "2.3.12"
 openapi-generator = "7.25.0"
@@ -20,6 +21,7 @@ gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 idea-settings-plugin = { module = "name.remal.idea-settings:name.remal.idea-settings.gradle.plugin", version.ref = "idea-settings" }
 jooq-codegen-gradle-plugin = { module = "org.jooq.jooq-codegen-gradle:org.jooq.jooq-codegen-gradle.gradle.plugin", version.ref = "jooq" }
 jooq-meta = { module = "org.jooq:jooq-meta", version.ref = "jooq" }
+konture-plugin = { module = "io.github.baole.konture:plugin-gradle", version.ref = "konture" }
 ksp-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 openapi-generator-plugin = { module = "org.openapitools:openapi-generator-gradle-plugin", version.ref = "openapi-generator" }
 spring-boot-gradle-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot" }

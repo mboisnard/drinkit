@@ -48,7 +48,7 @@ This is the core of the application, the hexagon. It is completely independent o
 This module must not depend on any other project module (`drinkit-backend` or `drinkit-infra`). It can have dependencies on external libraries not related to infrastructure (e.g., utils, starters).
 
 ::: info **📝 Note with Spring:**
-For pragmatic reasons and to avoid boilerplate code (like creating Spring Beans who instanciate each domain usecase in drinkit-backend), the use of Spring annotations like `@Service` or `@Transactional` is allowed in this module. Spring is used here as a simple dependency injector, not as an infrastructure framework.
+For pragmatic reasons and to avoid boilerplate code (like creating Spring Beans who instanciate each domain usecase in drinkit-backend), the use of Spring annotations like `@Service`, `@Component` or `@Transactional` is allowed in this module. Spring is used here as a simple dependency injector, not as an infrastructure framework.
 :::
 
 ---
