@@ -6,6 +6,8 @@ DrinkIt's architecture rules are tests: breaking one fails `./gradlew build`, wi
 ./gradlew :architecture-tests:test
 ```
 
+`./gradlew build` runs them, as CI does, and so does Claude Code's compile hook at the end of a turn that changed Kotlin sources, which hands a broken rule back to Claude.
+
 ## How a rule is written
 
 One file per theme, one test per rule, named after the rule. The test holds the whole rule in Konture's DSL: its id, a description giving its reason and the fix, and the modules it reads, such as `that().inModule(DOMAINS)`. It declares a rule and checks it, so it has no `// Given`, `// When`, `// Then`. `Declarations.kt` adds what Konture lacks: the names a file or a class uses, what a module declares, and the roles DrinkIt gives its classes, port, adapter and controller.
