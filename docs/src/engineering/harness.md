@@ -82,6 +82,7 @@ Enabled once per clone with `git config core.hooksPath .hooks/git`.
 | Wrapper checksum | The wrapper refuses a Gradle distribution whose SHA-256 differs from the committed one. Renovate updates it with each Gradle version | [`gradle-wrapper.properties`][wrapper-properties] | 2026-09-30 |
 | Dependency verification | The build refuses a dependency or plugin whose SHA-256 differs from the committed one, or has none. Renovate regenerates the file in its own pull requests. Sources, javadoc and two artifacts that plugins resolve on their own are trusted, each with its reason | [`verification-metadata.xml`][verification-metadata] | 2026-10-02 |
 | Dependency locking | `drinkit-backend` resolves exactly the versions its `gradle.lockfile` lists, transitive and test dependencies included. The libraries are not locked, so a new release inside a version range they ask for, cucumber's for instance, fails verification until the files are regenerated | [`com.drinkit.api-convention`][api-convention] | 2026-10-03 |
+| Architecture tests | Konture checks the architecture rules on the module graph and the Kotlin sources. The violations older than a rule are tolerated in the rule itself, by name, with the issue that removes them | [`architecture-tests`][architecture-tests], rules in [Architecture Tests](architecture-tests) | 2026-10-11 |
 
 ## Continuous integration
 
@@ -167,6 +168,7 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [wrapper-properties]: https://github.com/mboisnard/drinkit/blob/master/gradle/wrapper/gradle-wrapper.properties
 [verification-metadata]: https://github.com/mboisnard/drinkit/blob/master/gradle/verification-metadata.xml
 [api-convention]: https://github.com/mboisnard/drinkit/blob/master/build-logic/src/main/kotlin/archetype/com.drinkit.api-convention.gradle.kts
+[architecture-tests]: https://github.com/mboisnard/drinkit/tree/master/architecture-tests
 [ci-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci.yml
 [ci-lanes]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/config/ci-lanes.yml
 [ci-workflows-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-workflows.yml

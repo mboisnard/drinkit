@@ -12,6 +12,7 @@ through jOOQ. Exact versions live in the catalogs of `gradle/platform`, `gradle/
 ./gradlew :drinkit-infra:test --tests '*JooqUserEventsRepositoryTest'
 ./gradlew detektAll -Pdetekt.autoCorrect=true  # fixes formatting and auto-correctable findings
 ./gradlew :drinkit-backend:bootRun             # dev profile, starts deployment/local/compose.yml itself
+./gradlew :architecture-tests:test             # the architecture rules, part of build
 ```
 
 The JDK of `gradle/gradle-daemon-jvm.properties` must be installed: Gradle finds it whatever `java` is on
@@ -57,7 +58,7 @@ docker run --rm -v "$PWD:/mnt:ro" -w /mnt --entrypoint sh "$(grep -o 'koalaman/s
 ## Structure
 
 - `drinkit/`: the application. `drinkit-domain` holds use cases, entities in `<context>/core` and ports in
-  `<context>/spi`, shared ones in `common`. `drinkit-infra` holds the adapters, `drinkit-backend` the Spring Boot application and
+  `<context>/spi`, shared ones in `common/spi`. `drinkit-infra` holds the adapters, `drinkit-backend` the Spring Boot application and
   its REST controllers, `drinkit-api-contract` the OpenAPI contract, `drinkit-frontend` the Nuxt app.
 - `tech-starters/backend/`: one technical concern per starter, no business code.
 - `build-logic/`: the `com.drinkit.*` convention plugins. A Kotlin module applies one archetype,
@@ -70,6 +71,9 @@ docker run --rm -v "$PWD:/mnt:ro" -w /mnt --entrypoint sh "$(grep -o 'koalaman/s
   change.
 - `.hooks/`: the git hooks in `git/`, the Claude Code hooks in `claude/`, what they share in `lib/`, their bats
   suites in `tests/`.
+- `architecture-tests/`: the architecture rules, as Konture tests. `docs/src/engineering/architecture-tests.md`
+  lists each rule with its reason and fix, `docs/src/engineering/adr/` records the choices behind them, and
+  `docs/src/engineering/harness.md` says where they run.
 - `.claude/skills/`: how to carry out a kind of change, one folder each. Its `SKILL.md` says when it applies:
   read it before that change, whatever the agent. A skill names its model files by class: find one with
   `git grep -nwE '(class|interface|object) <Name>'`. `.claude/agents/`: the reviewers that check a branch.
@@ -82,23 +86,15 @@ Gradle project named after the folder.
 ## Code patterns
 
 Read `docs/src/engineering/guidelines/hexagonal-architecture.md` before adding a port or a module
-dependency, and `docs/src/engineering/guidelines/best-practices/coding-rules.md` before naming things.
+dependency, and `docs/src/engineering/guidelines/best-practices/coding-rules.md` before naming things. The
+architecture tests check the patterns of the domain, infra, backend, Spring, tech starters and tests, naming
+included: `docs/src/engineering/architecture-tests.md` gives each rule with its reason and fix.
 
-- Domain names say what a thing is, never its pattern: a port is `Cellars`, a use case `CreateCellar`, and
-  neither ends in `UseCase`, `Service` or `Repository`. An adapter is `internal` and carries its
-  technology: `JooqCellars`.
-- A command use case is a `@Service` with an `invoke` taking a `*Command`. Its decisions live in an
-  `internal object` annotated `@FunctionalCore`: pure, no I/O, returning a sealed decision. The use case,
-  `@ImperativeShell`, does the I/O around it. Model:
-  `drinkit/drinkit-domain/src/main/kotlin/com/drinkit/user/CreateNewUser.kt`.
 - Annotate new classes with the `documentation-starter` annotations. `@CoreDomain`, `@Usecase` and
   `@TechStarterTool` generate the documentation pages, the others mark a pattern in the code.
-- Business values are types, never primitives. An input value exposes `validate()`, whose errors the
-  functional core turns into a decision. An identifier or an invariant checks itself in `init`.
-- Time and identifiers come from the injected `Clock` and `GenerateId`.
+- Business values are types, never primitives. An input value exposes `validate()`, whose errors the use
+  case, or its functional core, turns into a decision. An identifier or an invariant checks itself in `init`.
 - The `User` aggregate is event-sourced: `UserEvents` stores its events, `Users` is the projection.
-- An HTTP client is a `@GetExchange` interface registered with `@ImportHttpServices`, its base URL under
-  `spring.http.serviceclient.<group>`.
 - Jackson 3: core, databind and the format modules are `tools.jackson.*`, but the generic annotations
   (`@JsonProperty`, `@JsonTypeInfo`…) stay in `com.fasterxml.jackson.annotation`.
 - The existing tech starters are found by component scan and configured through a profile listed in
@@ -108,7 +104,7 @@ dependency, and `docs/src/engineering/guidelines/best-practices/coding-rules.md`
 ## Tests
 
 - JUnit Jupiter with Kotest assertions, names in backticks that state the behavior, `// Given`, `// When`,
-  `// Then`.
+  `// Then`. An architecture test only declares and checks its Konture rule.
 - Never mock. Mockito comes with `spring-boot-starter-test` but stays unused: test doubles are written by
   hand in `src/testFixtures` (in-memory, spy, fake) and wired by `*Fixtures` classes.
 - A port's behavior is written once, in an abstract `*TestContract` of the domain test fixtures. The
@@ -160,6 +156,8 @@ same command fixes it.
 
 - detekt fails the build on any finding, formatting included. Fix the code, and never add an entry to
   `code-analysis/detekt/baseline.xml`.
+- The architecture tests fail the build on any broken rule: fix the code, or tolerate the violation in the
+  rule's `suppress` block with the issue that removes it, never loosen the rule.
 - Change the OpenAPI contract, never the code generated from it. A custom string format needs both
   `typeMappings` and `importMappings` in `drinkit/drinkit-backend/build.gradle.kts`.
 - Read `docs/src/engineering/guidelines/build-tool.md` before changing a convention. In `build-logic`, a
