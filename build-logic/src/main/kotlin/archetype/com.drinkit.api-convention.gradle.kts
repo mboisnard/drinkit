@@ -35,3 +35,9 @@ gitProperties {
 dependencyLocking {
     lockAllConfigurations()
 }
+
+// No native test runs: its classpath only resolves when the project resolves it itself, while the module
+// graph of the architecture tests reads every project's dependencies from the root project
+graalvmNative {
+    testSupport = false
+}

@@ -22,10 +22,12 @@ val openApiCommonTemplatesPath = configurations.resolvable("openApiCommonTemplat
     extendsFrom(openApiCommonTemplates.get())
 }
 
+val generatedSources = layout.buildDirectory.dir("generated-sources/openapi/src/main/kotlin")
+
 // https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-gradle-plugin
 openApiGenerate {
     generatorName.set("kotlin-spring")
-    outputDir.set(layout.buildDirectory.dir("generated-sources/openapi/src/main/kotlin"))
+    outputDir.set(generatedSources)
 
     // Remove old generated files before starting a new generation task
     cleanupOutput.set(true)
@@ -73,7 +75,9 @@ tasks.openApiGenerate {
 kotlin {
     sourceSets {
         main {
-            kotlin.srcDir(tasks.openApiGenerate)
+            // The folder rather than the task: reading the sources then never creates the task, which the
+            // module graph of the architecture tests does from the root project
+            kotlin.srcDir(files(generatedSources).builtBy(tasks.openApiGenerate))
         }
     }
 }
