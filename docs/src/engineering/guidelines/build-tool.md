@@ -66,6 +66,8 @@ and `gradle/platform` is a Java platform.
 - Used for **Spring Boot applications**.
 - Adds `common-convention`, `documentation-convention`, `spring-boot-starter-webmvc`, the kotlin and
   monitoring starters, build and git info for Actuator, GraalVM native builds, and dependency locking.
+  GraalVM's native test support is off: no test runs natively, and its classpath does not resolve from the
+  root project, which reads every project's dependencies for the architecture tests.
 
 ### `test / test-fixtures-convention`
 
