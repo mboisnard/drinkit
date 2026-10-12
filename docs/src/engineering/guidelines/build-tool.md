@@ -100,7 +100,7 @@ and `gradle/platform` is a Java platform.
 ### `contract-first-convention`
 
 - Configures **server code generation from OpenAPI contracts**.
-- Integrates generation tools (`openapi-generator`) to automatically produce server code (controllers, models, delegates, ...) aligned with the contracts.
+- Integrates generation tools (`openapi-generator`) to automatically produce server code aligned with the contracts: one interface per tag, which carries the mappings and the validation, and the models. A controller implements the interface; an operation it leaves out fails the compilation.
 
 ### `code-analysis-convention`
 
@@ -131,14 +131,14 @@ four: the rules this project opts into out of the 108 detekt ships inactive. Eve
 detekt's own default, test sources included — `**/testFixtures/**` is held to the same standard as
 production code, which is what detekt does by default and costs twelve findings.
 
-`code-analysis/detekt/baseline.xml` holds the 82 findings that predate the switch to a blocking
+`code-analysis/detekt/baseline.xml` holds the findings that predate the switch to a blocking
 build. They no longer fail anything; everything new does. The file only ever shrinks — you delete a
 line when you fix what it holds.
 
 The `detektBaseline*` tasks write one file per source set rather than to that path, so regenerating
 wholesale means merging their output back into it. `DetektCreateBaselineTask` does not extend
 `Detekt` either, so the convention applies the generated-code exclusion to it separately: without
-that it records the JOOQ and OpenAPI output too, 1117 entries instead of 82.
+that it records the JOOQ and OpenAPI output too, over a thousand entries instead of about eighty.
 
 ::: warning
 detekt's ktlint ruleset reads **detekt's** configuration, not `.editorconfig`. The root

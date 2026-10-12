@@ -1,17 +1,17 @@
 package com.drinkit.user
 
-import com.drinkit.api.generated.api.UserApiDelegate
+import com.drinkit.api.generated.api.UserApi
 import com.drinkit.api.generated.model.ConnectedUserInformation
 import com.drinkit.config.AbstractApi
 import com.drinkit.user.spi.Users
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.RestController
 
-@Component
-internal class UserApi(private val users: Users) :
+@RestController
+internal class UserController(private val users: Users) :
     AbstractApi(),
-    UserApiDelegate {
+    UserApi {
 
     override fun getConnectedUserInfo(): ResponseEntity<ConnectedUserInformation> {
         users.findEnabledBy(connectedUserIdOrFail())

@@ -5,6 +5,6 @@ plugins {
 }
 
 konture {
-    // The jOOQ classes and the OpenAPI delegates are generated: no rule applies to them
+    // The jOOQ classes and the OpenAPI interfaces are generated: no rule applies to them
     excludePackages("..generated..")
 }

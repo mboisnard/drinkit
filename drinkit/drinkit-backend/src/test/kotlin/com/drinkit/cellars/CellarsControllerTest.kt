@@ -3,7 +3,7 @@ package com.drinkit.cellars
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
-internal class CellarsApiTest {
+internal class CellarsControllerTest {
 
     @Test
     fun `should be true`() {

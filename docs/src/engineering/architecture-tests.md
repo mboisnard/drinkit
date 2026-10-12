@@ -10,11 +10,11 @@ DrinkIt's architecture rules are tests: breaking one fails `./gradlew build`, wi
 
 ## How a rule is written
 
-One file per theme, one test per rule, named after the rule. The test holds the whole rule in Konture's DSL: its id, a description giving its reason and the fix, and the modules it reads, such as `that().inModule(DOMAINS)`. It declares a rule and checks it, so it has no `// Given`, `// When`, `// Then`. `Declarations.kt` adds what Konture lacks: the names a file or a class uses, what a module declares, and the roles DrinkIt gives its classes, port, adapter and controller.
+One file per theme, one test per rule, named after the rule. The test holds the whole rule in Konture's DSL: its id, a description giving its reason and the fix, and the modules it reads, such as `that().inModule(DOMAINS)`. It declares a rule and checks it, so it has no `// Given`, `// When`, `// Then`. `Declarations.kt` adds what Konture lacks: the names a file or a class uses, what a module declares, and the roles DrinkIt gives its classes, port and adapter.
 
 The rules find the modules by a naming convention, never by their name or their folder, so that a new application or tech starter is checked from its first build, and a renamed or moved one stays checked. An application's modules start with its name, and its domain, infra and backend end in `-domain`, `-infra` and `-backend`: `drinkit-domain`, `drinkit-api-contract`. A package starts with a root of two segments, its organisation's reversed domain, then its bounded context: `com.drinkit`, then `cellar`. No rule names the root, so an application of another organisation is checked as well. Applications share nothing but the tech starters, the modules whose name ends in `-starter`. Any other module, such as `updater`, is out of the rules.
 
-A new rule is shown failing once, on a violation written for the occasion, before it is trusted. A rule that selects nothing fails, so a renamed package cannot empty it. Generated code, the jOOQ classes and the OpenAPI delegates, is out of every rule, as long as its package holds a `generated` segment.
+A new rule is shown failing once, on a violation written for the occasion, before it is trusted. A rule that selects nothing fails, so a renamed package cannot empty it. Generated code, the jOOQ classes and the OpenAPI interfaces, is out of every rule, as long as its package holds a `generated` segment.
 
 ## Tolerated violations
 
@@ -66,8 +66,8 @@ Konture reads neither `build-logic`, nor the text of the build files, nor the re
 
 | Rule | Id | Why, and how to fix a violation |
 |---|---|---|
-| An endpoint is an internal component implementing a delegate generated from the contract | `backend.endpoints-implement-generated-delegates` | The API contract defines every endpoint and generates its delegate: implement it as an internal @Component named after it, CellarsApi for CellarsApiDelegate |
-| No endpoint of the backend is mapped by hand | `backend.no-endpoint-mapped-by-hand` | An endpoint the contract does not define escapes its review and the generated client: add it to the API contract of the application and implement its delegate |
+| A controller is internal and implements an interface generated from the contract | `backend.controllers-implement-generated-interfaces` | The API contract defines every endpoint and generates its interface, which carries the mappings: implement it in an internal @RestController named after it, CellarsController for CellarsApi |
+| No endpoint of the backend is mapped by hand | `backend.no-endpoint-mapped-by-hand` | An endpoint the contract does not define escapes its review and the generated client: add it to the API contract of the application and implement its interface |
 | The backend uses no port directly | `backend.calls-use-cases-never-ports` | The backend turns a request or a message into a call to a use case, which holds the rules and the transaction around the ports: call a use case instead of the port |
 | A controller package is named after its bounded context | `backend.controller-package-named-after-context` | A controller sits in the package of the bounded context it serves, so a context reads as one package across the modules: move it to the package of its context, such as com.drinkit.cellar |
 | The backend uses no class or function of infra | `backend.uses-nothing-of-infra` | The backend reaches infra through the use cases only, which call the ports Spring wires the adapters behind: call a use case instead of the adapter or its function |

@@ -46,7 +46,7 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 |---|---|---|
 | `.github/workflows/**`, `.github/actions/**`, `.github/actionlint.yaml` | every lane, CI files included | Every list includes the `workflows` list: a change to the CI proves every lane still runs, and actionlint and zizmor check it |
 | The sources of a backend module or tech starter, build logic, Gradle setup and lock files, detekt configuration, `deployment/updater`, `architecture-tests` | Backend, CodeQL, Docs | The domain and tech starter pages are generated from the backend sources, so the docs lane lists the backend paths too |
-| `drinkit/drinkit-api-contract/contract/**` | Backend, CodeQL, Frontend, Docs | The Kotlin delegates and the TypeScript client are both generated from it |
+| `drinkit/drinkit-api-contract/contract/**` | Backend, CodeQL, Frontend, Docs | The Kotlin interfaces and the TypeScript client are both generated from it |
 | `drinkit/drinkit-frontend/**` | Frontend | |
 | `docs/**`, or a tech starter `README.md` | Docs | A starter README is copied into its page |
 | `.nvmrc` | Frontend, Docs, Hooks | The Node version the three use |

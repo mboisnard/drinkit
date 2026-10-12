@@ -36,7 +36,8 @@ openApiGenerate {
     // https://openapi-generator.tech/docs/generators/kotlin-spring/
     configOptions.set(
         mapOf(
-            "delegatePattern" to "true", // Generates interfaces a Spring service can implement
+            "interfaceOnly" to "true", // Generates the mapped interfaces a controller implements, not the controllers
+            "skipDefaultInterface" to "true", // An operation left unimplemented fails the compilation, not answers 501
             "useTags" to "true", // Use the defined tags in the yaml file to create interfaces and class names
             "useSpringBoot3" to "true", // Jakarta annotations in the generated code
             "sourceFolder" to "",
@@ -44,12 +45,11 @@ openApiGenerate {
         ),
     )
 
-    // Scope the generated files to only supportingFile/apis/models classes
+    // Scope the generated files to only apis/models classes
     // Can also be configured in .openapi-generator-ignore file
     // https://openapi-generator.tech/docs/globals/
     globalProperties.set(
         mapOf(
-            "supportingFiles" to "ApiUtil.kt",
             "apis" to "",
             "models" to "",
         ),

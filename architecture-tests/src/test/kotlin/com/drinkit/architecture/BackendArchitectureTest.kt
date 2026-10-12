@@ -6,21 +6,26 @@ import org.junit.jupiter.api.Test
 internal class BackendArchitectureTest {
 
     @Test
-    fun `an endpoint is an internal component implementing a delegate generated from the contract`() {
-        rule("backend.endpoints-implement-generated-delegates") {
-            description = "The API contract defines every endpoint and generates its delegate: implement it as an " +
-                "internal @Component named after it, CellarsApi for CellarsApiDelegate"
+    fun `a controller is internal and implements an interface generated from the contract`() {
+        rule("backend.controllers-implement-generated-interfaces") {
+            description = "The API contract defines every endpoint and generates its interface, which carries the " +
+                "mappings: implement it in an internal @RestController named after it, CellarsController for " +
+                "CellarsApi"
             classes {
                 that().inModule(BACKENDS)
-                that().satisfy { it in controllers }
+                that().annotatedWith("RestController")
                 should().beInternal()
-                andShould().annotatedWith("Component")
                 andShould().satisfy { controller, violations ->
-                    controller.supertypes
-                        .filter { it.endsWith("ApiDelegate") }
-                        .filterNot { it.substringAfterLast('.').removeSuffix("Delegate") == controller.name }
-                        .forEach { violations += "${controller.fqName} implements $it" }
+                    val generated = "${controller.name.removeSuffix("Controller")}Api"
+                    if (controller.supertypes.none { it.substringAfterLast('.') == generated }) {
+                        violations += "${controller.fqName} does not implement $generated"
+                    }
                 }
+            }
+            classes {
+                that().inModule(BACKENDS)
+                that().satisfy { cls -> cls.supertypes.any { ".generated." in it && it.endsWith("Api") } }
+                should().annotatedWith("RestController")
             }
         }.check()
     }
@@ -29,7 +34,7 @@ internal class BackendArchitectureTest {
     fun `no endpoint of the backend is mapped by hand`() {
         rule("backend.no-endpoint-mapped-by-hand") {
             description = "An endpoint the contract does not define escapes its review and the generated client: " +
-                "add it to the API contract of the application and implement its delegate"
+                "add it to the API contract of the application and implement its interface"
             val byHand = setOf(
                 "RequestMapping",
                 "GetMapping",
@@ -37,7 +42,6 @@ internal class BackendArchitectureTest {
                 "PutMapping",
                 "PatchMapping",
                 "DeleteMapping",
-                "RestController",
                 "Controller",
             )
             classes {
@@ -56,7 +60,7 @@ internal class BackendArchitectureTest {
         rule("backend.calls-use-cases-never-ports") {
             description = "The backend turns a request or a message into a call to a use case, which holds the " +
                 "rules and the transaction around the ports: call a use case instead of the port"
-            suppress { file("*/com/drinkit/user/UserApi.kt", FOLLOW_UP) }
+            suppress { file("*/com/drinkit/user/UserController.kt", FOLLOW_UP) }
             val portNames = ports.map { it.fqName }.toSet()
             files {
                 that().inModules(BACKENDS)
@@ -75,12 +79,12 @@ internal class BackendArchitectureTest {
             description = "A controller sits in the package of the bounded context it serves, so a context reads as " +
                 "one package across the modules: move it to the package of its context, such as com.drinkit.cellar"
             suppress {
-                classFqName("com.drinkit.cellars.CellarsApi", FOLLOW_UP)
-                classFqName("com.drinkit.bottles.search.SearchApi", FOLLOW_UP)
+                classFqName("com.drinkit.cellars.CellarsController", FOLLOW_UP)
+                classFqName("com.drinkit.bottles.search.SearchController", FOLLOW_UP)
             }
             classes {
                 that().inModule(BACKENDS)
-                that().satisfy { it in controllers }
+                that().annotatedWith("RestController")
                 should().satisfy { controller, violations ->
                     val context = contextOf(controller.packageName)
                     if (context !in contextsByApplication[applicationOf(controller.module())].orEmpty()) {

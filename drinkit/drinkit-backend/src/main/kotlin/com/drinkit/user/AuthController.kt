@@ -1,15 +1,15 @@
 package com.drinkit.user
 
-import com.drinkit.api.generated.api.AuthApiDelegate
+import com.drinkit.api.generated.api.AuthApi
 import com.drinkit.api.generated.model.SignInRequest
 import com.drinkit.security.AuthenticationFailedException
 import com.drinkit.security.AuthenticationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.RestController
 
-@Component
-internal class AuthApi(private val authenticationService: AuthenticationService) : AuthApiDelegate {
+@RestController
+internal class AuthController(private val authenticationService: AuthenticationService) : AuthApi {
 
     override fun authenticateUser(signInRequest: SignInRequest): ResponseEntity<Unit> {
         try {

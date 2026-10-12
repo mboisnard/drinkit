@@ -11,7 +11,7 @@ import io.github.baole.konture.classScopeFromModule
 import io.github.baole.konture.isEnclosedInClass
 
 // What the rules need beyond Konture's assertions: the names a file or a class uses, what a module declares, and the
-// roles DrinkIt gives its classes: port, adapter, controller
+// roles DrinkIt gives its classes: port and adapter
 private val modules = Konture.projectGraph.getAllModules()
 private val files = modules.flatMap { it.files }
 
@@ -54,10 +54,6 @@ internal val ports: List<ClassDeclaration> by lazy {
 internal val adapters: Map<ClassDeclaration, List<ClassDeclaration>> by lazy {
     classesOf(INFRAS).associateWith { adapter -> ports.filter { it.fqName in adapter.supertypes } }
         .filterValues { it.isNotEmpty() }
-}
-
-internal val controllers: List<ClassDeclaration> by lazy {
-    classesOf(BACKENDS).filter { cls -> cls.supertypes.any { it.endsWith("ApiDelegate") } }
 }
 
 // The bounded contexts of each application, common included: com.drinkit.cellar for a class of drinkit-domain

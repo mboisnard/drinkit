@@ -1,6 +1,6 @@
 ---
 name: api-contract-change
-description: Changes DrinkIt's OpenAPI contract first, then the backend delegates and the frontend client generated from it, and adapts both sides in the same pull request. Use it before adding or changing an operation, a parameter, a schema or a response of the API contract, or the generator configuration of either side.
+description: Changes DrinkIt's OpenAPI contract first, then the backend controllers and the frontend client generated from it, and adapts both sides in the same pull request. Use it before adding or changing an operation, a parameter, a schema or a response of the API contract, or the generator configuration of either side.
 paths:
   - "drinkit/*-api-contract/**"
   - "drinkit/*-frontend/openapi-config.yml"
@@ -23,16 +23,16 @@ to it is a structuring choice: ask first, as `AGENTS.md` says.
 ## Steps
 
 1. **The operation**, in `api-definition.yaml`, with an `operationId` and one tag. The tag names the backend
-   `<Tag>ApiDelegate` interface and the frontend `<Tag>Api` class: reuse an existing tag when the operation
-   belongs to its area.
+   `<Tag>Api` interface, which its `<Tag>Controller` implements, and the frontend `<Tag>Api` class: reuse an
+   existing tag when the operation belongs to its area.
 2. **The schemas**, in the fragment of the area, with `required` and the constraints the API enforces. The
-   backend turns them into Bean Validation, checked before the delegate runs: a request that breaks them gets a
+   backend turns them into Bean Validation, checked before the controller runs: a request that breaks them gets a
    400. Business rules stay in the domain.
 3. **A domain type for a string**: a `format` on the schema, then its two mappings in the build file of
    `drinkit-backend`, like the identifiers already mapped there. The frontend keeps a `string`.
 4. **The responses**: every status the controller can answer, each with a `description`, an error body only
    the way the existing error responses describe one.
-5. **Both sides**: the delegate and its security rule through the `hexagonal-backend` skill, then the frontend
+5. **Both sides**: the controller and its security rule through the `hexagonal-backend` skill, then the frontend
    client regenerated and the pages that use what changed adapted, through the `frontend-feature` skill.
 
 ## Backward compatibility
@@ -50,8 +50,9 @@ npm run generate:client-api && npm run build    # from the frontend app
 
 ## Traps
 
-- An operation that no delegate overrides compiles, then answers 501: the generated interface has a default
-  body. So does every operation of a new tag until a `@Component` implements its `<Tag>ApiDelegate`.
+- An operation that its controller does not override fails the compilation: the generated interface has no
+  default body. A new tag has no controller yet, so nothing fails: its operations are not served until a
+  `@RestController` implements its `<Tag>Api`.
 - The two sides use separate generator versions, the backend one from the Gradle catalogs and the frontend one
   from the frontend's `openapitools.json`. A construct can generate on one side and fail on the other: build
   both.
@@ -61,5 +62,5 @@ npm run generate:client-api && npm run build    # from the frontend app
 
 - [ ] Each new operation has a tag and every status its controller can answer.
 - [ ] A new `format` has both its mappings in the build file of `drinkit-backend`.
-- [ ] Each operation is overridden by a delegate, and the other side is adapted in the same pull request.
+- [ ] Each operation is implemented by its controller, and the other side is adapted in the same pull request.
 - [ ] Both check commands pass.
