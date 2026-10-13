@@ -19,10 +19,10 @@ internal class SendVerificationTokenTest {
     private val userFixtures = UserFixtures()
     private val sendVerificationToken = userFixtures.sendVerificationToken
     private val verificationTokens = userFixtures.verificationTokens
-    private val spyMessageSender = userFixtures.spyMessageSender
+    private val spyNotificationSender = userFixtures.spyNotificationSender
 
     @Test
-    fun `save verification token for a new registered user and send a message`() {
+    fun `save verification token for a new registered user and send a notification`() {
         // Given
         val user = userFixtures.givenAnInitializedUser()
         val command = SendVerificationTokenCommand(
@@ -39,7 +39,7 @@ internal class SendVerificationTokenTest {
             it.userId shouldBe user.id
         }
         verificationTokens.findBy(user.id, token.value).shouldNotBeNull()
-        spyMessageSender.count() shouldBe 1
+        spyNotificationSender.count() shouldBe 1
     }
 
     @Test

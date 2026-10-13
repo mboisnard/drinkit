@@ -1,4 +1,4 @@
-package com.drinkit.cellars
+package com.drinkit.cellar
 
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test

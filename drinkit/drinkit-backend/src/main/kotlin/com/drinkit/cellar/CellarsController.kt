@@ -1,4 +1,4 @@
-package com.drinkit.cellars
+package com.drinkit.cellar
 
 import com.drinkit.api.generated.api.CellarsApi
 import com.drinkit.api.generated.model.CellarResponse
@@ -7,10 +7,6 @@ import com.drinkit.api.generated.model.CityLocation
 import com.drinkit.api.generated.model.Country
 import com.drinkit.api.generated.model.CreateCellarRequest
 import com.drinkit.api.generated.model.Point
-import com.drinkit.cellar.CreateCellar
-import com.drinkit.cellar.CreateCellarCommand
-import com.drinkit.cellar.DeleteCellar
-import com.drinkit.cellar.FindCellars
 import com.drinkit.cellar.core.Cellar
 import com.drinkit.cellar.core.CellarId
 import com.drinkit.cellar.core.CellarName

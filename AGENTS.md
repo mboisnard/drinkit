@@ -9,7 +9,7 @@ through jOOQ. Exact versions live in the catalogs of `gradle/platform`, `gradle/
 ```
 ./gradlew build detektAll --continue           # what CI runs: compile, test, detekt
 ./gradlew :drinkit-domain:test                 # one module, named after its folder
-./gradlew :drinkit-infra:test --tests '*JooqUserEventsRepositoryTest'
+./gradlew :drinkit-infra:test --tests '*JooqUserEventsTest'
 ./gradlew detektAll -Pdetekt.autoCorrect=true  # fixes formatting and auto-correctable findings
 ./gradlew :drinkit-backend:bootRun             # dev profile, starts deployment/local/compose.yml itself
 ./gradlew :architecture-tests:test             # the architecture rules, part of build

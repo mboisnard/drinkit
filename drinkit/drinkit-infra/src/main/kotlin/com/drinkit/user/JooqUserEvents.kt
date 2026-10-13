@@ -20,7 +20,7 @@ import org.springframework.dao.DataAccessException
 import tools.jackson.databind.json.JsonMapper
 
 @JooqRepository
-internal class JooqUserEventsRepository(
+internal class JooqUserEvents(
     private val dsl: DSLContext,
     private val jsonMapper: JsonMapper,
     private val users: Users,
@@ -59,8 +59,10 @@ internal class JooqUserEventsRepository(
             throw ex
         }
 
-        val user = findAllBy(event.userId)!!.let { User.from(it) }
+        val history = checkNotNull(findAllBy(event.userId)) {
+            "No event of ${event.userId} after saving its event ${event.sequenceId}"
+        }
 
-        return users.saveOrUpdate(user)
+        return users.saveOrUpdate(User.from(history))
     }
 }

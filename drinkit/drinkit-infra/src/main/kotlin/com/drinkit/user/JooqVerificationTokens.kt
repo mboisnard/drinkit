@@ -9,7 +9,7 @@ import com.drinkit.user.spi.VerificationTokens
 import org.jooq.DSLContext
 
 @JooqRepository
-internal class JooqVerificationTokensRepository(private val dslContext: DSLContext) : VerificationTokens {
+internal class JooqVerificationTokens(private val dslContext: DSLContext) : VerificationTokens {
 
     override fun saveOrUpdate(verificationToken: VerificationToken): VerificationToken? {
         val query = dslContext.insertInto(VERIFICATION_TOKEN)

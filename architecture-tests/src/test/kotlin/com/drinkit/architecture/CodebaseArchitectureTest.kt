@@ -76,7 +76,6 @@ internal class CodebaseArchitectureTest {
             description = "A logger is declared one way, private val logger = KotlinLogging.logger {}, so it reads " +
                 "the same in every file, and never comes from the getLogger() of SLF4J, Log4j or java.util.logging: " +
                 "rename it, make it private, or create it with KotlinLogging"
-            suppress { property("com.drinkit.config.CustomResponseEntityExceptionHandler.log", FOLLOW_UP) }
             // A KotlinLogging logger is named logger. Konture's selection by dependency picks the wrong class in a
             // file of several, so the rule reads the other way: a property named otherwise is no KotlinLogging logger
             properties {

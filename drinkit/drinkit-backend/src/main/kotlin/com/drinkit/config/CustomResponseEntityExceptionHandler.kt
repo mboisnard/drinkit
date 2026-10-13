@@ -9,11 +9,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 internal class CustomResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 
-    private val log = KotlinLogging.logger { }
+    // Hides the commons-logging logger of ResponseEntityExceptionHandler, which keeps using its own
+    @Suppress("PROPERTY_HIDES_JAVA_FIELD")
+    private val logger = KotlinLogging.logger { }
 
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleAccessDeniedException(ex: Exception): ResponseEntity<Any> {
-        log.warn { ex.message }
+        logger.warn { ex.message }
 
         return ResponseEntity.badRequest().build()
     }

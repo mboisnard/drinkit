@@ -9,7 +9,7 @@ import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 
 @JooqIntegrationTest(schemas = [DrinkitApplication::class])
-internal class JooqExchangeRatesRepositoryTest : ExchangeRatesTestContract() {
+internal class JooqExchangeRatesTest : ExchangeRatesTestContract() {
 
     private lateinit var dsl: DSLContext
 
@@ -18,5 +18,5 @@ internal class JooqExchangeRatesRepositoryTest : ExchangeRatesTestContract() {
         this.dsl = dsl
     }
 
-    override fun fetchRepository(): ExchangeRates = JooqExchangeRatesRepository(dsl = dsl, clock = ControlledClock())
+    override fun fetchRepository(): ExchangeRates = JooqExchangeRates(dsl = dsl, clock = ControlledClock())
 }

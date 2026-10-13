@@ -4,9 +4,9 @@ import com.drinkit.common.Author
 import com.drinkit.common.Author.Unlogged
 import com.drinkit.common.CorrelationId
 import com.drinkit.common.MockGenerateId
-import com.drinkit.common.SpyMessageSender
 import com.drinkit.faker
 import com.drinkit.messaging.SpyPlatformEventPublisher
+import com.drinkit.notification.spi.SpyNotificationSender
 import com.drinkit.test.ControlledClock
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.EncodedPassword
@@ -28,7 +28,7 @@ class UserFixtures(
     val generateId: MockGenerateId = MockGenerateId(),
     val controlledClock: ControlledClock = ControlledClock(),
     val spyEventPublisher: SpyPlatformEventPublisher = SpyPlatformEventPublisher(),
-    val spyMessageSender: SpyMessageSender = SpyMessageSender(),
+    val spyNotificationSender: SpyNotificationSender = SpyNotificationSender(),
 ) {
     val users = InMemoryUsersRepository()
     val userEvents = InMemoryUserEventsStore(users)
@@ -49,7 +49,7 @@ class UserFixtures(
         userEvents = userEvents,
         generateVerificationToken = generateVerificationToken,
         verificationTokens = verificationTokens,
-        messageSender = spyMessageSender,
+        notificationSender = spyNotificationSender,
     )
 
     val confirmVerificationToken = ConfirmVerificationToken(

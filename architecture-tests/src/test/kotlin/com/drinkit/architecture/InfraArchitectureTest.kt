@@ -25,12 +25,6 @@ internal class InfraArchitectureTest {
             description = "An adapter's name starts with its technology or source and ends with the port it " +
                 "implements, or the last word of that port: JooqCellars for Cellars, EuropeanCentralBankProvider " +
                 "for ExchangeRateProvider. Rename it"
-            suppress {
-                classFqName("com.drinkit.user.JooqUsersRepository", FOLLOW_UP)
-                classFqName("com.drinkit.user.JooqUserEventsRepository", FOLLOW_UP)
-                classFqName("com.drinkit.user.JooqVerificationTokensRepository", FOLLOW_UP)
-                classFqName("com.drinkit.money.forex.JooqExchangeRatesRepository", FOLLOW_UP)
-            }
             classes {
                 that().inModule(INFRAS)
                 that().satisfy { it in adapters }
@@ -75,7 +69,6 @@ internal class InfraArchitectureTest {
         rule("infra.adapter-in-context-of-its-port") {
             description = "An adapter sits in the package of the context its port belongs to, so a context reads as " +
                 "one package across the modules: move it there"
-            suppress { classFqName("com.drinkit.message.sender.EmailMessageSender", FOLLOW_UP) }
             classes {
                 that().inModule(INFRAS)
                 that().satisfy { it in adapters }

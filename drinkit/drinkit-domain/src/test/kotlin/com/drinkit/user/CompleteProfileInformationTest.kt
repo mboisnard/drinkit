@@ -13,6 +13,7 @@ import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.Roles.Role.ROLE_USER
 import com.drinkit.user.core.UserDecision
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
@@ -20,7 +21,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
 
 internal class CompleteProfileInformationTest {
@@ -81,7 +81,7 @@ internal class CompleteProfileInformationTest {
         )
 
         // When / Then
-        assertThrows<IllegalStateException> {
+        shouldThrow<IllegalStateException> {
             completeProfileInformation.invoke(user.id, command)
         }
     }

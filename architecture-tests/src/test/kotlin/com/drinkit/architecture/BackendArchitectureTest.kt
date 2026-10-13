@@ -78,10 +78,6 @@ internal class BackendArchitectureTest {
         rule("backend.controller-package-named-after-context") {
             description = "A controller sits in the package of the bounded context it serves, so a context reads as " +
                 "one package across the modules: move it to the package of its context, such as com.drinkit.cellar"
-            suppress {
-                classFqName("com.drinkit.cellars.CellarsController", FOLLOW_UP)
-                classFqName("com.drinkit.bottles.search.SearchController", FOLLOW_UP)
-            }
             classes {
                 that().inModule(BACKENDS)
                 that().annotatedWith("RestController")

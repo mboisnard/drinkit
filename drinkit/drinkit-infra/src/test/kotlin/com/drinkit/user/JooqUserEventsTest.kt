@@ -13,7 +13,7 @@ import tools.jackson.module.kotlin.KotlinFeature
 import tools.jackson.module.kotlin.kotlinModule
 
 @JooqIntegrationTest(schemas = [DrinkitApplication::class])
-internal class JooqUserEventsRepositoryTest : UserEventsTestContract() {
+internal class JooqUserEventsTest : UserEventsTestContract() {
 
     private lateinit var dsl: DSLContext
 
@@ -22,7 +22,7 @@ internal class JooqUserEventsRepositoryTest : UserEventsTestContract() {
         this.dsl = dsl
     }
 
-    override fun fetchUsers(): Users = JooqUsersRepository(dsl = dsl, clock = ControlledClock())
+    override fun fetchUsers(): Users = JooqUsers(dsl = dsl, clock = ControlledClock())
 
     override fun fetchUserEvents(users: Users): UserEvents {
         val jsonMapper = JsonMapper.builder()
@@ -30,7 +30,7 @@ internal class JooqUserEventsRepositoryTest : UserEventsTestContract() {
             .addModule(UserEventMixinConfiguration().authorModule())
             .build()
 
-        return JooqUserEventsRepository(
+        return JooqUserEvents(
             dsl = dsl,
             jsonMapper = jsonMapper,
             users = users,

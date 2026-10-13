@@ -24,7 +24,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 
 @JooqRepository
-internal class JooqUsersRepository(private val dsl: DSLContext, private val clock: Clock) : Users {
+internal class JooqUsers(private val dsl: DSLContext, private val clock: Clock) : Users {
 
     private val logger = KotlinLogging.logger {}
 

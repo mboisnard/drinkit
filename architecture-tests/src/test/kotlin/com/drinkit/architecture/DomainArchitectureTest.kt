@@ -74,7 +74,6 @@ internal class DomainArchitectureTest {
                 "adapters implement: move this type there, or out of spi when it is not a port"
             suppress {
                 classFqName("com.drinkit.user.spi.UserCreated", FOLLOW_UP)
-                classFqName("com.drinkit.common.MessageSender", FOLLOW_UP)
                 classFqName("com.drinkit.common.GenerateId", FOLLOW_UP)
             }
             classes {
@@ -129,11 +128,6 @@ internal class DomainArchitectureTest {
     fun `a use case is a service annotated as a use case`() {
         rule("domain.use-cases-are-annotated") {
             description = "A use case is a @Service annotated @Usecase, which documents it: add the annotation"
-            suppress {
-                classFqName("com.drinkit.cellar.FindCellars", FOLLOW_UP)
-                classFqName("com.drinkit.cellar.DeleteCellar", FOLLOW_UP)
-                classFqName("com.drinkit.cellar.CreateCellar", FOLLOW_UP)
-            }
             classes {
                 that().inModule(DOMAINS)
                 that().annotatedWith("Service")
@@ -147,10 +141,7 @@ internal class DomainArchitectureTest {
         rule("domain.commands-are-annotated-data-classes") {
             description = "A command is the immutable input of a use case, documented as such: make it a data " +
                 "class annotated @Command"
-            suppress {
-                classFqName("com.drinkit.common.SendMessageCommand", FOLLOW_UP)
-                classFqName("com.drinkit.cellar.CreateCellarCommand", FOLLOW_UP)
-            }
+            suppress { classFqName("com.drinkit.cellar.CreateCellarCommand", FOLLOW_UP) }
             classes {
                 that().inModule(DOMAINS)
                 that().nameEndsWith("Command")

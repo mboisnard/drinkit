@@ -1,4 +1,4 @@
-package com.drinkit.bottles.search
+package com.drinkit.bottle.search
 
 import com.drinkit.api.generated.api.SearchApi
 import com.drinkit.config.AbstractApi

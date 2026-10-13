@@ -11,7 +11,7 @@ import java.time.Clock
 import java.time.OffsetDateTime
 
 @JooqRepository
-internal class JooqExchangeRatesRepository(private val dsl: DSLContext, private val clock: Clock) : ExchangeRates {
+internal class JooqExchangeRates(private val dsl: DSLContext, private val clock: Clock) : ExchangeRates {
 
     override fun find(source: Currency, target: Currency): ExchangeRate? {
         val query = dsl.selectFrom(EXCHANGE_RATE)

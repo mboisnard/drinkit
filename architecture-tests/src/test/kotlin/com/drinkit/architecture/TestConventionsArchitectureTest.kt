@@ -24,10 +24,6 @@ internal class TestConventionsArchitectureTest {
         rule("tests.kotest-assertions-only") {
             description = "Tests assert with Kotest only, never AssertJ, Hamcrest, kotlin.test or JUnit's " +
                 "assertions, so failures read the same everywhere: replace the assertion with its Kotest matcher"
-            suppress {
-                file("*/com/drinkit/configuration/infra/ConfigurationsTestContract.kt", FOLLOW_UP)
-                file("*/com/drinkit/user/CompleteProfileInformationTest.kt", FOLLOW_UP)
-            }
             files(SourceSets.tests()) {
                 that().inModules(ALL)
                 should().notHaveImportOf(
@@ -77,7 +73,7 @@ internal class TestConventionsArchitectureTest {
             suppress {
                 classFqName("com.drinkit.user.spi.VerificationTokens", FOLLOW_UP)
                 classFqName("com.drinkit.user.spi.Users", FOLLOW_UP)
-                classFqName("com.drinkit.common.MessageSender", FOLLOW_UP)
+                classFqName("com.drinkit.notification.spi.NotificationSender", FOLLOW_UP)
                 classFqName("com.drinkit.common.GenerateId", FOLLOW_UP)
                 classFqName("com.drinkit.money.forex.spi.ExchangeRateProvider", FOLLOW_UP)
                 classFqName("com.drinkit.cellar.spi.Cellars", FOLLOW_UP)
