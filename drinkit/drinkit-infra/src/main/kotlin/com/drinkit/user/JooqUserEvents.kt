@@ -1,0 +1,68 @@
+package com.drinkit.user
+
+import com.drinkit.common.Author
+import com.drinkit.event.sourcing.transaction.DuplicateSequenceException
+import com.drinkit.generated.jooq.keys.USER_EVENT_PKEY
+import com.drinkit.generated.jooq.tables.references.USER_EVENT
+import com.drinkit.postgresql.jooq.JSONBToJacksonConverter
+import com.drinkit.postgresql.jooq.JooqRepository
+import com.drinkit.postgresql.jooq.fetchSequence
+import com.drinkit.postgresql.jooq.isEventSourcingSequenceException
+import com.drinkit.user.core.Initialized
+import com.drinkit.user.core.User
+import com.drinkit.user.core.UserEvent
+import com.drinkit.user.core.UserHistory
+import com.drinkit.user.core.UserId
+import com.drinkit.user.spi.UserEvents
+import com.drinkit.user.spi.Users
+import org.jooq.DSLContext
+import org.springframework.dao.DataAccessException
+import tools.jackson.databind.json.JsonMapper
+
+@JooqRepository
+internal class JooqUserEvents(
+    private val dsl: DSLContext,
+    private val jsonMapper: JsonMapper,
+    private val users: Users,
+) : UserEvents {
+
+    private val authorConverter = JSONBToJacksonConverter(Author::class.java, jsonMapper)
+
+    override fun findAllBy(userId: UserId): UserHistory? = dsl.selectFrom(USER_EVENT)
+        .where(USER_EVENT.USER_ID.eq(userId.value))
+        .orderBy(USER_EVENT.SEQUENCE_ID.asc())
+        .fetchSequence { it.toEvent(jsonMapper) }
+        .toList()
+        .takeIf { it.isNotEmpty() }
+        ?.let { UserHistory.from<UserEvent, Initialized>(it) }
+
+    override fun save(event: UserEvent): User {
+        val (eventName, payload) = event.toEventNameWithPayload(jsonMapper)
+
+        try {
+            dsl.insertInto(USER_EVENT)
+                .set(USER_EVENT.USER_ID, event.userId.value)
+                .set(USER_EVENT.SEQUENCE_ID, event.sequenceId.value)
+                .set(USER_EVENT.EVENT_NAME, eventName.name)
+                .set(USER_EVENT.DATE, event.date)
+                .set(USER_EVENT.AUTHOR, authorConverter.to(event.author))
+                .set(USER_EVENT.PAYLOAD, payload)
+                .execute()
+        } catch (ex: DataAccessException) {
+            if (ex.isEventSourcingSequenceException(USER_EVENT_PKEY.name)) {
+                throw DuplicateSequenceException(
+                    "${event.sequenceId} already exists for ${event.userId} when trying to save $event",
+                    ex,
+                )
+            }
+
+            throw ex
+        }
+
+        val history = checkNotNull(findAllBy(event.userId)) {
+            "No event of ${event.userId} after saving its event ${event.sequenceId}"
+        }
+
+        return users.saveOrUpdate(User.from(history))
+    }
+}

@@ -24,10 +24,10 @@ A query: `FindExchangeRate`.
 
 ## Ports and their doubles
 
-- A port of one context: `Cellars`, `UserEvents`. A port several contexts share, in `common`: `GenerateId`,
-  `MessageSender`.
+- A port of one context: `Cellars`, `UserEvents`. A port several contexts share: `GenerateId`. A port of a
+  generic context the others call: `NotificationSender`.
 - A contract test: `ExchangeRatesTestContract` in the domain test fixtures, run by `InMemoryExchangeRatesTest`
-  against the in-memory double and by `JooqExchangeRatesRepositoryTest` against PostgreSQL.
+  against the in-memory double and by `JooqExchangeRatesTest` against PostgreSQL.
 - The wiring of doubles and use cases: `UserFixtures`, which also wires `ControlledClock` from `test-starter`
   and `MockGenerateId`.
 
@@ -37,11 +37,12 @@ A query: `FindExchangeRate`.
   `postgresql-starter`, takes the `DSLContext`, maps records to domain types in private extension functions,
   and reads a JSONB column through `JSONBToJacksonConverter` with an injected `JsonMapper`.
 - An HTTP client: `EuropeanCentralBankClient`, the `@GetExchange` interface, registered by
-  `ForexClientsConfiguration` and wrapped by `EuropeanCentralBankProvider`, the adapter. A secret is read through
+  `ForexClientsConfiguration`, its base URL under `spring.http.serviceclient.<group>`, and wrapped by
+  `EuropeanCentralBankProvider`, the adapter. A secret is read through
   `Configurations`, as `ExchangeRateApiProvider` does.
 
 ## Controller and event handler
 
-- A controller: `RegistrationApi`, an `internal` `@Component` that extends `AbstractApi` and implements the
-  generated `<Tag>ApiDelegate`. The connected user comes from `connectedUserIdOrFail()` of `AbstractApi`.
+- A controller: `RegistrationController`, an `internal` `@RestController` that extends `AbstractApi` and
+  implements the generated `<Tag>Api`. The connected user comes from `connectedUserIdOrFail()` of `AbstractApi`.
 - A platform event handler: `RegistrationHandler`, which calls a use case.

@@ -22,10 +22,12 @@ val openApiCommonTemplatesPath = configurations.resolvable("openApiCommonTemplat
     extendsFrom(openApiCommonTemplates.get())
 }
 
+val generatedSources = layout.buildDirectory.dir("generated-sources/openapi/src/main/kotlin")
+
 // https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-gradle-plugin
 openApiGenerate {
     generatorName.set("kotlin-spring")
-    outputDir.set(layout.buildDirectory.dir("generated-sources/openapi/src/main/kotlin"))
+    outputDir.set(generatedSources)
 
     // Remove old generated files before starting a new generation task
     cleanupOutput.set(true)
@@ -34,7 +36,8 @@ openApiGenerate {
     // https://openapi-generator.tech/docs/generators/kotlin-spring/
     configOptions.set(
         mapOf(
-            "delegatePattern" to "true", // Generates interfaces a Spring service can implement
+            "interfaceOnly" to "true", // Generates the mapped interfaces a controller implements, not the controllers
+            "skipDefaultInterface" to "true", // An operation left unimplemented fails the compilation, not answers 501
             "useTags" to "true", // Use the defined tags in the yaml file to create interfaces and class names
             "useSpringBoot3" to "true", // Jakarta annotations in the generated code
             "sourceFolder" to "",
@@ -42,12 +45,11 @@ openApiGenerate {
         ),
     )
 
-    // Scope the generated files to only supportingFile/apis/models classes
+    // Scope the generated files to only apis/models classes
     // Can also be configured in .openapi-generator-ignore file
     // https://openapi-generator.tech/docs/globals/
     globalProperties.set(
         mapOf(
-            "supportingFiles" to "ApiUtil.kt",
             "apis" to "",
             "models" to "",
         ),
@@ -73,7 +75,9 @@ tasks.openApiGenerate {
 kotlin {
     sourceSets {
         main {
-            kotlin.srcDir(tasks.openApiGenerate)
+            // The folder rather than the task: reading the sources then never creates the task, which the
+            // module graph of the architecture tests does from the root project
+            kotlin.srcDir(files(generatedSources).builtBy(tasks.openApiGenerate))
         }
     }
 }

@@ -28,15 +28,6 @@
     <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("100.00")</ID>
     <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("110.00")</ID>
     <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("112.34")</ID>
-    <ID>FunctionNaming:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$@Test fun `save an exchange rate and find it`</ID>
-    <ID>FunctionNaming:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$@Test fun `save multiple exchange rates`</ID>
-    <ID>FunctionNaming:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$@Test fun `should distinguish between different currency pairs`</ID>
-    <ID>FunctionNaming:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$@Test fun `update existing exchange rate when saving with same source and target`</ID>
-    <ID>FunctionNaming:UserEventsTestContract.kt:UserEventsTestContract$@Test fun `should save a user history starting by an initialized event`</ID>
-    <ID>FunctionNaming:UsersTestContract.kt:UsersTestContract$@Test fun `should be null when user is not found by his id`</ID>
-    <ID>FunctionNaming:UsersTestContract.kt:UsersTestContract$@Test fun `should find user by his email`</ID>
-    <ID>FunctionNaming:UsersTestContract.kt:UsersTestContract$@Test fun `should save a user and find it by his id`</ID>
-    <ID>LongParameterList:RegistrationApi.kt:RegistrationApi</ID>
     <ID>MagicNumber:FeatureFlagsConfig.kt:FeatureFlagsConfig$10</ID>
     <ID>MagicNumber:Percentage.kt:Percentage$100</ID>
     <ID>MaxLineLength:Aggregate.kt:Aggregate$*</ID>
@@ -71,11 +62,9 @@
     <ID>UnsafeCallOnNullableType:ConfigurationKey.kt:ConfigurationKey$this::class.simpleName!!</ID>
     <ID>UnsafeCallOnNullableType:ConfirmVerificationToken.kt:ConfirmVerificationToken$users.findEnabledBy(userId)!!</ID>
     <ID>UnsafeCallOnNullableType:DocumentationSymbolProcessor.kt:DocumentationSymbolProcessor$A::class.qualifiedName!!</ID>
-    <ID>UnsafeCallOnNullableType:EmailMessageSender.kt:EmailMessageSender$content!!</ID>
     <ID>UnsafeCallOnNullableType:GCPCloudVisionAnalyzer.kt:GCPCloudVisionAnalyzer$ex.message!!</ID>
     <ID>UnsafeCallOnNullableType:GenerateObjectId.kt:GenerateObjectId$idType.primaryConstructor!!</ID>
     <ID>UnsafeCallOnNullableType:InMemoryUserEventsStore.kt:InMemoryUserEventsStore$findAllBy(userId)!!</ID>
-    <ID>UnsafeCallOnNullableType:JooqUserEventsRepository.kt:JooqUserEventsRepository$findAllBy(event.userId)!!</ID>
     <ID>UnsafeCallOnNullableType:KSClassDeclarationTools.kt:T::class.qualifiedName!!</ID>
     <ID>UnsafeCallOnNullableType:MockGenerateId.kt:MockGenerateId$idType.primaryConstructor!!</ID>
     <ID>UnsafeCallOnNullableType:MockGenerateId.kt:MockGenerateId$ids.compute(idType) { _, value -&gt; if (value == null) 1 else value + 1 }!!</ID>

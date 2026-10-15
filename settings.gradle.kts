@@ -69,6 +69,7 @@ fun includeModulesFrom(folder: File) {
 
 addGradleProject(file("gradle/platform"))
 addGradleProject(file("deployment/updater"))
+addGradleProject(file("architecture-tests"))
 
 includeModulesFrom(file("tech-starters/backend"))
 includeModulesFrom(file("drinkit"))

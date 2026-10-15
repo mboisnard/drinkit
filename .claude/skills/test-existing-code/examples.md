@@ -71,7 +71,7 @@ internal class InMemoryExchangeRatesTest : ExchangeRatesTestContract() {
 }
 
 @JooqIntegrationTest(schemas = [DrinkitApplication::class])
-internal class JooqExchangeRatesRepositoryTest : ExchangeRatesTestContract() {
+internal class JooqExchangeRatesTest : ExchangeRatesTestContract() {
     …
 }
 ```

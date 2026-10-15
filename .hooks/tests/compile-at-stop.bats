@@ -17,6 +17,20 @@ setup() {
     echo '{"scripts": {"build": "vitepress build"}}' >"$repo/docs/package.json"
     stub "$repo/gradlew" <<STUB
 echo "gradle \$(basename "\$PWD")" >>"$work/runs"
+echo "\$*" >>"$work/gradle-args"
+if [ -f "$work/rule-broken" ]; then
+    echo "TechStartersArchitectureTest > a tech starter wires its beans without stereotype annotations() FAILED"
+    echo "    java.lang.AssertionError: ✗ Rule: starters.no-stereotype"
+    echo "    A tech starter wires its beans in one @AutoConfiguration: declare the bean there"
+    echo ""
+    echo "    1 violation(s) found:"
+    echo ""
+    echo "    1. com.drinkit.retryable.RetryProbe"
+    echo "       Message: com.drinkit.retryable.RetryProbe is a @Component"
+    echo "       File: \$PWD/RetryProbe.kt:5"
+    echo "FAILURE: Build failed with an exception."
+    exit 1
+fi
 if [ -f "$work/kotlin-broken" ]; then
     echo "e: file://\$PWD/src/Cellar.kt:1:7 Unresolved reference 'Bottle'."
     exit 1
@@ -64,6 +78,11 @@ checked() {
     else
         refute_output
     fi
+}
+
+architecture_tests() {
+    mkdir -p "$repo/architecture-tests"
+    touch "$repo/architecture-tests/build.gradle.kts"
 }
 
 cellar() {
@@ -122,6 +141,45 @@ every_typecheck="npm admin run --silent typecheck,npm front run --silent typeche
     cellar bottle
     turn_ends
     assert_output --partial "Unresolved reference 'Bottle'"
+}
+
+@test "a Kotlin change also runs the architecture tests of a repository that has them" {
+    architecture_tests
+    cellar label
+    turn_ends
+    assert_equal "$(cat "$work/gradle-args")" "compileTestKotlin :architecture-tests:test --console=plain"
+}
+
+@test "a repository without architecture tests is only compiled" {
+    cellar label
+    turn_ends
+    assert_equal "$(cat "$work/gradle-args")" "compileTestKotlin --console=plain"
+}
+
+@test "an architecture-tests folder holding only its build output is only compiled" {
+    mkdir -p "$repo/architecture-tests/build"
+    cellar label
+    turn_ends
+    assert_equal "$(cat "$work/gradle-args")" "compileTestKotlin --console=plain"
+}
+
+@test "a broken architecture rule blocks the end of the turn" {
+    touch "$work/rule-broken"
+    architecture_tests
+    cellar label
+    turn_ends
+    checked "gradle repo," blocked
+}
+
+@test "a broken architecture rule is shown to Claude with its reason and its violation" {
+    touch "$work/rule-broken"
+    architecture_tests
+    cellar label
+    turn_ends
+    assert_output --partial "An architecture rule is broken"
+    assert_output --partial "Rule: starters.no-stereotype"
+    assert_output --partial "declare the bean there"
+    assert_output --partial "Message: com.drinkit.retryable.RetryProbe is a @Component"
 }
 
 @test "the same state is not checked twice, so it cannot loop" {

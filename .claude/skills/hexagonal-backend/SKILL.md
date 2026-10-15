@@ -7,8 +7,9 @@ paths:
 
 # A backend feature in DrinkIt
 
-The rules are in the Code patterns section of `AGENTS.md`. This skill says where each piece goes, in which
-order, and what to avoid. The model to copy for each step is in [examples.md](examples.md).
+The rules are in the Code patterns section of `AGENTS.md` and on the rules page it points to,
+`docs/src/engineering/architecture-tests.md`. This skill says where each piece goes, in which order, and what to
+avoid. The model to copy for each step is in [examples.md](examples.md).
 
 Tests come first: invoke the `test-driven-development` skill before writing code. Its test order follows the
 steps below.
@@ -16,10 +17,10 @@ steps below.
 ## Order of work
 
 1. **Contract.** A new or changed HTTP operation starts in the OpenAPI contract: the `api-contract-change`
-   skill. The generated `<Tag>ApiDelegate` interface gives the controller its signatures.
+   skill. The generated `<Tag>Api` interface gives the controller its signatures and mappings.
 2. **Domain types**, in `drinkit-domain`, package `com.drinkit.<context>.core`. A value several contexts use
    goes in `com.drinkit.common`.
-3. **Use case and its functional core**, in `com.drinkit.<context>`.
+3. **Use case**, and its functional core when it takes decisions, in `com.drinkit.<context>`.
 4. **Ports**, in `com.drinkit.<context>.spi`, with their test doubles in the test fixtures of `drinkit-domain`.
 5. **Adapters**, in `drinkit-infra`, in the package of the context. A new table or column first goes through
    the `database-change` skill.
@@ -29,9 +30,9 @@ A feature with no new HTTP operation, such as a platform event handler, skips st
 
 ## Use case
 
-The use case gathers the inputs (ports, the current date, new ids), hands them to the functional core, does
-what the decision says and maps it to a `Result`. Every decision becomes a `Result` case the controller can
-answer. A decision handled with `error()` answers 500: never copy such a branch, even from a model.
+The use case gathers the inputs (ports, the current date, new ids), hands them to its functional core if it has
+one, does what the decision says and maps it to a `Result`. Every decision becomes a `Result` case the controller
+can answer. A decision handled with `error()` answers 500: never copy such a branch, even from a model.
 
 A read that decides nothing is a query: no command and no core, under `@Transactional(readOnly = true)`.
 
@@ -57,13 +58,13 @@ above `/api/**`, which is a security rule: ask first, as `AGENTS.md` says. A pat
   tells. Until it is on, `SecurityConfiguration` alone decides access.
 - `CustomResponseEntityExceptionHandler` decides the status of an exception: an `IllegalArgumentException`,
   thrown by a `require` in an `init`, answers 400, and an exception it does not handle answers 500.
-- A use case with no functional core or no documentation annotation predates these patterns: it is not a model,
-  whatever its context.
+- A use case with no documentation annotation, or returning no sealed `Result`, predates these patterns: it is
+  not a model, whatever its context.
 
 ## Before you finish
 
 - [ ] Each new class sits in the module and package of its step, and each adapter is `internal`.
-- [ ] The use case does I/O only, its decisions live in the `@FunctionalCore` object, every decision maps to a
-      `Result` case and every `Result` case to a status.
-- [ ] Every operation of the contract is overridden by a delegate, and `SecurityConfiguration` gives each new path
+- [ ] The use case does the I/O, its decisions live in it or in a `@FunctionalCore` object, every decision maps
+      to a `Result` case and every `Result` case to a status.
+- [ ] Every operation of the contract is implemented by its controller, and `SecurityConfiguration` gives each new path
       the access it needs.
