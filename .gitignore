@@ -53,6 +53,9 @@ out/
 ### Kotlin ###
 .kotlin
 
+### Konture, the architecture tests ###
+.konture/
+
 ### JVM crash artefacts ###
 *.hprof
 hs_err_pid*.log
