@@ -1,6 +1,6 @@
 package com.drinkit.user.registration
 
-import com.drinkit.api.generated.api.RegistrationApiDelegate
+import com.drinkit.api.generated.api.RegistrationApi
 import com.drinkit.api.generated.model.CompleteUserInformationRequest
 import com.drinkit.api.generated.model.ConfirmEmailRequest
 import com.drinkit.api.generated.model.CreateUserRequest
@@ -26,16 +26,14 @@ import com.drinkit.user.core.LastName
 import com.drinkit.user.core.Password
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.UserId
-import jakarta.servlet.http.HttpServletRequest
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.RestController
 
-@Component
-internal class RegistrationApi(
-    private val request: HttpServletRequest,
-
+@RestController
+internal class RegistrationController(
     private val createANewUser: CreateNewUser,
     private val sendVerificationToken: SendVerificationToken,
     private val confirmVerificationToken: ConfirmVerificationToken,
@@ -44,7 +42,7 @@ internal class RegistrationApi(
     private val passwordEncoder: PasswordEncoder,
     private val authenticationService: AuthenticationService,
 ) : AbstractApi(),
-    RegistrationApiDelegate {
+    RegistrationApi {
 
     override fun createNewUser(createUserRequest: CreateUserRequest): ResponseEntity<UserId> {
         require(createUserRequest.password == createUserRequest.confirmedPassword) {
@@ -60,7 +58,7 @@ internal class RegistrationApi(
                 password = EncodedPassword.from(password) { raw ->
                     requireNotNull(passwordEncoder.encode(raw)) { "Password encoder returned no value" }
                 },
-                locale = request.locale,
+                locale = LocaleContextHolder.getLocale(),
             ),
         )
 
@@ -99,7 +97,7 @@ internal class RegistrationApi(
             userId = userId,
             command = SendVerificationTokenCommand(
                 author = Author.Connected(userId),
-                locale = request.locale,
+                locale = LocaleContextHolder.getLocale(),
             ),
         )
 

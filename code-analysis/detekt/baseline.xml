@@ -36,7 +36,6 @@
     <ID>FunctionNaming:UsersTestContract.kt:UsersTestContract$@Test fun `should be null when user is not found by his id`</ID>
     <ID>FunctionNaming:UsersTestContract.kt:UsersTestContract$@Test fun `should find user by his email`</ID>
     <ID>FunctionNaming:UsersTestContract.kt:UsersTestContract$@Test fun `should save a user and find it by his id`</ID>
-    <ID>LongParameterList:RegistrationApi.kt:RegistrationApi</ID>
     <ID>MagicNumber:FeatureFlagsConfig.kt:FeatureFlagsConfig$10</ID>
     <ID>MagicNumber:Percentage.kt:Percentage$100</ID>
     <ID>MaxLineLength:Aggregate.kt:Aggregate$*</ID>

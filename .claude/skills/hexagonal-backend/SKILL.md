@@ -16,7 +16,7 @@ steps below.
 ## Order of work
 
 1. **Contract.** A new or changed HTTP operation starts in the OpenAPI contract: the `api-contract-change`
-   skill. The generated `<Tag>ApiDelegate` interface gives the controller its signatures.
+   skill. The generated `<Tag>Api` interface gives the controller its signatures and mappings.
 2. **Domain types**, in `drinkit-domain`, package `com.drinkit.<context>.core`. A value several contexts use
    goes in `com.drinkit.common`.
 3. **Use case and its functional core**, in `com.drinkit.<context>`.
@@ -65,5 +65,5 @@ above `/api/**`, which is a security rule: ask first, as `AGENTS.md` says. A pat
 - [ ] Each new class sits in the module and package of its step, and each adapter is `internal`.
 - [ ] The use case does I/O only, its decisions live in the `@FunctionalCore` object, every decision maps to a
       `Result` case and every `Result` case to a status.
-- [ ] Every operation of the contract is overridden by a delegate, and `SecurityConfiguration` gives each new path
+- [ ] Every operation of the contract is implemented by its controller, and `SecurityConfiguration` gives each new path
       the access it needs.

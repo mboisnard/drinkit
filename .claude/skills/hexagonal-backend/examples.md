@@ -42,6 +42,6 @@ A query: `FindExchangeRate`.
 
 ## Controller and event handler
 
-- A controller: `RegistrationApi`, an `internal` `@Component` that extends `AbstractApi` and implements the
-  generated `<Tag>ApiDelegate`. The connected user comes from `connectedUserIdOrFail()` of `AbstractApi`.
+- A controller: `RegistrationController`, an `internal` `@RestController` that extends `AbstractApi` and
+  implements the generated `<Tag>Api`. The connected user comes from `connectedUserIdOrFail()` of `AbstractApi`.
 - A platform event handler: `RegistrationHandler`, which calls a use case.

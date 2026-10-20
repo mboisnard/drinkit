@@ -1,6 +1,6 @@
 package com.drinkit.cellars
 
-import com.drinkit.api.generated.api.CellarsApiDelegate
+import com.drinkit.api.generated.api.CellarsApi
 import com.drinkit.api.generated.model.CellarResponse
 import com.drinkit.api.generated.model.CellarsResponse
 import com.drinkit.api.generated.model.CityLocation
@@ -19,17 +19,17 @@ import com.drinkit.config.ConnectedUser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.RestController
 
-@Component
+@RestController
 @PreAuthorize("isAuthenticated()")
-internal class CellarsApi(
+internal class CellarsController(
     private val createCellar: CreateCellar,
     private val deleteCellar: DeleteCellar,
     private val findCellars: FindCellars,
     private val connectedUser: ConnectedUser,
 ) : AbstractApi(),
-    CellarsApiDelegate {
+    CellarsApi {
 
     override fun createCellar(createCellarRequest: CreateCellarRequest): ResponseEntity<CellarId> {
         val command = createCellarRequest.toCommand()
