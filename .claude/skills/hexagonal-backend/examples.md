@@ -37,7 +37,8 @@ A query: `FindExchangeRate`.
   `postgresql-starter`, takes the `DSLContext`, maps records to domain types in private extension functions,
   and reads a JSONB column through `JSONBToJacksonConverter` with an injected `JsonMapper`.
 - An HTTP client: `EuropeanCentralBankClient`, the `@GetExchange` interface, registered by
-  `ForexClientsConfiguration` and wrapped by `EuropeanCentralBankProvider`, the adapter. A secret is read through
+  `ForexClientsConfiguration`, its base URL under `spring.http.serviceclient.<group>`, and wrapped by
+  `EuropeanCentralBankProvider`, the adapter. A secret is read through
   `Configurations`, as `ExchangeRateApiProvider` does.
 
 ## Controller and event handler
