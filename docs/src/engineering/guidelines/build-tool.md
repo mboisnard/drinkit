@@ -121,7 +121,8 @@ A single file configures it: `code-analysis/detekt/detekt.yml`, holding **only t
 deviations** from detekt's defaults, the convention setting `buildUponDefaultConfig`. There are
 four: the rules this project opts into out of the 108 detekt ships inactive. Everything else is
 detekt's own default, test sources included — `**/testFixtures/**` is held to the same standard as
-production code, which is what detekt does by default and costs twelve findings.
+production code, which is what detekt does by default, except that `FunctionNaming` lets a function
+annotated `@Test` take a backticked name, as a port's test contract there does.
 
 `code-analysis/detekt/baseline.xml` holds the findings that predate the switch to a blocking
 build. They no longer fail anything; everything new does. The file only ever shrinks — you delete a

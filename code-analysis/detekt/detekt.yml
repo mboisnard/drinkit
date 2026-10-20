@@ -8,6 +8,10 @@ naming:
     privateParameterPattern: '_?[a-z][A-Za-z0-9]*'
   FunctionParameterNaming:
     parameterPattern: '_?[a-z][A-Za-z0-9]*'
+  # A port's test contract lives in the test fixtures, which detekt does not treat as tests, and names its
+  # tests in backticks like any other test
+  FunctionNaming:
+    ignoreAnnotated: ['Test']
 
 performance:
   CouldBeSequence:
