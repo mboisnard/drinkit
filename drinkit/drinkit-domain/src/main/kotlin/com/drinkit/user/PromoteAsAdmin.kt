@@ -1,6 +1,5 @@
 package com.drinkit.user
 
-import com.drinkit.common.Author
 import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.cqrs.Command
 import com.drinkit.documentation.event.sourcing.Aggregate
@@ -12,6 +11,7 @@ import com.drinkit.user.AdminPromotionDecider.Decision.EventToPersist
 import com.drinkit.user.AdminPromotionDecider.Decision.Unauthorized
 import com.drinkit.user.PromoteAsAdmin.Result.Success
 import com.drinkit.user.PromoteAsAdmin.Result.UserNotFound
+import com.drinkit.user.core.Author
 import com.drinkit.user.core.PromotedAsAdmin
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserDecision

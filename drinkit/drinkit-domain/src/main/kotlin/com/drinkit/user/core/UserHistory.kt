@@ -1,6 +1,5 @@
 package com.drinkit.user.core
 
-import com.drinkit.common.Author
 import com.drinkit.event.sourcing.DomainEvent
 import com.drinkit.event.sourcing.History
 import com.drinkit.event.sourcing.SequenceId

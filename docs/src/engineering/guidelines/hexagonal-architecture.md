@@ -41,7 +41,7 @@ This is the core of the application, the hexagon. It is completely independent o
 **Responsibilities:**
 
 - 🧱 Contain all business logic, organized into bounded contexts.
-- 📜 Define secondary ports as interfaces (SPI - Service Provider Interface) in `<context>/spi` packages, named after what they hold or do (e.g., `Users`, `Cellars`). Ports shared by several contexts, such as `MessageSender` or `GenerateId`, live in `common`.
+- 📜 Define secondary ports as interfaces (SPI - Service Provider Interface) in `<context>/spi` packages, named after what they hold or do (e.g., `Users`, `Cellars`). Ports shared by several contexts, such as `GenerateId`, live in `common`. A generic capability several contexts rely on, such as notifying a user, is a context of its own that knows none of them: `user` calls `NotificationSender` in `notification/spi`.
 - 🚪 Expose primary ports (use cases) through services.
 
 **Dependency Rules:**  

@@ -1,6 +1,5 @@
 package com.drinkit.user
 
-import com.drinkit.common.Author
 import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.cqrs.Command
 import com.drinkit.documentation.event.sourcing.Aggregate
@@ -13,6 +12,7 @@ import com.drinkit.user.DeleteUser.Result.UserNotFound
 import com.drinkit.user.UserDeletionDecider.Decision.AlreadyDeleted
 import com.drinkit.user.UserDeletionDecider.Decision.EventToPersist
 import com.drinkit.user.UserDeletionDecider.Decision.Unauthorized
+import com.drinkit.user.core.Author
 import com.drinkit.user.core.Deleted
 import com.drinkit.user.core.UserDecision
 import com.drinkit.user.core.UserId

@@ -1,0 +1,12 @@
+package com.drinkit.cellar
+
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Test
+
+internal class CellarsControllerTest {
+
+    @Test
+    fun `should be true`() {
+        true shouldBe true
+    }
+}

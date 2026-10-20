@@ -1,6 +1,5 @@
 package com.drinkit.user
 
-import com.drinkit.common.Author
 import com.drinkit.event.sourcing.SequenceId
 import com.drinkit.generated.jooq.tables.records.UserEventRecord
 import com.drinkit.postgresql.jooq.JSONBToJacksonConverter
@@ -9,6 +8,7 @@ import com.drinkit.user.UserEventPayloadType.INITIALIZED
 import com.drinkit.user.UserEventPayloadType.PROFILE_COMPLETED
 import com.drinkit.user.UserEventPayloadType.PROMOTED_AS_ADMIN
 import com.drinkit.user.UserEventPayloadType.VERIFIED
+import com.drinkit.user.core.Author
 import com.drinkit.user.core.Deleted
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.EncodedPassword

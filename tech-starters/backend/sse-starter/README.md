@@ -27,7 +27,7 @@ This starter separates business logic from technical concerns. It is designed fo
 sequenceDiagram
     participant Client
     participant SseApi
-    participant Repository as InMemoryEmittersRepository
+    participant Repository as InMemoryEmitters
 
     Client->>SseApi: GET /sse/event-stream?eventName=notifications
     SseApi->>SseApi: Create SseEmitter
@@ -46,7 +46,7 @@ sequenceDiagram
     participant Business as Business Logic
     participant Messaging as Messaging Layer
     participant SseApi
-    participant Repository as InMemoryEmittersRepository
+    participant Repository as InMemoryEmitters
     participant Client
 
     Business->>Messaging: Publish SendSseEvent

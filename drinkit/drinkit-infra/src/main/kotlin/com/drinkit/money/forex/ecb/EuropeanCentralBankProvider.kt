@@ -1,7 +1,7 @@
 package com.drinkit.money.forex.ecb
 
-import com.drinkit.money.Currency
-import com.drinkit.money.forex.core.ExchangeRate
+import com.drinkit.money.core.Currency
+import com.drinkit.money.core.ExchangeRate
 import com.drinkit.money.forex.spi.ExchangeRateProvider
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service

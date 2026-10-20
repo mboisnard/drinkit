@@ -1,22 +1,22 @@
 package com.drinkit.user
 
-import com.drinkit.common.Author
-import com.drinkit.common.MessageContent
-import com.drinkit.common.MessageSender
-import com.drinkit.common.Recipient
-import com.drinkit.common.SendMessageCommand
 import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.cqrs.Command
 import com.drinkit.documentation.event.sourcing.Aggregate
 import com.drinkit.documentation.fcis.FunctionalCore
 import com.drinkit.documentation.fcis.ImperativeShell
 import com.drinkit.event.sourcing.transaction.RetryableTransactional
+import com.drinkit.notification.core.Notification
+import com.drinkit.notification.core.NotificationContent
+import com.drinkit.notification.core.Recipient
+import com.drinkit.notification.spi.NotificationSender
 import com.drinkit.user.SendVerificationToken.Result.Forbidden
 import com.drinkit.user.SendVerificationToken.Result.Success
 import com.drinkit.user.SendVerificationToken.Result.UserNotFound
 import com.drinkit.user.VerificationTokenSendingDecider.Decision.AlreadyVerified
 import com.drinkit.user.VerificationTokenSendingDecider.Decision.CanSendToken
 import com.drinkit.user.VerificationTokenSendingDecider.Decision.Unauthorized
+import com.drinkit.user.core.Author
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.UserDecision
 import com.drinkit.user.core.UserId
@@ -38,7 +38,7 @@ class SendVerificationToken(
     private val userEvents: UserEvents,
     private val generateVerificationToken: GenerateVerificationToken,
     private val verificationTokens: VerificationTokens,
-    private val messageSender: MessageSender,
+    private val notificationSender: NotificationSender,
 ) {
     sealed interface Result {
         data class Success(val token: VerificationToken) : Result
@@ -66,9 +66,9 @@ class SendVerificationToken(
                 val token = generateVerificationToken.invoke(decision.userId)
                 verificationTokens.saveOrUpdate(token)
 
-                messageSender.send(
-                    SendMessageCommand(
-                        content = MessageContent("Verification code", token.value),
+                notificationSender.send(
+                    Notification(
+                        content = NotificationContent("Verification code", token.value),
                         locale = command.locale,
                         recipient = Recipient(decision.email.value),
                     ),

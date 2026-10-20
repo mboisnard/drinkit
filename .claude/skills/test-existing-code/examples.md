@@ -47,7 +47,7 @@ Several properties of one value go in one `should { }` block, so a failure shows
 
 ## Time and identifiers
 
-`ControlledClock` and `MockGenerateId` come with the fixtures. Fix the clock for a test that compares dates,
+`ControlledClock` and `FakeGenerateId` come with the fixtures. Fix the clock for a test that compares dates,
 `controlledClock.fix(instant)`, and move it with `add(Duration.ofMinutes(16))` to cross an expiry.
 
 ## A port without its contract
@@ -71,7 +71,7 @@ internal class InMemoryExchangeRatesTest : ExchangeRatesTestContract() {
 }
 
 @JooqIntegrationTest(schemas = [DrinkitApplication::class])
-internal class JooqExchangeRatesRepositoryTest : ExchangeRatesTestContract() {
+internal class JooqExchangeRatesTest : ExchangeRatesTestContract() {
     …
 }
 ```

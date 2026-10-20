@@ -1,7 +1,7 @@
 package com.drinkit.money.forex
 
 import com.drinkit.documentation.clean.architecture.Usecase
-import com.drinkit.money.Currency
+import com.drinkit.money.core.Currency
 import com.drinkit.money.forex.spi.ExchangeRateProvider
 import com.drinkit.money.forex.spi.ExchangeRates
 import org.springframework.stereotype.Service

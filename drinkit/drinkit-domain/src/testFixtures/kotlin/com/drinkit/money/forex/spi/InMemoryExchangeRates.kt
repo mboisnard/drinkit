@@ -1,7 +1,7 @@
 package com.drinkit.money.forex.spi
 
-import com.drinkit.money.Currency
-import com.drinkit.money.forex.core.ExchangeRate
+import com.drinkit.money.core.Currency
+import com.drinkit.money.core.ExchangeRate
 
 class InMemoryExchangeRates : ExchangeRates {
 

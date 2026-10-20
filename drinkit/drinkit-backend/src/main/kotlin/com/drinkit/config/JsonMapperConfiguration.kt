@@ -9,7 +9,7 @@ import tools.jackson.module.kotlin.KotlinFeature
 import tools.jackson.module.kotlin.kotlinModule
 
 @Configuration
-class JsonMapperConfiguration {
+internal class JsonMapperConfiguration {
 
     @Bean
     fun drinkitJsonMapperBuilderCustomizer(jacksonModules: List<JacksonModule>) =

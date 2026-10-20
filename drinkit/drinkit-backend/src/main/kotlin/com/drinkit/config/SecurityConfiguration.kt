@@ -11,7 +11,7 @@ import org.springframework.security.web.context.SecurityContextRepository
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfiguration {
+internal class SecurityConfiguration {
 
     @Bean
     @Throws(Exception::class)

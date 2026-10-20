@@ -1,6 +1,5 @@
 package com.drinkit.user
 
-import com.drinkit.common.Author
 import com.drinkit.common.GenerateId
 import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.cqrs.Command
@@ -13,6 +12,7 @@ import com.drinkit.user.CreateNewUser.Result.UserCreated
 import com.drinkit.user.UserCreationDecider.Decision.EmailAlreadyExists
 import com.drinkit.user.UserCreationDecider.Decision.EventToPersist
 import com.drinkit.user.UserCreationDecider.Decision.ValidationFailed
+import com.drinkit.user.core.Author
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.EncodedPassword
 import com.drinkit.user.core.Initialized
