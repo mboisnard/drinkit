@@ -6,7 +6,7 @@ DrinkIt's architecture rules are tests: breaking one fails `./gradlew build`, wi
 ./gradlew :architecture-tests:test
 ```
 
-`./gradlew build` runs them, as CI does.
+`./gradlew build` runs them, as CI does, and so does Claude Code's compile hook at the end of a turn that changed Kotlin sources, which hands a broken rule back to Claude.
 
 ## How a rule is written
 

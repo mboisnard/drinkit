@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# Claude Code hook on SessionStart and Stop: when a turn changed Kotlin or frontend sources, compiles or type checks
-# them and hands the errors back to Claude. A state checked once, pass or fail, is never checked again: no loop.
+# Claude Code hook on SessionStart and Stop: when a turn changed Kotlin sources, compiles them and runs the architecture
+# tests, or type checks changed frontend sources, and hands the errors back. A state is checked once: no loop.
 
 command -v jq >/dev/null 2>&1 || exit 0
 
@@ -52,10 +52,22 @@ needs_check() {
 }
 
 compile_kotlin() {
-    output=$(cd "$root" && ./gradlew compileTestKotlin --console=plain 2>&1) && return
+    set -- compileTestKotlin
+    [ -f "$root/architecture-tests/build.gradle.kts" ] && set -- "$@" :architecture-tests:test
+    output=$(cd "$root" && ./gradlew "$@" --console=plain 2>&1) && return
     found=$(printf '%s\n' "$output" | grep '^e: ' | head -n 30)
-    [ -n "$found" ] || found=$(printf '%s\n' "$output" | tail -n 30)
-    printf 'The Kotlin code no longer compiles:\n%s\n' "$found"
+    if [ -n "$found" ]; then
+        printf 'The Kotlin code no longer compiles:\n%s\n' "$found"
+        return
+    fi
+    # A broken rule prints its id, then its reason and fix on the next line, then each violation
+    found=$(printf '%s\n' "$output" | awk '/ Rule: /{print; getline; print; next} /Message: |File: /' |
+        sed 's/^ *//; s/^java.lang.AssertionError: //' | head -n 30)
+    if [ -n "$found" ]; then
+        printf 'An architecture rule is broken:\n%s\n' "$found"
+        return
+    fi
+    printf 'The Kotlin build fails:\n%s\n' "$(printf '%s\n' "$output" | tail -n 30)"
 }
 
 type_check_app() {
