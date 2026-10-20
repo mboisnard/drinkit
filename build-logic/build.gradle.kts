@@ -25,6 +25,7 @@ dependencies {
     implementation(pluginLibs.idea.settings.plugin)
     implementation(pluginLibs.jooq.codegen.gradle.plugin)
     implementation(pluginLibs.jooq.meta)
+    implementation(pluginLibs.konture.plugin)
     implementation(pluginLibs.ksp.plugin)
     implementation(pluginLibs.openapi.generator.plugin)
     implementation(pluginLibs.spring.boot.gradle.plugin)

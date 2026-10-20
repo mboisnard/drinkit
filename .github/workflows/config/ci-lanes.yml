@@ -21,6 +21,7 @@ backend: &backend
   - 'drinkit/drinkit-infra/src/**'
   - 'tech-starters/backend/*/src/**'
   - 'deployment/updater/src/**'
+  - 'architecture-tests/src/**'
 
 frontend: &frontend
   - *workflows

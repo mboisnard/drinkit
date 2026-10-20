@@ -80,6 +80,16 @@ and `gradle/platform` is a Java platform.
 - Generates the jOOQ classes from a running PostgreSQL into `src/generated/jooq/kotlin`, which is
   committed. Only an explicit `jooqCodegen` runs it, never the build.
 
+### `architecture-tests-convention`
+
+- Applies [Konture](https://github.com/baole/konture) to the root project, which builds the Gradle module
+  graph, and to `architecture-tests`, whose tests read it with the Kotlin sources of every module. Applied
+  from the settings, as Konture's docs do, it would make the tests of every module depend on that graph.
+- Leaves the generated code out of every rule. The rules themselves are listed in
+  [Architecture Tests](../architecture-tests).
+- Empties the sources Konture scans for rules on external libraries, which none of the rules is: listed at
+  configuration time, they made any Kotlin edit discard the configuration cache.
+
 ### `documentation-convention`
 
 - Runs the KSP processor of `documentation-starter`, which writes the domain and tech starter pages of

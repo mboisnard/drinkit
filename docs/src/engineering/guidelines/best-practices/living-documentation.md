@@ -82,7 +82,7 @@ data class User(val id: UserId, val email: Email)
 @Usecase(description = "Registers a new user account")
 @Service
 class RegisterUser(private val users: Users) {
-    operator fun invoke(command: RegisterUserCommand): User { ... }
+    fun invoke(command: RegisterUserCommand): User { ... }
 }
 ```
 

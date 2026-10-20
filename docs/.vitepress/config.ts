@@ -80,6 +80,7 @@ export default withMermaid(
               },
 
               { text: 'Harness', link: 'harness' },
+              { text: 'Architecture Tests', link: 'architecture-tests' },
               { text: 'CI/CD', link: 'ci-cd' },
 
               {
