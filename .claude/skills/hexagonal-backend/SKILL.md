@@ -43,8 +43,8 @@ A use case on the `User` aggregate appends events rather than saving a state: re
 ## Controller and security rule
 
 The controller builds the command from the request, calls the use case, and maps every `Result` case to a
-status with an exhaustive `when`. It calls use cases, never a port: a controller that reads a port directly is
-not a model.
+status with an exhaustive `when`. A plain read with no rule to apply may call the port directly, from a method
+annotated `@Transactional(readOnly = true)`, since a jOOQ adapter demands a running transaction: `UserController`.
 
 Then open `SecurityConfiguration` in `drinkit-backend`. The first matching rule wins, paths are written without
 the `/drinkit` context path, and `/api/**` requires `ROLE_USER`. A new path under `/api/` that a registered user
