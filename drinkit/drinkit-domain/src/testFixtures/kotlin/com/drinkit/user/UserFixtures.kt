@@ -1,13 +1,13 @@
 package com.drinkit.user
 
-import com.drinkit.common.Author
-import com.drinkit.common.Author.Unlogged
 import com.drinkit.common.CorrelationId
-import com.drinkit.common.MockGenerateId
-import com.drinkit.common.SpyMessageSender
+import com.drinkit.common.FakeGenerateId
 import com.drinkit.faker
 import com.drinkit.messaging.SpyPlatformEventPublisher
+import com.drinkit.notification.spi.SpyNotificationSender
 import com.drinkit.test.ControlledClock
+import com.drinkit.user.core.Author
+import com.drinkit.user.core.Author.Unlogged
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.EncodedPassword
 import com.drinkit.user.core.Initialized
@@ -16,8 +16,8 @@ import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserHistory
 import com.drinkit.user.core.UserId
-import com.drinkit.user.spi.InMemoryUserEventsStore
-import com.drinkit.user.spi.InMemoryUsersRepository
+import com.drinkit.user.spi.InMemoryUserEvents
+import com.drinkit.user.spi.InMemoryUsers
 import com.drinkit.user.spi.InMemoryVerificationTokens
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -25,13 +25,13 @@ import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 class UserFixtures(
-    val generateId: MockGenerateId = MockGenerateId(),
+    val generateId: FakeGenerateId = FakeGenerateId(),
     val controlledClock: ControlledClock = ControlledClock(),
     val spyEventPublisher: SpyPlatformEventPublisher = SpyPlatformEventPublisher(),
-    val spyMessageSender: SpyMessageSender = SpyMessageSender(),
+    val spyNotificationSender: SpyNotificationSender = SpyNotificationSender(),
 ) {
-    val users = InMemoryUsersRepository()
-    val userEvents = InMemoryUserEventsStore(users)
+    val users = InMemoryUsers()
+    val userEvents = InMemoryUserEvents(users)
     val verificationTokens = InMemoryVerificationTokens()
 
     val createNewUser = CreateNewUser(
@@ -49,7 +49,7 @@ class UserFixtures(
         userEvents = userEvents,
         generateVerificationToken = generateVerificationToken,
         verificationTokens = verificationTokens,
-        messageSender = spyMessageSender,
+        notificationSender = spyNotificationSender,
     )
 
     val confirmVerificationToken = ConfirmVerificationToken(

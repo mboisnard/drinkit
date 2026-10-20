@@ -1,6 +1,5 @@
 package com.drinkit.user
 
-import com.drinkit.common.Author
 import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.cqrs.Command
 import com.drinkit.documentation.event.sourcing.Aggregate
@@ -14,6 +13,7 @@ import com.drinkit.user.ProfileCompletionDecider.Decision.AlreadyCompleted
 import com.drinkit.user.ProfileCompletionDecider.Decision.EventToPersist
 import com.drinkit.user.ProfileCompletionDecider.Decision.Unauthorized
 import com.drinkit.user.ProfileCompletionDecider.Decision.ValidationFailed
+import com.drinkit.user.core.Author
 import com.drinkit.user.core.ProfileCompleted
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.User

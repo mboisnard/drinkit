@@ -6,10 +6,10 @@ import com.drinkit.configuration.get
 import com.drinkit.configuration.getOrSetDefault
 import com.drinkit.configuration.getOrThrow
 import com.drinkit.configuration.set
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 internal abstract class ConfigurationsTestContract {
 
@@ -104,7 +104,7 @@ internal abstract class ConfigurationsTestContract {
 
     @Test
     fun `throws exception when configuration does not exist and getOrThrow is used`() {
-        assertThrows<NoSuchElementException> {
+        shouldThrow<NoSuchElementException> {
             repository.getOrThrow(TestKey.Feature1)
         }
     }

@@ -1,6 +1,5 @@
 package com.drinkit.user
 
-import com.drinkit.common.Author
 import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.cqrs.Command
 import com.drinkit.documentation.fcis.FunctionalCore
@@ -14,6 +13,7 @@ import com.drinkit.user.VerificationTokenDecider.Decision.AlreadyVerified
 import com.drinkit.user.VerificationTokenDecider.Decision.EventToPersist
 import com.drinkit.user.VerificationTokenDecider.Decision.Expired
 import com.drinkit.user.VerificationTokenDecider.Decision.Unauthorized
+import com.drinkit.user.core.Author
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserDecision
 import com.drinkit.user.core.UserId

@@ -1,9 +1,9 @@
 package com.drinkit.money.forex.spi
 
-import com.drinkit.money.Currency.EUR
-import com.drinkit.money.Currency.GBP
-import com.drinkit.money.Currency.USD
-import com.drinkit.money.forex.core.ExchangeRate
+import com.drinkit.money.core.Currency.EUR
+import com.drinkit.money.core.Currency.GBP
+import com.drinkit.money.core.Currency.USD
+import com.drinkit.money.core.ExchangeRate
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal

@@ -2,17 +2,19 @@ package com.drinkit.cellar
 
 import com.drinkit.cellar.core.CellarId
 import com.drinkit.cellar.spi.Cellars
+import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.user.core.User
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Usecase
 class DeleteCellar(private val cellars: Cellars) {
     private val logger = KotlinLogging.logger { }
 
     @Transactional
-    operator fun invoke(cellarId: CellarId, connectedUser: User) {
+    fun invoke(cellarId: CellarId, connectedUser: User) {
         val cellar = cellars.findById(cellarId) ?: error("Cellar not found")
 
         if (cellar.canBeSeenBy(connectedUser)) {

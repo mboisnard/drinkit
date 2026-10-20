@@ -1,9 +1,9 @@
 package com.drinkit.money.forex
 
 import com.drinkit.documentation.clean.architecture.Usecase
-import com.drinkit.money.Currency
-import com.drinkit.money.forex.core.ExchangeRate
-import com.drinkit.money.forex.core.ExchangeRate.Companion.EXCHANGE_RATE_SCALE_PRECISION
+import com.drinkit.money.core.Currency
+import com.drinkit.money.core.ExchangeRate
+import com.drinkit.money.core.ExchangeRate.Companion.EXCHANGE_RATE_SCALE_PRECISION
 import com.drinkit.money.forex.spi.ExchangeRates
 import com.drinkit.utils.safelyDivide
 import io.github.oshai.kotlinlogging.KotlinLogging

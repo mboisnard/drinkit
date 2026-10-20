@@ -1,6 +1,5 @@
 package com.drinkit.user.core
 
-import com.drinkit.common.Author
 import com.drinkit.documentation.event.sourcing.Aggregate
 import com.drinkit.event.sourcing.EventsReducer
 import com.drinkit.event.sourcing.SequenceId

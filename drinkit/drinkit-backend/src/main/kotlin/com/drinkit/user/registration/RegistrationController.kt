@@ -4,7 +4,6 @@ import com.drinkit.api.generated.api.RegistrationApi
 import com.drinkit.api.generated.model.CompleteUserInformationRequest
 import com.drinkit.api.generated.model.ConfirmEmailRequest
 import com.drinkit.api.generated.model.CreateUserRequest
-import com.drinkit.common.Author
 import com.drinkit.common.CorrelationId
 import com.drinkit.config.AbstractApi
 import com.drinkit.security.AuthenticationService
@@ -18,6 +17,7 @@ import com.drinkit.user.CreateNewUser.Result.UserCreated
 import com.drinkit.user.CreateNewUserCommand
 import com.drinkit.user.SendVerificationToken
 import com.drinkit.user.SendVerificationTokenCommand
+import com.drinkit.user.core.Author
 import com.drinkit.user.core.BirthDate
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.EncodedPassword

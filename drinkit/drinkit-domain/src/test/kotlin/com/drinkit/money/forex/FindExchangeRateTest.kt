@@ -1,8 +1,8 @@
 package com.drinkit.money.forex
 
-import com.drinkit.money.Currency.EUR
-import com.drinkit.money.Currency.GBP
-import com.drinkit.money.Currency.USD
+import com.drinkit.money.core.Currency.EUR
+import com.drinkit.money.core.Currency.GBP
+import com.drinkit.money.core.Currency.USD
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should

@@ -16,7 +16,7 @@ private val EMITTER_TIMEOUT = Duration.ofMinutes(3)
 
 @TechStarterTool
 @RestController("/sse")
-internal class SseApi(private val emitters: InMemoryEmittersRepository) {
+internal class SseApi(private val emitters: InMemoryEmitters) {
     private val logger = KotlinLogging.logger { }
 
     @GetMapping("/event-stream", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])

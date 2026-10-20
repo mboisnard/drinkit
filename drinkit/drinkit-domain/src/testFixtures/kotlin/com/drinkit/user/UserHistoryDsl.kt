@@ -1,6 +1,6 @@
 package com.drinkit.user
 
-import com.drinkit.common.Author
+import com.drinkit.user.core.Author
 import com.drinkit.user.core.UserDecision
 import com.drinkit.user.core.UserEvent
 import com.drinkit.user.core.UserHistory

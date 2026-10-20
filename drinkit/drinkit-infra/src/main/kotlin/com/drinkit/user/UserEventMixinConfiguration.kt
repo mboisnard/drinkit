@@ -1,6 +1,6 @@
 package com.drinkit.user
 
-import com.drinkit.common.Author
+import com.drinkit.user.core.Author
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import org.springframework.context.annotation.Bean

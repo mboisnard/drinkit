@@ -161,11 +161,11 @@ featureFlags.isEnabled("feature-x", FeatureFlagContext(userId = otherUserId))
 
 ### 3. Use in Tests (testFixtures)
 
-`MockFeatureFlags` provides an in-memory store with state inspection and evaluation tracking:
+`InMemoryFeatureFlags` provides an in-memory store with state inspection and evaluation tracking:
 
 ```kotlin
 class CheckoutServiceTest {
-    private val featureFlags = MockFeatureFlags()
+    private val featureFlags = InMemoryFeatureFlags()
     private val service = CheckoutService(featureFlags)
 
     @Test
@@ -187,7 +187,7 @@ class CheckoutServiceTest {
     }
 
     @Test
-    fun `inspect mock state`() {
+    fun `inspect the in-memory state`() {
         featureFlags.configure("feature-a", enabled = true)
         featureFlags.configure("feature-b", enabled = false)
 

@@ -1,11 +1,11 @@
 package com.drinkit.cellar
 
 import com.drinkit.cellar.spi.InMemoryCellars
-import com.drinkit.common.MockGenerateId
+import com.drinkit.common.FakeGenerateId
 import com.drinkit.messaging.SpyPlatformEventPublisher
 import com.drinkit.test.ControlledClock
 
-class CellarFixtures(val generateId: MockGenerateId = MockGenerateId()) {
+class CellarFixtures(val generateId: FakeGenerateId = FakeGenerateId()) {
     val spyEventPublisher = SpyPlatformEventPublisher()
 
     val controlledClock = ControlledClock()

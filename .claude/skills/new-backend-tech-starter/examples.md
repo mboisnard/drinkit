@@ -1,6 +1,6 @@
 # Tech starter examples
 
-Shapes for the `new-backend-tech-starter` skill, written for an imaginary `notification-starter`. Rename
+Shapes for the `new-backend-tech-starter` skill, written for an imaginary `sms-starter`. Rename
 everything, keep only what the starter needs, and check every import against the code and the jars.
 
 ## Module layout
@@ -66,12 +66,12 @@ dependencies {
 
 ## Auto-configuration
 
-`src/main/kotlin/com/drinkit/notification/infra/NotificationAutoConfiguration.kt`:
+`src/main/kotlin/com/drinkit/sms/infra/SmsAutoConfiguration.kt`:
 
 ```kotlin
-package com.drinkit.notification.infra
+package com.drinkit.sms.infra
 
-import com.drinkit.notification.NotificationSender
+import com.drinkit.sms.SmsSender
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -81,21 +81,21 @@ import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
 @ConditionalOnClass(SomeVendorClient::class)
-@ConditionalOnProperty(prefix = "starters.notification", name = ["enabled"], matchIfMissing = true)
-@EnableConfigurationProperties(NotificationProperties::class)
-internal class NotificationAutoConfiguration {
+@ConditionalOnProperty(prefix = "starters.sms", name = ["enabled"], matchIfMissing = true)
+@EnableConfigurationProperties(SmsProperties::class)
+internal class SmsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun notificationSender(properties: NotificationProperties): NotificationSender =
-        DefaultNotificationSender(properties.endpoint, properties.timeout)
+    fun smsSender(properties: SmsProperties): SmsSender =
+        DefaultSmsSender(properties.endpoint, properties.timeout)
 }
 ```
 
 `src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`:
 
 ```
-com.drinkit.notification.infra.NotificationAutoConfiguration
+com.drinkit.sms.infra.SmsAutoConfiguration
 ```
 
 An optional integration, such as an actuator health indicator or a servlet filter, goes in a nested
@@ -105,13 +105,13 @@ An optional integration, such as an actuator health indicator or a servlet filte
 ## Configuration properties
 
 ```kotlin
-package com.drinkit.notification.infra
+package com.drinkit.sms.infra
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.time.Duration
 
-@ConfigurationProperties(prefix = "starters.notification")
-internal data class NotificationProperties(
+@ConfigurationProperties(prefix = "starters.sms")
+internal data class SmsProperties(
     val enabled: Boolean = true,
     val endpoint: String = "",
     val timeout: Duration = Duration.ofSeconds(5),
@@ -123,7 +123,7 @@ internal data class NotificationProperties(
 
 ## Defaults for Spring's own properties
 
-`src/main/resources/META-INF/drinkit/notification-defaults.yml`:
+`src/main/resources/META-INF/drinkit/sms-defaults.yml`:
 
 ```yaml
 spring:
@@ -133,7 +133,7 @@ spring:
 ```
 
 ```kotlin
-package com.drinkit.notification.infra
+package com.drinkit.sms.infra
 
 import org.springframework.boot.EnvironmentPostProcessor
 import org.springframework.boot.SpringApplication
@@ -141,15 +141,15 @@ import org.springframework.boot.env.YamlPropertySourceLoader
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.io.ClassPathResource
 
-internal class NotificationDefaultsEnvironmentPostProcessor : EnvironmentPostProcessor {
+internal class SmsDefaultsEnvironmentPostProcessor : EnvironmentPostProcessor {
 
     override fun postProcessEnvironment(environment: ConfigurableEnvironment, application: SpringApplication) {
-        val resource = ClassPathResource("META-INF/drinkit/notification-defaults.yml")
+        val resource = ClassPathResource("META-INF/drinkit/sms-defaults.yml")
         if (!resource.exists()) return
 
         // addLast gives the lowest precedence: application.yml, env vars and CLI args all override these
         YamlPropertySourceLoader()
-            .load("notification-starter-defaults", resource)
+            .load("sms-starter-defaults", resource)
             .forEach { environment.propertySources.addLast(it) }
     }
 }
@@ -159,7 +159,7 @@ internal class NotificationDefaultsEnvironmentPostProcessor : EnvironmentPostPro
 
 ```
 org.springframework.boot.EnvironmentPostProcessor=\
-com.drinkit.notification.infra.NotificationDefaultsEnvironmentPostProcessor
+com.drinkit.sms.infra.SmsDefaultsEnvironmentPostProcessor
 ```
 
 ## Several implementations
@@ -170,24 +170,24 @@ implementation, such as several clients, the public API exposes a factory instea
 
 ```kotlin
 @AutoConfiguration
-@EnableConfigurationProperties(NotificationProperties::class)
-internal class NotificationAutoConfiguration {
+@EnableConfigurationProperties(SmsProperties::class)
+internal class SmsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "starters.notification", name = ["provider"], havingValue = "vendor")
-    fun vendorNotificationSender(properties: NotificationProperties): NotificationSender =
-        VendorNotificationSender(properties)
+    @ConditionalOnProperty(prefix = "starters.sms", name = ["provider"], havingValue = "vendor")
+    fun vendorSmsSender(properties: SmsProperties): SmsSender =
+        VendorSmsSender(properties)
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(
-        prefix = "starters.notification",
+        prefix = "starters.sms",
         name = ["provider"],
         havingValue = "default",
         matchIfMissing = true,
     )
-    fun loggingNotificationSender(): NotificationSender = LoggingNotificationSender()
+    fun loggingSmsSender(): SmsSender = LoggingSmsSender()
 }
 ```
 
@@ -195,14 +195,14 @@ internal class NotificationAutoConfiguration {
 
 ```kotlin
 @Transactional(propagation = Propagation.MANDATORY)
-internal class JooqNotificationOutbox(private val dsl: DSLContext) : NotificationOutbox { … }
+internal class JooqSmsOutbox(private val dsl: DSLContext) : SmsOutbox { … }
 ```
 
 ## Test fixtures
 
 - In-memory, when the starter holds state: `InMemoryConfigurations` in `configuration-starter`.
 - Spy, when it only produces side effects: `SpyEmailSender` in `mail-starter`.
-- Programmable, when a test steers its behaviour: `MockFeatureFlags` in `feature-flags-starter`, written by hand
+- Programmable, when a test steers its behaviour: `InMemoryFeatureFlags` in `feature-flags-starter`, written by hand
   like the others.
 - A JUnit extension and its meta-annotation, when consumers need the real infrastructure:
   `MeilisearchExtension` and `@MeilisearchIntegrationTest` in `search-engine-starter`.
@@ -213,37 +213,37 @@ The behaviour contract: `ConfigurationsTestContract`, run by `InMemoryConfigurat
 ## Wiring test
 
 ```kotlin
-internal class NotificationAutoConfigurationTest {
+internal class SmsAutoConfigurationTest {
 
     private val runner = ApplicationContextRunner()
-        .withConfiguration(AutoConfigurations.of(NotificationAutoConfiguration::class.java))
+        .withConfiguration(AutoConfigurations.of(SmsAutoConfiguration::class.java))
 
     @Test
     fun `registers the default sender`() {
         runner.run { context ->
-            context.getBean(NotificationSender::class.java).shouldBeInstanceOf<LoggingNotificationSender>()
+            context.getBean(SmsSender::class.java).shouldBeInstanceOf<LoggingSmsSender>()
         }
     }
 
     @Test
     fun `backs off when the application declares its own bean`() {
-        runner.withBean(NotificationSender::class.java, { SpyNotificationSender() })
+        runner.withBean(SmsSender::class.java, { SpySmsSender() })
             .run { context ->
-                context.getBean(NotificationSender::class.java).shouldBeInstanceOf<SpyNotificationSender>()
+                context.getBean(SmsSender::class.java).shouldBeInstanceOf<SpySmsSender>()
             }
     }
 
     @Test
     fun `registers nothing when disabled`() {
-        runner.withPropertyValues("starters.notification.enabled=false")
-            .run { context -> context.containsBean("notificationSender") shouldBe false }
+        runner.withPropertyValues("starters.sms.enabled=false")
+            .run { context -> context.containsBean("smsSender") shouldBe false }
     }
 
     @Test
     fun `selects the vendor implementation`() {
-        runner.withPropertyValues("starters.notification.provider=vendor")
+        runner.withPropertyValues("starters.sms.provider=vendor")
             .run { context ->
-                context.getBean(NotificationSender::class.java).shouldBeInstanceOf<VendorNotificationSender>()
+                context.getBean(SmsSender::class.java).shouldBeInstanceOf<VendorSmsSender>()
             }
     }
 }
