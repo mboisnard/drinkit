@@ -32,7 +32,7 @@ dependencies {
         api(libs.cucumber.java)
         api(libs.cucumber.junit)
         api(libs.cucumber.spring)
-        api(libs.io.rest.assured)
+        api(libs.rest.assured)
         api(libs.konture)
         api(libs.kotest.assertions.core)
         api(libs.kotlin.faker)

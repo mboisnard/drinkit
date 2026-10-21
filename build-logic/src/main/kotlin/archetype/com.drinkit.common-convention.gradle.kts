@@ -32,7 +32,7 @@ dependencies {
 // The toolchain is the single source of truth for the Java version: the Kotlin plugin derives its
 // own jvmTarget from it, and java.sourceCompatibility becomes redundant
 kotlin {
-    jvmToolchain(libs.findVersion("java").get().requiredVersion.toInt())
+    jvmToolchain(libs.findVersion("jdk").get().requiredVersion.toInt())
 
     compilerOptions {
         // Null safety management https://docs.spring.io/spring-boot/reference/features/kotlin.html
