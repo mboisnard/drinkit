@@ -18,7 +18,7 @@ val enabledDetektTasks =
 
 dependencies {
     // Formatting rules, versioned off the tool so they cannot drift from the engine running them
-    detektPlugins("dev.detekt:detekt-rules-ktlint-wrapper:${detekt.toolVersion.get()}")
+    addProvider("detektPlugins", detekt.toolVersion.map { "dev.detekt:detekt-rules-ktlint-wrapper:$it" })
 }
 
 detekt {

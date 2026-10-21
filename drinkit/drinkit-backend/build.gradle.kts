@@ -15,21 +15,21 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
-    openApiInput(project(":drinkit-api-contract", "openApi"))
+    openApiInput(project(":drinkit-api-contract"))
 }
 
 openApiGenerate {
     apiPackage.set("com.drinkit.api.generated.api")
     modelPackage.set("com.drinkit.api.generated.model")
 
-    typeMappings.set(
-        typeMappings.get() + mapOf(
+    typeMappings.putAll(
+        mapOf(
             "string+cellar-id" to "CellarId",
             "string+user-id" to "UserId",
         ),
     )
-    importMappings.set(
-        importMappings.get() + mapOf(
+    importMappings.putAll(
+        mapOf(
             "CellarId" to "com.drinkit.cellar.core.CellarId",
             "UserId" to "com.drinkit.user.core.UserId",
         ),

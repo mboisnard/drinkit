@@ -11,7 +11,9 @@ plugins {
 // The Java version used to build the convention plugins themselves. It comes from the same catalog
 // entry as the one the conventions apply to the application, so both stay in sync
 kotlin {
-    jvmToolchain(libs.versions.java.get().toInt())
+    jvmToolchain {
+        languageVersion = libs.versions.java.map(JavaLanguageVersion::of)
+    }
 }
 
 dependencies {

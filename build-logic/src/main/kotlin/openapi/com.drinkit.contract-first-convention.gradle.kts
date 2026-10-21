@@ -10,16 +10,18 @@ dependencies {
 }
 
 // Gradle role-based configurations: `dependencyScope` receives the declared dependencies
-// (see `openApiInput(project(...))` in consuming modules), `resolvable` is what actually gets resolved
-// https://docs.gradle.org/current/userguide/declaring_configurations.html
+// (see `openApiInput(project(...))` in consuming modules), `resolvable` is what actually gets resolved, the variant
+// its category selects. https://docs.gradle.org/current/userguide/declaring_configurations.html
 val openApiInput = configurations.dependencyScope("openApiInput")
 val openApiInputPath = configurations.resolvable("openApiInputPath") {
-    extendsFrom(openApiInput.get())
+    extendsFrom(openApiInput)
+    attributes { attribute(Category.CATEGORY_ATTRIBUTE, objects.named(OPENAPI_CONTRACT_CATEGORY)) }
 }
 
 val openApiCommonTemplates = configurations.dependencyScope("openApiCommonTemplates")
 val openApiCommonTemplatesPath = configurations.resolvable("openApiCommonTemplatesPath") {
-    extendsFrom(openApiCommonTemplates.get())
+    extendsFrom(openApiCommonTemplates)
+    attributes { attribute(Category.CATEGORY_ATTRIBUTE, objects.named(OPENAPI_TEMPLATES_CATEGORY)) }
 }
 
 val generatedSources = layout.buildDirectory.dir("generated-sources/openapi/src/main/kotlin")
@@ -63,10 +65,10 @@ openApiGenerate {
 }
 
 tasks.openApiGenerate {
-    val openApiInputFiles = openApiInputPath.get()
-    if (openApiInputFiles.files.isNotEmpty()) {
-        inputSpec.set("${openApiInputFiles.singleFile.path}/api-definition.yaml")
-    }
+    // Resolved only when the task needs it, never while the build is configured
+    inputSpec.fileProvider(
+        openApiInputPath.flatMap { it.elements }.map { it.single().asFile.resolve("api-definition.yaml") },
+    )
 
     inputs.files(openApiInputPath)
     inputs.files(openApiCommonTemplatesPath)
