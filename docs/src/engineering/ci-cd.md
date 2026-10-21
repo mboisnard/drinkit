@@ -8,7 +8,7 @@ flowchart LR
   master([Push to master]) --> decision
   weekly([Weekly or manual run]) --> decision
   decision{Decision<br/>which lanes changed,<br/>all on an unknown file}
-  decision -- ci --> cifiles[CI files<br/>actionlint, zizmor]
+  decision -- workflows --> cifiles[CI files<br/>actionlint, zizmor]
   decision -- backend --> backend[Backend<br/>build, tests, detekt]
   decision -- backend --> codeql[CodeQL<br/>not blocking]
   decision -- frontend --> frontend[Frontend<br/>Nuxt build]
@@ -63,7 +63,7 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 | Job | Runs when | What it does | Blocks the merge |
 |---|---|---|---|
 | `Decision` | always | Sorts the changed files into lanes | through the gate |
-| `CI files` | ci | [actionlint][actionlint] checks the syntax, the expressions, the action inputs and, with ShellCheck, the `run:` scripts. [zizmor][zizmor] audits the security of the workflows and the composite action. A finding of either fails the job | yes |
+| `CI files` | workflows | [actionlint][actionlint] checks the syntax, the expressions, the action inputs and, with ShellCheck, the `run:` scripts. [zizmor][zizmor] audits the security of the workflows and the composite action. A finding of either fails the job | yes |
 | `Backend` | backend | `./gradlew build detektAll`: compiles, tests, runs detekt once and publishes its findings to code scanning. Keeps the test reports when it fails | yes |
 | `CodeQL` | backend | Security analysis of the Kotlin and Java code with the `security-extended` queries | no |
 | `Frontend` | frontend | `npm ci`, generates the API client, `nuxt build` | yes |
@@ -79,7 +79,7 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 
 ## When security analysis runs
 
-- **CodeQL** runs on pull requests and master pushes that touch the backend, and every week on everything. This is GitHub's own cadence for code scanning, minus the changes it cannot affect. It does not block the merge: its alerts show on the pull request and in the Security tab. One thing to watch: Kotlin 2.4.20 is the newest version CodeQL supports, so a Kotlin upgrade from Renovate can make the job fail until CodeQL catches up.
+- **CodeQL** runs on pull requests and master pushes that touch the backend, and every week on everything. This is GitHub's own cadence for code scanning, minus the changes it cannot affect. It does not block the merge: its alerts show on the pull request and in the Security tab. One thing to watch: CodeQL supports a Kotlin release some time after it ships, so a Kotlin upgrade from Renovate can make the job fail until CodeQL catches up.
 - **detekt** runs inside `Backend`, so a finding blocks the merge.
 - **zizmor** runs on pull requests and master pushes that touch the CI, and every week. It looks for template injection, broad permissions, persisted credentials, unpinned or impostor actions and actions with a known vulnerability. A finding blocks the merge.
 - **The dependency review** compares the dependencies of the pull request with those of its base commit. It fails on any known vulnerability, in runtime and development dependencies alike, since Nuxt and the docs site are development dependencies that still end up in what is served.
