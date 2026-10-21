@@ -70,6 +70,13 @@
       "rebaseWhen": "behind-base-branch"
     },
     {
+      "description": "The image that validates this file releases several times a day. Its pull request runs the new image on this file before it merges itself",
+      "matchPackageNames": ["ghcr.io/renovatebot/renovate"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "rebaseWhen": "behind-base-branch"
+    },
+    {
       "matchCategories": ["java"],
       "addLabels": ["gradle"]
     },

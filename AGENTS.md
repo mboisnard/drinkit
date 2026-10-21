@@ -40,12 +40,14 @@ npm run build
 Documentation site: `./gradlew kspKotlin --rerun` first, which writes the generated pages, then from
 `docs`: `npm ci && npm run docs:build`.
 
-Compose file and workflows, from the root, with Docker:
+Compose file, workflows and Renovate configuration, from the root, with Docker:
 
 ```
 docker compose -f deployment/local/compose.yml config --quiet
+docker compose -f deployment/local/compose.yml up --detach --wait   # the dev services, until each healthcheck passes
 docker run --rm -v "$PWD:/repo:ro" -w /repo "$(grep -o 'ghcr.io/[^ ]*actionlint[^ ]*' .github/workflows/ci-workflows.yml)"
 docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/zizmorcore/zizmor --offline .
+docker run --rm -v "$PWD:/repo:ro" -w /repo "$(grep -o 'ghcr.io/renovatebot/renovate[^ ]*' .github/workflows/ci-renovate.yml)" renovate-config-validator --strict --no-global .github/renovate.json
 ```
 
 Hooks, from the root, with Node and `jq`: `npm cit --prefix .hooks` runs every bats suite under `sh`, and

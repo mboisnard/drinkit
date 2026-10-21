@@ -91,13 +91,14 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 | Part | What it does | Where | Since |
 |---|---|---|---|
 | `CI gate` | The only required check. Fails when a lane failed or was cancelled, passes when a lane was not needed | [`ci.yml`][ci-yml] | 2026-10-01 |
-| `Decision` | Maps the changed files to the workflows, backend, frontend, hooks, docs, ops and dependencies lanes. A file no list knows runs every lane | [`ci-lanes.yml`][ci-lanes] | 2026-10-01 |
+| `Decision` | Maps the changed files to the workflows, backend, frontend, hooks, docs, ops, renovate and dependencies lanes. A file no list knows runs every lane | [`ci-lanes.yml`][ci-lanes] | 2026-10-01 |
 | `CI files` | actionlint checks that the workflows are valid and zizmor audits their security, whenever they change. A finding blocks the merge | [`ci-workflows.yml`][ci-workflows-yml] | 2026-10-02 |
 | `Backend` | Compiles and tests the backend and runs detekt in one Gradle run, findings in code scanning | [`ci-backend.yml`][ci-backend-yml] | 2024-03-03 as `build`, detekt in the same run since 2026-10-01 |
 | `CodeQL` | Looks for security flaws in the Kotlin and Java code, results in code scanning. Not required | [`ci-codeql.yml`][ci-codeql-yml] | 2024-03-25, off from 2026-09-13 to 2026-09-26 |
 | `Frontend` | Generates the API client and builds the Nuxt app | [`ci-frontend.yml`][ci-frontend-yml] | 2026-10-01 |
 | `Hooks` | ShellCheck on the hooks, their bats suites under dash, `bash --posix` and macOS `sh`, and the harness check: a suite for each hook, settings commands that run an existing hook with a timeout, skill `paths:` globs that match tracked files, relative links under `.claude/` that lead to a file | [`ci-hooks.yml`][ci-hooks-yml], [`harness.bats`][harness-bats] | 2026-10-05 |
-| `Ops` | Validates the local compose file | [`ci-ops.yml`][ci-ops-yml] | 2026-10-01 |
+| `Ops` | Validates the local compose file, pulls its images and starts the services until each healthcheck passes | [`ci-ops.yml`][ci-ops-yml] | 2026-10-01, images pulled and started since 2026-10-22 |
+| `Renovate` | Runs Renovate's own validator on its configuration, which decides what merges without a review | [`ci-renovate.yml`][ci-renovate-yml] | 2026-10-22 |
 | `Docs` and `Deploy docs` | Generate the living documentation and build the site on pull requests, deploy that build from master | [`ci-docs.yml`][ci-docs-yml], [`cd-docs.yml`][cd-docs-yml] | deployed since 2025-07-03, built on pull requests since 2026-10-01 |
 | `Dependencies`: graph submission | Sends the Gradle dependency graph to GitHub for every master commit and for pull requests that change dependencies | [`ci-dependencies.yml`][ci-dependencies-yml] | 2024-03-25, nothing sent from 2025-01-25 to 2026-09-27 |
 | `Dependencies`: review | Fails a pull request that adds a dependency with a known vulnerability | [`ci-dependencies.yml`][ci-dependencies-yml] | 2026-10-01 |
@@ -113,7 +114,7 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 | Workflow token | Read-only by default, each workflow asks for what it needs | Repository settings | Not recorded |
 | Fork pull requests | Workflows of every external contributor wait for approval | Repository settings | 2026-10-02, first-time contributors only before |
 | Pinned actions | A workflow that references an action by tag or branch does not start: every action is pinned by commit SHA, in-repo ones with `$/` | Repository settings | 2026-10-02 |
-| Renovate | Opens dependency update pull requests a week after a release, on Monday mornings, and pins GitHub Actions and compose images by digest. Security fixes and undated releases (JDK, large Docker Hub images) skip the wait. Majors and lock file refreshes wait for a checkbox on the Dependency Dashboard. GitHub Actions minor and patch updates, grouped in one pull request, and new digests of an image tag merge themselves once `CI gate` is green, rebased when behind master. Any other pull request is rebased only on conflict | [`.github/renovate.json`][renovate] | 2024-04-11, delayed since 2026-09-30, rebased on conflict only since 2026-10-01, CI tooling merged automatically since 2026-10-21 |
+| Renovate | Opens dependency update pull requests a week after a release, on Monday mornings, and pins GitHub Actions and compose images by digest. Security fixes and undated releases (JDK, large Docker Hub images) skip the wait. Majors and lock file refreshes wait for a checkbox on the Dependency Dashboard. GitHub Actions minor and patch updates, grouped in one pull request, new digests of an image tag, and minor and patch updates of the Renovate image that validates this configuration merge themselves once `CI gate` is green, rebased when behind master. Any other pull request is rebased only on conflict. The CI validates this configuration with Renovate's own validator, and pulls and starts the compose images | [`.github/renovate.json`][renovate] | 2024-04-11, delayed since 2026-09-30, rebased on conflict only since 2026-10-01, CI tooling merged automatically since 2026-10-21, validated in CI since 2026-10-22 |
 | Dependabot alerts | Flag dependencies with a known vulnerability, which Renovate turns into security updates. Dependabot opens no pull request of its own | Repository settings | Not recorded, its security updates off since 2026-10-01 |
 | Secret scanning and push protection | GitHub refuses a push that contains a known secret format, from git, the web interface or the API, and scans the whole history for secrets already pushed | Repository settings | 2026-10-02 |
 | Private vulnerability reporting | A vulnerability can be reported from the Security tab, without a public issue. `SECURITY.md` points there | Repository settings, [`SECURITY.md`][security-md] | 2026-10-02, policy since 2026-10-03 |
@@ -176,6 +177,7 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [ci-codeql-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-codeql.yml
 [ci-frontend-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-frontend.yml
 [ci-ops-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-ops.yml
+[ci-renovate-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-renovate.yml
 [ci-hooks-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-hooks.yml
 [harness-bats]: https://github.com/mboisnard/drinkit/blob/master/.hooks/tests/harness.bats
 [ci-docs-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-docs.yml

@@ -14,10 +14,11 @@ flowchart LR
   decision -- frontend --> frontend[Frontend<br/>Nuxt build]
   decision -- hooks --> hooks[Hooks<br/>ShellCheck, bats on three shells]
   decision -- docs --> docs[Docs<br/>generate and build]
-  decision -- ops --> ops[Ops<br/>compose check]
+  decision -- ops --> ops[Ops<br/>compose check, pull and start]
+  decision -- renovate --> renovate[Renovate<br/>config validator]
   decision -- dependencies --> submission[Dependencies<br/>submit the graph]
   submission -- pull request --> review[Dependencies<br/>review the additions]
-  cifiles & backend & frontend & hooks & docs & ops & submission & review --> gate[[CI gate<br/>the only required check]]
+  cifiles & backend & frontend & hooks & docs & ops & renovate & submission & review --> gate[[CI gate<br/>the only required check]]
   docs -- master only --> pages[Deploy docs<br/>GitHub Pages]
   gate -.->|next, master only| images[Publish images]
 ```
@@ -30,7 +31,7 @@ flowchart LR
 |---|---|---|
 | [`ci.yml`][ci-yml] | Entry point: triggers, decision, lanes, gate | on pull requests, master pushes, by hand |
 | [`config/ci-lanes.yml`][ci-lanes] | The paths of each lane, in a subfolder since GitHub reads every file at the top as a workflow | by the decision job |
-| `ci-workflows.yml`, `ci-backend.yml`, `ci-frontend.yml`, `ci-hooks.yml`, `ci-ops.yml`, `ci-docs.yml`, `ci-dependencies.yml` | One lane each: what it checks | by `ci.yml`, when the lane changed |
+| `ci-workflows.yml`, `ci-backend.yml`, `ci-frontend.yml`, `ci-hooks.yml`, `ci-ops.yml`, `ci-renovate.yml`, `ci-docs.yml`, `ci-dependencies.yml` | One lane each: what it checks | by `ci.yml`, when the lane changed |
 | `ci-codeql.yml` | The security analysis, outside the gate | by `ci.yml`, with the backend lane |
 | `cd-docs.yml` | A deployment: publishes what a lane built | by `ci.yml`, on master |
 | [`weekly.yml`][weekly-yml] | Starts a full run of `ci.yml` every Monday | on a schedule |
@@ -52,8 +53,9 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 | `.nvmrc` | Frontend, Docs, Hooks | The Node version the three use |
 | A Gradle script or lock file, anything under `gradle/`, a `package.json` or `package-lock.json` | Dependencies, plus the lane the file belongs to | |
 | `deployment/local/**` | Ops | |
+| `.github/renovate.json` | Renovate | It decides what merges without a review |
 | `.hooks/**`, `.claude/**` | Hooks | The hooks live under `.hooks/`, and `.claude/` holds the settings that run them and the skills the harness check reads |
-| Any other `*.md`, `.editorconfig`, `.idea/**`, `.gitignore`, `.git-blame-ignore-revs`, `LICENSE`, `.github/ISSUE_TEMPLATE/**`, `.github/renovate.json`, `.github/rulesets/**` | none | No job reads them: the `none` list. Renovate reads its configuration itself, and the ruleset is applied by hand |
+| Any other `*.md`, `.editorconfig`, `.idea/**`, `.gitignore`, `.git-blame-ignore-revs`, `LICENSE`, `.github/ISSUE_TEMPLATE/**`, `.github/rulesets/**` | none | No job reads them: the `none` list. The ruleset is applied by hand |
 | Anything else: a new folder or module | every lane | No list knows the file, so any lane could depend on it |
 
 ## Jobs
@@ -66,7 +68,8 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 | `CodeQL` | backend | Security analysis of the Kotlin and Java code with the `security-extended` queries | no |
 | `Frontend` | frontend | `npm ci`, generates the API client, `nuxt build` | yes |
 | `Hooks` | hooks | ShellCheck on the hooks and their suites. The bats suites of `.hooks/tests` under dash and `bash --posix` on Linux and under `sh` on macOS, the check of the harness files included: a suite for each hook, settings that run existing hooks, skill globs and relative links that lead somewhere | yes |
-| `Ops` | ops | Validates `deployment/local/compose.yml` | yes |
+| `Ops` | ops | Validates `deployment/local/compose.yml`, pulls its images and starts the services until each healthcheck passes. A digest Renovate merges on its own must exist and start | yes |
+| `Renovate` | renovate | Renovate's `renovate-config-validator --strict` on `.github/renovate.json`, from the Renovate image pinned by digest. A minor or patch update of that image runs here on the configuration, then merges itself | yes |
 | `Docs` | docs | Generates the living documentation, builds the VitePress site, keeps it for the deployment on master | yes |
 | `Deploy docs` | docs, on master | Deploys the site the `Docs` job built | no |
 | `Dependencies` | every master push, pull requests that change dependencies | Submits the Gradle dependency graph to GitHub. On a pull request, then fails when an added dependency has a known vulnerability | yes |
@@ -107,8 +110,10 @@ Most of CodeQL's time used to go to two places. The build conventions were compi
 - **The Node version lives in `.nvmrc`,** read by the CI, nvm and Renovate alike.
 - **The hook tests run on the shells the hooks meet.** The maintainer's macOS runs a hook with bash 3.2 as `sh`, a Linux agent with dash, so the `Hooks` lane runs every suite under dash, `bash --posix` and macOS `sh`.
 - **ShellCheck runs from an image pinned by digest,** not from the runner, whose copy changes with the runner image. Renovate updates the digest.
+- **Renovate's validator runs from Renovate's image pinned by digest,** not through `npx`, which would resolve its dependencies anew on every run. Renovate releases several times a day, so its minor and patch updates merge on their own: the pull request that changes the image runs the new one on `.github/renovate.json` before it merges.
+- **The compose services start in CI.** A digest that merges on its own is pulled and started, and each service has a healthcheck, which `bootRun` also waits for. The tests do not use these images: Testcontainers starts its own, by tag.
 - **Renovate rebases its pull requests only on conflict,** except the ones that merge themselves. Rebasing every open pull request on each master push started up to 22 runs at once, while the repository can run 20 jobs at a time.
-- **CI tooling updates merge themselves.** GitHub Actions minor and patch updates, grouped in one pull request, and new digests of an image tag get GitHub auto-merge, so they merge once `CI gate` is green. The ruleset merges only a branch up to date with master, so Renovate rebases these pull requests when they fall behind, and no other. Application libraries and majors wait for the maintainer.
+- **CI tooling updates merge themselves.** GitHub Actions minor and patch updates, grouped in one pull request, new digests of an image tag, and minor and patch updates of the Renovate image that validates the configuration get GitHub auto-merge, so they merge once `CI gate` is green. The ruleset merges only a branch up to date with master, so Renovate rebases these pull requests when they fall behind, and no other. Application libraries and majors wait for the maintainer.
 
 ## How to
 
@@ -116,7 +121,7 @@ Most of CodeQL's time used to go to two places. The build conventions were compi
 - **Add a folder or a module:** add its paths to its lane in `ci-lanes.yml`, or to `none` if no job reads them. Until then, a change to it runs every lane.
 - **See why a lane ran:** the `Decision` log lists the matching files of each list. When every lane ran, the files under `changed` that are missing under `known` are the unknown ones.
 - **Add an action:** reference it by the full SHA of its release commit, with the version as a comment: `uses: owner/action@<sha> # v1.2.3`. `gh api repos/<owner>/<action>/commits/v1.2.3 --jq .sha` gives the SHA. Renovate then keeps both up to date.
-- **Check the workflows locally:** `docker run --rm -v "$PWD":/w:ro ghcr.io/kjanat/actionlint` for actionlint, which reads `.github/actionlint.yaml`, and `docker run --rm -v "$PWD":/repo:ro -w /repo ghcr.io/zizmorcore/zizmor --offline .` for zizmor.
+- **Check the workflows locally:** `docker run --rm -v "$PWD":/w:ro ghcr.io/kjanat/actionlint` for actionlint, which reads `.github/actionlint.yaml`, and `docker run --rm -v "$PWD":/repo:ro -w /repo ghcr.io/zizmorcore/zizmor --offline .` for zizmor. The Renovate configuration and the compose services: the commands of the "Compose file, workflows and Renovate configuration" block of `AGENTS.md`.
 - **Merge a Renovate pull request that is behind master:** `gh pr update-branch <number> --rebase`, or "Update branch" on the pull request.
 - **Restart the weekly run** after a long pause: `gh workflow enable weekly.yml`.
 

@@ -14,6 +14,12 @@ services:
       POSTGRES_DB: drinkit
       POSTGRES_USER: drinkit
       POSTGRES_PASSWORD: admin
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "localhost", "-U", "drinkit", "-d", "drinkit"]
+      interval: 2s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
 
   meilisearch:
     image: getmeili/meilisearch:v1.55.0@sha256:ff546679970126f8822e15d1b6a06bfbff1f2ce2e43f810cfb5258012f92de5c
@@ -25,6 +31,12 @@ services:
       MEILI_MASTER_KEY: masterKey
       MEILI_NO_ANALYTICS: true
       MEILI_UPGRADE_DB: true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:7700/health"]
+      interval: 2s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
 
   flipt:
     image: flipt/flipt:v2.13.1@sha256:3118adad2f21d2d4793765265e9eb1c99b547019f062ce438430089ba7cea89b
@@ -32,3 +44,9 @@ services:
       - "8082:8080"
     volumes:
       - flipt-data:/var/opt/flipt # TODO change to real path
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8080/health"]
+      interval: 2s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
