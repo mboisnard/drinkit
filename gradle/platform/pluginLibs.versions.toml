@@ -8,7 +8,7 @@ jooq = "3.21.9"
 konture = "1.0.2"
 kotlin = "2.4.20"
 ksp = "2.3.12"
-openapi-generator = "7.25.0"
+openapi-generator = "7.26.0"
 spring-boot = "4.1.1"
 
 [libraries]
