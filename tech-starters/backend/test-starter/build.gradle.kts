@@ -14,7 +14,7 @@ dependencies {
 
     api(libs.kotest.assertions.core)
     api(libs.kotlin.faker)
-    api(libs.io.rest.assured)
+    api(libs.rest.assured)
 
     api("org.springframework.boot:spring-boot-starter-test")
     api("org.jetbrains.kotlin:kotlin-test-junit5")

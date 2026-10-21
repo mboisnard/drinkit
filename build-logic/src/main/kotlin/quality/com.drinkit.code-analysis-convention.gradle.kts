@@ -55,6 +55,8 @@ detekt {
 // https://detekt.dev/docs/introduction/reporting/#merging-reports
 val detektReportMergeSarif =
     rootProject.tasks.maybeCreate("detektReportMergeSarif", ReportMergeTask::class.java).apply {
+        group = "verification"
+        description = "Merges the SARIF reports of every detekt task into one file."
         output.convention(rootProject.layout.buildDirectory.file("reports/detekt/detekt-all-projects.sarif"))
     }
 

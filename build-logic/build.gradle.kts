@@ -12,7 +12,7 @@ plugins {
 // entry as the one the conventions apply to the application, so both stay in sync
 kotlin {
     jvmToolchain {
-        languageVersion = libs.versions.java.map(JavaLanguageVersion::of)
+        languageVersion = libs.versions.jdk.map(JavaLanguageVersion::of)
     }
 }
 
