@@ -106,6 +106,14 @@ jobs:
     permissions:
       contents: read
 
+  renovate:
+    name: Renovate
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.lanes), 'renovate')
+    uses: $/.github/workflows/ci-renovate.yml
+    permissions:
+      contents: read
+
   docs:
     name: Docs
     needs: decision
@@ -135,7 +143,7 @@ jobs:
 
   gate:
     name: CI gate
-    needs: [decision, workflows, backend, frontend, hooks, ops, docs, dependencies]
+    needs: [decision, workflows, backend, frontend, hooks, ops, renovate, docs, dependencies]
     # always(), not !cancelled(): a gate skipped in a cancelled run would count as passed
     if: always()
     runs-on: ubuntu-latest

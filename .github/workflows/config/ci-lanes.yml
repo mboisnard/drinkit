@@ -46,6 +46,10 @@ ops: &ops
   - *workflows
   - 'deployment/local/**'
 
+renovate: &renovate
+  - *workflows
+  - '.github/renovate.json'
+
 dependencies: &dependencies
   - *workflows
   - '**/*.gradle.kts'
@@ -63,7 +67,6 @@ none: &none
   - '.git-blame-ignore-revs'
   - 'LICENSE'
   - '.github/ISSUE_TEMPLATE/**'
-  - '.github/renovate.json'
   - '.github/rulesets/**'
 
 # ci.yml runs every lane when their counts differ
@@ -76,5 +79,6 @@ known:
   - *hooks
   - *docs
   - *ops
+  - *renovate
   - *dependencies
   - *none

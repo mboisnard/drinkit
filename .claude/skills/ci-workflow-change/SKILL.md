@@ -9,7 +9,7 @@ paths:
 
 # Changing a workflow
 
-The local check commands are in the "Compose file and workflows" section of `AGENTS.md`, the reasons behind each
+The local check commands are in the block of `AGENTS.md` that runs actionlint and zizmor, the reasons behind each
 rule in `docs/src/engineering/ci-cd.md`. This skill gives the order and what proves each step.
 
 ## 1. Shape the job
