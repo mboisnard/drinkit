@@ -107,7 +107,8 @@ Most of CodeQL's time used to go to two places. The build conventions were compi
 - **The Node version lives in `.nvmrc`,** read by the CI, nvm and Renovate alike.
 - **The hook tests run on the shells the hooks meet.** The maintainer's macOS runs a hook with bash 3.2 as `sh`, a Linux agent with dash, so the `Hooks` lane runs every suite under dash, `bash --posix` and macOS `sh`.
 - **ShellCheck runs from an image pinned by digest,** not from the runner, whose copy changes with the runner image. Renovate updates the digest.
-- **Renovate rebases its pull requests only on conflict.** Rebasing every open pull request on each master push started up to 22 runs at once, while the repository can run 20 jobs at a time.
+- **Renovate rebases its pull requests only on conflict,** except the ones that merge themselves. Rebasing every open pull request on each master push started up to 22 runs at once, while the repository can run 20 jobs at a time.
+- **CI tooling updates merge themselves.** GitHub Actions minor and patch updates, grouped in one pull request, and new digests of an image tag get GitHub auto-merge, so they merge once `CI gate` is green. The ruleset merges only a branch up to date with master, so Renovate rebases these pull requests when they fall behind, and no other. Application libraries and majors wait for the maintainer.
 
 ## How to
 

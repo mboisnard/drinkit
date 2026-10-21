@@ -10,6 +10,10 @@
   "labels": ["dependencies"],
   "commitMessagePrefix": "[VERSION-UPDATE]",
   "rebaseWhen": "conflicted",
+  "pin": {
+    "rebaseWhen": "conflicted"
+  },
+  "automergeStrategy": "rebase",
   "osvVulnerabilityAlerts": true,
   "dependencyDashboardOSVVulnerabilitySummary": "unresolved",
   "vulnerabilityAlerts": {
@@ -48,6 +52,22 @@
       "description": "Majors need code changes: open them from the Dependency Dashboard",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
+    },
+    {
+      "description": "CI tooling merges itself once CI gate is green, in one pull request. Behind master, it is rebased: the ruleset merges only an up-to-date branch",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["action"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "GitHub Actions",
+      "automerge": true,
+      "rebaseWhen": "behind-base-branch"
+    },
+    {
+      "description": "Same for a new digest of the same image tag",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["digest"],
+      "automerge": true,
+      "rebaseWhen": "behind-base-branch"
     },
     {
       "matchCategories": ["java"],
