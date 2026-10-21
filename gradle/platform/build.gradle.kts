@@ -19,11 +19,7 @@ dependencies {
     constraints {
         // Runtime Dependencies
         api(libs.bson)
-        api(libs.jooq) {
-            version {
-                strictly(libs.versions.jooq.get())
-            }
-        }
+        api(libs.jooq)
         api(libs.kotlin.logging.jvm)
         // No longer managed by a BOM since Spring Cloud was removed
         api(libs.spring.retry)
