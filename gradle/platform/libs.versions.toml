@@ -5,7 +5,7 @@ jdk = "25"
 # BOM Versions
 spring-ai-dependencies = "2.0.1"
 spring-boot-dependencies = "4.1.1"
-spring-cloud-gcp-dependencies = "8.2.1"
+spring-cloud-gcp-dependencies = "8.2.4"
 
 # Runtime Versions
 bson = "5.13.0"
