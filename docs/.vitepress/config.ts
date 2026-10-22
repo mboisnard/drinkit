@@ -119,6 +119,8 @@ export default withMermaid(
                   { text: 'Tech Starters', link: 'tech-starters/tech-starters' },
                 ],
               },
+
+              { text: 'Ideas', link: 'ideas' },
             ],
           },
         },
