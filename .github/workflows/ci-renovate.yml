@@ -18,6 +18,6 @@ jobs:
 
       # This configuration decides what merges without a review
       - name: Validate the Renovate configuration
-        uses: docker://ghcr.io/renovatebot/renovate:44.155.9@sha256:1b1d9d1137dc0f71e06d8ca830f783af5138113b57e684693a47a37be578ff04
+        uses: docker://ghcr.io/renovatebot/renovate:44.176.3@sha256:3b402971ebfcadc09473e684fb92caea52c0bfbbe78e3fd93f8e41d875999b0f
         with:
           args: renovate-config-validator --strict --no-global .github/renovate.json
