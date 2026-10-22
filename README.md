@@ -1,8 +1,49 @@
 # DrinkIt
 
-DrinkIt manages wine and spirit cellars. It is also a sandbox for engineering practices: reusable backend
-tech starters, Gradle conventions, living documentation, and a harness that lets coding agents work on it
-safely.
+DrinkIt manages wine and spirit cellars, and the cocktails you make from them. It is also a sandbox to try
+engineering practices on a real product, from the architecture to the coding agents that work on it.
+
+<p align="center">
+  <a href="docs/files/DrinkIt-Domains.png"><img src="docs/files/DrinkIt-Domains.png" alt="DrinkIt domains mind map" width="59%"></a>
+  <a href="docs/files/DrinkIt-Technical.png"><img src="docs/files/DrinkIt-Technical.png" alt="DrinkIt technical mind map" width="38%"></a>
+</p>
+
+The domain map (left) and the technical map (right) show what DrinkIt does and what it aims to do. Many of
+their branches are still ideas: the [DrinkIt Roadmap](https://github.com/users/mboisnard/projects/2) tracks
+what is built and in which order.
+
+## The product
+
+A cellar manager comes first. Its users keep track of what they own, what they drank and with whom.
+
+- **Cellars and bottles.** Create cellars and add wines, champagnes, beers and spirits, each with its purchase
+  date and price, quantity, photos and tasting notes. My Wines and My Bar show the wines and the spirits apart.
+- **Moments.** Record when and at which event a bottle was drunk, plan one for a date with an email reminder,
+  or offer it to someone, a member or not.
+- **Search and import.** Find a bottle by name or origin, or from a photo through OCR and vision language
+  models. Import bottles from Vivino and other sources, and keep their prices up to date.
+- **Cocktails.** Write recipes whose ingredients link to your bottles, find a cocktail from a picture of
+  bottles, and keep your favorites.
+- **Recommendations and sharing.** Bottles similar to the ones in your cellar, cocktails to your taste, and
+  cellars and activity shared with other members.
+- **A conversational assistant.** One entry point where an agent carries out every action for you.
+
+## The engineering sandbox
+
+DrinkIt is where practices get tried on a codebase that keeps growing, before they are used elsewhere.
+
+- **Architecture.** A Kotlin and Spring Boot backend in a hexagonal architecture and a modular monolith, with
+  event sourcing and a contract-first API, and a Nuxt frontend.
+- **Reusable foundations.** Tech starters, one technical concern each, and Gradle convention plugins over a
+  shared platform.
+- **Quality.** Testcontainers, architecture tests, detekt, and a documentation site generated in part from the
+  code.
+- **Security and delivery.** Session security, headers, TOTP, then optimized images, Kubernetes, GitOps and
+  OpenTelemetry.
+- **AI.** Language models in the product (Spring AI, Embabel, an AI gateway, Langfuse), and coding agents that
+  work on the code through a harness: `AGENTS.md`, skills, hooks, and a CI that guards master.
+
+Links and tools to look at later are on the [ideas page](docs/src/engineering/ideas.md).
 
 ## What's inside
 
@@ -11,8 +52,7 @@ safely.
 - `tech-starters/backend/`: technical libraries, one concern each, with no business code.
 - `build-logic/`: the Gradle convention plugins the modules apply.
 - `.hooks/`: the git hooks and the Claude Code hooks of the harness, with their bats suites, which
-  `npm cit --prefix .hooks` runs. A file there has no extension when it runs on its own, `.sh` when a hook sources
-  it, `.bash` for a bats helper and `.bats` for a suite.
+  `npm cit --prefix .hooks` runs.
 - The [documentation site](https://mboisnard.github.io/drinkit/): architecture, guidelines, the pages
   generated from the code, and the [harness](docs/src/engineering/harness.md) that guards master.
 
@@ -43,36 +83,6 @@ npm run dev                            # http://localhost:3000
 [CONTRIBUTING.md](CONTRIBUTING.md) explains how to write issues and pull requests. [AGENTS.md](AGENTS.md)
 holds the commands, the structure and the code conventions, for people and coding agents alike.
 
-## Global view of this project
-
-<img src="docs/files/DrinkIt.png" alt="DrinkIt Global View" width="1000" height="1000">
-
-## Wine & Spirit Application Examples
-
-* https://www.akiani.fr/realisations/application-de-gestion-de-caves-a-vins-et-spiritueux/
-* Vivino
-* Wine Searcher
-* Ploc
-
-## Api for wine/spirits scrapper
-
-* https://github.com/DrinkDistiller/api-docs/wiki/Spirits
-* https://www.openwinedata.fr/catalog
-* https://rapidapi.com/blog/best-beer-wine-alcohol-api/
-* https://rapidapi.com/thecocktaildb/api/the-cocktail-db
-* https://github.com/gugarosa/viviner
-
-## Gradle Plugins to check/add
-
-* https://github.com/gradle/github-dependency-graph-gradle-plugin
-* https://github.com/allure-framework/allure-gradle
-* https://github.com/remal-gradle-plugins/idea-settings
-
-Explore
-jlink / jdeps
-
 ## License
 
 DrinkIt is licensed under the [Apache License 2.0](LICENSE). Copyright 2024-2026 Mathieu Boisnard.
-
-The OCR starter bundles `fra.traineddata` from [tesseract-ocr/tessdata_best](https://github.com/tesseract-ocr/tessdata_best), also under the Apache License 2.0.
