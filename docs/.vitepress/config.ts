@@ -135,7 +135,7 @@ export default withMermaid(
         },
 
         footer: {
-          message: 'MIT Licensed',
+          message: 'Apache License 2.0',
           copyright: 'Copyright © 2024-present | Crafted by Mathieu Boisnard with 🍺🥃🍷❤️'
         },
       }
