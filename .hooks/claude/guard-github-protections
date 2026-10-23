@@ -31,7 +31,8 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
         SHELL = "^(eval|sh|bash|zsh|dash|ksh)([[:space:]]|$)"
         SHELL_WORD = "(^|[[:space:]/|&;(])(sh|bash|zsh|dash|ksh)([[:space:]|&;)]|$)"
         GIT_OPTION = "^[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--(git-dir|work-tree|namespace|config-env)[[:space:]]+[^[:space:]]+|--[a-z-]+(=[^[:space:]]+)?|-[A-Za-z])"
-        HOOKS_PATH_KEPT = "^config([[:space:]]+(--local|--global|--system|--worktree|--show-origin|--show-scope|--get|get|set))*[[:space:]]+core\\.hookspath([[:space:]]+\\.hooks/git)?[[:space:]]*$"
+        HOOKS_PATH_READ = "^config([[:space:]]+(--local|--global|--system|--worktree|--show-origin|--show-scope|--get|get))*[[:space:]]+core\\.hookspath[[:space:]]*$"
+        HOOKS_PATH_SET = "^config([[:space:]]+(--local|--global|--system|--worktree|set))*[[:space:]]+core\\.hookspath[[:space:]]+\\.hooks/git[[:space:]]*$"
     }
 
     function deny(rule, command) {
@@ -193,7 +194,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
         return text
     }
 
-    function check_command(command, piece, flat,    lower, subcommand) {
+    function check_command(command, piece, flat,    lower, subcommand, config) {
         lower = tolower(command)
         if (command ~ /^cd([[:space:]]|$)/) {
             cd_dir = joined(cd_dir, cd_target(command))
@@ -206,7 +207,10 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
         if (lower !~ /^git([[:space:]]|$)/)
             return
         subcommand = git_subcommand(command)
-        if ((lower ~ /core\.hookspath/ && tolower(subcommand) !~ HOOKS_PATH_KEPT) || tolower(piece) ~ /git_config_/)
+        config = tolower(subcommand)
+        if (config ~ HOOKS_PATH_SET && config ~ /[[:space:]]--(global|system)[[:space:]]/)
+            deny("hooks-path-scope", flat)
+        if ((lower ~ /core\.hookspath/ && config !~ HOOKS_PATH_READ && config !~ HOOKS_PATH_SET) || tolower(piece) ~ /git_config_/)
             deny("hooks-path", flat)
         if (subcommand ~ /^push([[:space:]]|$)/) {
             if (subcommand ~ /[[:space:]]--no-v/)
@@ -266,6 +270,7 @@ deny() {
         hidden-query) reason="a GraphQL query read from a file or stdin cannot be checked. Pass it inline with -f query=..." ;;
         alias) reason="a gh alias can hide a merge. Run the gh command itself" ;;
         hooks-path) reason="the git hooks keep master safe, so core.hooksPath stays .hooks/git. Never override or unset it" ;;
+        hooks-path-scope) reason="core.hooksPath is set in each clone, never globally, where it would run the hooks of every repository. Run git config core.hooksPath .hooks/git in the clone" ;;
         no-verify) reason="pre-push keeps master safe. Push without --no-verify" ;;
         hooks-off) reason="the git hooks do not run in $3, then push again" ;;
     esac
