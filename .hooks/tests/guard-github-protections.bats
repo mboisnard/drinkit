@@ -17,20 +17,21 @@ setup() {
     git init -q "$hooks_off"
 }
 
-# Claude is about to run <command> from <folder>: on, off, outside, or a path.
+# Claude is about to run <command> from <folder>: on, off, outside, hooks for the .hooks/git of on, or a path.
 runs() {
     local folder
     case $2 in
         off) folder=$hooks_off ;;
         outside) folder=$outside ;;
+        hooks) folder=$hooks_on/.hooks/git ;;
         /*) folder=$2 ;;
         *) folder=$hooks_on ;;
     esac
     run_hook_on pre-tool-use-bash '.tool_input.command = $command | .cwd = $cwd' --arg command "$1" --arg cwd "$folder"
 }
 
-# Case <number>: the guard allows or denies <command>, run from <folder>. @on@ and @off@ in the command stand for
-# those clones.
+# Case <number>: the guard allows, asks or denies <command>, run from <folder>. @on@ and @off@ in the command stand
+# for those clones.
 hook_decides() {
     local expected=$2 command=$3
     command=${command//@on@/$hooks_on}
@@ -40,7 +41,7 @@ hook_decides() {
     if [ "$expected" = allow ]; then
         refute_output
     else
-        assert_equal "$(decision)" deny
+        assert_equal "$(decision)" "$expected"
     fi
 }
 
@@ -287,6 +288,118 @@ mutation { mergePullRequest(input: {pullRequestId: "x"}) { clientMutationId } }
 EOF
 )"'
 
+decides ask "sed -i '' 's/deny/allow/' .hooks/claude/guard-github-protections"
+decides ask 'sed -i.bak 1d .hooks/git/pre-push'
+decides ask 'sed --in-place 1d .hooks/git/pre-push'
+decides ask "sed -n 'w .hooks/git/pre-push' /dev/null"
+decides ask "perl -pi -e 's/deny/allow/' .hooks/claude/guard-github-protections"
+decides ask 'cp /tmp/pre-push .hooks/git/pre-push'
+decides ask 'mv .hooks/git/pre-push .hooks/git/pre-push.off'
+decides ask 'rm -f .hooks/git/pre-push'
+decides ask 'chmod -x .hooks/git/pre-push'
+decides ask 'ln -sf /usr/bin/true .hooks/git/pre-push'
+decides ask 'install -m 755 /tmp/pre-push .hooks/git/'
+decides ask 'rsync -a /tmp/hooks/ .hooks/'
+decides ask 'touch .hooks/claude/new-hook'
+decides ask 'echo exit 0 > .hooks/git/pre-push'
+decides ask "printf 'exit 0\n' >>.hooks/claude/guard-github-protections"
+decides ask 'cat .hooks/git/pre-push > .hooks/git/pre-push.bak'
+decides ask 'echo exit 0 | tee .hooks/git/pre-push'
+decides ask "cat > .hooks/git/pre-push <<'EOF'
+#!/bin/sh
+exit 0
+EOF"
+decides ask 'git checkout HEAD~1 -- .hooks/'
+decides ask 'git restore --source=HEAD~1 .hooks/git/pre-push'
+decides ask 'git diff --output=.hooks/git/pre-push'
+decides ask "python3 -c \"open('.hooks/git/pre-push', 'w').write('exit 0')\""
+decides ask "bash -c 'echo exit 0 > .hooks/git/pre-push'"
+decides ask "echo 'rm .hooks/git/pre-push' | sh"
+decides ask 'cd .hooks/git && echo exit 0 > pre-push'
+decides ask 'rm pre-push' hooks
+decides ask 'ls .hooks/git | xargs rm'
+# shellcheck disable=SC2016
+decides ask 'f=.hooks/git/pre-push; rm $f'
+decides ask 'find .hooks -name pre-push -delete'
+decides ask "find .hooks -name '*.bats' -exec sed -i '' s/a/b/ {} +"
+decides ask 'npm install --prefix .hooks left-pad'
+# shellcheck disable=SC2016
+decides ask 'docker run --rm -v "$PWD:/repo" alpine rm /repo/.hooks/git/pre-push'
+decides ask 'git status && rm .hooks/git/pre-push'
+decides ask "python3 - <<'EOF'
+open('.hooks/git/pre-push', 'w').write('exit 0')
+EOF"
+decides ask "node - <<'EOF'
+require('fs').writeFileSync('.hooks/git/pre-push', 'exit 0')
+EOF"
+decides ask 'tree -o .hooks/claude/guard-github-protections /nonexistent'
+decides ask 'sort -o .hooks/git/pre-push /tmp/pre-push'
+decides ask 'rg --pre ./rewrite deny .hooks/claude'
+# shellcheck disable=SC2016
+decides ask 'docker run --rm -v$PWD:/repo alpine rm /repo/.hooks/git/pre-push'
+# shellcheck disable=SC2016
+decides ask 'docker run --rm -itv "$PWD:/repo" alpine rm /repo/.hooks/git/pre-push'
+decides ask 'docker run --rm --volumes-from dev alpine rm /repo/.hooks/git/pre-push'
+decides ask 'echo \>&rm .hooks/git/pre-push'
+decides ask '.hooks/../../../../bin/rm .hooks/git/pre-push'
+decides ask "git config alias.x '!rm .hooks/git/pre-push'"
+decides ask 'git config -f .hooks/git/pre-push core.x y'
+decides ask 'git -c core.fsmonitor=./rewrite status -- .hooks'
+decides ask "git grep -O'rm .hooks/git/pre-push' deny"
+decides ask "GIT_EDITOR='tee .hooks/git/pre-push' git commit --allow-empty"
+decides ask 'GIT_EXTERNAL_DIFF=./rewrite git diff -- .hooks'
+decides ask "git fetch --upload-pack='cp /dev/null .hooks/git/pre-push; git-upload-pack' ."
+# shellcheck disable=SC2016
+decides ask 'f=.hooks/claude/new-hook; echo exit 0 > "$f"'
+# shellcheck disable=SC2016
+decides ask 'cd .hooks/git && echo exit 0 > "$PWD/pre-push"'
+decides deny 'rm .hooks/git/pre-push && gh pr merge 450'
+decides deny 'gh pr merge 450; rm .hooks/git/pre-push'
+decides deny 'rm .hooks/git/pre-push && git push origin HEAD' off
+decides deny 'echo \>&gh pr merge 450'
+decides deny 'echo \>|git config core.hooksPath /dev/null'
+decides deny 'cat \<&gh pr merge 450'
+
+decides allow 'cat .hooks/git/pre-push'
+decides allow 'head -n 40 .hooks/claude/guard-github-protections'
+decides allow "sed -n '1,40p' .hooks/claude/guard-github-protections"
+decides allow 'grep -rn hookspath .hooks'
+decides allow 'rg -n deny .hooks/claude'
+decides allow 'ls -la .hooks .hooks/*'
+decides allow "find .hooks -name '*.bats' | xargs wc -l"
+decides allow 'jq .scripts .hooks/package.json'
+decides allow 'diff .hooks/git/pre-push ../off/.hooks/git/pre-push'
+decides allow 'git diff origin/master -- .hooks/'
+decides allow 'git log --oneline -5 -- .hooks'
+decides allow 'git show HEAD:.hooks/git/pre-push'
+decides allow 'git ls-files .hooks'
+decides allow 'git add .hooks/claude/guard-github-protections && git commit -m "Ask before a write under .hooks/"'
+decides allow 'npm cit --prefix .hooks'
+decides allow 'npm cit --prefix .hooks 2>&1 | tail -n 30'
+decides allow 'cd .hooks && HOOK_SHELL=dash npx bats tests/guard-github-protections.bats'
+decides allow "docker run --rm -v \"\$PWD:/mnt:ro\" -w /mnt --entrypoint sh \"\$(grep -o 'koalaman/shellcheck[^ ]*' .github/workflows/ci-hooks.yml)\" -c 'shellcheck .hooks/git/* .hooks/claude/* .hooks/lib/*.sh .hooks/tests/*.bats .hooks/tests/*.bash'"
+decides allow 'sh -n .hooks/claude/guard-github-protections'
+decides allow '.hooks/claude/session-context < input.json'
+# shellcheck disable=SC2016
+decides allow '"$CLAUDE_PROJECT_DIR"/.hooks/claude/guard-github-protections < input.json'
+decides allow 'cat .hooks/git/pre-push > pre-push.txt'
+decides allow 'grep -c deny .hooks/claude/guard-github-protections 2>/dev/null'
+decides allow 'gh pr create --title "[HARNESS] Ask before a Bash command writes under .hooks (#456)" --body-file body.md'
+decides allow "git commit -F - <<'EOF'
+Ask before a Bash command writes under .hooks/
+
+- rm .hooks/git/pre-push now waits for the maintainer
+EOF"
+decides allow 'cat .github/workflows/ci-hooks.yml'
+decides allow 'cat pre-push' hooks
+decides allow 'npx bats ../tests/pre-push.bats' hooks
+decides allow "cat > notes.md <<'EOF'
+rm .hooks/git/pre-push now waits for the maintainer
+EOF"
+decides allow 'wc -l .hooks/claude/* | sort -n'
+decides allow 'npm run test --prefix .hooks'
+decides allow 'git -C .hooks log --oneline -3'
+
 
 @test "allow  without jq, with a warning on stderr" {
     only_tools "$work/no-jq" awk cat git
@@ -327,6 +440,18 @@ clone_with_pre_push() {
     clone_with_pre_push missing
     runs 'git push -u origin HEAD' "$work/clone"
     assert_equal "$(reason)" "guard-github-protections: the git hooks do not run in $work/clone: .hooks/git/pre-push is missing or not executable. Rebase the branch on origin/master, then push again: git push -u origin HEAD"
+}
+
+@test "a write under .hooks/ tells the maintainer why it waits" {
+    runs 'rm .hooks/git/pre-push'
+    assert_equal "$(reason)" "guard-github-protections: this command may write under .hooks/, whose hooks keep master safe. Approve it only if you asked for this change: rm .hooks/git/pre-push"
+}
+
+@test "deny  a write under .hooks/ in bypassPermissions mode, where no one approves it" {
+    run_hook_on pre-tool-use-bash '.tool_input.command = $command | .cwd = $cwd | .permission_mode = "bypassPermissions"' \
+        --arg command 'rm .hooks/git/pre-push' --arg cwd "$hooks_on"
+    assert_equal "$(decision)" deny
+    assert_equal "$(reason)" "guard-github-protections: no one can approve a write under .hooks/ in bypassPermissions mode. Change a hook with the Edit tool, which asks the maintainer: rm .hooks/git/pre-push"
 }
 
 @test "a core.hooksPath set for every repository is told to set it in the clone" {
