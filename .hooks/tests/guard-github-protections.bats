@@ -170,6 +170,9 @@ decides deny 'git config --global core.hooksPath /dev/null'
 decides deny 'git config --global --unset core.hooksPath'
 decides deny 'git config -f .git/config core.hooksPath /dev/null'
 decides deny 'git config set core.hooksPath /dev/null'
+decides deny 'git config --global core.hooksPath .hooks/git'
+decides deny 'git config --system core.hooksPath .hooks/git'
+decides deny 'git config set --global core.hooksPath .hooks/git'
 decides deny 'git push origin HEAD:master' off
 decides deny 'git push origin HEAD:master' outside
 decides deny 'git -C ../off push -u origin HEAD'
@@ -198,6 +201,9 @@ decides allow 'cd ../off && cd ../on && git push -u origin HEAD'
 decides allow 'git config core.hooksPath'
 decides allow 'git config core.hooksPath .hooks/git'
 decides allow 'git config --local core.hooksPath .hooks/git'
+decides allow 'git config set core.hooksPath .hooks/git'
+decides allow 'git config set --local core.hooksPath .hooks/git'
+decides allow 'git config --worktree core.hooksPath .hooks/git'
 decides allow 'git config --get core.hooksPath'
 decides allow 'git config get core.hooksPath'
 decides allow 'git config --global core.hooksPath'
@@ -321,6 +327,11 @@ clone_with_pre_push() {
     clone_with_pre_push missing
     runs 'git push -u origin HEAD' "$work/clone"
     assert_equal "$(reason)" "guard-github-protections: the git hooks do not run in $work/clone: .hooks/git/pre-push is missing or not executable. Rebase the branch on origin/master, then push again: git push -u origin HEAD"
+}
+
+@test "a core.hooksPath set for every repository is told to set it in the clone" {
+    runs 'git config --global core.hooksPath .hooks/git'
+    assert_equal "$(reason)" "guard-github-protections: core.hooksPath is set in each clone, never globally, where it would run the hooks of every repository. Run git config core.hooksPath .hooks/git in the clone: git config --global core.hooksPath .hooks/git"
 }
 
 @test "a push with the git hooks off is told the command that turns them on" {
