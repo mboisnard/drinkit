@@ -13,7 +13,10 @@ cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
 
 found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
     BEGIN {
-        PIECE = "\001"
+        SEPARATOR = "\001"
+        OPENING = "\002"
+        CLOSING = "\003"
+        MARK = "[\001\002\003]"
         MERGE_MUTATION = "mergepullrequest|enablepullrequestautomerge|enqueuepullrequest"
         MUTATION = "(create|update|delete)(repositoryruleset|branchprotectionrule)|" MERGE_MUTATION
         MERGE = "pulls/[^[:space:]/]+/merge|" MERGE_MUTATION
@@ -70,8 +73,10 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
                 i++
             } else if (c == ";") {
                 cut_segment()
-            } else if (c == "&" || c == "|" || c == "`") {
-                current = current PIECE
+            } else if (c == "&" || c == "|") {
+                current = current SEPARATOR
+            } else if (c == "`") {
+                backquote()
             } else if (c == "\n") {
                 end_line()
             } else {
@@ -84,19 +89,24 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
 
     function in_double_quotes(c) {
         if (c == "\"") quote = ""
-        else if (c == "`") current = current PIECE
+        else if (c == "`") backquote()
         else current = current c
+    }
+
+    function backquote() {
+        in_backquote = !in_backquote
+        current = current (in_backquote ? OPENING : CLOSING)
     }
 
     function open_paren(quote_outside) {
         outer_quote[++depth] = quote_outside
         quote = ""
-        current = current PIECE
+        current = current OPENING
     }
 
     function close_paren() {
         if (depth > 0) quote = outer_quote[depth--]
-        current = current PIECE
+        current = current CLOSING
     }
 
     function cut_segment() {
@@ -147,7 +157,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
 
     function check_segment(text,    flat, lower, count, pieces, j) {
         flat = text
-        gsub(PIECE "|\n", " ", flat)
+        gsub(MARK "|\n", " ", flat)
         sub(/^[[:space:]]+/, "", flat)
         lower = tolower(flat)
         if (lower ~ MUTATION || (lower ~ ENDPOINT && (lower ~ WRITE || (has_body(flat) && !is_read(flat)))))
@@ -156,7 +166,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
             deny("hooks-path", flat)
         if (lower ~ /graphql/ && lower ~ /(--input|[[:space:]=]@)/)
             deny("hidden-query", flat)
-        count = split(text, pieces, PIECE)
+        count = split(text, pieces, MARK)
         for (j = 1; j <= count; j++)
             check_piece(pieces[j], flat)
     }
@@ -190,11 +200,11 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
             text = substr(text, RLENGTH + 1)
         }
         sub(/^\\/, "", text)
-        sub(/^[^[:space:]]*\//, "", text)
         return text
     }
 
     function check_command(command, piece, flat,    lower, subcommand, config) {
+        sub(/^[^[:space:]]*\//, "", command)
         lower = tolower(command)
         if (command ~ /^cd([[:space:]]|$)/) {
             cd_dir = joined(cd_dir, cd_target(command))
@@ -263,8 +273,8 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | awk '
 
 [ -n "$found" ] || exit 0
 
-deny() {
-    case $1 in
+answer() {
+    case $2 in
         protection) reason="coding agents never change rulesets, branch protection or push protection bypasses. Ask the maintainer to run it" ;;
         merge) reason="coding agents never merge a pull request, the maintainer does. Leave it open for review" ;;
         hidden-query) reason="a GraphQL query read from a file or stdin cannot be checked. Pass it inline with -f query=..." ;;
@@ -272,12 +282,12 @@ deny() {
         hooks-path) reason="the git hooks keep master safe, so core.hooksPath stays .hooks/git. Never override or unset it" ;;
         hooks-path-scope) reason="core.hooksPath is set in each clone, never globally, where it would run the hooks of every repository. Run git config core.hooksPath .hooks/git in the clone" ;;
         no-verify) reason="pre-push keeps master safe. Push without --no-verify" ;;
-        hooks-off) reason="the git hooks do not run in $3, then push again" ;;
+        hooks-off) reason="the git hooks do not run in $4, then push again" ;;
     esac
-    jq -n --arg reason "$reason" --arg command "$2" '{
+    jq -n --arg decision "$1" --arg reason "$reason" --arg command "$3" '{
         hookSpecificOutput: {
             hookEventName: "PreToolUse",
-            permissionDecision: "deny",
+            permissionDecision: $decision,
             permissionDecisionReason: ("guard-github-protections: " + $reason + ": " + $command)
         }
     }'
@@ -293,22 +303,27 @@ resolved() {
     esac
 }
 
+# Refuses the first push from a clone whose git hooks do not run.
+refuse_push_without_hooks() {
+    command -v git >/dev/null 2>&1 || return 0
+    # shellcheck source=../lib/git-hooks.sh
+    . "$(dirname "$0")/../lib/git-hooks.sh"
+    printf '%s\n' "$found" | while IFS= read -r push; do
+        push=${push#push"$tab"}
+        dir=$(resolved "${push%%"$tab"*}")
+        off=$(git_hooks_off "$dir")
+        [ -n "$off" ] || continue
+        answer deny hooks-off "${push#*"$tab"}" "$dir: $off"
+        break
+    done
+}
+
 tab=$(printf '\t')
 rule=${found%%"$tab"*}
 if [ "$rule" != push ]; then
-    deny "$rule" "${found#*"$tab"}"
+    answer deny "$rule" "${found#*"$tab"}"
     exit 0
 fi
 
-command -v git >/dev/null 2>&1 || exit 0
-# shellcheck source=../lib/git-hooks.sh
-. "$(dirname "$0")/../lib/git-hooks.sh"
-printf '%s\n' "$found" | while IFS= read -r push; do
-    push=${push#push"$tab"}
-    dir=$(resolved "${push%%"$tab"*}")
-    off=$(git_hooks_off "$dir")
-    [ -n "$off" ] || continue
-    deny hooks-off "${push#*"$tab"}" "$dir: $off"
-    break
-done
+refuse_push_without_hooks
 exit 0
