@@ -38,7 +38,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         HOOKS_PATH_READ = "^config([[:space:]]+(--local|--global|--system|--worktree|--show-origin|--show-scope|--get|get))*[[:space:]]+core\\.hookspath[[:space:]]*$"
         HOOKS_PATH_SET = "^config([[:space:]]+(--local|--global|--system|--worktree|set))*[[:space:]]+core\\.hookspath[[:space:]]+\\.hooks/git[[:space:]]*$"
         CONFIG_QUIET = "^(commit|log|show|diff|blame|shortlog)([[:space:]]|$)"
-        HOOKS ="(^|[^[:alnum:]_.-])\\.hooks([^[:alnum:]_.-]|$)"
+        HOOKS = "(^|[^[:alnum:]_.-])\\.hooks([^[:alnum:]_.-]|$)"
         UNDER_HOOKS = "(^|/)\\.hooks(/|$)"
         NEUTRAL = "^(cd|for|fi|done|esac|[}]|export|unset|set|read|:)([[:space:]]|$)"
         READER = "^(cat|head|tail|grep|egrep|fgrep|ls|wc|diff|cmp|file|stat|du|realpath|readlink|basename|dirname|echo|printf|test|\\[|jq|shellcheck|bats|true|false|pwd|nl|cut|tr|column|od|hexdump|shasum|sha1sum|sha256sum|md5sum|md5)([[:space:]]|$)"
