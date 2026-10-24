@@ -1,0 +1,109 @@
+# Every rule of Squawk 2.70.0 is listed below, on or off, so that nobody has to know its defaults. The section
+# "Checked Rules" of docs/src/engineering/guidelines/database.md says why each family matters.
+# On a Squawk upgrade, read its changelog and put each new rule in one of the two lists: a misspelled name fails.
+# Not listed: require-timeout-settings and prefer-timestamptz, aliases of rules below.
+
+pg_version = "18.0"
+
+# Every migration runs outside a transaction: runInTransaction:false, checked by ChangelogConventionsTest
+assume_in_transaction = false
+
+included_rules = [
+    # A statement must not lock a table for long, nor wait for its lock without a limit
+    "require-lock-timeout",
+    "require-statement-timeout",
+    "require-concurrent-index-creation",
+    "require-concurrent-index-deletion",
+    "require-concurrent-reindex",
+    "require-concurrent-partition-detach",
+    "ban-concurrent-index-creation-in-transaction",
+    "prefer-repack",
+    "transaction-nesting",
+    "ban-uncommitted-transaction",
+
+    # A statement must succeed when its file runs again after a failure halfway
+    "prefer-robust-stmts",
+
+    # A constraint, a required column or a default must not scan or rewrite a whole table under lock
+    "constraint-missing-not-valid",
+    "adding-foreign-key-constraint",
+    "disallowed-unique-constraint",
+    "adding-not-nullable-field",
+    "adding-required-field",
+    "adding-field-with-default",
+    "adding-serial-primary-key-field",
+    "changing-column-type",
+    "ban-create-domain-with-constraint",
+    "ban-alter-domain-with-add-constraint",
+
+    # Types and names that do not run out, drift or surprise
+    "require-table-schema",
+    "prefer-timestamp-tz",
+    "prefer-bigint-over-int",
+    "prefer-bigint-over-smallint",
+    "prefer-identity",
+    "ban-char-field",
+    "identifier-too-long",
+    "require-enum-value-ordering",
+    "ban-add-enum-value",
+    "ban-add-composite-attribute",
+
+    # The version of the application still running during a deployment must keep working
+    "renaming-column",
+    "renaming-table",
+    "renaming-object",
+    "ban-set-schema",
+    "ban-drop-not-null",
+    "ban-drop-default",
+    "ban-set-default",
+    "ban-alter-identity",
+    "ban-alter-sequence-values",
+    "ban-alter-generated-expression",
+    "ban-drop-generated-expression",
+    "ban-duplicate-column-assignments",
+    "ban-detach-inheritance",
+    "ban-replace-view-function",
+    "ban-alter-view-options",
+    "ban-alter-function-options",
+    "ban-disable-trigger",
+    "ban-drop-trigger",
+
+    # Data and objects must not disappear without a decision written next to the statement
+    "ban-drop-column",
+    "ban-drop-table",
+    "ban-drop-schema",
+    "ban-drop-database",
+    "ban-drop-sequence",
+    "ban-drop-type",
+    "ban-drop-domain",
+    "ban-drop-view",
+    "ban-drop-function",
+    "ban-drop-extension",
+    "ban-drop-constraint",
+    "ban-truncate-cascade",
+
+    # Access, replication and server settings belong to operations, not to a migration
+    "ban-alter-database-options",
+    "ban-alter-system-options",
+    "ban-alter-role-options",
+    "ban-alter-extension",
+    "ban-revoke",
+    "ban-replica-identity",
+    "ban-alter-row-level-security",
+    "ban-create-policy",
+    "ban-drop-policy",
+    "ban-alter-policy-condition",
+    "ban-alter-policy-roles",
+]
+
+excluded_rules = [
+    # A VARCHAR(n) length is a deliberate guard, often the only one, and widening it changes the catalog only
+    "prefer-text-field",
+    # A ddl/ file drops each index right before it builds it, so that an interrupted build is never kept
+    "ban-drop-index",
+    # Adding a nullable column is the first step of every expand and contract, and jOOQ names its columns
+    "ban-add-column",
+    # Adding a constraint is the purpose of most ddl/ files: the rules above check how it locks, and
+    # database.md how the running version keeps working
+    "ban-new-write-restriction",
+]

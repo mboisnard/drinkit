@@ -1,5 +1,8 @@
 --liquibase formatted sql
---changeset mboisnard:01-initial-schema logicalFilePath:fixed splitStatements:false runInTransaction:false runOnChange:true
+--changeset mboisnard:01-initial-schema logicalFilePath:fixed runInTransaction:false runOnChange:true
+
+SET lock_timeout = '5s';
+SET statement_timeout = '1min';
 
 -- Application Schema
 
@@ -9,15 +12,15 @@ CREATE SCHEMA IF NOT EXISTS drinkit_application;
 
 CREATE TABLE IF NOT EXISTS drinkit_application.cellar
 (
-    id                    VARCHAR(24)      NOT NULL PRIMARY KEY,
-    owner_id              VARCHAR(24)      NOT NULL,
-    name                  VARCHAR(100)     NOT NULL,
-    location              JSONB            NOT NULL,
-    rooms                 JSONB            NOT NULL,
-    modified              TIMESTAMP        NOT NULL
+    id                    VARCHAR(24)              NOT NULL PRIMARY KEY,
+    owner_id              VARCHAR(24)              NOT NULL,
+    name                  VARCHAR(100)             NOT NULL,
+    location              JSONB                    NOT NULL,
+    rooms                 JSONB                    NOT NULL,
+    modified              TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS cellar_owner_id_idx
+CREATE INDEX CONCURRENTLY IF NOT EXISTS cellar_owner_id_idx
     ON drinkit_application.cellar (owner_id);
 
 -- User Events
@@ -52,10 +55,10 @@ CREATE TABLE IF NOT EXISTS drinkit_application.user
     CONSTRAINT roles_check CHECK (roles::VARCHAR[] && ARRAY['ROLE_ADMIN'::VARCHAR, 'ROLE_USER'::VARCHAR, 'ROLE_REGISTRATION_IN_PROGRESS'::VARCHAR])
 );
 
-CREATE INDEX IF NOT EXISTS user_email_idx
+CREATE INDEX CONCURRENTLY IF NOT EXISTS user_email_idx
     ON drinkit_application.user (email);
 
-CREATE INDEX IF NOT EXISTS user_enabled_idx
+CREATE INDEX CONCURRENTLY IF NOT EXISTS user_enabled_idx
     ON drinkit_application.user (enabled);
 
 -- Verification Token
@@ -68,7 +71,7 @@ CREATE TABLE IF NOT EXISTS drinkit_application.verification_token
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES drinkit_application.user (id) ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS verification_token_user_id_token_expiry_date_idx
+CREATE INDEX CONCURRENTLY IF NOT EXISTS verification_token_user_id_token_expiry_date_idx
     ON drinkit_application.verification_token (user_id, token, expiry_date);
 
 -- Configuration
