@@ -20,8 +20,19 @@ backend: &backend
   - 'drinkit/drinkit-domain/src/**'
   - 'drinkit/drinkit-infra/src/**'
   - 'tech-starters/backend/*/src/**'
-  - 'deployment/updater/src/**'
   - 'architecture-tests/src/**'
+
+updater: &updater
+  - *workflows
+  - 'build-logic/**'
+  - 'code-analysis/**'
+  - 'gradle/**'
+  - 'gradlew*'
+  - 'gradle.properties'
+  - '**/*.gradle.kts'
+  - '**/*.lockfile'
+  - 'deployment/updater/**'
+  - '.nvmrc' # the Node version that runs Squawk
 
 frontend: &frontend
   - *workflows
@@ -75,6 +86,7 @@ changed:
 known:
   - *workflows
   - *backend
+  - *updater
   - *frontend
   - *hooks
   - *docs

@@ -72,6 +72,14 @@ jobs:
     secrets:
       GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
+  updater:
+    name: Updater
+    needs: decision
+    if: contains(fromJSON(needs.decision.outputs.lanes), 'updater')
+    uses: $/.github/workflows/ci-updater.yml
+    permissions:
+      contents: read
+
   # Not in the gate: its alerts show on the pull request and in the Security tab, the merge does not wait for it
   codeql:
     name: CodeQL
@@ -143,7 +151,7 @@ jobs:
 
   gate:
     name: CI gate
-    needs: [decision, workflows, backend, frontend, hooks, ops, renovate, docs, dependencies]
+    needs: [decision, workflows, backend, updater, frontend, hooks, ops, renovate, docs, dependencies]
     # always(), not !cancelled(): a gate skipped in a cancelled run would count as passed
     if: always()
     runs-on: ubuntu-latest

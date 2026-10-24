@@ -13,10 +13,12 @@ through jOOQ. Exact versions live in the catalogs of `gradle/platform`, `gradle/
 ./gradlew detektAll -Pdetekt.autoCorrect=true  # fixes formatting and auto-correctable findings
 ./gradlew :drinkit-backend:bootRun             # dev profile, starts deployment/local/compose.yml itself
 ./gradlew :architecture-tests:test             # the architecture rules, part of build
+./gradlew :updater:check                       # the changelog rules and Squawk, part of build
 ```
 
 The JDK of `gradle/gradle-daemon-jvm.properties` must be installed: Gradle finds it whatever `java` is on
-the `PATH`, but never downloads it. Integration tests need Docker.
+the `PATH`, but never downloads it. Integration tests need Docker, and `./gradlew build` needs Node on the
+`PATH`, at the version of `.nvmrc`, to run Squawk.
 
 Nothing in the application creates the database schema: on a new database, apply the changelogs once, as
 shown in [Database and jOOQ](#database-and-jooq), before using the app. From an IDE, running
@@ -117,14 +119,19 @@ included: `docs/src/engineering/architecture-tests.md` gives each rule with its 
 
 ## Database and jOOQ
 
-Read `docs/src/engineering/guidelines/database.md` before writing a changelog. A changelog must be
-idempotent, which is what makes this command safe to replay. It applies them all, and is also the first-run
-step:
+Read `docs/src/engineering/guidelines/database.md` before writing a changelog. A schema change goes in a new
+numbered file of `ddl/`, a data change in one of `dml/`, and `base/` changes only in a rebaseline, or before the
+first deployment with the local database recreated. Every statement must be idempotent, which is what makes this
+command safe to replay. It applies them all, in the order Liquibase runs them, and is also the first-run step:
 
 ```
 docker compose -f deployment/local/compose.yml up -d postgresql
-cat deployment/updater/src/main/resources/db/changelog/base/*.sql | docker compose -f deployment/local/compose.yml exec -T postgresql psql -v ON_ERROR_STOP=1 -U drinkit -d drinkit
+find deployment/updater/src/main/resources/db/changelog -name '*.sql' | sort | xargs cat | docker compose -f deployment/local/compose.yml exec -T postgresql psql -v ON_ERROR_STOP=1 -U drinkit -d drinkit
 ```
+
+`./gradlew :updater:check` checks the changelogs: the rules of `database.md` and Squawk, each finding with its
+rule and its fix. A Squawk rule that does not apply to a statement is tolerated in its file, with the reason on
+the line above. `deployment/updater/.squawk.toml` lists every Squawk rule, on or off.
 
 The jOOQ classes are committed under `src/generated/jooq/kotlin` in every module that applies
 `com.drinkit.jooq-codegen-convention`, and never edited by hand. The build does not regenerate them: after a

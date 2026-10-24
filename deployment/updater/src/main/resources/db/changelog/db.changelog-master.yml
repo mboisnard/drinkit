@@ -1,3 +1,12 @@
 databaseChangeLog:
   - includeAll:
       path: classpath:/db/changelog/base/
+      endsWithFilter: .sql
+  - includeAll:
+      path: classpath:/db/changelog/ddl/
+      endsWithFilter: .sql
+      errorIfMissingOrEmpty: false
+  - includeAll:
+      path: classpath:/db/changelog/dml/
+      endsWithFilter: .sql
+      errorIfMissingOrEmpty: false

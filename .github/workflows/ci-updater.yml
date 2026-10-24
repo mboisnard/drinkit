@@ -1,0 +1,51 @@
+name: Updater
+
+on:
+  workflow_call:
+
+jobs:
+  check:
+    name: Check the changelogs
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK and Gradle
+        uses: $/.github/actions/setup-gradle-jdk
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: deployment/updater/package-lock.json
+
+      # The changelog rules, detekt and Squawk. Each finding prints its rule, the SQL and the fix,
+      # and --continue reports them all in one run
+      - name: Check the changelogs
+        run: ./gradlew :updater:check --continue
+
+      # Puts each Squawk finding on its line, in the Files changed tab of the pull request. Squawk prints one
+      # format per run, so it runs again on a failure: JSON gives the positions, the readable report stays above
+      - name: Annotate the Squawk findings
+        if: failure()
+        working-directory: deployment/updater
+        run: |
+          [ -x node_modules/.bin/squawk ] || exit 0
+          { npx squawk --reporter json 'src/main/resources/db/changelog/**/*.sql' || true; } \
+            | jq -r '.[] | "::error file=deployment/updater/\(.file),line=\(.line + 1),col=\(.column + 1),title=Squawk \(.rule_name)::\([.message, .help, "https://squawkhq.com/docs/\(.rule_name)"] | map(select(. != null)) | join(" "))"'
+
+      - name: Keep the test reports
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: updater-test-reports
+          path: deployment/updater/build/reports/tests/
+          if-no-files-found: ignore
+          retention-days: 7

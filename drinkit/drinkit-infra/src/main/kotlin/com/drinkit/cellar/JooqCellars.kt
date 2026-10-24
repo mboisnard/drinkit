@@ -16,7 +16,7 @@ import com.drinkit.user.core.UserId
 import org.jooq.DSLContext
 import tools.jackson.databind.json.JsonMapper
 import java.time.Clock
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @JooqRepository
 internal class JooqCellars(private val dslContext: DSLContext, private val clock: Clock, jsonMapper: JsonMapper) :
@@ -32,7 +32,7 @@ internal class JooqCellars(private val dslContext: DSLContext, private val clock
             .set(CELLAR.LOCATION, cityLocationConverter.to(cellar.location))
             .set(CELLAR.ROOMS, cellarRoomsConverter.to(cellar.rooms.allAsString()))
             .set(CELLAR.OWNER_ID, cellar.owner.value)
-            .set(CELLAR.MODIFIED, LocalDateTime.now(clock))
+            .set(CELLAR.MODIFIED, OffsetDateTime.now(clock))
             .onConflict(CELLAR.ID)
             .doNothing()
 
