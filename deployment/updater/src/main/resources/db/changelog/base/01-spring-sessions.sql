@@ -1,5 +1,11 @@
 --liquibase formatted sql
---changeset mboisnard:01-spring-sessions logicalFilePath:fixed splitStatements:false runInTransaction:false runOnChange:true
+--changeset mboisnard:01-spring-sessions logicalFilePath:fixed runInTransaction:false runOnChange:true
+
+-- The tables of Spring Session JDBC, kept as its schema-postgresql.sql ships them
+-- squawk-ignore-file ban-char-field, prefer-bigint-over-int
+
+SET lock_timeout = '5s';
+SET statement_timeout = '1min';
 
 -- Session Schema
 
@@ -18,13 +24,13 @@ CREATE TABLE IF NOT EXISTS drinkit_session.spring_session
     principal_name        VARCHAR(100)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS spring_session_session_id_idx
+CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS spring_session_session_id_idx
     ON drinkit_session.spring_session (session_id);
 
-CREATE INDEX IF NOT EXISTS spring_session_expiry_time_idx
+CREATE INDEX CONCURRENTLY IF NOT EXISTS spring_session_expiry_time_idx
     ON drinkit_session.spring_session (expiry_time);
 
-CREATE INDEX IF NOT EXISTS spring_session_principal_name_idx
+CREATE INDEX CONCURRENTLY IF NOT EXISTS spring_session_principal_name_idx
     ON drinkit_session.spring_session (principal_name);
 
 CREATE TABLE IF NOT EXISTS drinkit_session.spring_session_attributes

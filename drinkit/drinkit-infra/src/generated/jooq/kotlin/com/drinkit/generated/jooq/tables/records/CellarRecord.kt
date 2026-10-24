@@ -6,7 +6,7 @@ package com.drinkit.generated.jooq.tables.records
 
 import com.drinkit.generated.jooq.tables.Cellar
 
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 import org.jooq.JSONB
 import org.jooq.Record1
@@ -39,9 +39,9 @@ open class CellarRecord private constructor() : UpdatableRecordImpl<CellarRecord
         set(value): Unit = set(4, value)
         get(): JSONB = get(4) as JSONB
 
-    open var modified: LocalDateTime
+    open var modified: OffsetDateTime
         set(value): Unit = set(5, value)
-        get(): LocalDateTime = get(5) as LocalDateTime
+        get(): OffsetDateTime = get(5) as OffsetDateTime
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -52,7 +52,7 @@ open class CellarRecord private constructor() : UpdatableRecordImpl<CellarRecord
     /**
      * Create a detached, initialised CellarRecord
      */
-    constructor(id: String, ownerId: String, name: String, location: JSONB, rooms: JSONB, modified: LocalDateTime): this() {
+    constructor(id: String, ownerId: String, name: String, location: JSONB, rooms: JSONB, modified: OffsetDateTime): this() {
         this.id = id
         this.ownerId = ownerId
         this.name = name

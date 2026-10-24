@@ -9,7 +9,7 @@ import com.drinkit.generated.jooq.indexes.CELLAR_OWNER_ID_IDX
 import com.drinkit.generated.jooq.keys.CELLAR_PKEY
 import com.drinkit.generated.jooq.tables.records.CellarRecord
 
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 import kotlin.collections.Collection
 import kotlin.collections.List
@@ -103,7 +103,7 @@ open class Cellar(
     /**
      * The column <code>drinkit_application.cellar.modified</code>.
      */
-    val MODIFIED: TableField<CellarRecord, LocalDateTime?> = createField(DSL.name("modified"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "")
+    val MODIFIED: TableField<CellarRecord, OffsetDateTime?> = createField(DSL.name("modified"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
     private constructor(alias: Name, aliased: Table<CellarRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<CellarRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
