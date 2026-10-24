@@ -10,6 +10,7 @@ flowchart LR
   decision{Decision<br/>which lanes changed,<br/>all on an unknown file}
   decision -- workflows --> cifiles[CI files<br/>actionlint, zizmor]
   decision -- backend --> backend[Backend<br/>build, tests, detekt]
+  decision -- updater --> updater[Updater<br/>changelog rules, Squawk]
   decision -- backend --> codeql[CodeQL<br/>not blocking]
   decision -- frontend --> frontend[Frontend<br/>Nuxt build]
   decision -- hooks --> hooks[Hooks<br/>ShellCheck, bats on three shells]
@@ -18,7 +19,7 @@ flowchart LR
   decision -- renovate --> renovate[Renovate<br/>config validator]
   decision -- dependencies --> submission[Dependencies<br/>submit the graph]
   submission -- pull request --> review[Dependencies<br/>review the additions]
-  cifiles & backend & frontend & hooks & docs & ops & renovate & submission & review --> gate[[CI gate<br/>the only required check]]
+  cifiles & backend & updater & frontend & hooks & docs & ops & renovate & submission & review --> gate[[CI gate<br/>the only required check]]
   docs -- master only --> pages[Deploy docs<br/>GitHub Pages]
   gate -.->|next, master only| images[Publish images]
 ```
@@ -31,7 +32,7 @@ flowchart LR
 |---|---|---|
 | [`ci.yml`][ci-yml] | Entry point: triggers, decision, lanes, gate | on pull requests, master pushes, by hand |
 | [`config/ci-lanes.yml`][ci-lanes] | The paths of each lane, in a subfolder since GitHub reads every file at the top as a workflow | by the decision job |
-| `ci-workflows.yml`, `ci-backend.yml`, `ci-frontend.yml`, `ci-hooks.yml`, `ci-ops.yml`, `ci-renovate.yml`, `ci-docs.yml`, `ci-dependencies.yml` | One lane each: what it checks | by `ci.yml`, when the lane changed |
+| `ci-workflows.yml`, `ci-backend.yml`, `ci-updater.yml`, `ci-frontend.yml`, `ci-hooks.yml`, `ci-ops.yml`, `ci-renovate.yml`, `ci-docs.yml`, `ci-dependencies.yml` | One lane each: what it checks | by `ci.yml`, when the lane changed |
 | `ci-codeql.yml` | The security analysis, outside the gate | by `ci.yml`, with the backend lane |
 | `cd-docs.yml` | A deployment: publishes what a lane built | by `ci.yml`, on master |
 | [`weekly.yml`][weekly-yml] | Starts a full run of `ci.yml` every Monday | on a schedule |
@@ -46,11 +47,13 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 | Change | Lanes | Why |
 |---|---|---|
 | `.github/workflows/**`, `.github/actions/**`, `.github/actionlint.yaml` | every lane, CI files included | Every list includes the `workflows` list: a change to the CI proves every lane still runs, and actionlint and zizmor check it |
-| The sources of a backend module or tech starter, build logic, Gradle setup and lock files, detekt configuration, `deployment/updater`, `architecture-tests` | Backend, CodeQL, Docs | The domain and tech starter pages are generated from the backend sources, so the docs lane lists the backend paths too |
+| The sources of a backend module or tech starter, `architecture-tests` | Backend, CodeQL, Docs | The domain and tech starter pages are generated from the backend sources, so the docs lane lists the backend paths too |
+| Build logic, Gradle setup and lock files, detekt configuration | Backend, CodeQL, Docs, Updater | Every Gradle module builds with them, the updater included |
+| `deployment/updater/**` | Updater | The changelogs, their checks and the Squawk configuration |
 | `drinkit/drinkit-api-contract/contract/**` | Backend, CodeQL, Frontend, Docs | The Kotlin interfaces and the TypeScript client are both generated from it |
 | `drinkit/drinkit-frontend/**` | Frontend | |
 | `docs/**`, or a tech starter `README.md` | Docs | A starter README is copied into its page |
-| `.nvmrc` | Frontend, Docs, Hooks | The Node version the three use |
+| `.nvmrc` | Updater, Frontend, Docs, Hooks | The Node version that runs Squawk, the Nuxt app, the docs site and bats |
 | A Gradle script or lock file, anything under `gradle/`, a `package.json` or `package-lock.json` | Dependencies, plus the lane the file belongs to | |
 | `deployment/local/**` | Ops | |
 | `.github/renovate.json` | Renovate | It decides what merges without a review |
@@ -64,7 +67,8 @@ A job in `ci.yml` grants its lane a ceiling of permissions, and each job of the 
 |---|---|---|---|
 | `Decision` | always | Sorts the changed files into lanes | through the gate |
 | `CI files` | workflows | [actionlint][actionlint] checks the syntax, the expressions, the action inputs and, with ShellCheck, the `run:` scripts. [zizmor][zizmor] audits the security of the workflows and the composite action. A finding of either fails the job | yes |
-| `Backend` | backend | `./gradlew build detektAll`: compiles, tests, runs detekt once and publishes its findings to code scanning. Keeps the test reports when it fails | yes |
+| `Backend` | backend | `./gradlew build detektAll`: compiles, tests, runs detekt once and publishes its findings to code scanning. Keeps the test reports when it fails. Skips the Squawk task, which the Updater lane runs with Node | yes |
+| `Updater` | updater | `./gradlew :updater:check` with Node: the changelog rules of `ChangelogConventionsTest`, detekt and Squawk. Each Squawk finding becomes an annotation on its line of the pull request, and the test reports are kept when it fails | yes |
 | `CodeQL` | backend | Security analysis of the Kotlin and Java code with the `security-extended` queries | no |
 | `Frontend` | frontend | `npm ci`, generates the API client, `nuxt build` | yes |
 | `Hooks` | hooks | ShellCheck on the hooks and their suites. The bats suites of `.hooks/tests` under dash and `bash --posix` on Linux and under `sh` on macOS, the check of the harness files included: a suite for each hook, settings that run existing hooks, skill globs and relative links that lead somewhere | yes |
