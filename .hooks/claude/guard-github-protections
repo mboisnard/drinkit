@@ -34,7 +34,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         WRAPPER = "^([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*|env|command|exec|nohup|nice|time|sudo|xargs|eval|sh|bash|zsh|dash|ksh|if|elif|then|else|do|while|until|!|timeout([[:space:]]+-[^[:space:]]*)*[[:space:]]+[0-9.]+[smhd]?)([[:space:]]+-[^[:space:]]*)*([[:space:]]+|$)"
         SHELL = "^(eval|sh|bash|zsh|dash|ksh)([[:space:]]|$)"
         SHELL_WORD = "(^|[[:space:]/|&;(])(sh|bash|zsh|dash|ksh)([[:space:]|&;)]|$)"
-        GIT_OPTION = "^[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--(git-dir|work-tree|namespace|config-env)[[:space:]]+[^[:space:]]+|--[a-z-]+(=[^[:space:]]+)?|-[A-Za-z])"
+        GIT_OPTION = "^[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--(git-dir|work-tree|namespace|config-env|attr-source)[[:space:]]+[^[:space:]]+|--[a-z-]+(=[^[:space:]]+)?|-[A-Za-z])"
         HOOKS_PATH_READ = "^config([[:space:]]+(--local|--global|--system|--worktree|--show-origin|--show-scope|--get|get))*[[:space:]]+core\\.hookspath[[:space:]]*$"
         HOOKS_PATH_SET = "^config([[:space:]]+(--local|--global|--system|--worktree|set))*[[:space:]]+core\\.hookspath[[:space:]]+\\.hooks/git[[:space:]]*$"
         CONFIG_QUIET = "^(commit|log|show|diff|blame|shortlog)([[:space:]]|$)"

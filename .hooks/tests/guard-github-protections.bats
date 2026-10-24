@@ -181,6 +181,8 @@ decides deny 'git fetch --upload-pack="git config core.hooksPath /dev/null; git-
 decides deny 'git grep -O"git config core.hooksPath /dev/null;" foo'
 decides deny 'git grep -nO"git config core.hooksPath /dev/null;" foo'
 decides deny 'git grep --open-files="git config core.hooksPath /dev/null;" foo'
+decides deny 'git --attr-source log -c core.hooksPath=/dev/null push origin HEAD:master'
+decides deny 'git --attr-source HEAD push --no-verify origin HEAD:master'
 decides deny 'git -c "a.b=x log" config core.hooksPath /dev/null'
 decides deny 'git -c a.b=x\ log config core.hooksPath /dev/null'
 decides deny 'git --namespace "a log" config core.hooksPath /dev/null'
