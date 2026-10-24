@@ -37,6 +37,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         GIT_OPTION = "^[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--(git-dir|work-tree|namespace|config-env)[[:space:]]+[^[:space:]]+|--[a-z-]+(=[^[:space:]]+)?|-[A-Za-z])"
         HOOKS_PATH_READ = "^config([[:space:]]+(--local|--global|--system|--worktree|--show-origin|--show-scope|--get|get))*[[:space:]]+core\\.hookspath[[:space:]]*$"
         HOOKS_PATH_SET = "^config([[:space:]]+(--local|--global|--system|--worktree|set))*[[:space:]]+core\\.hookspath[[:space:]]+\\.hooks/git[[:space:]]*$"
+        CONFIG_QUIET = "^(commit|log|show|diff|blame|shortlog)([[:space:]]|$)"
         HOOKS ="(^|[^[:alnum:]_.-])\\.hooks([^[:alnum:]_.-]|$)"
         UNDER_HOOKS = "(^|/)\\.hooks(/|$)"
         NEUTRAL = "^(cd|for|fi|done|esac|[}]|export|unset|set|read|:)([[:space:]]|$)"
@@ -248,7 +249,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         config = tolower(subcommand)
         if (config ~ HOOKS_PATH_SET && config ~ /[[:space:]]--(global|system)[[:space:]]/)
             deny("hooks-path-scope", flat)
-        if ((lower ~ /core\.hookspath/ && config !~ HOOKS_PATH_READ && config !~ HOOKS_PATH_SET) || tolower(piece) ~ /git_config_/)
+        if ((lower ~ /core\.hookspath/ && config !~ HOOKS_PATH_READ && config !~ HOOKS_PATH_SET && !only_names_hooks_path(lower, config)) || tolower(piece) ~ /git_config_/)
             deny("hooks-path", flat)
         if (subcommand ~ /^push([[:space:]]|$)/) {
             if (subcommand ~ /[[:space:]]--no-v/)
@@ -256,6 +257,12 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
             push_dir[++pushes] = joined(cd_dir, git_dir)
             push_command[pushes] = flat
         }
+    }
+
+    # A subcommand that never changes the configuration may name core.hooksPath in its arguments, unless an option comes
+    # before it: with its quotes gone, an option value such as -c "a.b=x log" can pass for the subcommand.
+    function only_names_hooks_path(lower, config) {
+        return config ~ CONFIG_QUIET && substr(lower, 1, length(lower) - length(config)) ~ /^git[[:space:]]+$/
     }
 
     # What a $( ), a ( ) or a backquote holds is a command of its own, the words after it belong to the one around it.
