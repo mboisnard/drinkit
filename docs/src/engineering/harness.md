@@ -50,7 +50,7 @@ it is asked for, and other agents are told to read it by `AGENTS.md`.
 | [`test-existing-code`][skill-test-existing] | Covering code that works but has no tests, each test proven able to fail | On request |
 | [`hexagonal-backend`][skill-hexagonal] | Where each piece of a backend feature goes, from use case to controller and security rule | Backend production code |
 | [`api-contract-change`][skill-contract] | Changing the OpenAPI contract, then both generated sides | The contract and the client generator settings |
-| [`database-change`][skill-database] | Changing the schema in place, idempotently, then the jOOQ classes and their tests | The changelogs and the generated jOOQ code |
+| [`database-change`][skill-database] | Changing the schema in `ddl/`, the data in `dml/` and `base/` only in a rebaseline, checked by `:updater:check`, then the jOOQ classes and their tests | The changelogs and the generated jOOQ code |
 | [`frontend-feature`][skill-frontend] | Shaping a feature of the Nuxt app around the generated client | Frontend sources |
 | [`new-backend-tech-starter`][skill-starter] | Creating a backend tech starter, or aligning one with the conventions | On request |
 | [`new-frontend-tech-starter`][skill-frontend-starter] | Creating the first frontend tech starter, a Nuxt layer, once its layout is agreed | On request |
@@ -83,6 +83,7 @@ Enabled once per clone with `git config core.hooksPath .hooks/git`.
 | Dependency verification | The build refuses a dependency or plugin whose SHA-256 differs from the committed one, or has none. Renovate regenerates the file in its own pull requests. Sources, javadoc and two artifacts that plugins resolve on their own are trusted, each with its reason | [`verification-metadata.xml`][verification-metadata] | 2026-10-02 |
 | Dependency locking | `drinkit-backend` resolves exactly the versions its `gradle.lockfile` lists, transitive and test dependencies included. The libraries are not locked, so a new release inside a version range they ask for, cucumber's for instance, fails verification until the files are regenerated | [`com.drinkit.api-convention`][api-convention] | 2026-10-03 |
 | Architecture tests | Konture checks the architecture rules on the module graph and the Kotlin sources. The violations older than a rule are tolerated in the rule itself, by name, with the issue that removes them | [`architecture-tests`][architecture-tests], rules in [Architecture Tests](architecture-tests) | 2026-10-11 |
+| Changelog rules | `./gradlew :updater:check`: `ChangelogConventionsTest` reads each changelog with Liquibase's own parser and checks the rules of `base/`, `ddl/` and `dml/`, and Squawk lints their SQL with every rule listed, on or off, in `.squawk.toml` | [`deployment/updater`][updater] | 2026-10-24 |
 
 ## Continuous integration
 
@@ -91,9 +92,10 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 | Part | What it does | Where | Since |
 |---|---|---|---|
 | `CI gate` | The only required check. Fails when a lane failed or was cancelled, passes when a lane was not needed | [`ci.yml`][ci-yml] | 2026-10-01 |
-| `Decision` | Maps the changed files to the workflows, backend, frontend, hooks, docs, ops, renovate and dependencies lanes. A file no list knows runs every lane | [`ci-lanes.yml`][ci-lanes] | 2026-10-01 |
+| `Decision` | Maps the changed files to the workflows, backend, updater, frontend, hooks, docs, ops, renovate and dependencies lanes. A file no list knows runs every lane | [`ci-lanes.yml`][ci-lanes] | 2026-10-01 |
 | `CI files` | actionlint checks that the workflows are valid and zizmor audits their security, whenever they change. A finding blocks the merge | [`ci-workflows.yml`][ci-workflows-yml] | 2026-10-02 |
 | `Backend` | Compiles and tests the backend and runs detekt in one Gradle run, findings in code scanning | [`ci-backend.yml`][ci-backend-yml] | 2024-03-03 as `build`, detekt in the same run since 2026-10-01 |
+| `Updater` | Checks the changelogs with Node: the rules of `ChangelogConventionsTest` and Squawk. Each Squawk finding becomes an annotation on its line of the pull request | [`ci-updater.yml`][ci-updater-yml] | 2026-10-24 |
 | `CodeQL` | Looks for security flaws in the Kotlin and Java code, results in code scanning. Not required | [`ci-codeql.yml`][ci-codeql-yml] | 2024-03-25, off from 2026-09-13 to 2026-09-26 |
 | `Frontend` | Generates the API client and builds the Nuxt app | [`ci-frontend.yml`][ci-frontend-yml] | 2026-10-01 |
 | `Hooks` | ShellCheck on the hooks, their bats suites under dash, `bash --posix` and macOS `sh`, and the harness check: a suite for each hook, settings commands that run an existing hook with a timeout, skill `paths:` globs that match tracked files, relative links under `.claude/` that lead to a file | [`ci-hooks.yml`][ci-hooks-yml], [`harness.bats`][harness-bats] | 2026-10-05 |
@@ -170,10 +172,12 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [verification-metadata]: https://github.com/mboisnard/drinkit/blob/master/gradle/verification-metadata.xml
 [api-convention]: https://github.com/mboisnard/drinkit/blob/master/build-logic/src/main/kotlin/archetype/com.drinkit.api-convention.gradle.kts
 [architecture-tests]: https://github.com/mboisnard/drinkit/tree/master/architecture-tests
+[updater]: https://github.com/mboisnard/drinkit/tree/master/deployment/updater
 [ci-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci.yml
 [ci-lanes]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/config/ci-lanes.yml
 [ci-workflows-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-workflows.yml
 [ci-backend-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-backend.yml
+[ci-updater-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-updater.yml
 [ci-codeql-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-codeql.yml
 [ci-frontend-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-frontend.yml
 [ci-ops-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci-ops.yml
