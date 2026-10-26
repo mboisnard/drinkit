@@ -12,6 +12,5 @@ As aspiring Software Craftsmen we are raising the bar of professional software d
 
 That is, in pursuit of the items on the left we have found the items on the right to be indispensable.
 
-::: tip
-Original manifesto can be found [here](https://manifesto.softwarecraftsmanship.org/)
-:::
+> [!TIP]
+> Original manifesto can be found [here](https://manifesto.softwarecraftsmanship.org/)

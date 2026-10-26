@@ -43,9 +43,9 @@ val squawk = tasks.register<Exec>("squawk") {
     // Squawk has printed each finding with its rule, the SQL and a fix: say what to do next instead of an exit code
     isIgnoreExitValue = true
     val nextStep = "Squawk failed on the changelogs, as printed above. A finding names its rule, links to its page " +
-        "and shows a fix, and a configuration error names its line in .squawk.toml. The section \"Checked Rules\" " +
-        "of docs/src/engineering/guidelines/database.md says why each rule matters. When a rule does not apply to " +
-        "a statement, write `-- squawk-ignore <rule>` on its own line, right below a `-- <reason>` comment."
+        "and shows a fix, and a configuration error names its line in .squawk.toml. The section \"Checked rules\" " +
+        "of docs/src/engineering/build-and-data/database.md says why each rule matters. When a rule does not apply " +
+        "to a statement, write `-- squawk-ignore <rule>` on its own line, right below a `-- <reason>` comment."
     doLast {
         if (executionResult.get().exitValue != 0) throw GradleException(nextStep)
         passed.get().asFile.writeText("")

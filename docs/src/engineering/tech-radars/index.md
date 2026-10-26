@@ -11,9 +11,8 @@ The Tech Radar is a list of technologies, complemented by an assessment result, 
 
 The Tech Radar is a tool to inspire and support Engineering teams to pick the best technologies for new projects; it provides a platform to share knowledge and experience in technologies, to reflect on technology decisions and continuously evolve our technology landscape. Based on [the pioneering work of ThoughtWorks][thoughtworks], our Tech Radar sets out the changes in technologies that are interesting in software development — changes that we think our engineering teams should pay attention to and use in their projects.
 
-::: info
-*Text and component code inspired from [Zalando Tech Radar][zalando]*
-:::
+> [!NOTE]
+> *Text and component code inspired from [Zalando Tech Radar][zalando]*
 
 [thoughtworks]: https://www.thoughtworks.com/radar
 [zalando]: https://opensource.zalando.com/tech-radar/

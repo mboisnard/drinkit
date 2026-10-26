@@ -8,7 +8,7 @@ paths:
 # A backend feature in DrinkIt
 
 The rules are in the Code patterns section of `AGENTS.md` and on the rules page it points to,
-`docs/src/engineering/architecture-tests.md`. This skill says where each piece goes, in which order, and what to
+`docs/src/engineering/writing-code/testing/architecture-tests.md`. This skill says where each piece goes, in which order, and what to
 avoid. The model to copy for each step is in [examples.md](examples.md).
 
 Tests come first: invoke the `test-driven-development` skill before writing code. Its test order follows the

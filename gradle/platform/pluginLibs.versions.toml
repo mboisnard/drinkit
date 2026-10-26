@@ -3,7 +3,6 @@
 detekt = "2.0.0-alpha.6"
 graalvm-buildtools-native = "1.1.14"
 gradle-git-properties = "4.0.1"
-idea-settings = "4.0.9"
 jooq = "3.21.9"
 konture = "1.0.2"
 kotlin = "2.4.21"
@@ -18,7 +17,6 @@ detekt-plugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "det
 graalvm-buildtools-native-plugin = { module = "org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin", version.ref = "graalvm-buildtools-native" }
 gradle-git-properties-plugin = { module = "com.gorylenko.gradle-git-properties:gradle-git-properties", version.ref = "gradle-git-properties" }
 gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-idea-settings-plugin = { module = "name.remal.idea-settings:name.remal.idea-settings.gradle.plugin", version.ref = "idea-settings" }
 jooq-codegen-gradle-plugin = { module = "org.jooq.jooq-codegen-gradle:org.jooq.jooq-codegen-gradle.gradle.plugin", version.ref = "jooq" }
 jooq-meta = { module = "org.jooq:jooq-meta", version.ref = "jooq" }
 konture-plugin = { module = "io.github.baole.konture:plugin-gradle", version.ref = "konture" }

@@ -7,8 +7,9 @@ paths:
 
 # Changing a build convention
 
-Read `docs/src/engineering/guidelines/build-tool.md` first: it describes each convention and why it exists. The
-"Build traps" section of `AGENTS.md` lists what fails the build. This skill gives the rules and what proves them.
+Read `docs/src/engineering/build-and-data/build-tool.md` first: it gives the role of each convention, and each convention
+file explains its own choices in its comments. The "Build traps" section of `AGENTS.md` lists what fails the build.
+This skill gives the rules and what proves them.
 
 ## 1. Name the plugin by its file
 
@@ -26,8 +27,8 @@ a convention. Versions come from the catalogs of `gradle/platform`, never writte
 
 The configuration cache is on for every build. A convention reads values through providers, never touches
 `project` inside a task action, and registers tasks lazily. Run the build twice: the second run must print
-"Configuration cache entry reused". A plugin that breaks it, as `ide-convention` did, stays out until a fixed
-version exists.
+"Configuration cache entry reused". A plugin that breaks it stays out until a fixed version
+exists.
 
 ## 4. Prove it
 

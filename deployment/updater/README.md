@@ -19,4 +19,4 @@ Liquibase records each file it runs in `DRINKIT_DATABASECHANGELOG`, and skips it
 
 ## Read Next
 
-[`database.md`](../../docs/src/engineering/guidelines/database.md) explains what goes in each folder, how to write a change that never blocks the users, how to rebaseline `base/`, and why each checked rule exists. [ADR 0002](../../docs/src/engineering/adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) records why the changelogs are organized this way.
+[`database.md`](../../docs/src/engineering/build-and-data/database.md) explains what goes in each folder, how to write a change that never blocks the users, how to rebaseline `base/`, and why each checked rule exists. [ADR 0002](../../docs/src/engineering/adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) records why the changelogs are organized this way.
