@@ -84,6 +84,17 @@ export default withMermaid(
               { text: 'CI/CD', link: 'ci-cd' },
 
               {
+                text: 'Decision Records',
+                base: '/engineering/adr/',
+                collapsed: true,
+                items: [
+                  { text: 'About ADRs', link: 'index' },
+                  { text: '0001. Architecture tests with Konture', link: '0001-architecture-tests-with-konture' },
+                  { text: '0002. Base, DDL and DML changelogs', link: '0002-base-ddl-and-dml-changelogs-checked-by-squawk' },
+                ],
+              },
+
+              {
                 text: 'Tech Radars',
                 base: '/engineering/tech-radars/',
                 collapsed: true,
