@@ -196,7 +196,8 @@ same command fixes it.
   the acceptance criteria as binding. The pull request explains the choices made.
 - A structuring choice is the maintainer's: a new module or dependency, a change to the API contract, to the
   schema or to a security rule. Ask before making one: the facts with their real names, one question, two to
-  four options of one line, your recommendation first.
+  four options of one line, your recommendation first. Once the maintainer settles it, the same pull request
+  records it as an ADR, with the `new-adr` skill.
 - A person reads every issue, pull request and comment: follow "Writing issues, pull requests and
   comments" in `CONTRIBUTING.md`. `gh` and the API skip the issue forms, so an issue follows the matching
   form in `.github/ISSUE_TEMPLATE/` by hand: each field's `label` as a `###` heading in the form's order, its

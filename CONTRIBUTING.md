@@ -65,6 +65,9 @@ Leave out the tics of generated text: an em dash for an aside, "not X but Y" con
 transitions such as "it is worth noting", bold on random words. The text also leaves no trace of how it was
 drafted: no placeholder, no restated instruction, no comment on the text itself.
 
+Pages of the documentation site and READMEs follow these rules too, and those of the
+[`documentation-change` skill](.claude/skills/documentation-change/SKILL.md).
+
 ## AI-assisted contributions
 
 Coding agents are welcome, and most of this project is written with them. Whoever opens an issue or a pull

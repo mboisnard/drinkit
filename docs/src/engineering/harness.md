@@ -60,6 +60,8 @@ it is asked for, and other agents are told to read it by `AGENTS.md`.
 | [`harness-change`][skill-harness] | Changing a hook, its test, the settings, a skill or an agent: portable `sh`, a bats suite for each hook, globs that match | The hooks, the settings, the skills and the agents |
 | [`dependency-change`][skill-dependency] | Adding or bumping a dependency: one version in the catalogs and the BOM, then the verification metadata and the lock | The platform, the build scripts and the `package.json` files |
 | [`build-convention-change`][skill-build-convention] | Changing a convention plugin: its id from its file name, the archetypes, the configuration cache | `build-logic` |
+| [`documentation-change`][skill-documentation] | Writing or rewriting a page of the site or a README for a person who reads it once: facts checked against the code, the kind of page, the shape, no generated-text tics | Pages under `docs/src` and the READMEs |
+| [`new-adr`][skill-adr] | Recording a structuring choice the maintainer settled as an ADR, or superseding one, with how the decision is checked | The ADR folder, on request, or once a structuring choice is settled |
 | [`caveman`][skill-caveman] | Terse replies to the maintainer, on by default through `AGENTS.md`, with plain prose where clarity needs it | Every session, `/caveman lite`, `full` or `ultra` |
 
 ## Git hooks
@@ -155,6 +157,8 @@ One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its
 [skill-dependency]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/dependency-change/SKILL.md
 [skill-build-convention]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/build-convention-change/SKILL.md
 [skill-caveman]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/caveman/SKILL.md
+[skill-documentation]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/documentation-change/SKILL.md
+[skill-adr]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-adr/SKILL.md
 [detekt-hook]: https://github.com/mboisnard/drinkit/blob/master/.hooks/claude/detekt-after-edit
 [guard-hook]: https://github.com/mboisnard/drinkit/blob/master/.hooks/claude/guard-github-protections
 [cmux-status]: https://github.com/mboisnard/drinkit/blob/master/.hooks/claude/cmux-status
