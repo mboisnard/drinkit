@@ -52,7 +52,7 @@ allowed() {
 @test "package.json is allowed" { allowed "$repo/drinkit/drinkit-frontend/package.json"; }
 @test "a version catalog is allowed" { allowed "$repo/gradle/libs.versions.toml"; }
 @test "the verification metadata is allowed" { allowed "$repo/gradle/verification-metadata.xml"; }
-@test "a hand-written documentation page is allowed" { allowed "$repo/docs/src/engineering/harness.md"; }
+@test "a hand-written documentation page is allowed" { allowed "$repo/docs/src/engineering/delivery/harness.md"; }
 @test "a .env template is allowed" { allowed "$repo/deployment/local/.env.example" Write; }
 @test "a .env sample is allowed" { allowed "$repo/deployment/local/.env.sample"; }
 @test "a file outside any repository is allowed" { allowed "$work/outside/notes.md" Write; }

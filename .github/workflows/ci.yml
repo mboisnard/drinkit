@@ -1,6 +1,6 @@
 # Entry point of the CI. `decision` maps the changed files to lanes (config/ci-lanes.yml), each lane runs
 # from its own ci-<lane>.yml file when it changed, deployments run from cd-<target>.yml files, and `gate` is
-# the only check the master ruleset requires. docs/src/engineering/ci-cd.md explains the choices
+# the only check the master ruleset requires. docs/src/engineering/delivery/ci-cd.md explains the choices
 name: CI
 
 on:

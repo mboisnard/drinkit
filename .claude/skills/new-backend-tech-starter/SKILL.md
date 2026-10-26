@@ -8,7 +8,7 @@ paths:
 # New backend tech starter
 
 A tech starter solves one technical concern under `tech-starters/backend/<name>-starter/` and knows no business
-word (`tech-starters.md` under `docs/src/engineering/guidelines/`). The module layout, the build file and the
+word (`docs/src/engineering/architecture/tech-starters.md`). The module layout, the build file and the
 code shapes are in [examples.md](examples.md).
 
 ## Done means

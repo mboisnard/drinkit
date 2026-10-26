@@ -84,12 +84,12 @@ Enabled once per clone with `git config core.hooksPath .hooks/git`.
 | Wrapper checksum | The wrapper refuses a Gradle distribution whose SHA-256 differs from the committed one. Renovate updates it with each Gradle version | [`gradle-wrapper.properties`][wrapper-properties] | 2026-09-30 |
 | Dependency verification | The build refuses a dependency or plugin whose SHA-256 differs from the committed one, or has none. Renovate regenerates the file in its own pull requests. Sources, javadoc and two artifacts that plugins resolve on their own are trusted, each with its reason | [`verification-metadata.xml`][verification-metadata] | 2026-10-02 |
 | Dependency locking | `drinkit-backend` resolves exactly the versions its `gradle.lockfile` lists, transitive and test dependencies included. The libraries are not locked, so a new release inside a version range they ask for, cucumber's for instance, fails verification until the files are regenerated | [`com.drinkit.api-convention`][api-convention] | 2026-10-03 |
-| Architecture tests | Konture checks the architecture rules on the module graph and the Kotlin sources. The violations older than a rule are tolerated in the rule itself, by name, with the issue that removes them | [`architecture-tests`][architecture-tests], rules in [Architecture Tests](architecture-tests) | 2026-10-11 |
+| Architecture tests | Konture checks the architecture rules on the module graph and the Kotlin sources. The violations older than a rule are tolerated in the rule itself, by name, with the issue that removes them | [`architecture-tests`][architecture-tests], rules in [Architecture Tests](../writing-code/testing/architecture-tests) | 2026-10-11 |
 | Changelog rules | `./gradlew :updater:check`: `ChangelogConventionsTest` reads each changelog with Liquibase's own parser and checks the rules of `base/`, `ddl/` and `dml/`, and Squawk lints their SQL with every rule listed, on or off, in `.squawk.toml` | [`deployment/updater`][updater] | 2026-10-24 |
 
 ## Continuous integration
 
-One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its own. [CI/CD](./ci-cd) explains the lanes and the choices behind them.
+One workflow, `ci.yml`, runs the lanes a change touches, each from a file of its own. [CI/CD](ci-cd) explains the lanes and the choices behind them.
 
 | Part | What it does | Where | Since |
 |---|---|---|---|

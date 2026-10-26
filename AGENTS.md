@@ -71,13 +71,15 @@ docker run --rm -v "$PWD:/mnt:ro" -w /mnt --entrypoint sh "$(grep -o 'koalaman/s
 - `gradle/platform/`: the version catalogs and the internal BOM.
 - `deployment/local/compose.yml`: the local services the dev profile starts. `deployment/updater`: the
   schema, as Liquibase changelogs.
-- `docs/src/engineering/guidelines/`: the guidelines. The sections below say which one to read before which
-  change.
+- `docs/src/engineering/`: the engineering documentation, its folders in the order of the site:
+  `architecture/`, `build-and-data/`, `writing-code/`, `delivery/`, `adr/`. The sections below say which page
+  to read before which change.
 - `.hooks/`: the git hooks in `git/`, the Claude Code hooks in `claude/`, what they share in `lib/`, their bats
   suites in `tests/`.
-- `architecture-tests/`: the architecture rules, as Konture tests. `docs/src/engineering/architecture-tests.md`
-  lists each rule with its reason and fix, `docs/src/engineering/adr/` records the choices behind them, and
-  `docs/src/engineering/harness.md` says where they run.
+- `architecture-tests/`: the architecture rules, as Konture tests.
+  `docs/src/engineering/writing-code/testing/architecture-tests.md` lists each rule with its reason and fix,
+  `docs/src/engineering/adr/` records the choices behind them, and `docs/src/engineering/delivery/harness.md`
+  says where they run.
 - `.claude/skills/`: how to carry out a kind of change, one folder each. Its `SKILL.md` says when it applies:
   read it before that change, whatever the agent. A skill names its model files by class: find one with
   `git grep -nwE '(class|interface|object) <Name>'`. `.claude/agents/`: the reviewers that check a branch.
@@ -89,10 +91,10 @@ Gradle project named after the folder.
 
 ## Code patterns
 
-Read `docs/src/engineering/guidelines/hexagonal-architecture.md` before adding a port or a module
-dependency, and `docs/src/engineering/guidelines/best-practices/coding-rules.md` before naming things. The
+Read `docs/src/engineering/architecture/hexagonal-architecture.md` before adding a port or a module
+dependency, and `docs/src/engineering/writing-code/best-practices/coding-rules.md` before naming things. The
 architecture tests check the patterns of the domain, infra, backend, Spring, tech starters and tests, naming
-included: `docs/src/engineering/architecture-tests.md` gives each rule with its reason and fix.
+included: `docs/src/engineering/writing-code/testing/architecture-tests.md` gives each rule with its reason and fix.
 
 - Annotate new classes with the `documentation-starter` annotations. `@CoreDomain`, `@Usecase` and
   `@TechStarterTool` generate the documentation pages, the others mark a pattern in the code.
@@ -119,7 +121,7 @@ included: `docs/src/engineering/architecture-tests.md` gives each rule with its 
 
 ## Database and jOOQ
 
-Read `docs/src/engineering/guidelines/database.md` before writing a changelog. A schema change goes in a new
+Read `docs/src/engineering/build-and-data/database.md` before writing a changelog. A schema change goes in a new
 numbered file of `ddl/`, a data change in one of `dml/`, and `base/` changes only in a rebaseline, or before the
 first deployment with the local database recreated. Every statement must be idempotent, which is what makes this
 command safe to replay. It applies them all, in the order Liquibase runs them, and is also the first-run step:
@@ -169,7 +171,7 @@ same command fixes it.
   rule's `suppress` block with the issue that removes it, never loosen the rule.
 - Change the OpenAPI contract, never the code generated from it. A custom string format needs both
   `typeMappings` and `importMappings` in `drinkit/drinkit-backend/build.gradle.kts`.
-- Read `docs/src/engineering/guidelines/build-tool.md` before changing a convention. In `build-logic`, a
+- Read `docs/src/engineering/build-and-data/build-tool.md` before changing a convention. In `build-logic`, a
   plugin id is the file name: no `package` declaration, and file names unique across folders. The
   configuration cache is on, and every convention must stay compatible with it.
 

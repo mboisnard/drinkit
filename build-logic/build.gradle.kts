@@ -24,7 +24,6 @@ dependencies {
     implementation(pluginLibs.graalvm.buildtools.native.plugin)
     implementation(pluginLibs.gradle.git.properties.plugin)
     implementation(pluginLibs.gradle.kotlin.plugin)
-    implementation(pluginLibs.idea.settings.plugin)
     implementation(pluginLibs.jooq.codegen.gradle.plugin)
     implementation(pluginLibs.jooq.meta)
     implementation(pluginLibs.konture.plugin)

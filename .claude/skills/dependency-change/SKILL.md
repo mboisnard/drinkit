@@ -10,7 +10,7 @@ paths:
 # Changing a dependency
 
 The commands are in the "Dependencies" section of `AGENTS.md`, the catalogs and the BOM in
-`docs/src/engineering/guidelines/build-tool.md`. This skill gives the order and what proves each step.
+`docs/src/engineering/build-and-data/build-tool.md`. This skill gives the order and what proves each step.
 
 A new dependency is a structuring choice: ask the maintainer first, as `AGENTS.md` says. Renovate already opens
 the routine bumps.

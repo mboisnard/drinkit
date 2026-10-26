@@ -54,7 +54,7 @@ Links and tools to look at later are on the [ideas page](docs/src/engineering/id
 - `.hooks/`: the git hooks and the Claude Code hooks of the harness, with their bats suites, which
   `npm cit --prefix .hooks` runs.
 - The [documentation site](https://mboisnard.github.io/drinkit/): architecture, guidelines, the pages
-  generated from the code, and the [harness](docs/src/engineering/harness.md) that guards master.
+  generated from the code, and the [harness](docs/src/engineering/delivery/harness.md) that guards master.
 
 ## Quick start
 

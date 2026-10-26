@@ -1,15 +1,14 @@
 # Database
 
-This page explains how we use **PostgreSQL** database with **jOOQ** for code generation and **Liquibase** for managing migrations in this project.
-This approach ensures reliable deployments, safe migrations, and a smooth integration between the database and the application code.
+DrinkIt stores its data in PostgreSQL. Liquibase applies the schema changes, which the build checks, and jOOQ generates from the schema the Kotlin classes the adapters query with. Read this page before you write a changelog.
 
 Most rules below come from one fact: a migration runs while users are still using the application. A migration that holds a table for a few seconds too long stalls their requests, and one that cannot run twice blocks the next deployment. Each rule says what it protects against, so that you can tell when it really applies.
 
-## 🐘 Liquibase
+## 📜 Liquibase
 
-Liquibase is an essential tool for tracking, managing, and applying database schema changes in a platform-independent way. It enables versioned, reproducible, and team-friendly migrations. [ADR 0002](../adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk) records why the changelogs are organized as below.
+Liquibase applies the schema changes and records which ones each database has received. [ADR 0002](../adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk) records why the changelogs are organized as below.
 
-### 📂 Three Folders
+### Three folders
 
 The changelogs live in `deployment/updater/src/main/resources/db/changelog/`. `db.changelog-master.yml` runs three folders, always in this order, and the `.sql` files of a folder in the order of their names. A `.gitkeep` keeps an empty folder in sight:
 
@@ -35,13 +34,13 @@ A `base/` file is named after its level, `<two digits>-<name>.sql`. Files of one
     --changeset mboisnard:0001-add-cellar-description logicalFilePath:fixed runInTransaction:false
     ```
 
-3.  **Timeouts**: Before the first statement, as [Bounded Waits](#bounded-waits) explains.
+3.  **Timeouts**: Before the first statement, as [Bounded waits](#bounded-waits) explains.
     ```sql
     SET lock_timeout = '5s';
     SET statement_timeout = '1min';
     ```
 
-### 🧰 Useful Changeset Options
+### Useful changeset options
 
 -   `logicalFilePath:fixed`: **Mandatory**. Liquibase identifies a changeset by its id, its author and its file path. Fixing the path keeps a moved or renamed file from running again.
 -   `runInTransaction:false`: **Mandatory**. Each statement commits on its own, so a lock lasts one statement instead of the whole file, and `CREATE INDEX CONCURRENTLY`, which refuses to run in a transaction, can run. A file that fails halfway runs again from its first statement, which is why every statement is idempotent.
@@ -49,7 +48,7 @@ A `base/` file is named after its level, `<two digits>-<name>.sql`. Files of one
 -   `splitStatements`: Left to its default, so Liquibase sends the statements one by one, as Squawk reads them. Its splitter cuts a `$$` body at an inner `END IF;`, which is one reason a changelog holds no `DO` block.
 -   `labels:local`: Allows you to run a script only in a specific environment (e.g., `local` for development).
 
-### ♻️ Rebaselining {#rebaselining}
+### Rebaselining
 
 When `ddl/` holds many files that every environment has run, rewrite `base/` from the current schema and delete those files. A new database then builds its schema from a few readable files, and the history stays short. GitLab does the same a few times a year, folding its old migrations into one structure file, and Flyway calls such a file a baseline migration.
 
@@ -61,13 +60,13 @@ When `ddl/` holds many files that every environment has run, rewrite `base/` fro
 
 The rebaseline is safe for existing databases. The new `base/` runs again there and finds every object in place, so each statement changes nothing and blocks no read or write. Liquibase ignores the rows of `DATABASECHANGELOG` whose file is gone.
 
-### 🔒Security: Liquibase Outside the Application
+### Liquibase outside the application
 
 To enhance security, it is recommended to run Liquibase via an external process (CI/CD, dedicated script) with elevated privileges, while the application connects to the database using a role with restricted permissions (read/write on its tables, but no administrative rights like `CREATE`, `ALTER`, `DROP`). For the same reason, a changelog never changes roles, privileges or server settings: they belong to the people who run the database.
 
-## ✅ Database Best Practices
+## 🗄️ Database best practices
 
-- **Use a Dedicated Schema**: To avoid conflicts and keep your database well-organized, it is crucial not to use the default `public` schema. Create a specific schema for your application, such as `drinkit_application`. This isolates your database objects and simplifies permissions management. Name the schema in every statement too: PostgreSQL otherwise picks the table through the `search_path`, which may not be the one you meant.
+- **Use a Dedicated Schema**: To avoid conflicts and keep your database well-organized, do not use the default `public` schema. Create a specific schema for your application, such as `drinkit_application`. This isolates your database objects and simplifies permissions management. Name the schema in every statement too: PostgreSQL otherwise picks the table through the `search_path`, which may not be the one you meant.
 
 
 - **Don't ignore timezones when manipulating dates and times**: don't use `TIMESTAMP` alone use `TIMESTAMP WITH TIME ZONE` unless you actually want to store a logical date such as a birth date, in which case you should use `DATE`. A `TIMESTAMP` drops the offset it was given: `10:00+02` and `10:00-06` are stored as the same value although they are eight hours apart.
@@ -82,19 +81,19 @@ To enhance security, it is recommended to run Liquibase via an external process 
   - No `CHAR(n)`, which pads its values with spaces and compares them in surprising ways.
   - A `VARCHAR(n)` is fine when its length is a rule of the data, since it is often the only guard on it. Widening it later only changes the catalog.
 
-## 🛡️Writing Safe Migrations
+## 🛡️ Writing safe migrations
 
-### Why Locks Matter 🔐
+### Why locks matter
 
 PostgreSQL takes a lock on a table for each statement. Most locks share well: reads and writes run side by side. A schema change usually needs an `ACCESS EXCLUSIVE` lock, which shares with nothing. While it waits for a long query to finish, every query that arrives after it queues behind it, reads included. The table then looks down for every user, although the change itself would take a millisecond.
 
 The rules below keep each lock short, bounded in time, and away from statements that do not need it. Measured on PostgreSQL 18.6, even a statement guarded by `IF NOT EXISTS` takes its lock before it finds nothing to do: `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` waits for an `ACCESS EXCLUSIVE` lock when the column exists, and `CREATE INDEX IF NOT EXISTS` for a `SHARE` lock that blocks writes. `CREATE TABLE IF NOT EXISTS` waits for nothing. `CREATE INDEX CONCURRENTLY IF NOT EXISTS` and `COMMENT ON` take a `SHARE UPDATE EXCLUSIVE` lock, which lets reads and writes through, but waits behind a running `VACUUM`, `ANALYZE` or index build, at most `lock_timeout`. An autovacuum gives way to it at once, a manual `VACUUM` does not. This is why `base/` keeps to these statements: running it again never blocks a user.
 
-### Bounded Waits ⏱️ {#bounded-waits}
+### Bounded waits
 
 `SET lock_timeout = '5s'` turns a long wait for a lock into a failure after five seconds: the deployment fails and runs again later, rather than stalling the application. `SET statement_timeout = '1min'` bounds a statement that runs for too long. A file that needs more, an index on a large table for instance, raises `statement_timeout` right before that statement. A `SET` lasts until the end of the Liquibase run, into the next files: a file resets any other setting it changes, with `RESET`.
 
-### The Golden Rule: Idempotency 🔄
+### Idempotency, the first rule
 
 The fundamental rule is that **every statement must be idempotent**.
 An idempotent operation can be executed multiple times without changing the result beyond its initial application.
@@ -106,15 +105,15 @@ Three situations run a statement again: a file that failed halfway runs again fr
 -   `DROP ... IF EXISTS ...`
 -   `INSERT ... ON CONFLICT DO NOTHING`, for data
 
-When a statement has no `IF NOT EXISTS` form (`ADD CONSTRAINT` for instance), drop the object with `IF EXISTS` first, as [Foreign Keys](#foreign-keys) shows.
+When a statement has no `IF NOT EXISTS` form (`ADD CONSTRAINT` for instance), drop the object with `IF EXISTS` first, as [Foreign keys](#foreign-keys) shows.
 
 A new database and an existing one end up with the same schema, since both run the same files in the same order.
 
-### Handling Complex Schema Changes (Without Locking) ⚠️
+### Complex schema changes without long locks
 
 Certain database operations can lock tables for a long time (`ACCESS EXCLUSIVE lock`), which is unacceptable in production. Here is how to handle the most common cases.
 
-#### Creating/Dropping Indexes 🔍
+#### Creating and dropping indexes
 
 A standard index creation or deletion blocks the writes to the table while it runs, minutes on a large table.
 
@@ -130,7 +129,7 @@ A standard index creation or deletion blocks the writes to the table while it ru
 -   **Large table**: An index that takes minutes to build goes in a file of its own, with a raised `statement_timeout`.
 -   **Tip**: Before dropping a column (`DROP COLUMN`), it is better to first drop any associated indexes using `DROP INDEX CONCURRENTLY` to minimize the duration of the `ACCESS EXCLUSIVE` lock on the table.
 
-#### Foreign Keys 🔗 {#foreign-keys}
+#### Foreign keys
 
 Adding a foreign key to an existing table checks every row under a lock that blocks its writes. Add it `NOT VALID`, which checks the new rows only, then validate it in the next file, under a lock that lets reads and writes through. Index the referencing columns: a delete in the referenced table looks them up, and scans the whole table without an index.
 
@@ -150,22 +149,22 @@ ALTER TABLE drinkit_application.tasting VALIDATE CONSTRAINT tasting_cellar_id_fk
 
 A `UNIQUE` constraint follows the same idea: build its index concurrently, then `ADD CONSTRAINT ... UNIQUE USING INDEX`, which takes the existing index instead of building one under lock.
 
-#### NOT NULL Constraint 🚫
+#### NOT NULL constraint
 
 Adding a `NOT NULL` constraint on a large table locks it while it scans all rows. To avoid this, proceed in three steps (in separate files, each applied before the next):
 
-1.  **Add a non-validated `CHECK` constraint**: It is added instantly because the database does not check existing data. Dropping it first keeps the file idempotent, as for [Foreign Keys](#foreign-keys).
+1.  **Add a non-validated `CHECK` constraint**: It is added instantly because the database does not check existing data. Dropping it first keeps the file idempotent, as for [Foreign keys](#foreign-keys).
 2.  **Manually verify** that there are no longer any `NULL` values in the column, or fill them in a `dml/` file.
 3.  **Validate the constraint**: This operation only requires a light lock to update metadata.
     ```sql
     ALTER TABLE my_table VALIDATE CONSTRAINT my_column_not_null;
     ```
 
-#### Adding a Column With a Default ➕
+#### Adding a column with a default
 
 A constant default, or a stable one such as `now()`, adds the column without rewriting the table. A volatile default such as `gen_random_uuid()` rewrites it under lock: add the column without a default, set the default, then fill the existing rows in batches from `dml/`.
 
-#### Changing a Column Type ↔️
+#### Changing a column type
 
 Some changes only update the catalog: widening a `VARCHAR(n)`, `VARCHAR` to `TEXT`, and `TIMESTAMP` to `TIMESTAMP WITH TIME ZONE` under `SET TimeZone = 'UTC'`. Squawk flags them all the same: tolerate its rule with that reason.
 
@@ -181,7 +180,7 @@ In most other cases, changing a column's type rewrites the entire table. A safer
 3.  Update the **application code** to use the new column.
 4.  Once the code is deployed and stable, drop the old column and the trigger in a later file.
 
-#### Renaming and Dropping ✂️
+#### Renaming and dropping
 
 During a deployment, the previous version of the application keeps running until the new one replaces it, and it still uses the old names. A rename breaks it at once. Change names in steps, which is called expand and contract:
 
@@ -191,17 +190,13 @@ During a deployment, the previous version of the application keeps running until
 
 A drop destroys data that no rollback brings back. Squawk refuses every drop until a `-- squawk-ignore` says, on the line above, why the data is no longer needed.
 
-#### Changing Data 📦
+#### Changing data
 
 - **Idempotent**: write `INSERT ... ON CONFLICT DO NOTHING`, or an `UPDATE` whose `WHERE` skips the rows already done, so that running it again changes nothing.
 - **In batches**: an `UPDATE` of many rows holds the lock of each row until it ends, and leaves as many dead rows to clean. Split a large backfill in several statements of a few thousand rows each.
 - **After the schema**: `dml/` runs after `ddl/`, so a backfill can fill a column added in the same deployment.
 
-::: tip
-More best practices [here](https://medium.com/paypal-tech/postgresql-at-scale-database-schema-changes-without-downtime-20d3749ed680)
-:::
-
-## ✔️ Checked Rules
+## 🔍 Checked rules
 
 `./gradlew :updater:check`, part of `./gradlew build`, runs two checks, and fails on any finding. It needs Node, at the version of `.nvmrc`, on the `PATH`.
 
@@ -210,7 +205,7 @@ More best practices [here](https://medium.com/paypal-tech/postgresql-at-scale-da
 
 In CI, the Updater lane runs the same command, then puts each Squawk finding on its line, in the "Files changed" tab of the pull request.
 
-### What a Failure Looks Like
+### What a failure looks like
 
 A rule of `ChangelogConventionsTest` names itself, says why it exists and how to fix it, then lists every file that breaks it:
 
@@ -218,7 +213,7 @@ A rule of `ChangelogConventionsTest` names itself, says why it exists and how to
 ChangelogConventionsTest > every base migration only creates what is missing() FAILED
     Rule base-creates-only: base/ runs again on existing databases, where each statement must change nothing
     and block no read or write. Fix: keep to `SET`, `CREATE ... IF NOT EXISTS`, `CREATE INDEX CONCURRENTLY IF NOT EXISTS`
-    and `COMMENT ON`, and write any other change in a ddl/ file. See "Checked Rules" in database.md.
+    and `COMMENT ON`, and write any other change in a ddl/ file. See "Checked rules" in database.md.
     expected:<[]> but was:<["base/02-cellar-rooms.sql"]>
 ```
 
@@ -235,9 +230,9 @@ Execution failed for task ':updater:squawk'.
 > Squawk failed on the changelogs, as printed above. A finding names its rule, links to its page and shows a fix.
 ```
 
-### Tolerating a Rule
+### Tolerating a rule
 
-A rule that does not apply to one statement is tolerated in its file, never for the whole project: `-- squawk-ignore <rule>` for the next statement, `-- squawk-ignore-file <rule>` for the whole file. The directive stands on a line of its own, right below a comment that says why the rule does not apply, as the examples of [Foreign Keys](#foreign-keys) show.
+A rule that does not apply to one statement is tolerated in its file, never for the whole project: `-- squawk-ignore <rule>` for the next statement, `-- squawk-ignore-file <rule>` for the whole file. The directive stands on a line of its own, right below a comment that says why the rule does not apply, as the examples of [Foreign keys](#foreign-keys) show.
 
 ### Rules of `ChangelogConventionsTest`
 
@@ -283,9 +278,37 @@ Four rules are off, each for a reason written in `.squawk.toml`:
 
 On a Squawk upgrade, read its changelog and put each new rule in one of the two lists of `.squawk.toml`: a misspelled or unknown name makes Squawk fail.
 
-### Not Checked Yet
+### Not checked yet
 
 Neither check starts a database, so a few rules wait for a test against PostgreSQL ([#502](https://github.com/mboisnard/drinkit/issues/502)): a primary key on each table, an index behind each foreign key, no invalid index left behind, names without hyphens, the same schema for a new and an existing database after a rebaseline, and no read or write blocked when `base/` runs again.
+
+## ⚙️ jOOQ code generation
+
+jOOQ generates Kotlin classes from the database schema, and the adapters write their SQL queries with them. The compiler then checks each query: a renamed column fails the build instead of a request.
+
+### Why the generated classes are committed
+
+We commit the jOOQ-generated files to our code repository. The main reason is to **simplify the Continuous Integration (CI) pipeline**. Without this, the CI would have to:
+1.  Start a PostgreSQL container using [Testcontainers](../writing-code/testing/testcontainers.md).
+2.  Run all Liquibase migrations.
+3.  Generate the jOOQ code from this newly created database.
+4.  Compile and test the application.
+
+Committing the code avoids this overhead and complexity in the CI process. After a changelog change, apply it locally and regenerate the classes as the "Database and jOOQ" section of `AGENTS.md` describes.
+
+## 🧪 Integration tests
+
+An adapter's queries are tested against a real PostgreSQL, which [Testcontainers](../writing-code/testing/testcontainers.md) starts once in Docker. `@JooqIntegrationTest` sets it up and builds its schema from the committed jOOQ classes, not from Liquibase: a schema change is tested once those classes are regenerated.
+
+```kotlin
+@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+internal class JooqExchangeRatesTest : ExchangeRatesTestContract() {
+    // ...
+    override fun fetchRepository(): ExchangeRates = JooqExchangeRates(dsl = dsl, clock = ControlledClock())
+}
+```
+
+The test runs the port's test contract, the same tests the [in-memory double](../writing-code/testing/testdouble.md) passes.
 
 ## 📚 Sources
 
@@ -296,33 +319,3 @@ Neither check starts a database, so a few rules wait for a test against PostgreS
 - [Squawk rules](https://squawkhq.com/docs/rules)
 - [Best Practices](https://docs.liquibase.com/concepts/bestpractices.html) and [Trimming ChangeLogs](https://www.liquibase.com/blog/trimming-liquibase-changelogs), Liquibase
 - [Baseline Migrations](https://documentation.red-gate.com/fd/baseline-migrations-273973336.html), Flyway
-
-## ✨ jOOQ Code Generation
-
-jOOQ generates Java/Kotlin classes from your database schema. This provides a type-safe DSL (Domain Specific Language) for writing elegant and safe SQL queries directly in your code.
-
-### Why Commit Generated Code? 🚀
-
-We commit the jOOQ-generated files to our code repository. The main reason is to **simplify the Continuous Integration (CI) pipeline**. Without this, the CI would have to:
-1.  Start a PostgreSQL container using TestContainer.
-2.  Run all Liquibase migrations.
-3.  Generate the jOOQ code from this newly created database.
-4.  Compile and test the application.
-
-Committing the code avoids this overhead and complexity in the CI process. After a changelog change, apply it locally and regenerate the classes as the "Database and jOOQ" section of `AGENTS.md` describes.
-
-## 🧪 Integration Testing
-
-To ensure our queries work as expected, we use integration tests that connect to a real database.
-
--   **TestContainers** 🐳: This tool starts a PostgreSQL Docker container for each test suite. The database connection is then configured to point to this container.
--   **Using jOOQ Schemas**: Instead of using annotations like `@Sql` to load test data from SQL files, we can directly use the jOOQ-generated schemas to insert the necessary data for the test.
-
-Here is a configuration example with a custom annotation in Kotlin:
-```kotlin
-// Usage in a test class
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
-class MyJooqRepositoryTest {
-    // ... tests ...
-}
-```

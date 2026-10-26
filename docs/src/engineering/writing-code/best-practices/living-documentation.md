@@ -86,9 +86,8 @@ class RegisterUser(private val users: Users) {
 }
 ```
 
-::: tip
-You can also use KDoc instead of the `description` parameter. The `name` parameter is optional to override the class name.
-:::
+> [!TIP]
+> You can also use KDoc instead of the `description` parameter. The `name` parameter is optional to override the class name.
 
 ### Generate Documentation
 
@@ -101,8 +100,8 @@ CI generates it before building the site, and deploys the site from master.
 
 ## Resources
 
-::: tip Learn More
-- [Living Documentation by Design - Cyrille Martraire](https://www.goodreads.com/book/show/34927405-living-documentation)
-- [Domain-Driven Design - Eric Evans](https://www.domainlanguage.com/ddd/)
-- [KSP Documentation](https://kotlinlang.org/docs/ksp-overview.html)
-:::
+> [!TIP]
+> **Learn More**
+> - [Living Documentation by Design - Cyrille Martraire](https://www.goodreads.com/book/show/34927405-living-documentation)
+> - [Domain-Driven Design - Eric Evans](https://www.domainlanguage.com/ddd/)
+> - [KSP Documentation](https://kotlinlang.org/docs/ksp-overview.html)

@@ -50,7 +50,8 @@ Also check:
 
 Read these fresh, then apply them to the diff (`git -C <worktree> diff <base>..<head>`):
 
-- for a backend change, `coding-rules.md` and `hexagonal-architecture.md` under `docs/src/engineering/guidelines/`;
+- for a backend change, `docs/src/engineering/writing-code/best-practices/coding-rules.md` and
+  `docs/src/engineering/architecture/hexagonal-architecture.md`;
 - in `.claude/skills/test-driven-development/`, the cycle rules and the refactor checklists of `SKILL.md`, and
   `backend.md` or `frontend.md` for the side the diff touches;
 - `AGENTS.md` again, from the worktree, only when the diff changes it.
