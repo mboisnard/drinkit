@@ -5,16 +5,12 @@
 
 command -v jq >/dev/null 2>&1 || exit 0
 
-input=$(cat)
-event=$(printf '%s' "$input" | jq -r '.hook_event_name // empty')
-source=$(printf '%s' "$input" | jq -r '.source // empty')
-cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
+event='' source='' cwd=''
+eval "$(jq -r '@sh "event=\(.hook_event_name // "") source=\(.source // "") cwd=\(.cwd // "")"')"
 
 # cwd follows Claude's cd, which can leave the repository.
 root=$(git -C "${cwd:-.}" rev-parse --show-toplevel 2>/dev/null)
-if [ -z "$root" ] && [ -n "$CLAUDE_PROJECT_DIR" ]; then
-    root=$(git -C "$CLAUDE_PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null)
-fi
+[ -n "$root" ] || [ -z "$CLAUDE_PROJECT_DIR" ] || root=$(git -C "$CLAUDE_PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null)
 [ -n "$root" ] || exit 0
 
 # Only a new session starts from a clean slate: after a resume, a /clear or a compaction, the changes not checked yet
@@ -23,32 +19,27 @@ fi
 case $(git -C "$root" branch --show-current) in
     pr-*) exit 0 ;;
 esac
-state=$(git -C "$root" rev-parse --path-format=absolute --git-path claude) || exit 0
-mkdir -p "$state" || exit 0
+state=$(git -C "$root" rev-parse --path-format=absolute --git-path claude) && mkdir -p "$state" || exit 0
 
-fingerprint() {
-    (
-        cd "$root" || exit
+# Succeeds when the files of <patterns> changed since <kind> was last checked, their state in $print. A session start
+# only records it, and so does a worktree seen for the first time, while it matches its commit.
+needs_check() {
+    kind=$1
+    shift
+    print=$(cd "$root" && {
         git ls-files --stage -- "$@"
         git diff -- "$@"
         git ls-files -z --others --exclude-standard -- "$@" | xargs -0 cat
-    ) | cksum
-}
-
-record() {
-    printf '%s\n' "$2" >"$state/$1-checked"
-}
-
-# A worktree seen for the first time has nothing to check while it matches its commit.
-needs_check() {
-    kind=$1
-    print=$2
-    shift 2
-    if [ ! -f "$state/$kind-checked" ] && [ -z "$(git -C "$root" status --porcelain -- "$@")" ]; then
-        record "$kind" "$print"
+    } | cksum)
+    if [ "$event" = SessionStart ] || { [ ! -f "$state/$kind-checked" ] && [ -z "$(git -C "$root" status --porcelain -- "$@")" ]; }; then
+        record "$kind"
         return 1
     fi
     [ "$(cat "$state/$kind-checked" 2>/dev/null)" != "$print" ]
+}
+
+record() {
+    printf '%s\n' "$print" >"$state/$1-checked"
 }
 
 compile_kotlin() {
@@ -56,57 +47,34 @@ compile_kotlin() {
     [ -f "$root/architecture-tests/build.gradle.kts" ] && set -- "$@" :architecture-tests:test
     output=$(cd "$root" && ./gradlew "$@" --console=plain 2>&1) && return
     found=$(printf '%s\n' "$output" | grep '^e: ' | head -n 30)
-    if [ -n "$found" ]; then
-        printf 'The Kotlin code no longer compiles:\n%s\n' "$found"
-        return
-    fi
+    [ -n "$found" ] && printf 'The Kotlin code no longer compiles:\n%s\n' "$found" && return
     # A broken rule prints its id, then its reason and fix on the next line, then each violation
     found=$(printf '%s\n' "$output" | awk '/ Rule: /{print; getline; print; next} /Message: |File: /' |
         sed 's/^ *//; s/^java.lang.AssertionError: //' | head -n 30)
-    if [ -n "$found" ]; then
-        printf 'An architecture rule is broken:\n%s\n' "$found"
-        return
-    fi
+    [ -n "$found" ] && printf 'An architecture rule is broken:\n%s\n' "$found" && return
     printf 'The Kotlin build fails:\n%s\n' "$(printf '%s\n' "$output" | tail -n 30)"
-}
-
-type_check_app() {
-    manifest=$1
-    jq -e '.scripts.typecheck' "$root/$manifest" >/dev/null 2>&1 || return
-    app=$(dirname "$root/$manifest")
-    [ -d "$app/node_modules" ] || return
-    output=$(cd "$app" && npm run --silent typecheck 2>&1 </dev/null) && return
-    printf 'The type check of %s fails:\n%s\n' "$manifest" "$(printf '%s\n' "$output" | tail -n 30)"
 }
 
 type_check_frontend() {
     git -C "$root" ls-files -- '*package.json' | while IFS= read -r manifest; do
-        type_check_app "$manifest"
+        app=$(dirname "$root/$manifest")
+        jq -e '.scripts.typecheck' "$root/$manifest" >/dev/null 2>&1 && [ -d "$app/node_modules" ] || continue
+        output=$(cd "$app" && npm run --silent typecheck 2>&1 </dev/null) ||
+            printf 'The type check of %s fails:\n%s\n' "$manifest" "$(printf '%s\n' "$output" | tail -n 30)"
     done
 }
 
-kotlin_print=$(fingerprint '*.kt' '*.kts')
-typescript_print=$(fingerprint '*.vue' '*.ts')
-if [ "$event" = SessionStart ]; then
-    record kotlin "$kotlin_print"
-    record typescript "$typescript_print"
-    exit 0
-fi
-
 kotlin_errors=
-if needs_check kotlin "$kotlin_print" '*.kt' '*.kts' && [ -x "$root/gradlew" ]; then
+if needs_check kotlin '*.kt' '*.kts' && [ -x "$root/gradlew" ]; then
     kotlin_errors=$(compile_kotlin)
-    record kotlin "$kotlin_print"
+    record kotlin
 fi
-
 typescript_errors=
-if needs_check typescript "$typescript_print" '*.vue' '*.ts' && command -v npm >/dev/null 2>&1; then
+if needs_check typescript '*.vue' '*.ts' && command -v npm >/dev/null 2>&1; then
     typescript_errors=$(type_check_frontend)
-    record typescript "$typescript_print"
+    record typescript
 fi
 
 [ -n "$kotlin_errors$typescript_errors" ] || exit 0
-jq -n --arg kotlin "$kotlin_errors" --arg typescript "$typescript_errors" '{
-    decision: "block",
-    reason: (["compile-at-stop: fix this before you finish.", $kotlin, $typescript] | map(select(. != "")) | join("\n"))
-}'
+jq -n --arg kotlin "$kotlin_errors" --arg typescript "$typescript_errors" '{decision: "block",
+    reason: (["compile-at-stop: fix this before you finish.", $kotlin, $typescript] | map(select(. != "")) | join("\n"))}'

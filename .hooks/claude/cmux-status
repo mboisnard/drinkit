@@ -7,63 +7,43 @@
 command -v cmux >/dev/null 2>&1 || exit 0
 command -v jq >/dev/null 2>&1 || exit 0
 
-input=$(cat)
-
-field() {
-    printf '%s' "$input" | jq -r "$1 // empty"
-}
-
 # A Bash command that exits non-zero, as gh pr checks does on a failing or pending check, comes as
 # PostToolUseFailure, its output in .error.
-tool_output() {
-    field '.tool_response.stdout // .error'
-}
+event='' agent='' cwd='' command='' output='' verdict=''
+eval "$(jq -r '@sh "event=\(.hook_event_name // "") agent=\(.agent_id // "") cwd=\(.cwd // "") command=\(.tool_input.command // "") output=\(.tool_response.stdout // .error // "") verdict=\(.last_assistant_message // "")"')"
 
 pill() {
     cmux set-status "drinkit_$1" "$2" --color "$3" >/dev/null 2>&1
 }
 
-event=$(field .hook_event_name)
 case $event in
-    PostToolUse | PostToolUseFailure) [ -n "$(field .agent_id)" ] && exit 0 ;;
+    PostToolUse*) [ -n "$agent" ] && exit 0 ;;
 esac
 
-cwd=$(field .cwd)
 branch=$(git -C "${cwd:-.}" branch --show-current 2>/dev/null)
 issue=${branch%%-*}
 case $issue in
     '' | *[!0-9]*) exit 0 ;;
 esac
 
-cache=$(git -C "${cwd:-.}" rev-parse --path-format=absolute --git-path claude/cmux 2>/dev/null) || exit 0
-mkdir -p "$cache" || exit 0
-step_file=$cache/step-$issue
-shown_file=$cache/shown-$CMUX_SURFACE_ID
-step=$(cat "$step_file" 2>/dev/null)
+cache=$(git -C "${cwd:-.}" rev-parse --path-format=absolute --git-path claude/cmux 2>/dev/null) && mkdir -p "$cache" || exit 0
+step=$(cat "$cache/step-$issue" 2>/dev/null)
 
-case $event in
-    PostToolUse | PostToolUseFailure)
-        case $(field .tool_input.command) in
-            *"gh pr create"*)
-                pr=$(tool_output | grep -o 'pull/[0-9][0-9]*' | head -n 1 | cut -d / -f 2)
-                if [ -n "$pr" ]; then
-                    step="PR #$pr"
-                    printf '%s\n' "$step" >"$step_file"
-                    pill ci "CI running" "#ff9500"
-                fi
-                ;;
-            *"gh pr checks"*)
-                case $(tool_output | awk -F '\t' '$1 == "CI gate" { print $2 }' | tail -n 1) in
-                    pass) pill ci "CI green" "#34c759" ;;
-                    fail) pill ci "CI red" "#ff3b30" ;;
-                    pending) pill ci "CI running" "#ff9500" ;;
-                esac
-                ;;
+case $event:$command in
+    PostToolUse*"gh pr create"*)
+        pr=$(printf '%s\n' "$output" | grep -o 'pull/[0-9][0-9]*' | head -n 1 | cut -d / -f 2)
+        [ -n "$pr" ] && step="PR #$pr" && printf '%s\n' "$step" >"$cache/step-$issue" && pill ci "CI running" "#ff9500"
+        ;;
+    PostToolUse*"gh pr checks"*)
+        case $(printf '%s\n' "$output" | awk -F '\t' '$1 == "CI gate" { print $2 }' | tail -n 1) in
+            pass) pill ci "CI green" "#34c759" ;;
+            fail) pill ci "CI red" "#ff3b30" ;;
+            pending) pill ci "CI running" "#ff9500" ;;
         esac
         ;;
-    SubagentStart) pill judge "judging" "#ff9500" ;;
-    SubagentStop)
-        case $(field .last_assistant_message | head -n 1) in
+    SubagentStart:*) pill judge "judging" "#ff9500" ;;
+    SubagentStop:*)
+        case $verdict in
             "VERDICT: OK"*) pill judge "judge OK" "#34c759" ;;
             "VERDICT: NEEDS_WORK"*) pill judge "judge: needs work" "#ff3b30" ;;
             *) cmux clear-status drinkit_judge >/dev/null 2>&1 ;;
@@ -73,9 +53,8 @@ esac
 
 title="#$issue ${step:-implement}"
 [ "$event" = SubagentStart ] && title="#$issue judge"
-[ "$title" = "$(cat "$shown_file" 2>/dev/null)" ] && exit 0
-
-set -- --surface "$CMUX_SURFACE_ID"
-[ -n "$CMUX_WORKSPACE_ID" ] && set -- --workspace "$CMUX_WORKSPACE_ID" "$@"
-cmux rename-tab "$@" "$title" >/dev/null 2>&1 && printf '%s\n' "$title" >"$shown_file"
+shown=$cache/shown-$CMUX_SURFACE_ID
+[ "$title" = "$(cat "$shown" 2>/dev/null)" ] && exit 0
+cmux rename-tab ${CMUX_WORKSPACE_ID:+--workspace "$CMUX_WORKSPACE_ID"} --surface "$CMUX_SURFACE_ID" "$title" >/dev/null 2>&1 &&
+    printf '%s\n' "$title" >"$shown"
 exit 0

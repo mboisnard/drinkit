@@ -27,10 +27,5 @@ case /$file in
         exit 0 ;;
 esac
 
-jq -n --arg reason "protect-generated-files: this file is $how" '{
-    hookSpecificOutput: {
-        hookEventName: "PreToolUse",
-        permissionDecision: "deny",
-        permissionDecisionReason: $reason
-    }
-}'
+jq -n --arg reason "protect-generated-files: this file is $how" \
+    '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason}}'

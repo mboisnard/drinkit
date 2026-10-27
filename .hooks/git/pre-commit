@@ -6,38 +6,36 @@
 set -e
 
 # Without quotePath=false, a non-ASCII name comes quoted and matches no file.
-staged() {
-    git -c core.quotePath=false diff --cached --name-only "$@"
+changed() {
+    git -c core.quotePath=false diff --name-only "$@"
 }
 
-staged --no-renames --diff-filter=AM | while IFS= read -r f; do
-    if [ "$(git cat-file -s ":$f")" -gt 5242880 ]; then
-        echo "pre-commit: $f is over 5 MB, keep large files out of the repository" >&2
-        exit 1
-    fi
+changed --cached --no-renames --diff-filter=AM | while IFS= read -r f; do
+    [ "$(git cat-file -s ":$f")" -le 5242880 ] ||
+        { echo "pre-commit: $f is over 5 MB, keep large files out of the repository" >&2; exit 1; }
 done
 
-staged --diff-filter=AM -- '*package.json' | while IFS= read -r manifest; do
+changed --cached --diff-filter=AM -- '*package.json' | while IFS= read -r manifest; do
     lock="$(dirname "$manifest")/package-lock.json"
     [ -f "$lock" ] || continue
     git diff --cached --quiet -- "$lock" || continue
-    if git diff --cached -U0 -- "$manifest" | grep -qE '^[+-][[:space:]]*"[^"]+": "([~^<>=*0-9]|latest|npm:|file:|git|https?:|workspace:)'; then
-        echo "pre-commit: $manifest changes a dependency but $lock is not staged. Run npm install, then stage both" >&2
-        exit 1
-    fi
+    git diff --cached -U0 -- "$manifest" |
+        grep -qE '^[+-][[:space:]]*"[^"]+": "([~^<>=*0-9]|latest|npm:|file:|git|https?:|workspace:)' || continue
+    echo "pre-commit: $manifest changes a dependency but $lock is not staged. Run npm install, then stage both" >&2
+    exit 1
 done
 
-kotlin=$(staged --diff-filter=ACMR -- '*.kt' '*.kts')
+kotlin=$(changed --cached --diff-filter=ACMR -- '*.kt' '*.kts')
 [ -n "$kotlin" ] || exit 0
 
 # Recorded before formatting: staging one of these afterwards would carry its unstaged edits into
 # the commit too, so they are reformatted on disk but left for you to stage yourself.
-partly_staged=$(git -c core.quotePath=false diff --name-only)
+partly_staged=$(changed)
 
 "$(dirname "$0")/lint-kotlin"
 
 # Listed before the loop: a git diff still running can hold the index lock that git add needs.
-reformatted=$(git -c core.quotePath=false diff --name-only)
+reformatted=$(changed)
 printf '%s\n' "$reformatted" | while IFS= read -r f; do
     printf '%s\n' "$kotlin" | grep -qxF -- "$f" || continue
     if printf '%s\n' "$partly_staged" | grep -qxF -- "$f"; then
