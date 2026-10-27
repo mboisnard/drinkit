@@ -15,7 +15,7 @@ Liquibase records each file it runs in `DRINKIT_DATABASECHANGELOG`, and skips it
 ## Run It
 
 - **Apply the changelogs**: run `UpdaterApplication` from an IDE, against the local PostgreSQL of `deployment/local/compose.yml`. The psql command of the "Database and jOOQ" section of `AGENTS.md` does the same without the JVM.
-- **Check the changelogs**: `./gradlew :updater:check` checks them against the conventions, with Liquibase's own parser and with [Squawk](https://squawkhq.com/docs/rules). It needs Node, at the version of `.nvmrc`.
+- **Check the changelogs**: `./gradlew :updater:check` checks them against the conventions, with Liquibase's own parser and with [Squawk](https://squawkhq.com/docs/rules), whose binary Gradle downloads.
 
 ## Read Next
 

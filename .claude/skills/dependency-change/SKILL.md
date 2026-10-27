@@ -18,7 +18,8 @@ the routine bumps.
 ## 1. Declare the version once
 
 A runtime or test library goes into `gradle/platform/libs.versions.toml`, and its constraint into the BOM,
-`gradle/platform/build.gradle.kts`. A build plugin goes into `gradle/platform/pluginLibs.versions.toml` alone.
+`gradle/platform/build.gradle.kts`. A tool binary that a convention downloads goes into `libs.versions.toml` alone,
+since a BOM constraint does nothing for it. A build plugin goes into `gradle/platform/pluginLibs.versions.toml` alone.
 Modules declare the dependency without a version, and no project declares a repository.
 
 ## 2. Regenerate the verification metadata and the lock
@@ -55,7 +56,7 @@ refuses a dependency change in a `package.json` whose lock is not staged, and CI
 
 ## Before you finish
 
-- [ ] The version lives in a catalog and the BOM, and no module or project names it.
+- [ ] The version lives in a catalog, and in the BOM for a library, and no module or project names it.
 - [ ] `verification-metadata.xml` and `gradle.lockfile` were regenerated with `--refresh-dependencies`, and their
   diff holds only the expected artifacts.
 - [ ] `./gradlew build` passes.

@@ -17,8 +17,7 @@ through jOOQ. Exact versions live in the catalogs of `gradle/platform`, `gradle/
 ```
 
 The JDK of `gradle/gradle-daemon-jvm.properties` must be installed: Gradle finds it whatever `java` is on
-the `PATH`, but never downloads it. Integration tests need Docker, and `./gradlew build` needs Node on the
-`PATH`, at the version of `.nvmrc`, to run Squawk.
+the `PATH`, but never downloads it. Integration tests need Docker.
 
 Nothing in the application creates the database schema: on a new database, apply the changelogs once, as
 shown in [Database and jOOQ](#database-and-jooq), before using the app. From an IDE, running
@@ -143,7 +142,7 @@ deletes the committed classes and still succeeds: check `git status` before comm
 
 ## Dependencies
 
-A version lives in a catalog of `gradle/platform` and in the BOM `gradle/platform/build.gradle.kts`.
+A version lives in a catalog of `gradle/platform`, and a library's also in the BOM `gradle/platform/build.gradle.kts`.
 Modules declare dependencies without a version, and a project cannot declare a repository.
 
 Gradle checks every artifact against `gradle/verification-metadata.xml`, and `drinkit-backend` resolves

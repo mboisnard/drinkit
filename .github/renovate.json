@@ -49,6 +49,13 @@
       "pinDigests": false
     },
     {
+      "description": "Squawk is a binary of its GitHub releases that the Gradle catalog names. Its upgrades never merge themselves: a new version can bring rules that .squawk.toml must list",
+      "matchPackageNames": ["sbdchd:squawk"],
+      "overrideDatasource": "github-releases",
+      "overridePackageName": "sbdchd/squawk",
+      "extractVersion": "^v(?<version>.+)$"
+    },
+    {
       "description": "Majors need code changes: open them from the Dependency Dashboard",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true

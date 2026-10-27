@@ -298,7 +298,8 @@ line above, why the data is no longer needed.
 ## 🔍 Checked rules
 
 `./gradlew :updater:check`, the check task of `deployment/updater` and part of `./gradlew build`, runs two checks
-and fails on any finding. It needs Node, at the version of `.nvmrc`, on the `PATH`.
+and fails on any finding. Gradle downloads the Squawk binary of your platform and checks its checksum, so the check
+needs nothing beyond the JDK.
 
 - `ChangelogConventionsTest` reads every changelog with Liquibase's own parser, and checks how the folders and
   changesets are written.

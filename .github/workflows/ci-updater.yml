@@ -19,26 +19,20 @@ jobs:
       - name: Set up JDK and Gradle
         uses: $/.github/actions/setup-gradle-jdk
 
-      - name: Set up Node
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-          cache-dependency-path: deployment/updater/package-lock.json
-
       # The changelog rules, detekt and Squawk. Each finding prints its rule, the SQL and the fix,
       # and --continue reports them all in one run
       - name: Check the changelogs
         run: ./gradlew :updater:check --continue
 
       # Puts each Squawk finding on its line, in the Files changed tab of the pull request. Squawk prints one
-      # format per run, so it runs again on a failure: JSON gives the positions, the readable report stays above
+      # format per run, so it runs again on a failure: JSON gives the positions, the readable report stays above.
+      # Without the binary, Gradle failed before Squawk and printed why
       - name: Annotate the Squawk findings
         if: failure()
         working-directory: deployment/updater
         run: |
-          [ -x node_modules/.bin/squawk ] || exit 0
-          { npx squawk --reporter json 'src/main/resources/db/changelog/**/*.sql' || true; } \
+          [ -x build/squawk/bin/squawk ] || exit 0
+          { build/squawk/bin/squawk --reporter json 'src/main/resources/db/changelog/**/*.sql' || true; } \
             | jq -r '.[] | "::error file=deployment/updater/\(.file),line=\(.line + 1),col=\(.column + 1),title=Squawk \(.rule_name)::\([.message, .help, "https://squawkhq.com/docs/\(.rule_name)"] | map(select(. != null)) | join(" "))"'
 
       - name: Keep the test reports

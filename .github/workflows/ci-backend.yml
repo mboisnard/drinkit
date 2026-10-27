@@ -29,10 +29,9 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       # One Gradle run: `check` already runs detekt on every module, detektAll adds the analysis of
-      # the Gradle scripts at the root, --continue reports test and detekt failures together.
-      # The updater lane runs Squawk, with Node
+      # the Gradle scripts at the root, --continue reports test and detekt failures together
       - name: Build, test and analyse
-        run: ./gradlew build detektAll --continue -x :updater:squawk
+        run: ./gradlew build detektAll --continue
 
       - name: Publish the detekt findings
         if: (success() || failure()) && hashFiles('build/reports/detekt/detekt-all-projects.sarif') != ''
