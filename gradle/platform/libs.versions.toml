@@ -2,6 +2,9 @@
 # Toolchain
 jdk = "25"
 
+# Tool Versions
+squawk = "2.70.0"
+
 # BOM Versions
 spring-ai-dependencies = "2.0.1"
 spring-boot-dependencies = "4.1.1"
@@ -34,6 +37,9 @@ testcontainers-meilisearch = "2.0.0"
 spring-ai-dependencies-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai-dependencies" }
 spring-boot-dependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-dependencies" }
 spring-cloud-gcp-dependencies-bom = { module = "com.google.cloud:spring-cloud-gcp-dependencies", version.ref = "spring-cloud-gcp-dependencies" }
+
+# Tool Binaries, one artifact per platform
+squawk = { module = "sbdchd:squawk", version.ref = "squawk" }
 
 # Runtime Dependencies
 bson = { module = "org.mongodb:bson", version.ref = "bson" }

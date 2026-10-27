@@ -48,7 +48,9 @@ flowchart LR
   starter needs no edit to the settings.
 - **Repositories are declared once.** The settings declare Maven Central for every project, and
   `FAIL_ON_PROJECT_REPOS` fails the build when a project declares a repository of its own. No module can pull a
-  library from a source the rest of the build does not use.
+  library from a source the rest of the build does not use. The one other repository is the GitHub releases of
+  Squawk, the SQL linter of the [database updater](database.md#checked-rules). It serves only Squawk's `sbdchd`
+  group, and no other repository serves that group.
 - **The root project holds no code.** What the root project applies reaches the whole build, so its
   `build.gradle.kts` keeps to what concerns the build as a whole: detekt on every Gradle script, and the graph of
   dependencies between modules that the architecture tests read. Code goes in a module, where it gets the
@@ -90,6 +92,7 @@ The add-ons a module chooses, and the conventions the archetypes apply for it:
 | `openapi-contract-convention` | Exposes the [OpenAPI contract](../architecture/contract-first.md) and its generator templates to other modules | `drinkit-api-contract`, the module of the contract |
 | `contract-first-convention` | Generates the Spring interfaces and models of the API from that contract | `drinkit-backend` |
 | `jooq-codegen-convention` | Generates the jOOQ classes from the schema of a running PostgreSQL, only on `./gradlew jooqCodegen`. They are committed, as the [database page](database.md) explains | The modules that own tables |
+| `squawk-convention` | Downloads the Squawk binary of your platform and runs it on the module's SQL changelogs, as part of `check`, with no Node | `deployment/updater` |
 | `documentation-convention` | Writes the [generated pages](../writing-code/best-practices/living-documentation.md) of this site with KSP, only on `./gradlew kspKotlin` | `library-convention`, `api-convention` |
 | `test-convention` | JUnit Platform and the test libraries of `test-starter` | `common-convention` |
 | `code-analysis-convention` | detekt, which fails the build on any finding outside `code-analysis/detekt/baseline.xml`, the findings older than that rule, a file that never grows. It also runs after each Kotlin edit of an agent, as the [hooks](../coding-assistants/hooks.md) page explains | `common-convention`, the root project |
@@ -103,13 +106,14 @@ the file before you change it.
 
 Three files of `gradle/platform/` hold every version:
 
-- **`libs.versions.toml`** is the version catalog of the libraries and of the JDK. Every module reads it as
-  `libs`.
+- **`libs.versions.toml`** is the version catalog of the libraries, of the JDK and of Squawk, the one tool the
+  build downloads as a binary. Every module reads it as `libs`.
 - **`pluginLibs.versions.toml`** is the catalog of the Gradle plugins the conventions apply. Only `build-logic`
   reads it.
 - **`build.gradle.kts`** is the internal BOM. A BOM, bill of materials, is a list of versions meant to be used
   together. Ours is a Gradle platform. It imports the BOMs of Spring Boot, Spring AI and Spring Cloud GCP, then sets
-  the catalog version of each library listed in its `constraints` block.
+  the catalog version of each library listed in its `constraints` block. Squawk has no constraint there, since no
+  library depends on a binary.
 
 The catalog and the platform each do one job. The catalog names each version once, so a bump is one line. The
 platform takes part in dependency resolution: it sets a library's version wherever the library appears, as a
@@ -151,7 +155,8 @@ the one we expect.
 - **Gradle itself.** `gradlew`, the Gradle wrapper, downloads the version that
   `gradle/wrapper/gradle-wrapper.properties` pins, and checks its SHA-256 checksum. CI also checks the wrapper JAR
   against Gradle's official releases.
-- **Every plugin and library.** `gradle/verification-metadata.xml` holds the SHA-256 checksum of each artifact.
+- **Every plugin, library and binary.** `gradle/verification-metadata.xml` holds the SHA-256 checksum of each
+  artifact, the Squawk binary of every platform included.
   The build refuses one whose checksum differs or is missing, which stops a tampered or replaced file. A few
   artifacts that only IntelliJ or a plugin fetches on its own are trusted by name, each with its reason.
 - **The application's classpath.** `api-convention` locks the dependencies of `drinkit-backend`, which then

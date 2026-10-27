@@ -14,6 +14,18 @@ dependencyResolutionManagement {
 
     repositories {
         mavenCentral()
+
+        // Squawk publishes its binaries as GitHub release assets only, never to Maven Central
+        exclusiveContent {
+            forRepository {
+                ivy("https://github.com/sbdchd/squawk/releases/download") {
+                    name = "Squawk releases"
+                    patternLayout { artifact("v[revision]/[module]-[classifier](.[ext])") }
+                    metadataSources { artifact() }
+                }
+            }
+            filter { includeGroup("sbdchd") }
+        }
     }
 
     // Version catalog location is configured here to be able to use it in all subprojects

@@ -75,7 +75,7 @@ flowchart LR
 |---|---|---|
 | CI files | The workflows, the in-repo actions, `.github/actionlint.yaml` | actionlint checks the syntax and expressions of the workflows, zizmor audits their security |
 | Backend | The backend and [tech starter](../architecture/tech-starters.md) sources, the architecture tests, the [API contract](../architecture/contract-first.md), the build logic and Gradle files | `./gradlew build detektAll`: compiles, runs the tests and the [architecture tests](../writing-code/testing/architecture-tests.md), then detekt |
-| Updater | The database changelogs of `deployment/updater`, the build logic and Gradle files, `.nvmrc` | `./gradlew :updater:check`: the [changelog rules and Squawk](../build-and-data/database.md#checked-rules), each finding shown on its line of the pull request |
+| Updater | The database changelogs of `deployment/updater`, the build logic and Gradle files | `./gradlew :updater:check`: the [changelog rules and Squawk](../build-and-data/database.md#checked-rules), each finding shown on its line of the pull request |
 | Frontend | The Nuxt app, the API contract, `.nvmrc` | Generates the API client and builds the app. No linter or test runs on it yet |
 | Hooks | `.hooks/`, `.claude/`, `.nvmrc` | ShellCheck on the git and Claude Code [hooks](../coding-assistants/hooks.md), then the bats suites of the hooks and of the harness files, under dash, `bash --posix` and macOS `sh` |
 | Docs | `docs/`, the tech starter READMEs, every path of Backend, `.nvmrc` | Generates the [living documentation](../writing-code/best-practices/living-documentation.md) and builds the site, which fails on a dead link |
@@ -88,9 +88,7 @@ flowchart LR
 - **Docs watches the backend**, because the living documentation generates the domain and tech starter pages from
   the backend sources.
 - **Frontend watches the API contract**, because the TypeScript client is generated from it.
-- **Four lanes watch `.nvmrc`**, the Node version that runs Squawk, the Nuxt app, the site and bats.
-- **Backend skips the Squawk task**, which needs Node: the Updater lane runs it.
-  [ADR 0002](../adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) records why Squawk checks the changelogs.
+- **Three lanes watch `.nvmrc`**, the Node version that runs the Nuxt app, the site and bats.
 - **Hooks runs under three shells**, because a hook runs under the `sh` of the machine: bash 3.2 on macOS, dash on
   Debian and Ubuntu, bash in POSIX mode on Fedora or Arch.
 - **Ops starts the services**, because Renovate merges a new image digest on its own: the image must exist and

@@ -32,7 +32,6 @@ updater: &updater
   - '**/*.gradle.kts'
   - '**/*.lockfile'
   - 'deployment/updater/**'
-  - '.nvmrc' # the Node version that runs Squawk
 
 frontend: &frontend
   - *workflows
