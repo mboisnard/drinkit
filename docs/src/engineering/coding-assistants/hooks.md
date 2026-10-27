@@ -23,7 +23,7 @@ it, from `~/.claude`: they add their own hooks and rules to the project's, and a
 
 | Hook | Runs | What it does |
 |---|---|---|
-| [`guard-github-protections`][guard], the guard | Before a shell command | Refuses what belongs to the maintainer: a write to a ruleset or to branch protection, a push protection bypass, a merge. Also refuses any way around the `pre-push` git hook below, and asks before a command that writes under `.hooks/` |
+| [`guard-github-protections`][guard], the guard | Before a shell command | Refuses what belongs to the maintainer: a write to a ruleset or to branch protection, a push protection bypass, a merge. Also refuses any way around the `pre-push` git hook below, such as a write to a git configuration file, which can turn the git hooks off, and asks before a command that writes under `.hooks/` |
 | [`protect-generated-files`][protect] | Before a file edit | Refuses a hand edit of a file a tool writes, such as the jOOQ classes, the API client generated from the contract, the lock files and the generated documentation pages, or of a `.env` file. Its message names the command that changes the file |
 | [`detekt-after-edit`][detekt] | After a Kotlin edit | Formats and checks the file with detekt, and shows the findings to Claude |
 | [`compile-at-stop`][compile] | When Claude stops | When Kotlin changed, compiles it with its tests and runs the [architecture tests](../writing-code/testing/architecture-tests.md). When the frontend changed, type checks it. The errors go back to Claude, and a state already checked is not checked again, so it cannot loop |

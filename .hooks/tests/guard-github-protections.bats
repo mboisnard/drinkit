@@ -189,6 +189,21 @@ decides deny 'git --namespace "a log" config core.hooksPath /dev/null'
 decides deny 'git -C "sub log" config core.hooksPath /dev/null'
 decides deny 'git --shallow-file log config core.hooksPath /dev/null'
 decides deny 'git -c "a.b=x commit" -c core.hooksPath=/dev/null push origin HEAD:master'
+decides deny 'git -c "a.b=x commit" push --no-verify origin HEAD:master'
+decides deny 'git --shallow-file log push --no-verify origin HEAD:master'
+decides deny 'GIT_EXTERNAL_DIFF="git config core.hooksPath /dev/null;" git diff --ext-diff'
+decides deny 'nice -n 5 git config core.hooksPath /dev/null'
+decides deny 'timeout -s KILL 5 git config core.hooksPath /dev/null'
+decides deny 'xargs -I X git X core.hooksPath /dev/null'
+decides deny 'printf config | xargs -Ilog git log core.hooksPath /dev/null'
+decides deny "bash -c 'git -c \"a.b=x commit\" push --no-verify origin HEAD:master'"
+decides deny 'export GIT_EXTERNAL_DIFF="git config core.hooksPath /dev/null;"; git diff --ext-diff'
+decides deny "git log -1 --format='[core]%n%x09hooksPath = /dev/null' --output=.git/config"
+decides deny "printf '[core]\n\thooksPath = /dev/null\n' >> .git/config"
+decides deny 'git diff --output .git/config'
+decides deny 'echo x | tee -a .git/config'
+decides deny 'echo x >> ~/.gitconfig'
+decides deny 'cd .git && echo x >> config'
 decides deny 'git push origin HEAD:master' off
 decides deny 'git push origin HEAD:master' outside
 decides deny 'git -C ../off push -u origin HEAD'
@@ -243,6 +258,9 @@ decides allow 'git log -S core.hooksPath --oneline'
 decides allow 'grep -rn "core.hooksPath" AGENTS.md'
 decides allow 'git status' off
 decides allow 'git status' outside
+decides allow 'cat .git/config'
+decides allow 'grep hooksPath .git/config'
+decides allow 'git config --local user.name x'
 decides allow 'gh pr merge --help'
 decides allow 'gh pr merge -h'
 
@@ -372,6 +390,17 @@ decides ask "git fetch --upload-pack='cp /dev/null .hooks/git/pre-push; git-uplo
 decides ask 'f=.hooks/claude/new-hook; echo exit 0 > "$f"'
 # shellcheck disable=SC2016
 decides ask 'cd .hooks/git && echo exit 0 > "$PWD/pre-push"'
+decides ask 'echo exit 0 >& .hooks/git/pre-push'
+decides ask 'echo exit 0 >&.hooks/git/pre-push'
+decides ask "sed -n '1w.hooks/git/pre-push' /dev/null"
+decides ask "sed 's/a/b/w.hooks/git/pre-push' /dev/null"
+decides ask "sed 's/a/b/gw .hooks/git/pre-push' /dev/null"
+decides ask "sed -n -e'w .hooks/git/pre-push' /dev/null"
+decides ask "export GIT_EDITOR='tee .hooks/git/pre-push'; git commit --allow-empty"
+decides ask "export GIT_EXTERNAL_DIFF='cp /dev/null .hooks/git/pre-push'; git diff -- .hooks"
+decides ask 'gh codespace cp -e remote:/tmp/p .hooks/git/pre-push'
+decides ask 'gh cs cp -e remote:/tmp/p .hooks/git/pre-push'
+decides ask "gh config set browser 'rm .hooks/git/pre-push' && gh browse"
 decides deny 'rm .hooks/git/pre-push && gh pr merge 450'
 decides deny 'gh pr merge 450; rm .hooks/git/pre-push'
 decides deny 'rm .hooks/git/pre-push && git push origin HEAD' off
@@ -418,6 +447,11 @@ EOF"
 decides allow 'wc -l .hooks/claude/* | sort -n'
 decides allow 'npm run test --prefix .hooks'
 decides allow 'git -C .hooks log --oneline -3'
+decides allow 'echo x 2>&1'
+decides allow 'cat .hooks/git/pre-push 2>&1'
+decides allow 'gh pr view 456 --json files --jq ".files[].path" | grep .hooks'
+decides allow 'gh -R mboisnard/drinkit pr view 456 --json files | grep .hooks'
+decides allow 'export LC_ALL=C; grep -rn deny .hooks/claude'
 
 
 @test "allow  without jq, with a warning on stderr" {
@@ -476,6 +510,11 @@ clone_with_pre_push() {
 @test "a core.hooksPath set for every repository is told to set it in the clone" {
     runs 'git config --global core.hooksPath .hooks/git'
     assert_equal "$(reason)" "guard-github-protections: core.hooksPath is set in each clone, never globally, where it would run the hooks of every repository. Run git config core.hooksPath .hooks/git in the clone: git config --global core.hooksPath .hooks/git"
+}
+
+@test "a write to a git configuration file is told to use git config" {
+    runs 'echo x >> .git/config'
+    assert_equal "$(reason)" "guard-github-protections: a git configuration file can set core.hooksPath, which stays .hooks/git. Change a setting with git config: echo x >> .git/config"
 }
 
 @test "a push with the git hooks off is told the command that turns them on" {

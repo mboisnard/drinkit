@@ -18,6 +18,8 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         OPENING = "\002"
         CLOSING = "\003"
         MARK = "[\001\002\003]"
+        BLANK = "\004"
+        NEWLINE = "\005"
         MERGE_MUTATION = "mergepullrequest|enablepullrequestautomerge|enqueuepullrequest"
         MUTATION = "(create|update|delete)(repositoryruleset|branchprotectionrule)|" MERGE_MUTATION
         MERGE = "pulls/[^[:space:]/]+/merge|" MERGE_MUTATION
@@ -31,32 +33,40 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         REPO_FLAG = "([[:space:]]+(-r|--repo)([[:space:]]+|=)[^[:space:]]+)*"
         PR_MERGE = "^gh" REPO_FLAG "[[:space:]]+pr" REPO_FLAG "[[:space:]]+merge([[:space:]]|$)"
         PR_MERGE_HELP = "^gh" REPO_FLAG "[[:space:]]+pr" REPO_FLAG "[[:space:]]+merge[[:space:]]+(-h|--help)[[:space:]]*$"
-        WRAPPER = "^([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*|env|command|exec|nohup|nice|time|sudo|xargs|eval|sh|bash|zsh|dash|ksh|if|elif|then|else|do|while|until|!|timeout([[:space:]]+-[^[:space:]]*)*[[:space:]]+[0-9.]+[smhd]?)([[:space:]]+-[^[:space:]]*)*([[:space:]]+|$)"
+        WRAPPER = "^([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*|env|command|exec|nohup|nice|time|sudo|xargs|eval|sh|bash|zsh|dash|ksh|if|elif|then|else|do|while|until|!|timeout)([[:space:]]+|$)"
+        WRAPPER_VALUE = "^(nice:(-n|--adjustment)|timeout:(-[sk]|--signal|--kill-after)|xargs:(-[adEILnPsJRS]|--(arg-file|delimiter|eof|max-args|max-lines|max-procs|max-chars|process-slot-var))|env:(-[uCP]|--unset|--chdir)|sudo:-[ugCDhprtUTR]|exec:-a|time:-[fo])$"
         SHELL = "^(eval|sh|bash|zsh|dash|ksh)([[:space:]]|$)"
         SHELL_WORD = "(^|[[:space:]/|&;(])(sh|bash|zsh|dash|ksh)([[:space:]|&;)]|$)"
-        GIT_OPTION = "^[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--(git-dir|work-tree|namespace|config-env|attr-source)[[:space:]]+[^[:space:]]+|--[a-z-]+(=[^[:space:]]+)?|-[A-Za-z])"
+        GIT_OPTION = "^[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--(git-dir|work-tree|namespace|config-env|attr-source|shallow-file|super-prefix)[[:space:]]+[^[:space:]]+|--[a-z-]+(=[^[:space:]]+)?|-[A-Za-z])"
         HOOKS_PATH_READ = "^config([[:space:]]+(--local|--global|--system|--worktree|--show-origin|--show-scope|--get|get))*[[:space:]]+core\\.hookspath[[:space:]]*$"
         HOOKS_PATH_SET = "^config([[:space:]]+(--local|--global|--system|--worktree|set))*[[:space:]]+core\\.hookspath[[:space:]]+\\.hooks/git[[:space:]]*$"
         CONFIG_QUIET = "^(commit|log|show|diff|blame|shortlog)([[:space:]]|$)"
-        HOOKS = "(^|[^[:alnum:]_.-])\\.hooks([^[:alnum:]_.-]|$)"
+        HOOKS = "\\.hooks([^[:alnum:]_.-]|$)"
         UNDER_HOOKS = "(^|/)\\.hooks(/|$)"
+        GIT_CONFIG_FILE = "(\\.git/((worktrees|modules)/.+/)?config(\\.worktree)?|(^|/)\\.?gitconfig|\\.config/git/config)$"
         NEUTRAL = "^(cd|for|fi|done|esac|[}]|export|unset|set|read|:)([[:space:]]|$)"
         READER = "^(cat|head|tail|grep|egrep|fgrep|ls|wc|diff|cmp|file|stat|du|realpath|readlink|basename|dirname|echo|printf|test|\\[|jq|shellcheck|bats|true|false|pwd|nl|cut|tr|column|od|hexdump|shasum|sha1sum|sha256sum|md5sum|md5)([[:space:]]|$)"
         GIT_READ = "^(status|diff|log|show|ls-files|ls-tree|grep|blame|cat-file|rev-parse|rev-list|merge-base|check-ignore|describe|shortlog|add|commit|push|fetch|branch|remote)([[:space:]]|$)"
         GIT_CONFIG_READ = "^config([[:space:]]+(get|list|-l|--[a-z-]+))*([[:space:]]+[^-[:space:]][^[:space:]]*)?[[:space:]]*$"
         GIT_RUNS = "[[:space:]](-c|--config-env|--exec-path)([[:space:]=]|$)"
         GIT_WRITES = "[[:space:]](--output|--open-files-in-pager|-O|--edit|--upload-pack|--receive-pack|--exec)"
-        RUNNER_VARIABLE = "(^|[[:space:]])(GIT_[A-Z_]*|PAGER|EDITOR|VISUAL|BASH_ENV|ENV)="
-        SED_WRITES = "[[:space:]](-[A-Za-z]*[iI]|--in-place)|(^|[[:space:];{}0-9$/])[wWe]([[:space:]]|$)"
+        RUNNER = "(GIT_[A-Z_]*|GH_(BROWSER|EDITOR|PAGER)|BROWSER|PAGER|EDITOR|VISUAL|BASH_ENV|ENV)="
+        RUNNER_VARIABLE = "(^|[[:space:]])" RUNNER
+        SED_READ = "^sed([[:space:]]+-n)?[[:space:]]+[0-9$,;p]+([[:space:]]+[^-[:space:]][^[:space:]]*)*[[:space:]]*$"
         FIND_WRITES = "[[:space:]]-(delete|exec|execdir|ok|okdir|fprint|fprint0|fprintf|fls)([[:space:]]|$)"
         NPM_TESTS = "^npm[[:space:]]+(ci|cit|clean-install|clean-install-test|install-ci-test|test|t|run[[:space:]]+test|run-script[[:space:]]+test)([[:space:]]|$)"
-        GH_WRITES = "[[:space:]](download|checkout|clone)([[:space:]]|$)|[[:space:]](-D|--dir|-O|--output)([[:space:]=]|$)"
+        GH_READ = "^gh" REPO_FLAG "[[:space:]]+((pr|issue)" REPO_FLAG "[[:space:]]+(view|list|create|comment|edit|checks|diff|status)|api|search|ruleset|run[[:space:]]+(view|list|watch))([[:space:]]|$)"
         cwd = ENVIRON["GUARD_CWD"]
     }
 
     function deny(rule, command) {
-        print rule "\t" command
+        print rule "\t" shown(command)
         exit
+    }
+
+    function shown(text) {
+        gsub(BLANK "|" NEWLINE, " ", text)
+        return text
     }
 
     # Cuts the command into segments on ; && || and line ends, and segments into pieces on | & ( ) $( and backquotes,
@@ -69,9 +79,9 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
             next_char = substr(command_text, i + 1, 1)
             if (quote == "\047") {
                 if (c == "\047") quote = ""
-                else current = current c
+                else current = current quoted(c)
             } else if (c == "\\") {
-                if (next_char != "\n") current = current next_char
+                if (next_char != "\n") current = current quoted(next_char)
                 escaped = ++i
             } else if (c == "$" && next_char == "(") {
                 open_paren(quote)
@@ -114,7 +124,21 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
     function in_double_quotes(c) {
         if (c == "\"") quote = ""
         else if (c == "`") backquote()
-        else current = current c
+        else current = current quoted(c)
+    }
+
+    # A blank inside quotes or after a backslash belongs to the word, as it does for the shell.
+    function quoted(c) {
+        if (c == " " || c == "\t") return BLANK
+        if (c == "\n") return NEWLINE
+        return c
+    }
+
+    # The text of a script, a word with its blanks back.
+    function unquoted(text) {
+        gsub(BLANK, " ", text)
+        gsub(NEWLINE, "\n", text)
+        return text
     }
 
     function backquote() {
@@ -206,30 +230,61 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         return tolower(flat) ~ READ || flat ~ SHORT_READ
     }
 
-    # Quotes are gone by now, so the script of sh -c is split again on every separator.
-    function check_piece(piece, flat,    command, count, parts, k) {
+    # The script of sh -c is scanned again, as check_simple says.
+    function check_piece(piece, flat,    command) {
         command = command_of(piece)
-        if (!via_shell) {
+        if (!via_shell)
             check_command(command, piece, flat)
-            return
-        }
-        count = split(command, parts, /[;|&()`\n]/)
-        for (k = 1; k <= count; k++)
-            check_command(command_of(parts[k]), parts[k], flat)
     }
 
-    function command_of(text,    word) {
+    # Strips the assignments and the wrappers, with their options and the values these take. A command run by xargs -I
+    # may get any word from its input, so replaced records it.
+    function command_of(text,    wrapper, option) {
         via_shell = 0
+        replaced = 0
         assigned = ""
         sub(/^[[:space:]{!]+/, "", text)
         while (match(text, WRAPPER)) {
-            word = substr(text, 1, RLENGTH)
-            if (word ~ SHELL) via_shell = 1
-            if (word ~ /^[A-Za-z_][A-Za-z0-9_]*=/) assigned = assigned " " word
+            wrapper = substr(text, 1, RLENGTH)
             text = substr(text, RLENGTH + 1)
+            sub(/[[:space:]]+$/, "", wrapper)
+            if (wrapper ~ SHELL) via_shell = 1
+            if (wrapper ~ /=/) assigned = assigned " " wrapper
+            while (match(text, /^-[^[:space:]]*([[:space:]]+|$)/)) {
+                option = substr(text, 1, RLENGTH)
+                text = substr(text, RLENGTH + 1)
+                sub(/[[:space:]]+$/, "", option)
+                if (wrapper ":" option ~ WRAPPER_VALUE) sub(/^[^[:space:]]*[[:space:]]*/, "", text)
+                if (wrapper == "xargs" && option ~ /^(-[Ii]|--replace)/) replaced = 1
+                if (wrapper == "env" && sub(/^(-[A-Za-z]*S|--split-string=?)/, "", option)) {
+                    via_shell = 1
+                    text = option " " text
+                    break
+                }
+            }
+            if (wrapper == "timeout") sub(/^[0-9.]+[smhd]?([[:space:]]+|$)/, "", text)
         }
         sub(/^\\/, "", text)
         return text
+    }
+
+    # Scans a script after the command around it, which reads it as one word.
+    function rescan(script) {
+        if (script ~ /^[[:space:]]*$/)
+            return
+        command_text = unquoted(script) "\n"
+        quote = current = delimiter = ""
+        depth = in_backquote = escaped = 0
+        scan()
+    }
+
+    # The programs held by variables such as GIT_EXTERNAL_DIFF, one per line.
+    function runner_values(text,    count, words, k, values) {
+        count = split(text, words, /[[:space:]]+/)
+        for (k = 1; k <= count; k++)
+            if (words[k] ~ "^" RUNNER)
+                values = values substr(words[k], index(words[k], "=") + 1) "\n"
+        return values
     }
 
     function check_command(command, piece, flat,    lower, subcommand, config) {
@@ -260,9 +315,9 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
     }
 
     # A subcommand that never changes the configuration may name core.hooksPath in its arguments, unless an option comes
-    # before it: with its quotes gone, an option value such as -c "a.b=x log" can pass for the subcommand.
+    # before it, or xargs -I may replace a word of it.
     function only_names_hooks_path(lower, config) {
-        return config ~ CONFIG_QUIET && substr(lower, 1, length(lower) - length(config)) ~ /^git[[:space:]]+$/
+        return !replaced && config ~ CONFIG_QUIET && substr(lower, 1, length(lower) - length(config)) ~ /^git[[:space:]]+$/
     }
 
     # What a $( ), a ( ) or a backquote holds is a command of its own, the words after it belong to the one around it.
@@ -286,18 +341,16 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
             check_simple(buffer[level--], flat)
     }
 
-    # A shell without a script reads one from its input, which may write anywhere.
-    function check_simple(text, flat,    command, count, parts, k) {
+    # A shell without a script reads one from its input, which may write anywhere. The script of sh -c, and the program
+    # a variable such as GIT_EXTERNAL_DIFF holds, set or exported, are scanned again as commands of their own.
+    function check_simple(text, flat,    command, scripts) {
         command = command_of(text)
-        if (!via_shell) {
+        scripts = runner_values(assigned " " (command ~ /^export[[:space:]]/ ? command : ""))
+        if (!via_shell)
             check_program(command, flat)
-            return
-        }
-        if (command == "" && writer == "")
+        else if (command == "" && writer == "")
             writer = flat
-        count = split(command, parts, /[;|&()`\n]/)
-        for (k = 1; k <= count; k++)
-            check_program(command_of(parts[k]), flat)
+        rescan(scripts (via_shell ? command : ""))
     }
 
     function check_program(command, flat,    under, write) {
@@ -305,21 +358,46 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         if (under)
             names_hooks = 1
         write = redirection_writes(command, under)
+        if (write == 3 || (!reads(command) && names_git_config(command)))
+            deny("git-config", flat)
         if (hooks_write == "" && write == 2)
             hooks_write = flat
         if (writer == "" && (write == 1 || !reads(command)))
             writer = flat
     }
 
-    # 2 for a redirection under .hooks/, 1 for one whose target a variable builds, 0 otherwise.
+    # A git configuration file can set core.hooksPath: only git config writes one, under the rules of check_command.
+    function names_git_config(command,    count, words, k) {
+        if (command ~ /^git[[:space:]]/ && tolower(git_subcommand(command)) ~ /^config([[:space:]]|$)/)
+            return 0
+        count = split(command, words, /[[:space:]]+/)
+        for (k = 1; k <= count; k++) {
+            sub(/^-[^=]*=/, "", words[k])
+            if (git_config_file(words[k]))
+                return 1
+        }
+        return 0
+    }
+
+    function git_config_file(path) {
+        return path != "" && joined(joined(cwd, cd_dir), path) ~ GIT_CONFIG_FILE
+    }
+
+    # 3 for a redirection to a git configuration file, 2 for one under .hooks/, 1 for one whose target a variable builds,
+    # 0 otherwise. >& word writes to the file word, unless word is a descriptor number or -.
     function redirection_writes(command, under,    target, variable) {
         variable = 0
-        while (match(command, />[>|]?[[:space:]]*[^[:space:]]*/)) {
+        while (match(command, />[>|]?&?[[:space:]]*[^[:space:]]*/)) {
             target = substr(command, RSTART, RLENGTH)
             command = substr(command, RSTART + RLENGTH)
-            sub(/^>[>|]?[[:space:]]*/, "", target)
-            if (target == "" || target ~ /^&/ || target == "/dev/null")
+            sub(/^>[>|]?/, "", target)
+            if (sub(/^&/, "", target) && target ~ /^[[:space:]]*([0-9]+|-)?$/)
                 continue
+            sub(/^[[:space:]]+/, "", target)
+            if (target == "" || target == "/dev/null")
+                continue
+            if (git_config_file(target))
+                return 3
             if (target ~ UNDER_HOOKS || (under && target !~ /^[\/~$]/))
                 return 2
             if (target ~ /^\$/)
@@ -329,12 +407,12 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
     }
 
     # A program that only reads, or a hook run from .hooks/. Anything else may write, and so may a program that a
-    # variable such as GIT_EDITOR lets git run.
+    # variable such as GIT_EDITOR lets git run, set for one command or exported.
     function reads(command,    program) {
+        if (assigned ~ RUNNER_VARIABLE || (command ~ /^export[[:space:]]/ && command ~ RUNNER_VARIABLE))
+            return 0
         if (command ~ /^[[:space:]]*$/ || command ~ NEUTRAL)
             return 1
-        if (assigned ~ RUNNER_VARIABLE)
-            return 0
         match(command, /^[^[:space:]]*/)
         program = substr(command, 1, RLENGTH)
         if (assigned == "" && program ~ UNDER_HOOKS && program !~ /(^|\/)\.\.(\/|$)/)
@@ -343,7 +421,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         if (command ~ READER)
             return 1
         if (command ~ /^sed([[:space:]]|$)/)
-            return command !~ SED_WRITES
+            return command ~ SED_READ
         if (command ~ /^find([[:space:]]|$)/)
             return command !~ FIND_WRITES
         if (command ~ /^sort([[:space:]]|$)/)
@@ -359,7 +437,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         if (command ~ /^npx[[:space:]]/)
             return command ~ /^npx([[:space:]]+-[^[:space:]]+)*[[:space:]]+bats([[:space:]]|$)/
         if (command ~ /^gh[[:space:]]/)
-            return command !~ GH_WRITES
+            return tolower(command) ~ GH_READ
         if (command ~ /^docker[[:space:]]+run[[:space:]]/)
             return read_only_mounts(command)
         return 0
@@ -428,11 +506,11 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         for (s = 1; s <= segments; s++)
             check_segment(segment[s])
         for (p = 1; p <= pushes; p++)
-            print "push\t" push_dir[p] "\t" push_command[p]
+            print "push\t" shown(push_dir[p]) "\t" shown(push_command[p])
         if (hooks_write != "")
-            print "ask\t" hooks_write
+            print "ask\t" shown(hooks_write)
         else if (names_hooks && writer != "")
-            print "ask\t" writer
+            print "ask\t" shown(writer)
     }')
 
 [ -n "$found" ] || exit 0
@@ -444,6 +522,7 @@ answer() {
         hidden-query) reason="a GraphQL query read from a file or stdin cannot be checked. Pass it inline with -f query=..." ;;
         alias) reason="a gh alias can hide a merge. Run the gh command itself" ;;
         hooks-path) reason="the git hooks keep master safe, so core.hooksPath stays .hooks/git. Never override or unset it" ;;
+        git-config) reason="a git configuration file can set core.hooksPath, which stays .hooks/git. Change a setting with git config" ;;
         hooks-path-scope) reason="core.hooksPath is set in each clone, never globally, where it would run the hooks of every repository. Run git config core.hooksPath .hooks/git in the clone" ;;
         no-verify) reason="pre-push keeps master safe. Push without --no-verify" ;;
         hooks-off) reason="the git hooks do not run in $4, then push again" ;;
