@@ -1,6 +1,6 @@
 ---
 name: new-issue
-description: Turns an idea, a bug or work discovered during another task into a DrinkIt issue that follows the matching issue form, with its labels, project, parent epic and blockers. Use it when asked to create an issue, or when work found on the way must be recorded rather than done.
+description: Turns an idea, a bug or work discovered during another task into a DrinkIt issue that follows the matching issue form, with its labels, project, milestone, parent epic and blockers. Use it when asked to create an issue, or when work found on the way must be recorded rather than done.
 argument-hint: <the idea or the bug, in a few words>
 ---
 
@@ -31,12 +31,22 @@ Follow the form as `AGENTS.md` says, and the writing rules of `CONTRIBUTING.md`.
 
 Write it to `$(git rev-parse --path-format=absolute --git-path claude/issue-draft.md)`.
 
-## 4. Create it
+## 4. Pick the milestone
 
-Create the issue with one `kind:` label, the `area:` labels that apply and the labels the form sets itself, then
-link its parent epic and its blockers. Put it on the board in Ready when it has no open blocker, in Backlog
-otherwise. When it belongs to an epic, tick or add its line in the epic's "Possible scope" checklist.
+A milestone groups the issues of one step of the roadmap, and its progress counts only the issues it holds.
 
-Read it back: title, labels, board status, parent and blockers are set, and it reads well without the
+- An issue under an epic takes the epic's milestone.
+- Otherwise, list the open milestones and take the one whose description covers the issue's outcome.
+- When the epic has no milestone and none fits, ask the maintainer before creating the issue: propose a
+  dedicated milestone with a title and a one-line description, or an existing one if it comes close. Create the
+  milestone only once they agree.
+
+## 5. Create it
+
+Create the issue with one `kind:` label, the `area:` labels that apply, the labels the form sets itself and its
+milestone, then link its parent epic and its blockers. Put it on the board in Ready when it has no open blocker,
+in Backlog otherwise. When it belongs to an epic, tick or add its line in the epic's "Possible scope" checklist.
+
+Read it back: title, labels, milestone, board status, parent and blockers are set, and it reads well without the
 conversation that led to it. Then show the maintainer what was created, for the record rather than for approval:
-its link, title, labels, status, parent and blockers, then its full text. Edit it when they ask.
+its link, title, labels, milestone, status, parent and blockers, then its full text. Edit it when they ask.
