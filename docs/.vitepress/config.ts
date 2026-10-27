@@ -118,12 +118,24 @@ export default withMermaid(
               },
 
               {
+                text: 'Coding Assistants',
+                base: '/engineering/coding-assistants/',
+                collapsed: false,
+                items: [
+                  { text: 'Harness', link: 'harness' },
+                  { text: 'Hooks', link: 'hooks' },
+                  { text: 'Skills', link: 'skills' },
+                  { text: 'Subagents', link: 'sub-agents' },
+                  { text: 'Tooling', link: 'tooling' },
+                ],
+              },
+
+              {
                 text: 'Delivery',
                 base: '/engineering/delivery/',
                 collapsed: false,
                 items: [
                   { text: 'CI/CD', link: 'ci-cd' },
-                  { text: 'Harness', link: 'harness' },
                 ],
               },
 

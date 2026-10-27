@@ -10,8 +10,8 @@ paths:
 
 # Changing the harness
 
-`docs/src/engineering/delivery/harness.md` describes every part and why it exists. This skill gives the rules a hook, a
-skill or an agent has to follow, and what proves them.
+The pages of `docs/src/engineering/coding-assistants/` describe every part and why it exists. This skill gives the
+rules a hook, a skill or an agent has to follow, and what proves them.
 
 ## Hooks
 
@@ -62,7 +62,7 @@ each changed hook under dash too: `cd .hooks && HOOK_SHELL=dash npx bats tests/<
 ### 5. Describe it
 
 The header comment of a hook holds two lines at most, as `AGENTS.md` asks of every comment. The hook's row in
-`docs/src/engineering/delivery/harness.md` says what it does, where it lives and since when.
+`docs/src/engineering/coding-assistants/hooks.md` says what it does and when it runs.
 
 ## Skills and agents
 
@@ -74,7 +74,8 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
 - A skill with side effects that the maintainer starts sets `disable-model-invocation: true`.
 - Working files go under `git rev-parse --git-path claude`, run from the worktree, or in the session's scratch
   directory.
-- The Skills table of `docs/src/engineering/delivery/harness.md` lists every skill, and its Coding agent table every agent.
+- The skills table of `docs/src/engineering/coding-assistants/skills.md` lists every skill, and the table of
+  `sub-agents.md` beside it every agent.
 
 ## Before you finish
 
@@ -82,4 +83,4 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
   before.
 - [ ] `npm cit --prefix .hooks` passes.
 - [ ] Every `paths:` glob matches tracked files.
-- [ ] The harness page describes what changed.
+- [ ] The page of `docs/src/engineering/coding-assistants/` that covers the changed part describes the change.

@@ -25,9 +25,12 @@ its bottom.
    [Testcontainers](writing-code/testing/testcontainers.md), and the
    [architecture tests](writing-code/testing/architecture-tests.md) keep the rules of the steps above true on every
    build.
-5. **From a change to master.** The [CI](delivery/ci-cd.md) runs what a change touches, and the
-   [harness](delivery/harness.md) keeps humans and coding agents from breaking master.
-6. **Why it is this way.** The [decision records](adr/index.md) keep the reason of each structuring choice.
+5. **With a coding assistant.** The [harness](coding-assistants/harness.md) steers the coding agents and checks
+   their work, through [hooks](coding-assistants/hooks.md), [skills](coding-assistants/skills.md) and
+   [subagents](coding-assistants/sub-agents.md).
+6. **From a change to master.** The [CI](delivery/ci-cd.md) runs what a change touches, and the master ruleset
+   lets the maintainer merge a pull request only once its gate is green.
+7. **Why it is this way.** The [decision records](adr/index.md) keep the reason of each structuring choice.
 
 ## 🗂️ For reference
 

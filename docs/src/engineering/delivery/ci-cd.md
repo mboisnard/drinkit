@@ -12,7 +12,7 @@ lane.
 DrinkIt keeps five practices of continuous integration and delivery, as Martin Fowler and DORA describe them:
 
 1. **Master always works.** Master changes only through a pull request whose `CI gate` passed on a branch up to
-   date with master. The [harness](harness.md) lists the guardrails that enforce this.
+   date with master. The [harness](../coding-assistants/harness.md) lists the guardrails that enforce this.
 2. **Feedback within minutes.** In the [monorepo](../architecture/monorepo.md), a frontend change never waits for
    the backend tests. A run of every lane took about six minutes in October 2026.
 3. **No check skipped by mistake.** A file that no lane knows runs every lane, and every lane runs on master each
@@ -77,7 +77,7 @@ flowchart LR
 | Backend | The backend and [tech starter](../architecture/tech-starters.md) sources, the architecture tests, the [API contract](../architecture/contract-first.md), the build logic and Gradle files | `./gradlew build detektAll`: compiles, runs the tests and the [architecture tests](../writing-code/testing/architecture-tests.md), then detekt |
 | Updater | The database changelogs of `deployment/updater`, the build logic and Gradle files, `.nvmrc` | `./gradlew :updater:check`: the [changelog rules and Squawk](../build-and-data/database.md#checked-rules), each finding shown on its line of the pull request |
 | Frontend | The Nuxt app, the API contract, `.nvmrc` | Generates the API client and builds the app. No linter or test runs on it yet |
-| Hooks | `.hooks/`, `.claude/`, `.nvmrc` | ShellCheck on the git and Claude Code hooks of the [harness](harness.md), then the bats suites of the hooks and of the harness files, under dash, `bash --posix` and macOS `sh` |
+| Hooks | `.hooks/`, `.claude/`, `.nvmrc` | ShellCheck on the git and Claude Code [hooks](../coding-assistants/hooks.md), then the bats suites of the hooks and of the harness files, under dash, `bash --posix` and macOS `sh` |
 | Docs | `docs/`, the tech starter READMEs, every path of Backend, `.nvmrc` | Generates the [living documentation](../writing-code/best-practices/living-documentation.md) and builds the site, which fails on a dead link |
 | Ops | `deployment/local/` | Validates the compose file, pulls its images and starts the services until each one is healthy |
 | Renovate | `.github/renovate.json` | Renovate's own validator, in strict mode |
@@ -158,11 +158,12 @@ skips the review. The review fails on development dependencies too, since Nuxt a
 
 ## 🤖 Dependency updates
 
-Renovate opens the update pull requests, configured as the [harness](harness.md) page describes. The minor and
-patch updates of GitHub Actions and of the Renovate image, and new digests of an image tag, merge themselves once
-`CI gate` is green: the run of their pull request already uses them. Renovate rebases those when they fall behind
-master, as the ruleset requires, and the others only on conflict, which keeps the runs within the 20 jobs the
-repository runs at once.
+Renovate opens the update pull requests on Monday mornings, a week after a release, and pins actions and images by
+digest. Security fixes and undated releases skip the wait, and majors and lock file refreshes wait for a checkbox on
+the Dependency Dashboard, as [`renovate.json`][renovate] configures it. The minor and patch updates of GitHub Actions
+and of the Renovate image, and new digests of an image tag, merge themselves once `CI gate` is green: the run of their
+pull request already uses them. Renovate rebases those when they fall behind master, as the ruleset requires, and the
+others only on conflict, which keeps the runs within the 20 jobs the repository runs at once.
 
 ## ⚡ Caches
 
@@ -208,6 +209,7 @@ The [`ci-workflow-change` skill][skill] gives the rules and the checklist, and t
 - [Automerge configuration and troubleshooting](https://docs.renovatebot.com/key-concepts/automerge/), Renovate
 
 [ci-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/ci.yml
+[renovate]: https://github.com/mboisnard/drinkit/blob/master/.github/renovate.json
 [ci-lanes]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/config/ci-lanes.yml
 [weekly-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/weekly.yml
 [skill]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/ci-workflow-change/SKILL.md

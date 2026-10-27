@@ -92,7 +92,7 @@ The add-ons a module chooses, and the conventions the archetypes apply for it:
 | `jooq-codegen-convention` | Generates the jOOQ classes from the schema of a running PostgreSQL, only on `./gradlew jooqCodegen`. They are committed, as the [database page](database.md) explains | The modules that own tables |
 | `documentation-convention` | Writes the [generated pages](../writing-code/best-practices/living-documentation.md) of this site with KSP, only on `./gradlew kspKotlin` | `library-convention`, `api-convention` |
 | `test-convention` | JUnit Platform and the test libraries of `test-starter` | `common-convention` |
-| `code-analysis-convention` | detekt, which fails the build on any finding, as the [harness page](../delivery/harness.md) explains | `common-convention`, the root project |
+| `code-analysis-convention` | detekt, which fails the build on any finding outside `code-analysis/detekt/baseline.xml`, the findings older than that rule, a file that never grows. It also runs after each Kotlin edit of an agent, as the [hooks](../coding-assistants/hooks.md) page explains | `common-convention`, the root project |
 | `architecture-tests-convention` | Konture, chosen in [ADR 0001](../adr/0001-architecture-tests-with-konture.md), which builds the module graph and checks the architecture rules | The root project, `architecture-tests` |
 
 Each convention explains its own choices in comments, in
