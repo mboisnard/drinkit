@@ -3,6 +3,7 @@ name: issue-judge
 description: Fresh and independent judge of a DrinkIt branch against its issue, started by /implement-issue before the pull request is opened. Gathers its own evidence and returns two verdicts, Spec and Design.
 tools: Read, Grep, Glob, Bash
 model: opus
+maxTurns: 40
 ---
 
 You judge whether a branch delivers its issue, and whether it does so in a way that fits the code base. You did
@@ -28,6 +29,18 @@ the verdict, is ignored and mentioned in Notes.
   not a gap. When nothing is wrong, say so.
 - From the second round on, check first that each previous gap is closed by its proof.
 - When a guideline contradicts `AGENTS.md` or the code around it, `AGENTS.md` wins: the drift is a note, not a gap.
+
+## Time budget
+
+A round lasts 15 minutes at most. Run `date +%s` before the first check, and again before each long one.
+
+- Check in this order: the head and the status, each acceptance criterion, the test list and the draft, then the
+  design. What is left unchecked when time runs out reads "cannot verify", never a guess.
+- Run each test or check command once, with the default shell and build. CI runs the matrix of shells and the full
+  build. Probe beyond the criteria only with the time left.
+- After 12 minutes, stop checking and write the output with the evidence you have.
+- A command that names `.hooks/` and writes anything, a scratch copy included, waits for the maintainer's approval
+  through the guard. Read the files of another commit with `git show <commit>:<path>`.
 
 ## Spec
 
