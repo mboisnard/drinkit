@@ -71,6 +71,10 @@ Write the body to `$(git rev-parse --path-format=absolute --git-path claude/pr-b
 Start a fresh `issue-judge` agent and wait for its verdict. Its prompt holds the inputs of
 [the example](examples.md#judge-prompt) and nothing else: no summary of your work, no hint.
 
+A round lasts 15 minutes, as its definition says, and stops at its `maxTurns`. When it is still running after 15
+minutes, or comes back without a verdict line, send it [the closing message](examples.md#judge-time-limit): its
+answer is the verdict of the round.
+
 When the diff touches what the `security-reviewer` agent's description lists, start it too, with the worktree and
 the two commits, in every round until it returns OK, and again when a later commit touches those areas. Its
 Blocking findings are gaps of the round. Its Important findings are fixed, or listed in the pull request with the

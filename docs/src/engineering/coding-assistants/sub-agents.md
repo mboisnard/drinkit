@@ -36,6 +36,9 @@ names the agent to start it.
 - **A new judge for each round.** On `NEEDS_WORK`, the session fixes every gap and starts a new judge. Its prompt
   lists the previous gaps, each with the commit and the command output that close it: facts the judge checks first,
   not an account of the work.
+- **Fifteen minutes a round.** The judge checks the acceptance criteria first and leaves the shell matrix to CI. What
+  it has not checked when time runs out reads "cannot verify". Past the limit, the session asks it for its verdict,
+  and `maxTurns` stops a judge that loops.
 - **Two rounds, then the maintainer.** After a second `NEEDS_WORK`, the maintainer decides whether the pull request
   opens with the gaps listed.
 - **The verdict in plain sight.** The pull request reads `Judge: OK, round <n>, at <commit>`, with the judge's tables

@@ -69,6 +69,15 @@ Previous gaps, from the second round on:
 
 The `security-reviewer` prompt holds the worktree, the base and the head, nothing else.
 
+## Judge time limit
+
+Sent to the running judge after 15 minutes, or to resume one that stopped without a verdict line:
+
+```
+Time limit reached: stop checking now and return your verdict at once, in your usual output format, with the
+evidence you already have. Mark every check you did not finish as "cannot verify".
+```
+
 ## Pull request and CI
 
 ```
