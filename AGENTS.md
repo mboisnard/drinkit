@@ -72,13 +72,13 @@ docker run --rm -v "$PWD:/mnt:ro" -w /mnt --entrypoint sh "$(grep -o 'koalaman/s
 - `deployment/local/compose.yml`: the local services the dev profile starts. `deployment/updater`: the
   schema, as Liquibase changelogs.
 - `docs/src/engineering/`: the engineering documentation, its folders in the order of the site:
-  `architecture/`, `build-and-data/`, `writing-code/`, `delivery/`, `adr/`. The sections below say which page
-  to read before which change.
+  `architecture/`, `build-and-data/`, `writing-code/`, `coding-assistants/`, `delivery/`, `adr/`. The sections
+  below say which page to read before which change.
 - `.hooks/`: the git hooks in `git/`, the Claude Code hooks in `claude/`, what they share in `lib/`, their bats
   suites in `tests/`.
 - `architecture-tests/`: the architecture rules, as Konture tests.
   `docs/src/engineering/writing-code/testing/architecture-tests.md` lists each rule with its reason and fix,
-  `docs/src/engineering/adr/` records the choices behind them, and `docs/src/engineering/delivery/harness.md`
+  `docs/src/engineering/adr/` records the choices behind them, and `docs/src/engineering/coding-assistants/harness.md`
   says where they run.
 - `.claude/skills/`: how to carry out a kind of change, one folder each. Its `SKILL.md` says when it applies:
   read it before that change, whatever the agent. A skill names its model files by class: find one with

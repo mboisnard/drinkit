@@ -80,6 +80,20 @@
     },
     {
       "quadrant": "Tools",
+      "ring": "ADOPT",
+      "label": "cmux",
+      "description": "A terminal for running several coding agents, fed by the status hook of the repository",
+      "link": "/drinkit/engineering/coding-assistants/tooling.html#cmux"
+    },
+    {
+      "quadrant": "Tools",
+      "ring": "TRIAL",
+      "label": "RTK",
+      "description": "Shortens the output of common commands before it reaches the agent",
+      "link": "/drinkit/engineering/coding-assistants/tooling.html#rtk"
+    },
+    {
+      "quadrant": "Tools",
       "ring": "TRIAL",
       "label": "CodeQL",
       "description": "Code scanning on every pull request, not blocking the merge",
@@ -111,14 +125,42 @@
       "ring": "ADOPT",
       "label": "Agent Skills",
       "description": "One folder of instructions per kind of change, loaded when the agent needs it",
-      "link": "https://agentskills.io/"
+      "link": "/drinkit/engineering/coding-assistants/skills.html"
+    },
+    {
+      "quadrant": "Coding Assistants",
+      "ring": "ADOPT",
+      "label": "Subagents",
+      "description": "A fresh, read-only agent judges a branch against its issue, another reviews its security, before the pull request",
+      "link": "/drinkit/engineering/coding-assistants/sub-agents.html"
+    },
+    {
+      "quadrant": "Coding Assistants",
+      "ring": "ADOPT",
+      "label": "Claude Code Hooks",
+      "description": "Tested scripts that refuse a merge or a ruleset write, and check the code after each edit and each turn",
+      "link": "/drinkit/engineering/coding-assistants/hooks.html"
+    },
+    {
+      "quadrant": "Coding Assistants",
+      "ring": "ADOPT",
+      "label": "Caveman",
+      "description": "A skill that keeps the replies of the agent terse, every technical fact kept",
+      "link": "/drinkit/engineering/coding-assistants/tooling.html#caveman"
     },
     {
       "quadrant": "Coding Assistants",
       "ring": "TRIAL",
-      "label": "Review Agents",
-      "description": "A fresh agent judges a branch against its issue, another reviews its security, before the pull request",
-      "link": "/drinkit/engineering/delivery/harness.html"
+      "label": "Ponytail",
+      "description": "A skill that pushes the agent to write less code and reuse what exists",
+      "link": "/drinkit/engineering/coding-assistants/tooling.html#ponytail"
+    },
+    {
+      "quadrant": "Coding Assistants",
+      "ring": "ASSESS",
+      "label": "Path-Scoped Rules",
+      "description": "Instructions loaded when the agent works on matching files, such as a pointer to the skill to read",
+      "link": "https://code.claude.com/docs/en/memory"
     },
     {
       "quadrant": "Coding Assistants",
@@ -132,7 +174,7 @@
       "ring": "ADOPT",
       "label": "Agent Harness",
       "description": "Hooks, rules and checks that keep humans and coding agents from breaking master",
-      "link": "/drinkit/engineering/delivery/harness.html"
+      "link": "/drinkit/engineering/coding-assistants/harness.html"
     },
     {
       "quadrant": "Techniques",

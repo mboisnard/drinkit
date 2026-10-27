@@ -3,8 +3,9 @@
 A monorepo is a single repository that holds several distinct projects, with well-defined relationships between
 them. DrinkIt keeps everything in one: its application, a backend and a frontend today, its
 [tech starters](tech-starters.md), the build logic, the database changelogs, this documentation and the
-[harness](../delivery/harness.md) that guides its coding agents. The idea to keep: a change and everything it affects travel
-in one pull request, checked by one CI. Read this page before you add a folder at the root or a new project.
+[harness](../coding-assistants/harness.md) that guides its coding agents. The idea to keep: a change and everything
+it affects travel in one pull request, checked by one CI. Read this page before you add a folder at the root or a
+new project.
 
 ## 🎯 Why one repository
 
@@ -31,7 +32,7 @@ side.
 | `architecture-tests/`, `code-analysis/` | The architecture rules and the configuration of detekt | [Architecture tests](../writing-code/testing/architecture-tests.md) |
 | `deployment/` | The services the application needs locally, and the database changelogs | [Database](../build-and-data/database.md) |
 | `docs/` | This documentation site | [Living documentation](../writing-code/best-practices/living-documentation.md) |
-| `.github/`, `.hooks/`, `.claude/` | The CI workflows, the git and agent hooks, the agent skills | [CI/CD](../delivery/ci-cd.md), [Harness](../delivery/harness.md) |
+| `.github/`, `.hooks/`, `.claude/` | The CI workflows, the git and agent hooks, the agent skills | [CI/CD](../delivery/ci-cd.md), [Harness](../coding-assistants/harness.md) |
 
 ## ✅ Practices that keep it healthy
 
