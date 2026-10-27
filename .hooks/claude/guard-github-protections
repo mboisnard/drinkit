@@ -20,6 +20,9 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         MARK = "[\001\002\003]"
         BLANK = "\004"
         NEWLINE = "\005"
+        SUBSTITUTED = "\006"
+        ANY = "\007"
+        UNKNOWN = "[\006\007]"
         MERGE_MUTATION = "mergepullrequest|enablepullrequestautomerge|enqueuepullrequest"
         MUTATION = "(create|update|delete)(repositoryruleset|branchprotectionrule)|" MERGE_MUTATION
         MERGE = "pulls/[^[:space:]/]+/merge|" MERGE_MUTATION
@@ -31,14 +34,19 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         SHORT_BODY = "(^|[[:space:]])(-[A-Za-z]*[dFT]|-f[^[:space:]]*=)"
         LONG_BODY = "(^|[[:space:]])(-f|--field|--raw-field|--input|--data[a-z-]*|--json|--form|--upload-file)([[:space:]=]|$)"
         REPO_FLAG = "([[:space:]]+(-[rR]|--repo)([[:space:]]+|=)[^[:space:]]+)*"
-        PR_MERGE = "^gh" REPO_FLAG "[[:space:]]+pr" REPO_FLAG "[[:space:]]+merge([[:space:]]|$)"
+        PR_MERGE = "^gh" REPO_FLAG "[[:space:]]+(" UNKNOWN "|pr" REPO_FLAG "[[:space:]]+(merge|" UNKNOWN "))([[:space:]]|$)"
         PR_MERGE_HELP = "^gh" REPO_FLAG "[[:space:]]+pr" REPO_FLAG "[[:space:]]+merge[[:space:]]+(-h|--help)[[:space:]]*$"
-        WRAPPER = "^([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*|env|command|exec|nohup|nice|time|sudo|xargs|eval|sh|bash|zsh|dash|ksh|if|elif|then|else|do|while|until|!|timeout)([[:space:]]+|$)"
-        WRAPPER_VALUE = "^(nice:(-n|--adjustment)|timeout:(-[sk]|--signal|--kill-after)|xargs:(-[adEILnPsJRS]|--(arg-file|delimiter|eof|max-args|max-lines|max-procs|max-chars|process-slot-var))|env:(-[uCP]|--unset|--chdir)|sudo:-[ugCDhprtUTR]|exec:-a|time:-[fo])$"
-        SHELL = "^(eval|sh|bash|zsh|dash|ksh)$"
+        WRAPPER = "^([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*|env|command|exec|nohup|nice|time|sudo|xargs|stdbuf|flock|script|watch|ssh|eval|sh|bash|zsh|dash|ksh|if|elif|then|else|do|while|until|!|timeout)([[:space:]]+|$)"
+        WRAPPER_VALUE = "^(nice:(-n|--adjustment)|timeout:(-[sk]|--signal|--kill-after)|xargs:(-[adEILnPsJRS]|--(arg-file|delimiter|eof|max-args|max-lines|max-procs|max-chars|process-slot-var))|env:(-[uCP]|--unset|--chdir)|sudo:-[ugCDhprtUTR]|exec:-a|time:-[fo]|stdbuf:-[ioe]|flock:-[wE]|script:-[EoTIOBm]|watch:(-[nq]|--interval|--equexit)|ssh:-[bcDEeFIiJLlmOopQRSWw])$"
+        WRAPPER_SCRIPT = "^(env:(-[A-Za-z]*S|--split-string)|(script|flock):(-[A-Za-z]*c|--command))"
+        POSITIONAL["timeout"] = POSITIONAL["flock"] = POSITIONAL["ssh"] = POSITIONAL["script"] = 1
+        SHELL = "^(eval|sh|bash|zsh|dash|ksh|watch|ssh)$"
         SHELL_WORD = "(^|[[:space:]/|&;(])(sh|bash|zsh|dash|ksh)([[:space:]|&;)]|$)"
         GIT_OPTION = "^[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--(git-dir|work-tree|namespace|config-env|attr-source|shallow-file|super-prefix)[[:space:]]+[^[:space:]]+|--[a-z-]+(=[^[:space:]]+)?|-[A-Za-z])"
-        HOOKS_PATH_READ = "^config([[:space:]]+(--local|--global|--system|--worktree|--show-origin|--show-scope|--get|get))*[[:space:]]+core\\.hookspath[[:space:]]*$"
+        INCLUDE = "include(if\\.[^[:space:]]*)?\\.path"
+        HOOKS_KEY = "core\\.hookspath|" INCLUDE
+        HOOKS_PATH_READ = "^config([[:space:]]+(--local|--global|--system|--worktree|--show-origin|--show-scope|--get|get))*[[:space:]]+(" HOOKS_KEY ")[[:space:]]*$"
+        CONFIG_EDIT = "^config([[:space:]].*)?[[:space:]](-e|--edit)([[:space:]]|$)|^config[[:space:]]+edit([[:space:]]|$)"
         HOOKS_PATH_SET = "^config([[:space:]]+(--local|--global|--system|--worktree|set))*[[:space:]]+core\\.hookspath[[:space:]]+\\.hooks/git[[:space:]]*$"
         CONFIG_QUIET = "^(commit|log|show|diff|blame|shortlog)([[:space:]]|$)"
         HOOKS = "\\.hooks([^[:alnum:]_.-]|$)"
@@ -173,7 +181,8 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         line_start = i + 1
     }
 
-    # What a $( ), a ( ) or a backquote holds is a command of its own, the words after it belong to the one around it.
+    # What a $( ), a ( ) or a backquote holds is a command of its own. After a word, it stands for SUBSTITUTED, a word
+    # the guard cannot read: in git -C "$(pwd)" push, -C still takes a value.
     function check_segment(text,    flat, lower, k, c, level, buffer) {
         flat = text
         gsub(MARK "|\n", " ", flat)
@@ -181,7 +190,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         lower = tolower(flat)
         if (lower ~ MUTATION || (lower ~ ENDPOINT && (lower ~ WRITE || ((flat ~ SHORT_BODY || lower ~ LONG_BODY) && lower !~ READ && flat !~ SHORT_READ))))
             deny(lower ~ MERGE ? "merge" : "protection", flat)
-        if (lower ~ /git_config_/ && lower ~ /hookspath/)
+        if (lower ~ /git_config_/ && lower ~ ("hookspath|" INCLUDE))
             deny("hooks-path", flat)
         if (lower ~ /graphql/ && lower ~ /(--input|[[:space:]=]@)/)
             deny("hidden-query", flat)
@@ -194,7 +203,9 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
             if (c == OPENING) {
                 buffer[++level] = ""
             } else if (c == CLOSING) {
-                if (level > 0) check_simple(buffer[level--], flat)
+                if (level == 0) continue
+                check_simple(buffer[level--], flat)
+                if (buffer[level] ~ /[^[:space:]]/) buffer[level] = buffer[level] SUBSTITUTED
             } else if (c == SEPARATOR) {
                 check_simple(buffer[level], flat)
                 buffer[level] = ""
@@ -227,11 +238,11 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
             scan(scripts "\n")
     }
 
-    # Strips the assignments and the wrappers, with their options and the values these take. A command run by xargs -I
-    # may get any word from its input, so replaced records it.
-    function command_of(text,    wrapper, option) {
-        via_shell = replaced = 0
-        assigned = ""
+    # Strips the assignments and wrappers, with their options, option values and operands such as a timeout duration.
+    # env -S and script -c hold a script. xargs adds words from its input, or puts them where its -I string is.
+    function command_of(text,    wrapper, word, positional) {
+        via_shell = from_input = 0
+        assigned = replace = ""
         sub(/^[[:space:]{!]+/, "", text)
         while (match(text, WRAPPER)) {
             wrapper = substr(text, 1, RLENGTH)
@@ -239,28 +250,50 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
             sub(/[[:space:]]+$/, "", wrapper)
             if (wrapper ~ SHELL) via_shell = 1
             if (wrapper ~ /=/) assigned = assigned " " wrapper
-            while (match(text, /^-[^[:space:]]*([[:space:]]+|$)/)) {
-                option = substr(text, 1, RLENGTH)
+            if (wrapper == "xargs") from_input = 1
+            positional = POSITIONAL[wrapper]
+            while (match(text, /^[^[:space:]]+/)) {
+                word = substr(text, 1, RLENGTH)
+                if (word !~ /^-/ && positional-- <= 0)
+                    break
                 text = substr(text, RLENGTH + 1)
-                sub(/[[:space:]]+$/, "", option)
-                if (wrapper ":" option ~ WRAPPER_VALUE) sub(/^[^[:space:]]*[[:space:]]*/, "", text)
-                if (wrapper == "xargs" && option ~ /^(-[Ii]|--replace)/) replaced = 1
-                if (wrapper == "env" && sub(/^(-[A-Za-z]*S|--split-string=?)/, "", option)) {
+                sub(/^[[:space:]]+/, "", text)
+                if (wrapper == "xargs" && word ~ /^(-I|-i|--replace)/) {
+                    replace = word
+                    sub(/^(-I|-i|--replace=?)/, "", replace)
+                    if (word == "-I" && match(text, /^[^[:space:]]*/)) replace = substr(text, 1, RLENGTH)
+                    if (replace == "") replace = "{}"
+                }
+                if (wrapper ":" word ~ WRAPPER_SCRIPT) {
+                    sub(/^(-[A-Za-z]*[Sc]|--[a-z-]+=?)/, "", word)
                     via_shell = 1
-                    text = option " " text
+                    text = word " " text
                     break
                 }
+                if (wrapper ":" word ~ WRAPPER_VALUE) sub(/^[^[:space:]]*[[:space:]]*/, "", text)
             }
-            if (wrapper == "timeout") sub(/^[0-9.]+[smhd]?([[:space:]]+|$)/, "", text)
         }
         sub(/^\\/, "", text)
         return text
     }
 
+    # Each word that holds the string of xargs -I may be any word, and the input of a plain xargs adds words.
+    function completed(command,    count, words, k) {
+        if (replace == "")
+            return command " " ANY
+        count = split(command, words, /[[:space:]]+/)
+        command = words[1]
+        for (k = 2; k <= count; k++)
+            command = command " " (index(words[k], replace) ? ANY : words[k])
+        return command
+    }
+
     # A subcommand that never changes the configuration may name core.hooksPath in its arguments, unless an option comes
-    # before it, or xargs -I may replace a word of it.
+    # before it. A git config edit, or one that takes words from xargs, may set it.
     function check_command(command, text, flat,    lower, subcommand, config, quiet) {
         sub(/^[^[:space:]]*\//, "", command)
+        if (from_input)
+            command = completed(command)
         lower = tolower(command)
         if (command ~ /^cd([[:space:]]|$)/) {
             sub(/^cd([[:space:]]+-[LPe@]+)*[[:space:]]*/, "", command)
@@ -278,12 +311,16 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         config = tolower(subcommand)
         if (config ~ HOOKS_PATH_SET && config ~ /[[:space:]]--(global|system)[[:space:]]/)
             deny("hooks-path-scope", flat)
-        quiet = !replaced && config ~ CONFIG_QUIET && substr(lower, 1, length(lower) - length(config)) ~ /^git[[:space:]]+$/
-        if ((lower ~ /core\.hookspath/ && config !~ HOOKS_PATH_READ && config !~ HOOKS_PATH_SET && !quiet) || tolower(text) ~ /git_config_/)
+        quiet = config ~ CONFIG_QUIET && substr(lower, 1, length(lower) - length(config)) ~ /^git[[:space:]]+$/
+        if ((lower ~ HOOKS_KEY && config !~ HOOKS_PATH_READ && config !~ HOOKS_PATH_SET && !quiet) || tolower(text) ~ /git_config_/)
             deny("hooks-path", flat)
-        if (subcommand ~ /^push([[:space:]]|$)/) {
-            if (subcommand ~ /[[:space:]]--no-v/)
+        if (config ~ CONFIG_EDIT || (config ~ /^config([[:space:]]|$)/ && config ~ ANY))
+            deny("hooks-path", flat)
+        if (subcommand ~ "^(push|" UNKNOWN ")([[:space:]]|$)") {
+            if (subcommand ~ ("[[:space:]]--no-v|" ANY))
                 deny("no-verify", flat)
+            if ((cd_dir git_dir) ~ SUBSTITUTED)
+                deny("push-folder", flat)
             push_dir[++pushes] = joined(cwd == "" ? "." : cwd, joined(cd_dir, git_dir))
             sub(/^~/, ENVIRON["HOME"], push_dir[pushes])
             push_command[pushes] = flat
@@ -437,6 +474,7 @@ answer() {
         git-config) reason="a git configuration file can set core.hooksPath, which stays .hooks/git. Change a setting with git config" ;;
         no-verify) reason="pre-push keeps master safe. Push without --no-verify" ;;
         hooks-off) reason="the git hooks do not run in $4, then push again" ;;
+        push-folder) reason="the git hooks of a clone guard its pushes, and the guard cannot tell which clone a \$( ) or backquote builds. Push from a folder written out" ;;
         hooks-write) reason="this command may write under .hooks/, whose hooks keep master safe. Approve it only if you asked for this change" ;;
         hooks-write-unattended) reason="no one can approve a write under .hooks/ in bypassPermissions mode. Change a hook with the Edit tool, which asks the maintainer" ;;
     esac

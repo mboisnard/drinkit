@@ -198,6 +198,23 @@ decides deny 'xargs -I X git X core.hooksPath /dev/null'
 decides deny 'printf config | xargs -Ilog git log core.hooksPath /dev/null'
 decides deny "bash -c 'git -c \"a.b=x commit\" push --no-verify origin HEAD:master'"
 decides deny 'export GIT_EXTERNAL_DIFF="git config core.hooksPath /dev/null;"; git diff --ext-diff'
+# shellcheck disable=SC2016
+decides deny 'git -C "$(pwd)" push --no-verify origin HEAD:master'
+# shellcheck disable=SC2016
+decides deny 'git -c "$(echo a.b=c)" config core.hooksPath /dev/null'
+decides deny 'git config --local include.path ../hooks-off.cfg'
+decides deny 'git -c include.path=/tmp/hooks-off.cfg push origin HEAD'
+decides deny 'git config --global includeIf.gitdir:~/.path /tmp/hooks-off.cfg'
+decides deny 'GIT_EDITOR="sed -i s/x/y/" git config --edit'
+decides deny "watch -n 1 'gh pr merge 450'"
+decides deny "script -q -c 'gh pr merge 450' /dev/null"
+decides deny 'script -q /dev/null gh pr merge 450'
+decides deny "flock /tmp/l -c 'gh pr merge 450'"
+decides deny "ssh localhost 'gh pr merge 450'"
+decides deny 'stdbuf -oL gh pr merge 450'
+decides deny 'echo merge | xargs -I X gh pr X 450'
+decides deny 'echo "push --no-verify origin HEAD:master" | xargs git'
+decides deny 'echo "core.hooksPath /dev/null" | xargs git config'
 decides deny "git log -1 --format='[core]%n%x09hooksPath = /dev/null' --output=.git/config"
 decides deny "printf '[core]\n\thooksPath = /dev/null\n' >> .git/config"
 decides deny 'git diff --output .git/config'
@@ -229,6 +246,18 @@ decides allow "git -C @on@ push -u origin HEAD" outside
 decides allow 'cd ../on && git push -u origin HEAD' off
 decides allow 'cd ~/on && git push -u origin HEAD' outside
 decides allow 'cd ../off && cd ../on && git push -u origin HEAD'
+# shellcheck disable=SC2016
+decides deny 'cd "$(git rev-parse --show-toplevel)" && git push -u origin HEAD'
+# shellcheck disable=SC2016
+decides deny 'cd "$(pwd)" && git push origin HEAD:master' off
+# shellcheck disable=SC2016
+decides deny 'git -C `pwd` push origin HEAD' off
+# shellcheck disable=SC2016
+decides deny 'git $(echo push) --no-verify origin HEAD:master'
+# shellcheck disable=SC2016
+decides deny 'gh pr $(echo merge) 450'
+# shellcheck disable=SC2016
+decides allow 'git push -u origin "$(git branch --show-current)"'
 decides allow 'git config core.hooksPath'
 decides allow 'git config core.hooksPath .hooks/git'
 decides allow 'git config --local core.hooksPath .hooks/git'
@@ -261,6 +290,9 @@ decides allow 'git status' outside
 decides allow 'cat .git/config'
 decides allow 'grep hooksPath .git/config'
 decides allow 'git config --local user.name x'
+decides allow 'watch -n 5 gh pr checks 450'
+decides allow 'echo 450 | xargs gh pr view'
+decides allow 'git ls-files -z | xargs -0 git log -1 --format=%h --'
 decides allow 'gh pr merge --help'
 decides allow 'gh pr merge -h'
 
@@ -515,6 +547,13 @@ clone_with_pre_push() {
 @test "a write to a git configuration file is told to use git config" {
     runs 'echo x >> .git/config'
     assert_equal "$(reason)" "guard-github-protections: a git configuration file can set core.hooksPath, which stays .hooks/git. Change a setting with git config: echo x >> .git/config"
+}
+
+@test "a push from a folder a command substitution builds is told to name the folder" {
+    # shellcheck disable=SC2016
+    runs 'git -C "$(pwd)" push origin HEAD'
+    # shellcheck disable=SC2016
+    assert_equal "$(reason)" 'guard-github-protections: the git hooks of a clone guard its pushes, and the guard cannot tell which clone a $( ) or backquote builds. Push from a folder written out: git -C  pwd  push origin HEAD'
 }
 
 @test "a push with the git hooks off is told the command that turns them on" {
