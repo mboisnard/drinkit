@@ -9,18 +9,17 @@ cwd=$(jq -r '.cwd // empty')
 root=$(git -C "${cwd:-.}" rev-parse --show-toplevel 2>/dev/null) || exit 0
 
 branch=$(git -C "$root" branch --show-current)
-prefix=${branch%%-*}
+issue=${branch%%-*}
 echo "DrinkIt session in $root, on ${branch:-a detached HEAD}."
-case $prefix in
+case $issue in
     pr) echo "The branch reviews pull request #${branch#pr-}: read it with gh pr view ${branch#pr-}." ;;
     '' | *[!0-9]*) echo "Not on an issue branch: an issue is worked with /implement-issue <number>, in a worktree of its own." ;;
-    *) echo "The branch works on issue #$prefix: read it with gh issue view $prefix." ;;
+    *) echo "The branch works on issue #$issue: read it with gh issue view $issue." ;;
 esac
 
 # shellcheck source=../lib/git-hooks.sh
 . "$(dirname "$0")/../lib/git-hooks.sh"
-hooks_off=$(git_hooks_off "$root")
-[ -n "$hooks_off" ] && echo "The git hooks do not run here, so pre-push cannot keep master safe: $hooks_off."
+why=$(git_hooks_on "$root") || echo "The git hooks do not run here, so pre-push cannot keep master safe: $why."
 
 ahead=$(git -C "$root" rev-list --count origin/master..HEAD 2>/dev/null)
 [ "${ahead:-0}" -gt 0 ] && echo "$ahead commits ahead of origin/master."
