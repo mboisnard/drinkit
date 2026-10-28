@@ -21,8 +21,6 @@ dependencies {
         api(libs.bson)
         api(libs.jooq)
         api(libs.kotlin.logging.jvm)
-        // No longer managed by a BOM since Spring Cloud was removed
-        api(libs.spring.retry)
         api(libs.meilisearch.java.client)
         api(libs.springdoc.openapi.starter.webmvc.ui)
         api(libs.tess4j)

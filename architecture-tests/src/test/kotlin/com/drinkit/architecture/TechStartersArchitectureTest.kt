@@ -50,7 +50,6 @@ internal class TechStartersArchitectureTest {
                 "internal: mark the class, or make it internal"
             suppress {
                 classFqName("com.drinkit.configuration.ConfigurationKey", DATA_STARTERS)
-                classFqName("com.drinkit.retryable.LoggingRetryListener", DATA_STARTERS)
                 classFqName("com.drinkit.security.configuration.SecurityConfiguration", WEB_STARTERS)
                 classFqName("com.drinkit.security.AuthenticationFailedException", WEB_STARTERS)
                 classFqName("com.drinkit.security.userdetails.InternalUserDetails", WEB_STARTERS)
@@ -103,7 +102,6 @@ internal class TechStartersArchitectureTest {
                 classFqName("com.drinkit.configuration.infra.ConfigurationSpringConfig", DATA_STARTERS)
                 classFqName("com.drinkit.configuration.infra.CachedConfigurationsRepository", DATA_STARTERS)
                 classFqName("com.drinkit.postgresql.jooq.JooqConfig", DATA_STARTERS)
-                classFqName("com.drinkit.retryable.LoggingRetryListener", DATA_STARTERS)
                 classFqName("com.drinkit.search.engine.MeilisearchConfig", DATA_STARTERS)
                 classFqName("com.drinkit.security.password.encoder.InternalUserPasswordEncoder", WEB_STARTERS)
                 classFqName("com.drinkit.security.InternalAuthenticationService", WEB_STARTERS)

@@ -1,33 +1,23 @@
 package com.drinkit.retryable
 
-import com.drinkit.documentation.tech.starter.TechStarterTool
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.retry.RetryCallback
-import org.springframework.retry.RetryContext
-import org.springframework.retry.RetryListener
-import org.springframework.stereotype.Component
+import org.springframework.context.ApplicationListener
+import org.springframework.core.retry.RetryException
+import org.springframework.resilience.retry.MethodRetryEvent
+import org.springframework.util.ClassUtils
 
-/**
- * An implementation of [RetryListener] that logs each failed retry attempt.
- *
- * This component hooks into the retry mechanism to provide a trace
- * for any occurring errors. On each failure of a retryable operation,
- * it logs a message containing the attempt count and the captured exception.
- *
- * @see RetryListener
- */
-@Component(value = "loggingRetryListener")
-@TechStarterTool
-internal class LoggingRetryListener : RetryListener {
+internal class LoggingRetryListener : ApplicationListener<MethodRetryEvent> {
 
     private val logger = KotlinLogging.logger {}
 
-    override fun <T : Any, E : Throwable> onError(
-        context: RetryContext,
-        callback: RetryCallback<T, E>,
-        throwable: Throwable,
-    ) {
-        super.onError(context, callback, throwable)
-        logger.info(throwable) { "Error on retry: ${context.retryCount}" }
+    // A failure's message can hold personal data, such as the event a refused write carried: only its class is logged
+    override fun onApplicationEvent(event: MethodRetryEvent) {
+        val method = ClassUtils.getQualifiedMethodName(event.method)
+        val failure = event.failure
+
+        when {
+            !event.isRetryAborted -> logger.info { "Attempt of $method failed: ${failure.javaClass.name}" }
+            failure is RetryException && failure.retryCount > 0 -> logger.warn { "Retries of $method exhausted" }
+        }
     }
 }

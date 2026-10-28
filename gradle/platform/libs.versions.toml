@@ -16,7 +16,6 @@ jooq = "3.21.9"
 kotlin-logging = "8.0.4"
 ksp = "2.3.12"
 meilisearch = "0.22.1"
-spring-retry = "2.0.13"
 openfeature-sdk = "1.23.0"
 openfeature-flipt-provider = "0.1.4"
 springdoc-openapi = "3.1.1"
@@ -47,7 +46,6 @@ jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 ksp-symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 meilisearch-java-client = { module = "com.meilisearch.sdk:meilisearch-java", version.ref = "meilisearch" }
-spring-retry = { module = "org.springframework.retry:spring-retry", version.ref = "spring-retry" }
 openfeature-sdk = { module = "dev.openfeature:sdk", version.ref = "openfeature-sdk" }
 openfeature-flipt-provider = { module = "dev.openfeature.contrib.providers:flipt", version.ref = "openfeature-flipt-provider" }
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
