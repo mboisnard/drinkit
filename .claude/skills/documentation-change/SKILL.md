@@ -87,9 +87,13 @@ and steps go in a numbered list under a heading that names the task.
 
 Short is the default. The reader comes for the idea, its reasons and the shape of what DrinkIt built, then goes to
 the code, a starter's README, a skill or the sources for the rest. An explanation page fits in about 100 lines of
-markdown. Past 150, cut detail or split the page. A reference table adds its rows to that count. A section earns
-its place when a reader would come looking for it, and a paragraph that answers no question of the reader goes,
-even when it is true.
+prose, its tables and diagrams left out. Past 150, cut detail or split the page. A section earns its place when a
+reader would come looking for it, and a paragraph that answers no question of the reader goes, even when it is true.
+
+A diagram carries what a paragraph carries poorly: a flow, the exchanges between parts in their order, what talks to
+what, a before and an after. Draw it next to the text it illustrates, and cut the sentences it makes redundant. One
+idea per diagram, a few nodes named as the text names them, and a sentence that says what it shows. A diagram that
+redraws a list adds nothing. `contract-first.md` and `ci-cd.md` hold examples.
 
 Detail has one home, next to what it describes. The page gives the shape of the subject and the reason for each
 part. The detail of one item, a setting, a class, a workaround, the version that broke something, stays in the
@@ -106,6 +110,7 @@ the added words carry reasons, never more detail nor a lesson.
   project chose
 - one word per concept, the word of the code, defined where it first appears
 - a version, a measure or a date on every fact that ages
+- no count that announces a list, such as "for four reasons": the list changes and the count goes wrong
 - headings in sentence case that say what the section holds, a `##` heading opening with one emoji at most
 - none of the generated-text tics: emoji anywhere else, em dashes, semicolons in prose, "not X but Y", empty transitions,
   inflated words, bold on random words, checkmark lists
@@ -115,7 +120,8 @@ VitePress `:::` container. A callout uses the GitHub alert form, `> [!NOTE]`, `>
 `> [!CAUTION]`, which GitHub and VitePress both render in the same style, and a collapsible block is an HTML
 `<details>`. Keep callouts for what must stand out, such as an exception the project accepts on purpose: a bold
 label that names it as accepted, then its reason, in two or three sentences, as "Accepted: Spring in the domain"
-in `hexagonal-architecture.md`. Mermaid diagrams are fine.
+in `hexagonal-architecture.md`. A diagram is a Mermaid block, which GitHub and VitePress both render and a diff
+shows, never an image.
 
 ## 6. Rewrite an existing page
 
@@ -145,8 +151,10 @@ generated page.
   Fix each finding with a link or a few words, never a new paragraph, then run it again. It always finds
   something: stop once a round reports only wording. When no agent can be started, answer the prompt yourself,
   reading as that engineer, and say so in the pull request.
-- [ ] `wc -l` counts about 100 lines for an explanation page, 150 at most beyond its reference tables, or the pull
-  request says why the page needs more.
+- [ ] The prose of an explanation page counts about 100 lines and 150 at most, or the pull request says why it needs
+  more: `awk '/^```/{c=!c;next} !c && !/^\|/ && NF' <page> | wc -l` leaves out diagrams, tables and blank lines.
+- [ ] Each flow, exchange between parts or before and after that the page explains is a diagram, and the words it
+  replaced are gone.
 - [ ] `npm run docs:dev` shows the tables and diagrams as intended.
 - [ ] Each concept of the page that has a page of its own links to it.
 - [ ] Each choice of the page that an ADR records links to that ADR.

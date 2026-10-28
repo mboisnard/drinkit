@@ -3,7 +3,7 @@
 ## Tics
 
 Prints each line, outside code blocks and inline code, that holds an em or en dash, a semicolon, an inflated word,
-or an emoji anywhere but at the start of a `##` heading. Pass the pages to check:
+an emoji anywhere but at the start of a `##` heading, or a count that announces a list. Pass the pages to check:
 
 ```
 perl -CSD -ne '
@@ -12,7 +12,8 @@ perl -CSD -ne '
   (my $prose = $_) =~ s/`[^`]*`//g;
   $prose =~ s/^## \S+ /## / if $prose =~ /^## [^\w\s]/;
   print "$ARGV:$.: $_" if $prose =~ /[\x{2013}\x{2014};\x{20E3}\x{FE0F}\x{2600}-\x{27BF}\x{1F300}-\x{1FAFF}]/
-    || $prose =~ /\b(crucial|essential|seamless|robust|leverage|powerful|elegant|key benefits|in summary|worth noting|not just)\b/i;
+    || $prose =~ /\b(crucial|essential|seamless|robust|leverage|powerful|elegant|key benefits|in summary|worth noting|not just)\b/i
+    || $prose =~ /\b(two|three|four|five|six|seven|eight|nine|ten) (reasons|rules|steps|cases|points|lists|things|ways|kinds|parts)\b/i;
 } continue { close ARGV if eof' docs/src/engineering/<section>/<page>.md
 ```
 
@@ -48,8 +49,10 @@ Then list, each item with the sentence it comes from:
 4. what you expected the first paragraph to tell you, and it did not
 5. every passage that explains what you already knew, or reads like a lesson
 6. every passage you could skip without losing a reason or a rule, such as a walk through settings or classes
+7. every flow or exchange you had to picture from the text, which a diagram would show at a glance, and every
+   diagram you could not read without the text around it
 
-Report only these six lists. An empty list is a good answer.
+Report only these lists. An empty list is a good answer.
 
 Page: <absolute path>
 ```
