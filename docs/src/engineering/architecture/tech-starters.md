@@ -7,8 +7,8 @@ yet. The application's code says what DrinkIt does, the starters say with which 
 you create a starter or add one to an application.
 
 DrinkIt has one application today, and the [generated pages](../resources/tech-starters/tech-starters.md) list its
-backend starters. Those written so far predate the conventions below: they are wired by the application's
-component scan and a Spring profile each. Copy their tests, not their wiring.
+backend starters. Most of them predate the conventions below: the application's component scan wires them, often
+with a Spring profile. Copy their tests, not their wiring.
 
 ## 🎯 Why starters
 
