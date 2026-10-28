@@ -29,8 +29,8 @@ code shapes are in [examples.md](examples.md).
 ## 1. Before writing anything
 
 Read the convention plugins the build file needs, and one existing starter close to the need, from
-`ls tech-starters/backend`. The existing starters predate this skill (component scan and a profile): copy their
-tests and fixtures, never their wiring.
+`ls tech-starters/backend`. A starter without an `AutoConfiguration.imports` file predates this skill (component
+scan, often a profile): copy its tests and fixtures, never its wiring.
 
 Settle these from the issue, and ask the maintainer what it leaves open, a new module being a structuring choice:
 

@@ -48,8 +48,8 @@ directory: never in the tree, never elsewhere on the machine.
 
 - Jackson 3: core, databind and the format modules are `tools.jackson.*`, but the generic annotations
   (`@JsonProperty`, `@JsonTypeInfo`…) stay in `com.fasterxml.jackson.annotation`.
-- The existing tech starters are wired by component scan and configured by a profile of `spring.profiles.include`.
-  Copy their tests, never their wiring: a new or migrated starter follows `new-backend-tech-starter`.
+- A tech starter without an `AutoConfiguration.imports` file is wired by component scan, often with a profile of
+  `spring.profiles.include`. Copy its tests, never its wiring: a new or migrated one follows `new-backend-tech-starter`.
 - Nothing in the application creates the database schema: on a new database, apply the changelogs as
   `database-change` says before using the app.
 - detekt fails the build on any finding, formatting included. Fix the code, never add to
