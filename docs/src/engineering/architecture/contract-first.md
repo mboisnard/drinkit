@@ -3,24 +3,24 @@
 The Nuxt frontend and the Spring Boot backend talk through an HTTP API described in one OpenAPI contract:
 `api-definition.yaml` and the files it references, in the `drinkit-api-contract` module. We write that contract
 before the code, and OpenAPI Generator generates both sides from it, so a change to the API starts there. The two
-sides deploy separately, so a change that would break the frontend takes two pull requests, following the
-[expand and contract][expand-and-contract] pattern. Read this page before you change the contract, and follow the
-[`api-contract-change` skill][skill] for the steps.
+sides deploy separately, so a change that would break the frontend goes in steps, each in its own pull request,
+following the [expand and contract][expand-and-contract] pattern. Read this page before you change the contract,
+and follow the [`api-contract-change` skill][skill] for the steps.
 
 ## 🧭 Why contract first
 
-We chose it over code first, which derives the API description from the backend code, for four reasons:
+We chose it over code first, which derives the API description from the backend code:
 
 - **The API is reviewed before it is built.** The pull request shows the contract diff, which a frontend and a
   backend developer both read.
-- **One source of truth.** The server interfaces, the client and the Swagger UI come from the contract, so none of
-  them drifts from the others.
+- **One source of truth.** The server interfaces and the client come from the contract, so neither drifts from the
+  other.
 - **Both sides start at once.** The frontend codes against the generated client while the backend implements the
   generated interfaces.
-- **A mismatch fails the build.** When the contract adds or changes an operation, the backend no longer compiles
-  until its controller follows.
+- **A mismatch fails the backend build.** When the contract changes an operation, or adds one to an existing tag,
+  the backend no longer compiles until its controller follows.
 
-It has a price. The generators decide the shape of the code. Some Kotlin types have no OpenAPI equivalent: a
+It has a price. The generators decide the shape of the code. Some types have no OpenAPI equivalent: a
 generic paginated result becomes one class per item type. The two sides pin separate generator versions, so a
 construct can generate on one side and fail on the other.
 
@@ -48,9 +48,10 @@ a contract change that breaks a page still builds, and only a review or a run of
 
 ## 🗂️ Organizing the contract
 
-`api-definition.yaml` holds the tags and every path. The schemas live in fragments next to it, one per area of the API
-such as the cellars, and `common.yaml` holds what several areas share. The generators reach a schema only through the
-`$ref`s that start from `api-definition.yaml`, so a schema that nothing references is not generated.
+`api-definition.yaml` holds the tags and every path. The schemas live in fragments next to it, split by area and by
+request or response, such as `cellarsParameters.yaml`, and `common.yaml` holds what several areas share. The
+generators reach a schema only through the `$ref`s that start from `api-definition.yaml`, so a schema that nothing
+references is not generated.
 
 Practices worth knowing, not applied yet:
 
@@ -62,7 +63,7 @@ Practices worth knowing, not applied yet:
 ## 🔀 Evolving the contract
 
 The frontend reads as Martin Fowler's Tolerant Reader does: the generated client ignores a response field it does not
-know. With that, here is what breaks:
+know. A change is breaking when it fails a consumer built before it:
 
 | Change | Breaking | Why |
 |---|---|---|
@@ -75,9 +76,26 @@ know. With that, here is what breaks:
 | Change the type or the default value of a field | Yes | An old consumer relies on the old one |
 | Add an enum value to a response | Yes | A consumer that lists the values has no case for the new one |
 
-The frontend and the backend come from the same commit but deploy separately. During a deployment, the old and the new
-backend run side by side, and a browser tab opened earlier keeps the old client until it reloads. So a breaking change
-never lands in one pull request, even one that adapts both sides, as [ADR 0003][adr] records. It takes two:
+The frontend and the backend come from the same commit but deploy separately. During a deployment, both versions of
+each side are in use:
+
+```mermaid
+flowchart LR
+  subgraph clients["Frontends in use"]
+    direction TB
+    oldClient["Old frontend<br/>a tab opened before, until it reloads"]
+    newClient[New frontend]
+  end
+  subgraph backends["Backends running"]
+    direction TB
+    oldBackend["Old backend<br/>until the rollout ends"]
+    newBackend[New backend]
+  end
+  clients -- "any of them calls any of them" --> backends
+```
+
+So a breaking change never lands in one pull request, even one that adapts both sides, as [ADR 0003][adr] records.
+It takes an expand and a contract, each in its own pull request:
 
 1. **Expand.** Add the new element next to the old one, which becomes `deprecated: true` so that no new code uses it,
    and move the frontend to the new one. A new required request field starts optional.
