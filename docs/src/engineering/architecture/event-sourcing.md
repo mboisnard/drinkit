@@ -71,9 +71,8 @@ projection never gets what it carries. The [`hexagonal-backend` skill][user-even
 goes.
 
 Two writes on the same aggregate can read the same history and compute the same next sequence id. The primary key
-refuses the second one. The use case carries the starter's `@RetryableTransactional`, meant to run it again on the
-new history, but nothing enables that retry yet ([#532](https://github.com/mboisnard/drinkit/issues/532)): the
-second write fails.
+refuses the second one. The use case carries the starter's `@RetryableTransactional`, which runs it again on the new
+history, three attempts at most, each in a transaction of its own.
 
 ## ⚖️ The projection in the same transaction
 
