@@ -109,8 +109,8 @@ export default withMermaid(
                     collapsed: true,
                     base: '/engineering/writing-code/testing/',
                     items: [
-                      {text: 'Test Double', link: 'testdouble'},
-                      {text: 'Test Containers', link: 'testcontainers'},
+                      {text: 'Test Doubles', link: 'testdouble'},
+                      {text: 'Testcontainers', link: 'testcontainers'},
                       {text: 'Randomization', link: 'randomization'},
                       {text: 'Architecture Tests', link: 'architecture-tests'},
                     ],
