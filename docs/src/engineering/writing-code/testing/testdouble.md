@@ -101,7 +101,11 @@ A test never reads the system clock or an unseeded random, so that it gives the 
 
 A fixtures class of the test fixtures, such as `UserFixtures`, builds the use cases of a bounded context with their
 doubles, so that every test gets them wired the same way. Its `given` functions put the doubles in a starting state,
-such as an existing user. A test calls the use case, then reads back the same doubles to check the state it left:
+such as an existing user. A test calls the use case, then reads back the same doubles to check the state it left.
+
+A test takes its doubles from the fixtures class, never builds its own. Doubles share state through their instances:
+`InMemoryUserEvents` writes the projection into the `InMemoryUsers` it receives, and a second `InMemoryUsers` built by
+the test would never see those writes.
 
 ```kotlin
 internal class SendVerificationTokenTest {
