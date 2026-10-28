@@ -17,12 +17,16 @@ from the test: it pulls the image, starts a container on a free port, waits unti
 and by default removes the container at the end. The test talks to the real service, with nothing installed but
 Docker.
 
-Any service that has a Docker image fits: a database, a cache such as Redis, a document store such as MongoDB, a
-search engine such as Elasticsearch or Meilisearch, a message broker. The price is Docker on every machine that runs
-the tests, and a few seconds to start each container, which DrinkIt pays once per machine.
+Any service that holds logic of its own fits: a database that runs queries, a cache such as Redis, a document store
+such as MongoDB, a search engine such as Elasticsearch or Meilisearch. A message broker does not: it only carries
+messages between parts of the application. A test calls the handler of a
+[platform event](../../architecture/platform-events.md) directly, and checks what a use case publishes with a spy.
+The price is Docker on every machine that runs the tests, and a few seconds to start each container, which DrinkIt
+pays once per machine.
 
-These tests check one adapter at a time, the integration tests of the test pyramid. The use cases that call the
-adapters are tested with
+These tests check one adapter at a time, the integration tests of the test pyramid. Even with its container already
+running, such a test is far slower than a test in memory, so only an adapter is tested this way. The use cases that
+call the adapters are tested with
 [test doubles](testdouble.md), in memory. Both kinds of test meet in the test contract of a port, one suite of tests
 that the adapter and its in-memory double both pass.
 
@@ -83,10 +87,14 @@ the annotation in its tests.
 
 The extension builds the schema of the test database from the jOOQ classes named in `schemas`, such as
 `DrinkitApplication` for the PostgreSQL schema `drinkit_application`. These classes are generated from the database
-and committed with the code, and the extension never reads the Liquibase changelogs. A schema change reaches the
-tests once the jOOQ classes are regenerated from its changelog, as the
+and committed with the code. Applying every Liquibase changelog to a blank database would make each test class pay for
+the whole history of the schema, so the extension never reads the changelogs. A schema change reaches the tests once
+the jOOQ classes are regenerated from its changelog, as the
 [database page](../../build-and-data/database.md#integration-tests) explains. No test runs the changelogs themselves
 against PostgreSQL yet.
+
+A test builds its data through the domain and the adapter under test, never with an `@Sql` script: a script is one
+more copy of the schema to update at every change. The architecture test `tests.no-sql-data-setup` refuses it.
 
 Every test of a jOOQ adapter carries the annotation: the
 [architecture test](architecture-tests.md) `tests.jooq-adapter-test-is-integration-test` fails the build otherwise,
@@ -97,8 +105,9 @@ page explains.
 ## 🔎 Meilisearch, with `@MeilisearchIntegrationTest`
 
 Meilisearch is the search engine that `search-engine-starter` brings. It has no transaction to roll back, so the tests
-of a class share the same indexes, and the extension deletes every index after the class. No adapter of the application
-uses Meilisearch yet: only the test of the extension runs it.
+of a class share the same indexes, and the extension deletes every index after the class. Meilisearch applies each
+write as an asynchronous task, so a test waits for the task with `client.waitForTask` before it reads. No adapter of
+the application uses Meilisearch yet: only the test of the extension runs it.
 
 ## ♻️ One container for every run
 
