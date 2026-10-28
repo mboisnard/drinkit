@@ -37,9 +37,20 @@ to it is a structuring choice: ask first, as `AGENTS.md` says.
 
 ## Backward compatibility
 
-The frontend and the backend are built from the same commit, and they are the only consumers of the contract. A
-breaking change is therefore possible, on one condition: the same pull request adapts the other side and names
-the break. Renaming an `operationId` or a tag renames the generated methods and classes on both sides.
+The frontend and the backend deploy separately: a browser tab opened before a deployment keeps the old client.
+A change that breaks the contract never lands in one pull request, even when it adapts both sides. It goes
+through expand and contract, in two pull requests:
+
+1. Add the new element next to the old one, mark the old one `deprecated: true`, and move the frontend to the new
+   one. A new required request field starts optional.
+2. Once the first pull request is deployed, remove the old element, or make the new field required.
+
+The frontend moves in the first pull request only when the backend deploys before it. Otherwise it moves in a
+pull request of its own, once the first one is deployed.
+
+The table of breaking changes, and the reasons, are on the
+[contract-first page](../../../docs/src/engineering/architecture/contract-first.md). Renaming an `operationId` or
+a tag changes no HTTP exchange: it renames the generated methods and classes on both sides, in one pull request.
 
 ## Check it
 

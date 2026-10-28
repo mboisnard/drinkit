@@ -68,6 +68,7 @@ export default withMermaid(
                   {text: 'Monorepo', link: 'monorepo'},
                   {text: 'Modular Monolith', link: 'modular-monolith'},
                   {text: 'Hexagonal Architecture', link: 'hexagonal-architecture'},
+                  {text: 'Contract First', link: 'contract-first'},
                   {text: 'Tech Starters', link: 'tech-starters'},
                   {text: 'Event Sourcing', link: 'event-sourcing'},
                   {text: 'Platform Events', link: 'platform-events'},
@@ -147,6 +148,7 @@ export default withMermaid(
                   { text: 'About ADRs', base: '/engineering/', link: 'adr/' },
                   { text: '0001. Architecture tests with Konture', link: '0001-architecture-tests-with-konture' },
                   { text: '0002. Base, DDL and DML changelogs', link: '0002-base-ddl-and-dml-changelogs-checked-by-squawk' },
+                  { text: '0003. API contract by expand and contract', link: '0003-api-contract-changes-by-expand-and-contract' },
                 ],
               },
 

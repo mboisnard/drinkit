@@ -279,7 +279,8 @@ Any other type change rewrites the whole table under lock. Move the data to a ne
 ### Renaming and dropping
 
 During a deployment, the previous version of the application keeps running until the new one replaces it, and it
-still uses the old names. A rename breaks it at once. Change names in steps, which is called expand and contract:
+still uses the old names. A rename breaks it at once. Change names in steps, which is called
+[expand and contract](../writing-code/best-practices/coding-rules.md#evolve-a-contract-in-steps):
 
 1. **Expand**: add the new column or table, and write to both.
 2. **Move**: copy the existing data in a `dml/` file, then switch the code to the new name.

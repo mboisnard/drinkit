@@ -32,6 +32,7 @@ the other. The status says where a decision stands:
 |---|---|---|---|
 | [0001](0001-architecture-tests-with-konture.md) | Architecture tests with Konture | Accepted | 2026-10-11 |
 | [0002](0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) | Base, DDL and DML changelogs, checked by Squawk | Accepted | 2026-10-24 |
+| [0003](0003-api-contract-changes-by-expand-and-contract.md) | The API contract changes by expand and contract, frontend included | Accepted | 2026-10-28 |
 
 ## How to write one
 
