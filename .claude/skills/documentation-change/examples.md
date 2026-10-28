@@ -47,8 +47,9 @@ Then list, each item with the sentence it comes from:
 3. every sentence you had to read twice
 4. what you expected the first paragraph to tell you, and it did not
 5. every passage that explains what you already knew, or reads like a lesson
+6. every passage you could skip without losing a reason or a rule, such as a walk through settings or classes
 
-Report only these five lists. An empty list is a good answer.
+Report only these six lists. An empty list is a good answer.
 
 Page: <absolute path>
 ```
