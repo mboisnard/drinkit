@@ -9,8 +9,8 @@ modules. Read this page before you add a bounded context or make one context use
 
 - **One deployment.** One artifact and one pipeline, no network between the parts of the application, and
   integration tests that run locally.
-- **Simple consistency.** One process and one database: a use case writes in a single transaction, with no saga
-  and no eventual consistency to manage.
+- **Simple consistency.** One process and one database: a use case writes in a single transaction, with no saga.
+  Only what a [platform event](platform-events.md) triggers comes later, eventually consistent.
 - **Thinking in business areas.** Each module owns a domain, such as users, cellars or bottles, with its own
   entities, use cases and interfaces. Domain-Driven Design applies from the first line of code.
 - **Less to run while the product takes shape.** No distributed tracing, no security between services, no fault
