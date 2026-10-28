@@ -21,6 +21,32 @@ Here’s how to achieve idempotency:
 - **Succeed Silently**: If the desired state is already met, simply return a success response. Don't throw an error like "Cellar already deleted." Consider the duplicate request a success.
 - **Use Idempotency Keys**: When calling external services that support it, provide a unique idempotency key for each operation. This allows the receiving service to safely handle your repeated requests.
 
+## 🔀 Evolve a contract in steps
+
+A contract is what one deployment unit produces and another consumes: an HTTP API, a database schema, the payload
+of a message. During a deployment the old and the new versions of a unit run side by side, so a change that breaks
+the contract in one step breaks the version still running. Two pieces changed in the same commit are not one unit:
+the frontend and the backend deploy separately, and so do the application and its schema.
+
+A breaking change, such as a rename, a removal or a new required field, therefore goes through expand and
+contract, also called parallel change:
+
+1. **Expand.** Add the new form next to the old one, and make each side accept both.
+2. **Deploy**, then move every consumer to the new form.
+3. **Contract.** Once no running version uses the old form, remove it in a later change.
+
+Two traps break a contract without looking like a change of it:
+
+- **A new enum value.** A consumer that lists the values has no case for it. The producer sends it only once
+  every consumer that reads it is deployed.
+- **A feature flag that switches both sides.** Its value can change between the moment a request or a message is
+  sent and the moment it is handled. The flag never stands in for the steps above.
+
+[Contract first](../../architecture/contract-first.md) applies these steps to the API contract, and
+[ADR 0003](../../adr/0003-api-contract-changes-by-expand-and-contract.md) records why the frontend gets no exception.
+The [database page](../../build-and-data/database.md) applies them to the schema. Danilo Sato describes the pattern
+in [Parallel Change](https://martinfowler.com/bliki/ParallelChange.html).
+
 ## 🗣️ Speak the Language of the Domain
 
 Your class, method, and variable names should reflect the business domain, not their technical implementation. The goal is for the code to be readable and understandable to anyone familiar with the business, even if they aren't a developer.

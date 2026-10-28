@@ -168,8 +168,10 @@ same command fixes it.
   `code-analysis/detekt/baseline.xml`.
 - The architecture tests fail the build on any broken rule: fix the code, or tolerate the violation in the
   rule's `suppress` block with the issue that removes it, never loosen the rule.
-- Change the OpenAPI contract, never the code generated from it. A custom string format needs both
-  `typeMappings` and `importMappings` in `drinkit/drinkit-backend/build.gradle.kts`.
+- Change the OpenAPI contract, never the code generated from it, after reading
+  `docs/src/engineering/architecture/contract-first.md`: a breaking change goes through expand and contract, even
+  for the frontend. A custom string format needs both `typeMappings` and `importMappings` in
+  `drinkit/drinkit-backend/build.gradle.kts`.
 - Read `docs/src/engineering/build-and-data/build-tool.md` before changing a convention. In `build-logic`, a
   plugin id is the file name: no `package` declaration, and file names unique across folders. The
   configuration cache is on, and every convention must stay compatible with it.
