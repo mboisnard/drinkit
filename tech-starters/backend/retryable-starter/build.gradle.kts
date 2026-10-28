@@ -4,8 +4,8 @@ plugins {
 }
 
 dependencies {
-    api("org.springframework:spring-context")
-    api("org.springframework.retry:spring-retry")
+    implementation("org.springframework:spring-context")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
 
     implementation(project(":kotlin-starter"))
 }

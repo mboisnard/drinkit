@@ -4,6 +4,8 @@ plugins {
 }
 
 dependencies {
+    api("org.springframework:spring-context")
     api("org.springframework:spring-tx")
-    api(project(":retryable-starter"))
+
+    runtimeOnly(project(":retryable-starter"))
 }
