@@ -2,7 +2,8 @@
 
 Every change goes through an issue and a pull request, whether a person or a coding agent writes it, and a
 person reads both. This guide says how to set up the project and how to write them. [AGENTS.md](AGENTS.md)
-holds the commands, the structure and the code conventions, for people as much as for agents.
+holds the build commands, the git rules and which skill to read before each kind of change, for people as much as
+for agents.
 
 ## Issues
 
@@ -40,7 +41,8 @@ editor reports what the build reports.
 application, and leaves them running when it stops. The database starts empty, though: nothing in the
 application creates its schema. On the first run, once PostgreSQL is up, run the updater,
 `UpdaterApplication` in `deployment/updater`, from IntelliJ: it applies the Liquibase changelogs and exits.
-From a terminal, the `psql` command in [AGENTS.md](AGENTS.md#database-and-jooq) does the same.
+From a terminal, the `psql` command of the [`database-change` skill](.claude/skills/database-change/SKILL.md)
+does the same.
 
 ## Pull requests
 

@@ -54,7 +54,7 @@ Claude writes most of the hooks, so each one is tested before it guards anything
   setting that runs a missing hook or has no timeout, which could hang a session, a `paths:` glob of a skill that
   matches no file, which would leave the skill unloaded, and a relative link under `.claude/` that leads nowhere.
 
-The commands are in the hooks paragraph of `AGENTS.md`.
+The commands are in the [`harness-change` skill](https://github.com/mboisnard/drinkit/blob/master/.claude/skills/harness-change/SKILL.md).
 
 ## 🔒 A hook the agent cannot rewrite
 

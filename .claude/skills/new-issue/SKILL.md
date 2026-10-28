@@ -20,7 +20,9 @@ Read the forms in `.github/ISSUE_TEMPLATE/` and pick the one whose `name` and `d
 
 ## 3. Write the draft
 
-Follow the form as `AGENTS.md` says, and the writing rules of `CONTRIBUTING.md`.
+Follow the form, and the writing rules of `CONTRIBUTING.md`. `gh` and the API skip the issue forms, so write the
+form by hand: each field's `label` as a `###` heading in the form's order, its prefilled `value` verbatim, and an
+empty optional field left out. The form's `title` prefix, `labels` and project go to `gh issue create`.
 
 - The goal says what someone observes once it is done.
 - Acceptance criteria are outcomes, each one checkable by a test or a command. "The code uses X" is not an

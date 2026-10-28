@@ -28,7 +28,8 @@ Look at what a reader of the diff alone would miss:
 - **The issue.** Is each acceptance criterion met, with evidence in the description? Is anything delivered that
   the issue does not ask for and the description does not explain?
 - **Correctness.** Edge cases, error paths, concurrency, a test that cannot fail.
-- **Design.** The refactor checklists of the `test-driven-development` skill, and the rules of `AGENTS.md`.
+- **Design.** The refactor checklists of the `test-driven-development` skill, the `hexagonal-backend` skill for a
+  backend change, and the rules of `AGENTS.md`.
 - **Security.** When the diff touches what the `security-reviewer` agent's description lists, start it with the
   worktree and the two commits. Its findings join yours with their severity.
 - **From outside the project.** A first-time contributor's pull request gets a closer look at workflows, scripts,

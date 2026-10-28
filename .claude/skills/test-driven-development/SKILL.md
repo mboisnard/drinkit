@@ -61,7 +61,8 @@ Rules at every step:
 
 This phase is required, even when the code looks good enough: agents tend to skip it. It reshapes the code the
 branch added, as a whole, tests green at every step and no assertion changed. A test name may follow a rename of
-the domain, since the names are the specification. The Code patterns of `AGENTS.md` hold for the whole diff.
+the domain, since the names are the specification. The rules of `architecture-tests.md`, `coding-rules.md` and the
+`hexagonal-backend` skill hold for the whole diff.
 
 ### Technical
 

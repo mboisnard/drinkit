@@ -14,7 +14,7 @@ case /$file in
     */src/openapi/*)
         how="generated from the API contract. Change the contract, then run npm run generate:client-api, as the api-contract-change skill says" ;;
     *.lockfile)
-        how="written by Gradle. Run the command of the Dependencies section of AGENTS.md" ;;
+        how="written by Gradle. Run the command of the dependency-change skill" ;;
     */package-lock.json)
         how="written by npm. Change package.json, then run npm install" ;;
     */docs/src/engineering/resources/*)

@@ -81,7 +81,8 @@ npm run dev                            # http://localhost:3000
 ## Contributing
 
 [CONTRIBUTING.md](CONTRIBUTING.md) explains how to write issues and pull requests. [AGENTS.md](AGENTS.md)
-holds the commands, the structure and the code conventions, for people and coding agents alike.
+holds the build commands, the git rules and which skill to read before each kind of change, for people and coding
+agents alike.
 
 ## License
 

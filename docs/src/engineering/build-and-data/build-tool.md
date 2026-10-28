@@ -165,7 +165,7 @@ the one we expect.
   through the application.
 
 After a dependency change, the commands of the
-["Dependencies" section of `AGENTS.md`](https://github.com/mboisnard/drinkit/blob/master/AGENTS.md#dependencies)
+[`dependency-change` skill](https://github.com/mboisnard/drinkit/blob/master/.claude/skills/dependency-change/SKILL.md)
 regenerate the checksums and the lock. Without them, the build fails with "Dependency verification failed".
 
 ## 🩺 Auditing the build

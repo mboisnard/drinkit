@@ -28,8 +28,9 @@ to it is a structuring choice: ask first, as `AGENTS.md` says.
 2. **The schemas**, in the fragment of the area, with `required` and the constraints the API enforces. The
    backend turns them into Bean Validation, checked before the controller runs: a request that breaks them gets a
    400. Business rules stay in the domain.
-3. **A domain type for a string**: a `format` on the schema, then its two mappings in the build file of
-   `drinkit-backend`, like the identifiers already mapped there. The frontend keeps a `string`.
+3. **A domain type for a string**: a `format` on the schema, then its `typeMappings` and `importMappings` entries
+   in the build file of `drinkit-backend`, like the identifiers already mapped there. The frontend keeps a
+   `string`.
 4. **The responses**: every status the controller can answer, each with a `description`, an error body only
    the way the existing error responses describe one.
 5. **Both sides**: the controller and its security rule through the `hexagonal-backend` skill, then the frontend

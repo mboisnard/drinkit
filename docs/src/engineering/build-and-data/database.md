@@ -6,7 +6,7 @@ changelogs, SQL files that the updater, `deployment/updater`, applies apart from
 schema into the Kotlin classes the [adapters](../architecture/hexagonal-architecture.md) query with, committed with
 the code. Until the first deployment, a change edits a file of `base/`. After it, a change is a new file in `ddl/`
 or `dml/`. Either way, `./gradlew :updater:check` checks it, you apply it to your local database, then regenerate
-and commit the jOOQ classes, with the commands of the ["Database and jOOQ" section of `AGENTS.md`][agents-db]. Read
+and commit the jOOQ classes, with the commands of the [`database-change` skill][database-skill]. Read
 this page before you write a changelog.
 
 Most rules below come from one fact: a migration runs while users are still using the application. A migration that
@@ -163,7 +163,7 @@ raised timeout ends with its file. A file that changes any other setting resets 
 
 Every statement must be idempotent: run again, it changes nothing. Three situations run a statement again: a file
 that failed halfway runs again from its first statement, `base/` runs again when it changes, and the local apply
-command of the ["Database and jOOQ" section of `AGENTS.md`][agents-db] replays every file. These forms check before
+command of the [`database-change` skill][database-skill] replays every file. These forms check before
 they act:
 
 - `CREATE TABLE IF NOT EXISTS ...`
@@ -435,7 +435,7 @@ compiler then checks each query: a renamed column fails the build instead of a r
 The classes are committed, under `src/generated/jooq/kotlin` of each module that generates them, so that the build
 needs no database. Generating them in CI would mean starting PostgreSQL and applying every changelog before the
 first compilation. The build never regenerates them: after a changelog change, apply it locally and regenerate them,
-as the ["Database and jOOQ" section of `AGENTS.md`][agents-db] describes. Until then, the code compiles and the tests
+as the [`database-change` skill][database-skill] describes. Until then, the code compiles and the tests
 run against the old schema.
 
 ## 🧪 Integration tests
@@ -467,4 +467,4 @@ The test extends the test contract of its port, an abstract class of tests that 
 - [Baseline Migrations](https://documentation.red-gate.com/fd/baseline-migrations-273973336.html), Flyway
 - [Squawk rules](https://squawkhq.com/docs/rules), Squawk
 
-[agents-db]: https://github.com/mboisnard/drinkit/blob/master/AGENTS.md#database-and-jooq
+[database-skill]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/database-change/SKILL.md
