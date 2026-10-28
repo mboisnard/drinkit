@@ -67,4 +67,18 @@ A retry policy names the exceptions worth a new attempt, as `@RetryableTransacti
 `maxRetries` counts the retries after the first attempt: `maxRetries = 2` makes three attempts.
 
 A unit test calls the method without Spring and sees one attempt. A test of the retry builds the Spring context,
-with an `ApplicationContextRunner` or an integration test.
+with an `ApplicationContextRunner` or an integration test. `SpyRetryListener`, in the starter's test fixtures, counts
+the failed attempts there. Declared as a bean, it replaces the starter's logging in that context:
+
+```kotlin
+testImplementation(testFixtures(project(":retryable-starter")))
+```
+
+```kotlin
+runner.withBean(SpyRetryListener::class.java, { spyRetryListener })
+    .run { context ->
+        context.getBean(SaveEvent::class.java).invoke()
+
+        spyRetryListener.countFailedAttempts() shouldBe 1
+    }
+```

@@ -10,9 +10,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 import org.springframework.boot.test.system.CapturedOutput
 import org.springframework.boot.test.system.OutputCaptureExtension
-import org.springframework.context.ApplicationListener
 import org.springframework.resilience.annotation.Retryable
-import org.springframework.resilience.retry.MethodRetryEvent
 
 @ExtendWith(OutputCaptureExtension::class)
 internal class RetryableAutoConfigurationTest {
@@ -82,16 +80,16 @@ internal class RetryableAutoConfigurationTest {
 
     @Test
     fun `the application's own retry listener replaces the starter's`(output: CapturedOutput) {
-        val applicationListener = RecordingRetryListener()
+        val applicationListener = SpyRetryListener()
 
-        runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 1) })
-            .withBean(RecordingRetryListener::class.java, { applicationListener })
+        runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 5) })
+            .withBean(SpyRetryListener::class.java, { applicationListener })
             .run { context ->
                 // When
-                context.getBean(FlakyCall::class.java).call()
+                shouldThrow<IllegalStateException> { context.getBean(FlakyCall::class.java).call() }
 
                 // Then
-                applicationListener.events shouldHaveSize 1
+                applicationListener.countFailedAttempts() shouldBe 3
                 output.out shouldNotContain FAILED_ATTEMPT_LOG
             }
     }
@@ -124,14 +122,6 @@ internal class RetryableAutoConfigurationTest {
 
         @Retryable(includes = [IllegalStateException::class], maxRetries = 2, delay = 0)
         open fun refuse(): Nothing = throw IllegalArgumentException(FAILURE_MESSAGE)
-    }
-
-    internal class RecordingRetryListener : ApplicationListener<MethodRetryEvent> {
-        val events = mutableListOf<MethodRetryEvent>()
-
-        override fun onApplicationEvent(event: MethodRetryEvent) {
-            events += event
-        }
     }
 
     companion object {
