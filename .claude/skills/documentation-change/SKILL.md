@@ -28,8 +28,8 @@ those files rather than copying their commands.
 - Read the code, configuration or class the page describes, and check each fact against it, never against the
   old page. `git grep` finds the class or the setting.
 - Find the source of truth for each thing the page mentions and link it instead of repeating it: `AGENTS.md`
-  for a command, an ADR for why a choice was made, the file that implements a rule, another page for a subject
-  it already covers.
+  or the skill of its kind of change for a command, an ADR for why a choice was made, the file that implements a
+  rule, another page for a subject it already covers.
 - Read [the ADR index](../../../docs/src/engineering/adr/index.md) for the decisions behind the subject.
   Where the page states a choice an ADR records, it links that ADR in one sentence, such as "ADR 0002 records why
   the changelogs are organized as below" in `database.md`: the page keeps how DrinkIt works, the ADR why. An ADR
@@ -85,15 +85,18 @@ and steps go in a numbered list under a heading that names the task.
    pattern before the Spring Boot or Nuxt page. Each entry gives the title as link text, then the author or
    publisher. The text may name a source without linking it again.
 
-A long subject makes a long page, as long as each section stands on its own and a reader can jump to it. A
-section earns its place when a reader would come looking for it. A paragraph that answers no question of the
-reader goes, even when it is true.
+Short is the default. The reader comes for the idea, its reasons and the shape of what DrinkIt built, then goes to
+the code, a starter's README, a skill or the sources for the rest. An explanation page fits in about 100 lines of
+markdown. Past 150, cut detail or split the page. A reference table adds its rows to that count. A section earns
+its place when a reader would come looking for it, and a paragraph that answers no question of the reader goes,
+even when it is true.
 
 Detail has one home, next to what it describes. The page gives the shape of the subject and the reason for each
-part. The detail of one item, a setting, a workaround, the version that broke something, stays in the comments of
-the file that holds it or in its README, and the page links there. A reference list gives one line per item, as
-the convention tables of `build-tool.md` do. When a rewrite comes out longer than the page it replaces, the added
-words carry reasons, never more detail nor a lesson.
+part. The detail of one item, a setting, a class, a workaround, the version that broke something, stays in the
+comments of the file that holds it or in its README, and the page links there. A walk through each setting or class
+in turn buries the reasons: give the shape in a sentence and link the code. A reference list gives one line per
+item, as the convention tables of `build-tool.md` do. When a rewrite comes out longer than the page it replaces,
+the added words carry reasons, never more detail nor a lesson.
 
 ## 5. Write it plainly
 
@@ -119,7 +122,7 @@ in `hexagonal-architecture.md`. Mermaid diagrams are fine.
 - Never invent a fact. Keep every true one. When one turns out wrong or stale, correct it from the code and say
   so in the pull request.
 - Leave frontmatter, link targets and the code blocks that are right as they are. A code block that names a
-  class the code does not have takes a real one, and a command copied from `AGENTS.md` becomes a link to it.
+  class the code does not have takes a real one, and a command copied from `AGENTS.md` or a skill becomes a link to it.
 - A heading's anchor comes from its text. Before you change a heading, find the links to it with
   `git grep -n '<page name>.*#'`, and update them in the same change. Never add a `{#anchor}` to a heading:
   VitePress reads it, but GitHub and editor previews show it as text.
@@ -137,10 +140,13 @@ generated page.
 - [ ] `./gradlew kspKotlin --rerun`, then `npm run docs:build` from `docs/`, passes. VitePress fails on a dead
   link.
 - [ ] A fresh agent given only the page and the [fresh reader prompt](examples.md#fresh-reader) reports no DrinkIt
-  term used before its definition, no rule without its reason and no passage that teaches what it already knows.
+  term used before its definition, no rule without its reason, no passage that teaches what it already knows and
+  none it could skip without losing a reason.
   Fix each finding with a link or a few words, never a new paragraph, then run it again. It always finds
   something: stop once a round reports only wording. When no agent can be started, answer the prompt yourself,
   reading as that engineer, and say so in the pull request.
+- [ ] `wc -l` counts about 100 lines for an explanation page, 150 at most beyond its reference tables, or the pull
+  request says why the page needs more.
 - [ ] `npm run docs:dev` shows the tables and diagrams as intended.
 - [ ] Each concept of the page that has a page of its own links to it.
 - [ ] Each choice of the page that an ADR records links to that ADR.
