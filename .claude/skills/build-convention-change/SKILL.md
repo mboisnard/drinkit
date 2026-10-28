@@ -7,9 +7,9 @@ paths:
 
 # Changing a build convention
 
-Read `docs/src/engineering/build-and-data/build-tool.md` first: it gives the role of each convention, and each convention
-file explains its own choices in its comments. The "Build traps" section of `AGENTS.md` lists what fails the build.
-This skill gives the rules and what proves them.
+Read `docs/src/engineering/build-and-data/build-tool.md` first: it gives the role of each convention and what fails
+the build, and each convention file explains its own choices in its comments. This skill gives the rules and what
+proves them.
 
 ## 1. Name the plugin by its file
 

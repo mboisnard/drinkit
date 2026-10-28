@@ -23,8 +23,8 @@ model reads is advisory, while a hook, a permission rule or a test runs every ti
 ## 🗺️ AGENTS.md, the map
 
 `AGENTS.md` is the file Codex, Cursor and Copilot read when a session starts, and Claude Code reads it too since the
-repository has no `CLAUDE.md`. Following OpenAI's advice, it is a map rather than a manual: the commands, the layout,
-the traps of the build, and which skill or page to read before which change. The detail of a rule lives in the skill
+repository has no `CLAUDE.md`. Following OpenAI's advice, it is a map rather than a manual: the build commands, the traps
+no tool catches, and which skill or page to read before which change. The detail of a rule lives in the skill
 or the page it points to, so the file stays short and every rule in it stays in the agent's sight.
 
 ## 📚 Documentation the agents explore
@@ -33,7 +33,7 @@ Agents read this site as a newcomer would. The pages say why the code is the way
 [decision records](../adr/index.md) keep the reason of each structuring choice, and the
 [living documentation](../writing-code/best-practices/living-documentation.md), generated from the annotations of
 the code, lists each domain type, use case and tech starter. An agent that lacks context opens the page `AGENTS.md`
-points to, instead of copying the code next door.
+or a skill points to, instead of copying the code next door.
 
 ## 🔁 The feedback loop
 
@@ -78,7 +78,8 @@ pre-push, since the guard refuses `git push --no-verify`, and nobody can skip th
   vulnerable dependency from the OSV database and opens its security update.
 - **The [issue forms][issue-forms], the [pull request template][pr-template] and the
   [contributing guide][contributing]** give people and agents the same shape for what they write on GitHub. Agents
-  create issues through `gh` or the API, which skip the forms, so `AGENTS.md` tells them to reuse their headings.
+  create issues through `gh` or the API, which skip the forms, so the `new-issue` skill tells them to reuse their
+  headings.
 
 The settings of the workflows themselves, a read-only token, pinned actions and approved fork runs, are on the
 [CI/CD](../delivery/ci-cd.md#securing-the-workflows) page.

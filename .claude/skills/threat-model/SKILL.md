@@ -66,8 +66,8 @@ At <short sha>, <date>. <one sentence on the flow>
 |---|---|---|---|---|
 ````
 
-Build the site as `AGENTS.md` describes and fix any dead link. With the maintainer's OK, each gap to fix becomes an
-issue through the `new-issue` skill.
+Build the site as the `documentation-change` skill describes and fix any dead link. With the maintainer's OK, each
+gap to fix becomes an issue through the `new-issue` skill.
 
 ## Before you finish
 

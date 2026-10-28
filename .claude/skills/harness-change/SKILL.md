@@ -57,7 +57,12 @@ before. A new case fails before the change. `harness.bats` fails when a hook has
 `.claude/settings.json` runs no hook of `.hooks/claude/` or has no timeout.
 
 From the root, `npm cit --prefix .hooks` installs bats and runs every suite. Before pushing, run the suite of
-each changed hook under dash too: `cd .hooks && HOOK_SHELL=dash npx bats tests/<hook>.bats`.
+each changed hook under dash too: `cd .hooks && HOOK_SHELL=dash npx bats tests/<hook>.bats`. ShellCheck runs with
+Docker, from the root:
+
+```
+docker run --rm -v "$PWD:/mnt:ro" -w /mnt --entrypoint sh "$(grep -o 'koalaman/shellcheck[^ ]*' .github/workflows/ci-hooks.yml)" -c 'shellcheck .hooks/git/* .hooks/claude/* .hooks/lib/*.sh .hooks/tests/*.bats .hooks/tests/*.bash'
+```
 
 ### 5. Describe it
 
@@ -81,6 +86,6 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
 
 - [ ] Every changed hook parses and runs under `sh` on macOS and under dash, and its suite has a case that failed
   before.
-- [ ] `npm cit --prefix .hooks` passes.
+- [ ] `npm cit --prefix .hooks` and ShellCheck pass.
 - [ ] Every `paths:` glob matches tracked files.
 - [ ] The page of `docs/src/engineering/coding-assistants/` that covers the changed part describes the change.

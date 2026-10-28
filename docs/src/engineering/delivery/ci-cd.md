@@ -176,8 +176,8 @@ built and checked. The backend and the frontend are not deployed yet.
 
 ## 🛠️ Changing the CI
 
-The [`ci-workflow-change` skill][skill] gives the rules and the checklist, and the
-["Compose file, workflows and Renovate configuration" block of `AGENTS.md`][agents-md] the local checks.
+The [`ci-workflow-change` skill][skill] gives the rules, the checklist and the local checks, those of the compose
+file and the Renovate configuration included.
 
 - **A new folder or module** goes into the list of the lane that reads it, or into `none`. Until then, a change to
   it runs every lane.
@@ -211,7 +211,6 @@ The [`ci-workflow-change` skill][skill] gives the rules and the checklist, and t
 [ci-lanes]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/config/ci-lanes.yml
 [weekly-yml]: https://github.com/mboisnard/drinkit/blob/master/.github/workflows/weekly.yml
 [skill]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/ci-workflow-change/SKILL.md
-[agents-md]: https://github.com/mboisnard/drinkit/blob/master/AGENTS.md#commands
 [paths-filter]: https://github.com/dorny/paths-filter
 [zizmor]: https://docs.zizmor.sh
 [actionlint]: https://github.com/kjanat/actionlint

@@ -8,8 +8,8 @@ paths:
 
 # Changing the database schema
 
-The commands are in the "Database and jOOQ" section of `AGENTS.md`, the safe statements in
-`docs/src/engineering/build-and-data/database.md`. This skill gives the order and what proves each step.
+The safe statements are in `docs/src/engineering/build-and-data/database.md`. This skill gives the order, the
+commands and what proves each step.
 
 ## 1. Write the change
 
@@ -29,8 +29,14 @@ an existing one: `deployment/local/compose.yml` keeps its data in a volume.
 
 ## 2. Apply it twice
 
-Run the apply commands of `AGENTS.md`, then run them a second time. An error on the second run means a statement
-is not idempotent: fix it before going on.
+From the root, with Docker, these commands apply every changelog in the order Liquibase runs them. They are also
+the first-run step of a new database. Run them, then run them a second time: an error on the second run means a
+statement is not idempotent, so fix it before going on.
+
+```
+docker compose -f deployment/local/compose.yml up -d postgresql
+find deployment/updater/src/main/resources/db/changelog -name '*.sql' | sort | xargs cat | docker compose -f deployment/local/compose.yml exec -T postgresql psql -v ON_ERROR_STOP=1 -U drinkit -d drinkit
+```
 
 ## 3. Generate the jOOQ classes
 

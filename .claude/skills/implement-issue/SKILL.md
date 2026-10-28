@@ -56,7 +56,8 @@ command follows the same rhythm: run it, see it fail, change, see it pass.
 
 ## 6. Verify like CI
 
-Run the `AGENTS.md` command of every lane the changed files hit, and keep the last lines of each output.
+Run the build commands of `AGENTS.md`, and the checks of the skill of each kind of change the branch makes, and
+keep the last lines of each output.
 
 ## 7. Draft the pull request
 

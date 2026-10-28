@@ -1,16 +1,18 @@
 ---
 name: ci-workflow-change
-description: Changes DrinkIt's GitHub Actions workflows, its in-repo actions and the lanes of the CI, in a way the repository accepts and that never skips a check by mistake. Use it before adding or changing a workflow, a job, a step, an action reference or a path of a lane.
+description: Changes DrinkIt's GitHub Actions workflows, its in-repo actions and the lanes of the CI, in a way the repository accepts and that never skips a check by mistake. Use it before adding or changing a workflow, a job, a step, an action reference or a path of a lane, and before changing the local compose file or the Renovate configuration, which CI checks too.
 paths:
   - ".github/workflows/**"
   - ".github/actions/**"
   - ".github/actionlint.yaml"
+  - ".github/renovate.json"
+  - "deployment/local/compose.yml"
 ---
 
 # Changing a workflow
 
-The local check commands are in the block of `AGENTS.md` that runs actionlint and zizmor, the reasons behind each
-rule in `docs/src/engineering/delivery/ci-cd.md`. This skill gives the order and what proves each step.
+The reasons behind each rule are in `docs/src/engineering/delivery/ci-cd.md`. This skill gives the order and what
+proves each step.
 
 ## 1. Shape the job
 
@@ -42,19 +44,32 @@ lane. The lists hold no `!` pattern: it would match every other file.
 
 ## 4. Check locally
 
-Run the actionlint and zizmor commands of `AGENTS.md`, from the root, with Docker. Both must print nothing to fix:
-zizmor fails its job in CI rather than uploading to code scanning. actionlint reads `.github/actionlint.yaml`.
+From the root, with Docker. Both must print nothing to fix: zizmor fails its job in CI rather than uploading to
+code scanning. actionlint reads `.github/actionlint.yaml`.
+
+```
+docker run --rm -v "$PWD:/repo:ro" -w /repo "$(grep -o 'ghcr.io/[^ ]*actionlint[^ ]*' .github/workflows/ci-workflows.yml)"
+docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/zizmorcore/zizmor --offline .
+```
+
+A change to the compose file or to the Renovate configuration has checks of its own, which CI runs too:
+
+```
+docker compose -f deployment/local/compose.yml config --quiet
+docker compose -f deployment/local/compose.yml up --detach --wait   # the dev services, until each healthcheck passes
+docker run --rm -v "$PWD:/repo:ro" -w /repo "$(grep -o 'ghcr.io/renovatebot/renovate[^ ]*' .github/workflows/ci-renovate.yml)" renovate-config-validator --strict --no-global .github/renovate.json
+```
 
 ## 5. Read the run
 
-The `CI files` job runs the same checks on the pull request. `CI gate` is the only check the master ruleset
-requires, so renaming or adding a job never touches the ruleset. When a lane ran and should not have, the
-`Decision` log lists the files each list matched.
+The `CI files`, `Ops` and `Renovate` jobs run the same checks on the pull request. `CI gate` is the only check
+the master ruleset requires, so renaming or adding a job never touches the ruleset. When a lane ran and should not
+have, the `Decision` log lists the files each list matched.
 
 ## Before you finish
 
 - [ ] Every new job has its permissions, its timeout and a checkout without credentials.
 - [ ] Every external action is pinned by SHA with its version comment, every in-repo one goes by `$/`.
 - [ ] Every new path is in a lane or in `none`.
-- [ ] actionlint and zizmor pass locally.
+- [ ] actionlint and zizmor pass locally, and the compose or Renovate check when that file changed.
 - [ ] `ci-cd.md` says what changed when a lane, a job or a choice changed.
