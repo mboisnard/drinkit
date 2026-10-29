@@ -57,8 +57,10 @@ and steps go in a numbered list under a heading that names the task.
 ## 4. Shape the page
 
 1. The title names the subject. The first paragraph says what the page covers and the one idea to keep: a
-   reader who stops there knows what matters. A guideline page also says when to read it, such as before
-   changing a convention. An absolute there, "every" or "never", holds for the whole page: when a later section
+   reader who stops there knows what matters. On a page about a pattern or a practice, its first sentences present
+   the pattern itself, in general terms and without DrinkIt, and how DrinkIt applies it comes next, as in
+   `clean-architecture.md`: a reader who knows the pattern recognizes it before meeting the modules. A guideline
+   page also says when to read it, such as before changing a convention. An absolute there, "every" or "never", holds for the whole page: when a later section
    makes an exception, the first paragraph names it or says less.
 2. The next paragraph gives the fact that drives the rules, such as "a migration runs while users are still
    using the application" in `database.md`.

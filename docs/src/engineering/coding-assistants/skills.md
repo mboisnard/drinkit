@@ -25,7 +25,7 @@ The format is an open standard, Agent Skills, which Codex and other agents read 
 
 Claude may judge that a task does not need a skill, or skip it under pressure. DrinkIt relies on the descriptions, the
 globs and `AGENTS.md` to load the skills, and on the hooks and tests to catch what a skipped skill would have
-prevented. Two ways, not tried in DrinkIt yet, would make a skill hard to miss:
+prevented. Either of these, not tried in DrinkIt yet, would make a skill hard to miss:
 
 - a rule file in `.claude/rules/`, which Claude Code loads whenever it works on a file the rule's `paths:` matches,
   holding a single line that names the skill to read

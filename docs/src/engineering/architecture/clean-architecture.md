@@ -1,11 +1,13 @@
 # Clean Architecture
 
-Inside the `drinkit-domain` module, DrinkIt follows Robert C. Martin's Clean Architecture: the entities in the middle,
-the use cases around them, and every dependency of the code pointing inward. Each business action is one use case,
-which returns its outcomes as a sealed `Result` of its own. Its decisions live in a pure function of its decider,
-following Gary Bernhardt's Functional Core / Imperative Shell. The build fails on a dependency that points outward.
-The [hexagonal architecture](hexagonal-architecture.md) page covers the ports and adapters around the domain, and
-this page what lies inside. Read this page before you add or change a use case.
+Robert C. Martin's Clean Architecture puts the business rules at the center of an application: the entities in the
+middle, the use cases around them, and every dependency of the code pointing inward, so that the database and the web
+framework stay details. Gary Bernhardt's Functional Core / Imperative Shell fits inside a use case: its decisions are
+a pure function, and a thin shell around it does the input and output. In DrinkIt, the domain module,
+`drinkit-domain`, holds these rings. Each business action is one use case, which returns its outcomes as a sealed
+`Result` of its own, and its decisions live in the pure function of its decider. The build fails on a dependency
+that points outward. The [hexagonal architecture](hexagonal-architecture.md) page covers the ports and adapters
+around the domain, and this page what lies inside. Read this page before you add or change a use case.
 
 ## 🧭 The pattern
 
@@ -111,12 +113,12 @@ types, Kotlin, `java.time` and `java.math`, never a port or a clock.
 which the documentation generator of [living documentation](../writing-code/best-practices/living-documentation.md)
 and the architecture tests read, so they cost nothing at runtime:
 
-| Annotation | Package, under `com.drinkit.documentation` | On | What reads it |
-|---|---|---|---|
-| `@CoreDomain` | `clean.architecture` | An entity or a value of `core` | The documentation generator, which writes a page for it |
-| `@Usecase` | `clean.architecture` | A use case | The documentation generator, which lists it on the page of its context's `@CoreDomain`. The architecture tests require it on every `@Service` of the domain, so the pages miss no use case |
-| `@ImperativeShell` | `fcis` | A use case with a decider | No tool: it tells the reader the class is the shell |
-| `@FunctionalCore` | `fcis` | A decider | The architecture tests, which check that it is pure and an `internal object` |
+| Annotation | On | What reads it |
+|---|---|---|
+| `@CoreDomain` | An entity or a value of `core` | The documentation generator, which writes a page for it |
+| `@Usecase` | A use case | The documentation generator, which lists it on the page of its context's `@CoreDomain`. The architecture tests require it on every `@Service` of the domain, so the pages miss no use case |
+| `@ImperativeShell` | A use case with a decider | No tool: it tells the reader the class is the shell |
+| `@FunctionalCore` | A decider | The architecture tests, which check that it is pure and an `internal object` |
 
 The generator finds the `@CoreDomain` of a use case through its package, so a use case stays in the parent package
 of `core`.
