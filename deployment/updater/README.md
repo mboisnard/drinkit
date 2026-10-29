@@ -12,7 +12,7 @@ The updater applies the database changes of DrinkIt to PostgreSQL, with Liquibas
 
 Liquibase records each file it runs in `DRINKIT_DATABASECHANGELOG`, and skips it the next time.
 
-The `Dockerfile` of this folder builds it into an image that holds no changelog: it reads them from the classpath under `/workspace`, so `db/` mounted at `/workspace/db` gives it the changelogs of your checkout.
+The `Dockerfile` of this folder builds it into an image, which master publishes as `ghcr.io/mboisnard/drinkit-updater`. The image holds no changelog: it reads them from the classpath under `/workspace`, so `db/` mounted at `/workspace/db` gives it the changelogs of your checkout. [Container images](../../docs/src/engineering/delivery/container-images.md) explains how master publishes it.
 
 ## Run It
 
@@ -22,4 +22,4 @@ The `Dockerfile` of this folder builds it into an image that holds no changelog:
 
 ## Read Next
 
-[`database.md`](../../docs/src/engineering/build-and-data/database.md) explains what goes in each folder, how to write a change that never blocks the users, how to rebaseline `base/`, and why each checked rule exists. [ADR 0002](../../docs/src/engineering/adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) records why the changelogs are organized this way.
+[`database.md`](../../docs/src/engineering/build-and-data/database.md) explains what goes in each folder, how to write a change that never blocks the users, how to rebaseline `base/`, and why each checked rule exists. [ADR 0002](../../docs/src/engineering/adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) records why the changelogs are organized this way. [ADR 0004](../../docs/src/engineering/adr/0004-one-updater-image-for-every-environment.md) records why one image runs them in every environment.
