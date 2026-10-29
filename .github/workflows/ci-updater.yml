@@ -43,3 +43,60 @@ jobs:
           path: deployment/updater/build/reports/tests/
           if-no-files-found: ignore
           retention-days: 7
+
+  # The image of the runner's platform only, never pushed. Not on master, where Deploy updater builds and runs it
+  image:
+    name: Build and run the image
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Lint the Dockerfile
+        uses: docker://hadolint/hadolint:v2.15.1@sha256:32dac94127fd60b7b7e3fbfc65e1383b9b5e25c9bfd7b8536de7a539fe68a12d
+        with:
+          args: hadolint deployment/updater/Dockerfile
+
+      - name: Set up JDK and Gradle
+        uses: $/.github/actions/setup-gradle-jdk
+
+      - name: Build the jar and its layers
+        run: ./gradlew :updater:extractLayers
+
+      # The image reads its changelogs from /workspace, after the jar on the classpath: a copy in the jar would win
+      - name: Check that the jar holds no changelog
+        run: |
+          if unzip -l deployment/updater/build/libs/updater.jar | grep 'BOOT-INF/classes/db/'; then
+            echo "::error::updater.jar holds changelogs: bootJar must exclude db/**"
+            exit 1
+          fi
+
+      - name: Build the image
+        run: docker build --file deployment/updater/Dockerfile --tag drinkit-updater:ci deployment/updater/build/image
+
+      - name: Smoke-test the image
+        uses: $/.github/actions/updater-smoke
+        with:
+          image: drinkit-updater:ci
+
+  # The weekly full run only: a CVE disclosed since the last publication fails it, never a pull request
+  scan-latest:
+    name: Scan the published image ${{ matrix.platform }}
+    if: github.event_name == 'workflow_dispatch' && github.repository == 'mboisnard/drinkit'
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions: {}
+    steps:
+      - name: Scan the image tagged latest
+        uses: docker://aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c
+        with:
+          args: image --image-src remote --platform ${{ matrix.platform }} --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 ghcr.io/mboisnard/drinkit-updater:latest
