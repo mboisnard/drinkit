@@ -40,7 +40,8 @@ editor reports what the build reports.
 `./gradlew :drinkit-backend:bootRun` starts the containers of `deployment/local/compose.yml` before the
 application, and leaves them running when it stops. The database starts empty, though: nothing in the
 application creates its schema. On the first run, once PostgreSQL is up, run the updater,
-`UpdaterApplication` in `deployment/updater`, from IntelliJ: it applies the Liquibase changelogs and exits.
+`UpdaterApplication` in `deployment/updater`, from IntelliJ with the `dev` profile: it applies the Liquibase
+changelogs and exits.
 From a terminal, the `psql` command of the [`database-change` skill](.claude/skills/database-change/SKILL.md)
 does the same.
 
