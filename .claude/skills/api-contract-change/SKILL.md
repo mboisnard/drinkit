@@ -33,7 +33,7 @@ to it is a structuring choice: ask first, as `AGENTS.md` says.
    `string`.
 4. **The responses**: every status the controller can answer, each with a `description`, an error body only
    the way the existing error responses describe one.
-5. **Both sides**: the controller and its security rule through the `hexagonal-backend` skill, then the frontend
+5. **Both sides**: the controller and its security rule through the `backend-feature` skill, then the frontend
    client regenerated and the pages that use what changed adapted, through the `frontend-feature` skill.
 
 ## Backward compatibility

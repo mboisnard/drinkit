@@ -21,8 +21,11 @@ lists the files, and "Writing safe migrations" gives the statements:
 - `base/` changes only before the first deployment, with the local database recreated, or in a rebaseline, as
   "Rebaselining" describes.
 
-The application tables live in `drinkit_application`. Then run `./gradlew :updater:check`: a finding names its
-rule and its fix, and the "Checked rules" section of `database.md` says why the rule exists.
+The application tables live in `drinkit_application`. Then run `./gradlew :updater:check`. It runs Squawk on
+the SQL of the changelogs and the tests of `deployment/updater`, `ChangelogConventionsTest` on their folders,
+changesets and statements among them. The Updater lane of CI runs it on every change under `deployment/updater`,
+where the changelogs live: the rules of the "Checked rules" section of `database.md` are enforced by these checks,
+not by this skill alone. A finding names its rule and its fix, and that section says why the rule exists.
 
 After the file runs, a new database and an existing one must end up with the same schema. The local database is
 an existing one: `deployment/local/compose.yml` keeps its data in a volume.
@@ -58,7 +61,7 @@ again. Commit the classes with the changelog that produced them, so every commit
 ## 5. Test the adapter
 
 The adapter test runs the port's `*TestContract` against PostgreSQL with `@JooqIntegrationTest`, whose model
-is in the examples of the `hexagonal-backend` skill. It builds the test database from the committed classes,
+is in the examples of the `backend-feature` skill. It builds the test database from the committed classes,
 not from Liquibase: a green adapter test proves the code against the classes, and steps 2 and 4 are what prove
 the classes match the changelog. Never skip them.
 

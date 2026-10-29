@@ -1,6 +1,6 @@
 # Tests on the backend
 
-Start from the domain and move out. The `hexagonal-backend` skill says where each piece goes, and its
+Start from the domain and move out. The `backend-feature` skill says where each piece goes, and its
 `examples.md` names the model of each piece and of its test.
 
 1. The use case, through its `invoke`, with the in-memory doubles its `*Fixtures` class wires, as
