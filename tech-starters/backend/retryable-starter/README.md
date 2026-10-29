@@ -1,7 +1,7 @@
 # Retryable Starter
 
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
-that turns on the `@Retryable` of Spring Framework 7 and logs each failed attempt. DrinkIt needs it for concurrent
+that turns on the `@Retryable` of Spring Framework and logs each failed attempt. DrinkIt needs it for concurrent
 writes on an event-sourced aggregate: the use case that loses the race runs again on the new history.
 `event-sourcing-starter` brings it, so an application gets it with that starter.
 
@@ -49,8 +49,7 @@ A failure the retry policy does not cover reaches the caller at once, after a si
 
 ## Usage
 
-An application that needs the retry without `event-sourcing-starter` declares the starter in its
-`build.gradle.kts`:
+An application that needs the retry declares the starter in its `build.gradle.kts`:
 
 ```kotlin
 dependencies {
@@ -77,7 +76,7 @@ testImplementation(testFixtures(project(":retryable-starter")))
 ```kotlin
 runner.withBean(SpyRetryListener::class.java, { spyRetryListener })
     .run { context ->
-        context.getBean(SaveEvent::class.java).invoke()
+        context.getBean<SaveEvent>().invoke()
 
         spyRetryListener.countFailedAttempts() shouldBe 1
     }
