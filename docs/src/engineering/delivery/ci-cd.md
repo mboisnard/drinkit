@@ -3,7 +3,8 @@
 Every change reaches master through a pull request, and GitHub Actions checks it first, from
 [`.github/workflows/ci.yml`][ci-yml]. The checks come in lanes, one per part of the repository, and a pull request
 runs only the lanes its changed files can affect, or all of them when in doubt. One check, `CI gate`, sums up the
-run and decides whether the pull request can merge. The documentation site is the only thing deployed so far.
+run and decides whether the pull request can merge. The documentation site and the
+[updater image](container-images.md) are the only things deployed so far.
 Read this page before you change a workflow, and before you add a folder: a folder that no lane knows runs every
 lane.
 
@@ -20,7 +21,7 @@ DrinkIt keeps five practices of continuous integration and delivery, as Martin F
 4. **The pipeline is guarded like the code.** A workflow runs third-party code with access to the repository. Its
    actions are pinned, its tokens get the least they need, and two linters check every change to it.
 5. **What is deployed is what was checked.** The documentation site is deployed from the build that checked it,
-   never from a second build that could differ.
+   never from a second build that could differ, and the updater image is tagged `latest` once CI ran that image.
 
 ## 🔄 The life of a change
 
@@ -40,7 +41,8 @@ flowchart LR
   A branch behind master is rebased first, with "Update branch" on the pull request or
   `gh pr update-branch <number> --rebase`.
 - **Master runs again after each merge**, on the new commits the rebase made. This run is also the one that saves
-  the Gradle cache, submits the dependency graph and deploys the site, so it is never cancelled.
+  the Gradle cache, submits the dependency graph, deploys the site and publishes the updater image, so it is never
+  cancelled.
 - **Every Monday, [`weekly.yml`][weekly-yml] starts a full run on master**, so the checks also see the code no
   recent change touched. It lives in a file of its own because GitHub disables a scheduled workflow after 60 days
   without activity, and a disabled `ci.yml` would block every pull request.
@@ -69,13 +71,14 @@ flowchart LR
   lanes --> gate[[CI gate<br/>the required check]]
   decision -. with Backend .-> codeql[CodeQL<br/>does not block]
   docs -. on master .-> deploy[Deploy docs<br/>does not block]
+  gate -. on master .-> deployupdater[Deploy updater<br/>does not block]
 ```
 
 | Lane | Runs when the change touches | What it checks |
 |---|---|---|
 | CI files | The workflows, the in-repo actions, `.github/actionlint.yaml` | actionlint checks the syntax and expressions of the workflows, zizmor audits their security |
 | Backend | The backend and [tech starter](../architecture/tech-starters.md) sources, the architecture tests, the [API contract](../architecture/contract-first.md), the build logic and Gradle files | `./gradlew build detektAll`: compiles, runs the tests and the [architecture tests](../writing-code/testing/architecture-tests.md), then detekt |
-| Updater | The database changelogs of `deployment/updater`, the build logic and Gradle files | `./gradlew :updater:check`: the [changelog rules and Squawk](../build-and-data/database.md#checked-rules), each finding shown on its line of the pull request |
+| Updater | `deployment/updater`, its changelogs and its Dockerfile, the compose file that runs its test, the build logic and Gradle files | `./gradlew :updater:check`: the [changelog rules and Squawk](../build-and-data/database.md#checked-rules), each finding shown on its line of the pull request. Then hadolint, and the [image](container-images.md) built and run twice against a new database, except on master |
 | Frontend | The Nuxt app, the API contract, `.nvmrc` | Generates the API client and builds the app. No linter or test runs on it yet |
 | Hooks | `.hooks/`, `.claude/`, `.nvmrc` | ShellCheck on the git and Claude Code [hooks](../coding-assistants/hooks.md), then the bats suites of the hooks and of the harness files, under dash, `bash --posix` and macOS `sh` |
 | Docs | `docs/`, the tech starter READMEs, every path of Backend, `.nvmrc` | Generates the [living documentation](../writing-code/best-practices/living-documentation.md) and builds the site, which fails on a dead link |
@@ -95,8 +98,8 @@ flowchart LR
   start. The integration tests do not use these images, [Testcontainers](../writing-code/testing/testcontainers.md)
   starts its own.
 
-Four jobs are not lanes: `Decision` picks the lanes, `CI gate` sums up their results, `CodeQL` runs with
-Backend, and `Deploy docs` publishes the site on master.
+Some jobs are not lanes: `Decision` picks the lanes, `CI gate` sums up their results, `CodeQL` runs with
+Backend, and on master `Deploy docs` publishes the site and `Deploy updater` the updater image.
 
 ## 🗺️ How Decision picks the lanes
 
@@ -129,10 +132,12 @@ The workflows follow GitHub's secure use reference:
 
 - **Pinned actions.** Every action is referenced by commit SHA, with its version as a comment that Renovate keeps
   up to date. The repository refuses a tag or a branch. In-repo actions go by `$/`, which GitHub counts as pinned.
-- **Pinned tools.** actionlint, ShellCheck and Renovate's validator run from images pinned by digest, never from
-  the runner's copy, which changes with the runner image.
+- **Pinned tools.** actionlint, ShellCheck, hadolint, Trivy, BuildKit and Renovate's validator run from images
+  pinned by digest, never from the runner's copy, which changes with the runner image. The Docker command line,
+  its buildx plugin, `skopeo`, `gh` and `jq` come with the runner.
 - **Least privilege.** `ci.yml` starts from `permissions: {}`, and each job asks only for what it needs. No
-  checkout keeps the token.
+  checkout keeps the token, and only the publish job of `Deploy updater`, which never runs a pull request, can
+  write packages.
 - **Approved forks.** A fork pull request runs only once a maintainer approves it.
 - **Linted workflows.** [actionlint][actionlint] and [zizmor][zizmor] check every workflow change, and a finding
   fails `CI files`. zizmor does not upload to code scanning, where it would never block the merge.
@@ -146,6 +151,8 @@ actionlint runs from the kjanat fork, since the original rejects `$/` ([rhysd/ac
 | detekt | Kotlin rule breaks, formatting included | In Backend | Yes |
 | CodeQL, `security-extended` queries | Security flaws in the Kotlin and Java code | With Backend, and weekly on all the code | No |
 | zizmor | Security flaws in the workflows | In CI files, and weekly | Yes |
+| hadolint | Dockerfile rule breaks | In Updater | Yes |
+| Trivy | A HIGH or CRITICAL CVE with a fix, in the base image or a library of the updater image | Before the image is pushed, and weekly on `latest` | No, it holds the image back |
 | Dependency review | An added dependency with a known vulnerability | On a pull request that changes dependencies | Yes |
 
 CodeQL supports a new Kotlin release some time after it ships, so a Kotlin upgrade can fail it for a while.
@@ -160,8 +167,10 @@ Renovate opens the update pull requests on Monday mornings, a week after a relea
 digest. Security fixes and undated releases skip the wait, and majors and lock file refreshes wait for a checkbox on
 the Dependency Dashboard, as [`renovate.json`][renovate] configures it. The minor and patch updates of GitHub Actions
 and of the Renovate image, and new digests of an image tag, merge themselves once `CI gate` is green: the run of their
-pull request already uses them. Renovate rebases those when they fall behind master, as the ruleset requires, and the
-others only on conflict, which keeps the runs within the 20 jobs the repository runs at once.
+pull request already uses them, except for the tools that only `Deploy updater` uses, which first run on master, as
+[ADR 0004](../adr/0004-one-updater-image-for-every-environment.md) records. Renovate rebases these updates when they
+fall behind master, as the ruleset requires, and the others only on conflict, which keeps the runs within the 20 jobs
+the repository runs at once.
 
 ## ⚡ Caches
 
@@ -171,8 +180,9 @@ The `GRADLE_ENCRYPTION_KEY` secret keeps the configuration cache between runs. T
 
 ## 🚀 Continuous deployment
 
-Only the documentation site is deployed: on master, `Deploy docs` publishes to GitHub Pages the site that `Docs`
-built and checked. The backend and the frontend are not deployed yet.
+On master, `Deploy docs` publishes to GitHub Pages the site that `Docs` built and checked. `Deploy updater`
+builds the updater image when the push ran the Updater lane and `CI gate` passed, and publishes it when it changed,
+as [container images](container-images.md) explains. The backend and the frontend are not deployed yet.
 
 ## 🛠️ Changing the CI
 

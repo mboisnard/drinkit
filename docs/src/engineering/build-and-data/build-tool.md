@@ -76,13 +76,14 @@ plugins {
 }
 ```
 
-The three archetypes:
+The archetypes:
 
 | Archetype | For | What it adds |
 |---|---|---|
-| `common-convention` | Every Kotlin module, directly or through the two others | The Java toolchain, Kotlin with its Spring support, the [internal BOM](#versions-in-one-place), `code-analysis-convention` and `test-convention` |
+| `common-convention` | Every Kotlin module, directly or through the others | The Java toolchain, Kotlin with its Spring support, the [internal BOM](#versions-in-one-place), `code-analysis-convention` and `test-convention` |
 | `library-convention` | The domain, its adapters and most tech starters | `common-convention`, `documentation-convention`, Spring context and transactions, the Kotlin and [event sourcing](../architecture/event-sourcing.md) starters |
 | `api-convention` | `drinkit-backend`, the Spring Boot application | `common-convention`, `documentation-convention`, Spring MVC, build and git details for Actuator's info endpoint, GraalVM native images, a lock on every resolved version |
+| `job-convention` | `deployment/updater`, a Spring Boot application that runs once, then stops | `common-convention`, Spring Boot's executable jar, a lock on every resolved version |
 
 The add-ons a module chooses, and the conventions the archetypes apply for it:
 
@@ -159,10 +160,11 @@ the one we expect.
   artifact, the Squawk binary of every platform included.
   The build refuses one whose checksum differs or is missing, which stops a tampered or replaced file. A few
   artifacts that only IntelliJ or a plugin fetches on its own are trusted by name, each with its reason.
-- **The application's classpath.** `api-convention` locks the dependencies of `drinkit-backend`, which then
-  resolves exactly the versions its `gradle.lockfile` lists. A new release inside a version range cannot reach the
-  application unnoticed. The library modules of DrinkIt are not locked on their own: they reach production only
-  through the application.
+- **The classpath of what ships.** `api-convention` locks the dependencies of `drinkit-backend`, and
+  `job-convention` those of the updater, whose [image](../delivery/container-images.md) reaches every environment.
+  Each resolves exactly the versions its `gradle.lockfile` lists, so a new release inside a version range cannot
+  reach them unnoticed. The library modules of DrinkIt are not locked on their own: they ship only inside the
+  application.
 
 After a dependency change, the commands of the
 [`dependency-change` skill](https://github.com/mboisnard/drinkit/blob/master/.claude/skills/dependency-change/SKILL.md)

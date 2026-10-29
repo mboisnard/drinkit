@@ -138,6 +138,7 @@ export default withMermaid(
                 collapsed: false,
                 items: [
                   { text: 'CI/CD', link: 'ci-cd' },
+                  { text: 'Container images', link: 'container-images' },
                 ],
               },
 
@@ -150,6 +151,7 @@ export default withMermaid(
                   { text: '0001. Architecture tests with Konture', link: '0001-architecture-tests-with-konture' },
                   { text: '0002. Base, DDL and DML changelogs', link: '0002-base-ddl-and-dml-changelogs-checked-by-squawk' },
                   { text: '0003. API contract by expand and contract', link: '0003-api-contract-changes-by-expand-and-contract' },
+                  { text: '0004. One updater image for every environment', link: '0004-one-updater-image-for-every-environment' },
                 ],
               },
 

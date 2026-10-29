@@ -12,7 +12,7 @@
       "quadrant": "Platforms",
       "ring": "ADOPT",
       "label": "GitHub Actions",
-      "description": "Runs the CI of every pull request and the deployment of this site",
+      "description": "Runs the CI of every pull request, the deployment of this site and the publication of the updater image",
       "link": "/drinkit/engineering/delivery/ci-cd.html"
     },
     {
@@ -28,6 +28,20 @@
       "label": "Docker Compose",
       "description": "Starts the services the application needs locally",
       "link": "https://docs.docker.com/compose/"
+    },
+    {
+      "quadrant": "Platforms",
+      "ring": "ADOPT",
+      "label": "GHCR",
+      "description": "The container registry of GitHub, which holds the updater image",
+      "link": "/drinkit/engineering/delivery/container-images.html"
+    },
+    {
+      "quadrant": "Platforms",
+      "ring": "ADOPT",
+      "label": "Distroless",
+      "description": "The base of the updater image: a JRE with no shell, run as a non-root user",
+      "link": "https://github.com/GoogleContainerTools/distroless"
     },
     {
       "quadrant": "Tools",
@@ -56,6 +70,20 @@
       "label": "ShellCheck",
       "description": "Lints the shell scripts of the git and agent hooks",
       "link": "https://www.shellcheck.net/"
+    },
+    {
+      "quadrant": "Tools",
+      "ring": "ADOPT",
+      "label": "hadolint",
+      "description": "Lints the Dockerfiles",
+      "link": "https://github.com/hadolint/hadolint"
+    },
+    {
+      "quadrant": "Tools",
+      "ring": "ADOPT",
+      "label": "Trivy",
+      "description": "Scans an image for known vulnerabilities before it is tagged latest",
+      "link": "https://trivy.dev"
     },
     {
       "quadrant": "Tools",
