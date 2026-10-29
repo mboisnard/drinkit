@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldNotContain
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.getBean
 import org.springframework.boot.autoconfigure.AutoConfigurations
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 import org.springframework.boot.test.system.CapturedOutput
@@ -23,7 +24,7 @@ internal class RetryableAutoConfigurationTest {
         runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 1) })
             .run { context ->
                 // When
-                val succeedingAttempt = context.getBean(FlakyCall::class.java).call()
+                val succeedingAttempt = context.getBean<FlakyCall>().call()
 
                 // Then
                 succeedingAttempt shouldBe 2
@@ -35,7 +36,7 @@ internal class RetryableAutoConfigurationTest {
         runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 2) })
             .run { context ->
                 // When
-                context.getBean(FlakyCall::class.java).call()
+                context.getBean<FlakyCall>().call()
 
                 // Then
                 FAILED_ATTEMPT_LOG.findAll(output.out).toList() shouldHaveSize 2
@@ -47,7 +48,7 @@ internal class RetryableAutoConfigurationTest {
         runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 1) })
             .run { context ->
                 // When
-                context.getBean(FlakyCall::class.java).call()
+                context.getBean<FlakyCall>().call()
 
                 // Then
                 output.out shouldNotContain FAILURE_MESSAGE
@@ -59,7 +60,7 @@ internal class RetryableAutoConfigurationTest {
         runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 5) })
             .run { context ->
                 // When
-                shouldThrow<IllegalStateException> { context.getBean(FlakyCall::class.java).call() }
+                shouldThrow<IllegalStateException> { context.getBean<FlakyCall>().call() }
 
                 // Then
                 EXHAUSTED_RETRIES_LOG.findAll(output.out).toList() shouldHaveSize 1
@@ -71,7 +72,7 @@ internal class RetryableAutoConfigurationTest {
         runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 0) })
             .run { context ->
                 // When
-                shouldThrow<IllegalArgumentException> { context.getBean(FlakyCall::class.java).refuse() }
+                shouldThrow<IllegalArgumentException> { context.getBean<FlakyCall>().refuse() }
 
                 // Then
                 output.out shouldNotContain EXHAUSTED_RETRIES_LOG
@@ -86,7 +87,7 @@ internal class RetryableAutoConfigurationTest {
             .withBean(SpyRetryListener::class.java, { applicationListener })
             .run { context ->
                 // When
-                shouldThrow<IllegalStateException> { context.getBean(FlakyCall::class.java).call() }
+                shouldThrow<IllegalStateException> { context.getBean<FlakyCall>().call() }
 
                 // Then
                 applicationListener.countFailedAttempts() shouldBe 3
@@ -100,7 +101,7 @@ internal class RetryableAutoConfigurationTest {
             .withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 1) })
             .run { context ->
                 // When
-                val flakyCall = context.getBean(FlakyCall::class.java)
+                val flakyCall = context.getBean<FlakyCall>()
                 shouldThrow<IllegalStateException> { flakyCall.call() }
 
                 // Then
