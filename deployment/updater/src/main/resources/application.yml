@@ -2,11 +2,9 @@ spring:
   application.name: updater
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/drinkit
-    username: drinkit
-    password: admin
   liquibase:
     enabled: true
+    analytics-enabled: false
     change-log: classpath:db/changelog/db.changelog-master.yml
     database-change-log-lock-table: DRINKIT_DATABASECHANGELOGLOCK
     database-change-log-table: DRINKIT_DATABASECHANGELOG
