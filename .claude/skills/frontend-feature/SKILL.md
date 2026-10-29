@@ -2,8 +2,8 @@
 name: frontend-feature
 description: Shapes a feature of DrinkIt's Nuxt frontend the way the app is built, calling the backend only through the client generated from the OpenAPI contract and leaving business rules to the backend. Use it before adding or changing code of the Nuxt app, drinkit-frontend.
 paths:
-  - "drinkit/*-frontend/src/**"
-  - "drinkit/*-frontend/nuxt.config.ts"
+  - "**/*-frontend/src/**"
+  - "**/*-frontend/nuxt.config.ts"
 ---
 
 # A feature in the Nuxt frontend

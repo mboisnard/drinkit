@@ -2,8 +2,8 @@
 name: api-contract-change
 description: Changes DrinkIt's OpenAPI contract first, then the backend controllers and the frontend client generated from it, and adapts both sides in the same pull request. Use it before adding or changing an operation, a parameter, a schema or a response of the API contract, or the generator configuration of either side.
 paths:
-  - "drinkit/*-api-contract/**"
-  - "drinkit/*-frontend/openapi-config.yml"
+  - "**/*-api-contract/**"
+  - "**/*-frontend/openapi-config.yml"
 ---
 
 # Changing the API contract

@@ -2,7 +2,9 @@
 name: backend-feature
 description: Shapes a feature of DrinkIt's Kotlin backend as a vertical slice, from the API contract to the database, in drinkit-domain, drinkit-infra and drinkit-backend, and points to the coding rules and architecture pages it follows. Use it before adding or changing backend production code, such as a use case, an entity or value type, a port, an adapter, a controller, a security rule, an HTTP client or an event of the User aggregate.
 paths:
-  - "drinkit/drinkit-*/src/main/**/*.kt"
+  - "**/*-domain/src/main/**/*.kt"
+  - "**/*-infra/src/main/**/*.kt"
+  - "**/*-backend/src/main/**/*.kt"
 ---
 
 # A backend feature in DrinkIt
