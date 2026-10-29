@@ -2,9 +2,8 @@
 name: test-driven-development
 description: Drives a change to DrinkIt's code test first, in the Kotlin backend as in the Nuxt frontend. A test list in business language, one red-green-tidy cycle per behavior, then a required refactor of the whole feature, technical and functional. Use it before adding or changing behavior, for a feature as for a bug fix.
 paths:
-  - "drinkit/*/src/*/kotlin/**/*.kt"
-  - "tech-starters/*/*/src/*/kotlin/**/*.kt"
-  - "drinkit/*-frontend/src/**"
+  - "**/src/*/kotlin/**/*.kt"
+  - "**/*-frontend/src/**"
 ---
 
 # Test-driven development in DrinkIt
