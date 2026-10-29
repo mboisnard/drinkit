@@ -67,8 +67,13 @@ sequenceDiagram
 The decider is a pure function of the domain, with no port nor database: it takes the decision state, the command
 and the date, and returns a refusal, nothing to do, or the event to append. The fold has a handler per event type, a
 function that applies the event to the state. An event type without a handler is ignored with no error, so the
-projection never gets what it carries. The [`hexagonal-backend` skill][user-events] lists every place a new event
+projection never gets what it carries. The [`backend-feature` skill][user-events] lists every place a new event
 goes.
+
+Annotations of `documentation-starter` mark the pattern in the code. `@Aggregate` marks the decision state and, with
+`@FunctionalCore`, each decider, `@Projection` the projection `User`, and `@Command` each command. They generate
+nothing and tell whoever reads a class its part in the pattern, as
+[living documentation](../writing-code/best-practices/living-documentation.md) explains.
 
 Two writes on the same aggregate can read the same history and compute the same next sequence id. The primary key
 refuses the second one. The use case carries the starter's `@RetryableTransactional`, which runs it again on the new
@@ -146,5 +151,5 @@ rewrite adds one.
 - [Versioning in an Event Sourced System](https://leanpub.com/esversioning), Greg Young
 - [Inline projections](https://martendb.io/events/projections/inline.html), Marten
 
-[user-events]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/hexagonal-backend/user-events.md
+[user-events]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/backend-feature/user-events.md
 [starter]: https://github.com/mboisnard/drinkit/tree/master/tech-starters/backend/event-sourcing-starter
