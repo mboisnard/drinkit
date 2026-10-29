@@ -14,8 +14,6 @@ Copy `DeleteUser`, whose decider refuses an author who may not edit the user:
 4. The core returns the event to persist, numbered with `decision.nextSequenceId`, or a refusal.
 5. The use case saves the event with `userEvents.save(event)`, which returns the `User` with the event applied.
 
-`PromoteAsAdmin` is no model: its decider checks no author yet, as its `TODO` says.
-
 Creating a user has no history to load: `CreateNewUser` builds the `Initialized` event without one.
 
 ## A new kind of event

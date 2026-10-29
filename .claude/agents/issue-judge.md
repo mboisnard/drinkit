@@ -66,13 +66,10 @@ Read these fresh, then apply them to the diff (`git -C <worktree> diff <base>..<
 - the `SKILL.md` under `.claude/skills/` of each kind of change the diff touches, as `AGENTS.md` lists them. For
   `test-driven-development`, its cycle rules and refactor checklists, and `backend.md` or `frontend.md` for the side
   the diff touches;
-- for a backend change, the pages that `.claude/skills/backend-feature/SKILL.md` lists under "The pages to apply":
-  `docs/src/engineering/writing-code/best-practices/coding-rules.md`,
-  `docs/src/engineering/architecture/clean-architecture.md`,
-  `docs/src/engineering/architecture/hexagonal-architecture.md`,
-  `docs/src/engineering/architecture/event-sourcing.md`,
-  `docs/src/engineering/writing-code/best-practices/living-documentation.md` and
-  `docs/src/engineering/writing-code/testing/architecture-tests.md`;
+- for a backend change, the result of `./gradlew :architecture-tests:test`, then what those tests cannot check, as
+  "Prove it with the architecture tests" of `.claude/skills/backend-feature/SKILL.md` says:
+  `docs/src/engineering/writing-code/best-practices/coding-rules.md` and
+  `docs/src/engineering/architecture/clean-architecture.md`;
 - `AGENTS.md` again, from the worktree, only when the diff changes it.
 
 The rules of `AGENTS.md` hold for the whole diff, and for the commits too, read with
