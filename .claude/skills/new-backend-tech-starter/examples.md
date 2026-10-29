@@ -3,6 +3,13 @@
 Shapes for the `new-backend-tech-starter` skill, written for an imaginary `sms-starter`. Rename
 everything, keep only what the starter needs, and check every import against the code and the jars.
 
+- [Module layout](#module-layout) and [build.gradle.kts](#buildgradlekts)
+- [Auto-configuration](#auto-configuration), [Configuration properties](#configuration-properties) and
+  [Defaults for Spring's own properties](#defaults-for-springs-own-properties)
+- [Several implementations](#several-implementations) and [Repository](#repository)
+- [Test fixtures](#test-fixtures) and [Wiring test](#wiring-test)
+- [README](#readme)
+
 ## Module layout
 
 ```

@@ -1,11 +1,11 @@
 ---
 name: new-frontend-tech-starter
-description: Creates a frontend tech starter for DrinkIt, one technical concern with no business code, shipped as a Nuxt layer under tech-starters/frontend that the Nuxt app extends. The first one settles its layout with the maintainer before any file is written. Use it when asked for a frontend tech starter, or when a technical concern of the Nuxt app, such as the API client setup, should live apart from the features.
+description: Creates a frontend tech starter for DrinkIt, one technical concern with no business code, shipped as a Nuxt layer under tech-starters/frontend that a Nuxt app, a -frontend module, extends. The first one settles its layout with the maintainer before any file is written. Use it when asked for a frontend tech starter, or when a technical concern of a Nuxt app, such as the API client setup, should live apart from the features.
 ---
 
 # New frontend tech starter
 
-A frontend tech starter does for the Nuxt app what a backend one does for the Spring application: it owns one
+A frontend tech starter does for a Nuxt app what a backend one does for a Spring application: it owns one
 technical concern, knows no business word, and the app can take it or drop it (`tech-starters.md` under
 `docs/src/engineering/architecture/`). It is a Nuxt layer in `tech-starters/frontend/<name>/`, listed in the
 `extends` of the app's `nuxt.config.ts` by a relative path: nothing to publish, and the app wins over it.
@@ -24,9 +24,9 @@ ask the maintainer, one question at a time:
 3. Where its dependencies are installed: the app's `node_modules` is not above `tech-starters/frontend/`, and npm
    workspaces or a `package.json` of its own both change the install step of the frontend workflow.
 4. How the app imports what it exposes when auto-imports are off: a relative path or an alias the layer declares.
-5. Where the decision is written: the issue form asks for an ADR for a structuring choice.
 
-The answers go in the starter's `README.md`, so that the next starter follows them.
+The answers go in the starter's `README.md`, so that the next starter follows them, and in an ADR of the same pull
+request, through the `new-adr` skill, as `AGENTS.md` says of a structuring choice.
 
 ## 2. The rules
 
@@ -44,6 +44,8 @@ The answers go in the starter's `README.md`, so that the next starter follows th
 - The install step of `.github/workflows/ci-frontend.yml`, as answer 3 decided.
 - The `paths:` of the skills that load on the app's frontend code, so that they load on the layer too:
   `grep -l '^  - ".*-frontend/src' .claude/skills/*/SKILL.md` lists them.
+- The `paths:` of this skill, `tech-starters/frontend/**`, once the folder holds a tracked file: a glob that
+  matches nothing fails `harness.bats`.
 - A `README.md` for the developer who uses it: what it provides, how the app extends it, each configuration key
   with its environment variable.
 

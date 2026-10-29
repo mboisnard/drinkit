@@ -1,6 +1,6 @@
 ---
 name: implement-issue
-description: Takes an open DrinkIt issue to a pull request that closes it, test first, checked by a fresh judge before the pull request is opened, and cleans up once it is merged. Run it as /implement-issue <number>.
+description: Takes an open DrinkIt issue to a pull request that closes it, test first, checked by a fresh judge before the pull request is opened, and cleans up once it is merged. Run it as /implement-issue.
 disable-model-invocation: true
 argument-hint: <issue number>
 ---
@@ -57,7 +57,7 @@ command follows the same rhythm: run it, see it fail, change, see it pass.
 ## 6. Verify like CI
 
 Run the build commands of `AGENTS.md`, and the checks of the skill of each kind of change the branch makes, and
-keep the last lines of each output.
+keep the last lines of each output. [The lanes](examples.md#lanes) the diff maps to name the checks CI runs on it.
 
 ## 7. Draft the pull request
 
@@ -72,8 +72,8 @@ Write the body to `$(git rev-parse --path-format=absolute --git-path claude/pr-b
 Start a fresh `issue-judge` agent and wait for its verdict. Its prompt holds the inputs of
 [the example](examples.md#judge-prompt) and nothing else: no summary of your work, no hint.
 
-A round lasts 15 minutes, as its definition says, and stops at its `maxTurns`. When it is still running after 15
-minutes, or comes back without a verdict line, send it [the closing message](examples.md#judge-time-limit): its
+A round lasts the time budget of its definition and stops at its `maxTurns`. When it is still running past that
+budget, or comes back without a verdict line, send it [the closing message](examples.md#judge-time-limit): its
 answer is the verdict of the round.
 
 When the diff touches what the `security-reviewer` agent's description lists, start it too, with the worktree and

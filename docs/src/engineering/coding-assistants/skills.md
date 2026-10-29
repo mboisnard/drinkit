@@ -10,10 +10,13 @@ a skill per kind of change in [`.claude/skills`][skills-folder]. A skill stays a
 
 ## 🧭 How a skill gets used
 
-- **By its description.** Claude loads a skill when its description matches the task.
+- **By its description.** Claude loads a skill when its description matches the task, so the description says what
+  the skill does and when to use it, in the words a task contains.
 - **By the files touched.** A `paths:` field in the frontmatter of `SKILL.md` lists globs, and Claude loads the skill
-  when it works on a matching file, as `database-change` does on the database changelogs. A glob that matches nothing
-  leaves the skill silent, with no error, and [`harness.bats`][harness-bats] fails on such a glob.
+  when it works on a matching file, as `database-change` does on the database changelogs. A glob names a module by its
+  role suffix, such as `-domain` or `-frontend`, never by an application folder, so that the skill loads on every
+  application of the monorepo. A glob that matches nothing leaves the skill silent, with no error, and
+  [`harness.bats`][harness-bats] fails on such a glob.
 - **By name.** `/implement-issue <issue number>` starts a skill. A skill with side effects, such as one that opens a
   pull request, sets `disable-model-invocation: true` in its frontmatter so that only a person starts it.
 - **By [`AGENTS.md`][agents-md] and other skills.** `AGENTS.md` sends every agent to the skill of each kind of
@@ -35,7 +38,8 @@ prevented. Either of these, not tried in DrinkIt yet, would make a skill hard to
 
 The examples stay in files of their own, read only when the body sends Claude there, so they cost nothing until then:
 commands and real cases in the `examples.md` of several skills, an ADR template in the `template.md` of `new-adr`, the
-backend and frontend cycles in the `backend.md` and `frontend.md` of `test-driven-development`. A skill names the
+backend and frontend specifics in the `backend.md` and `frontend.md` of `test-driven-development`. `SKILL.md` links
+each file itself, since Claude may read only the start of a file it reaches through another one. A skill names the
 classes to imitate rather than copying their code, so that it stays true when the code changes. A new skill is best
 tried by a fresh agent that runs it alone on a real task: the agent that wrote it would fill the gaps from what it
 already knows.
@@ -47,12 +51,12 @@ already knows.
 | [`implement-issue`][skill-issue] | Taking an open issue to a pull request, and cleaning up once it is merged | The maintainer, `/implement-issue <number>` |
 | [`new-issue`][skill-new-issue] | Turning an idea, a bug or discovered work into an issue that follows its form | Its description, or `implement-issue` |
 | [`review-pr`][skill-review-pr] | Reviewing a pull request and posting inline comments ranked by severity | The maintainer, `/review-pr <number>` |
-| [`test-driven-development`][skill-tdd] | Adding or changing behavior, backend or frontend, test first | Editing code under `drinkit/` or a backend tech starter |
-| [`test-existing-code`][skill-test-existing] | Covering code that works but has no tests, each test proven able to fail | Its description |
-| [`backend-feature`][skill-backend] | Shaping a feature of the Kotlin backend, from use case to controller, after the coding rules and the architecture pages | Editing backend production code |
-| [`api-contract-change`][skill-contract] | Changing the OpenAPI contract, then the Kotlin interfaces and the TypeScript client generated from it | Editing the contract or the client generator settings |
+| [`test-driven-development`][skill-tdd] | Adding or changing behavior, backend or frontend, test first | Editing Kotlin code of any module, tests included, or the sources of a `-frontend` module, and `implement-issue` |
+| [`test-existing-code`][skill-test-existing] | Covering code that works but has no tests, each test proven able to fail | Its description, or `test-driven-development` |
+| [`backend-feature`][skill-backend] | Shaping a feature of the Kotlin backend, from the API contract to the database, after the coding rules and the architecture pages | Editing production code of a `-domain`, `-infra` or `-backend` module |
+| [`api-contract-change`][skill-contract] | Changing the OpenAPI contract, then the Kotlin interfaces and the TypeScript client generated from it | Editing an `-api-contract` module or the client generator settings of a `-frontend` module |
 | [`database-change`][skill-database] | Changing the schema or the data, checked by the changelog rules, then the jOOQ classes | Editing the changelogs or the generated jOOQ code |
-| [`frontend-feature`][skill-frontend] | Shaping a feature of the Nuxt app around the generated client | Editing frontend sources |
+| [`frontend-feature`][skill-frontend] | Shaping a feature of a Nuxt app around the generated client | Editing the sources or the Nuxt configuration of a `-frontend` module |
 | [`new-backend-tech-starter`][skill-starter] | Creating a backend [tech starter](../architecture/tech-starters.md), or aligning one with the conventions | Editing a backend tech starter, or its description |
 | [`new-frontend-tech-starter`][skill-frontend-starter] | Creating the first frontend tech starter, a Nuxt layer | Its description |
 | [`pentest`][skill-pentest] | Scanning the running application with OWASP ZAP, then triaging the findings | The maintainer, `/pentest` |

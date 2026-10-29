@@ -97,4 +97,4 @@ Break the behavior in the smallest way, run the one test, read the failure, then
 - invert a condition: `if (exists)` becomes `if (!exists)`;
 - change a returned value or drop a side effect: return `null`, skip the `save`.
 
-`git diff` shows your mutation alone before you undo it, and nothing after.
+`git diff -- <production file>` shows your mutation alone before you undo it, and nothing after.

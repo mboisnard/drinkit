@@ -71,7 +71,8 @@ The `security-reviewer` prompt holds the worktree, the base and the head, nothin
 
 ## Judge time limit
 
-Sent to the running judge after 15 minutes, or to resume one that stopped without a verdict line:
+Sent to the judge still running past the time budget of its definition, or to resume one that stopped without a
+verdict line:
 
 ```
 Time limit reached: stop checking now and return your verdict at once, in your usual output format, with the

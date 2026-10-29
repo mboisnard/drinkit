@@ -48,7 +48,8 @@ From the root, with Docker. Both must print nothing to fix: zizmor fails its job
 code scanning. actionlint reads `.github/actionlint.yaml`.
 
 ```
-docker run --rm -v "$PWD:/repo:ro" -w /repo "$(grep -o 'ghcr.io/[^ ]*actionlint[^ ]*' .github/workflows/ci-workflows.yml)"
+docker run --rm -v "$PWD:/repo:ro" -w /repo \
+  "$(grep -o 'ghcr.io/[^ ]*actionlint[^ ]*' .github/workflows/ci-workflows.yml)"
 docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/zizmorcore/zizmor --offline .
 ```
 
@@ -57,7 +58,9 @@ A change to the compose file or to the Renovate configuration has checks of its 
 ```
 docker compose -f deployment/local/compose.yml config --quiet
 docker compose -f deployment/local/compose.yml up --detach --wait   # the dev services, until each healthcheck passes
-docker run --rm -v "$PWD:/repo:ro" -w /repo "$(grep -o 'ghcr.io/renovatebot/renovate[^ ]*' .github/workflows/ci-renovate.yml)" renovate-config-validator --strict --no-global .github/renovate.json
+docker run --rm -v "$PWD:/repo:ro" -w /repo \
+  "$(grep -o 'ghcr.io/renovatebot/renovate[^ ]*' .github/workflows/ci-renovate.yml)" \
+  renovate-config-validator --strict --no-global .github/renovate.json
 ```
 
 ## 5. Read the run

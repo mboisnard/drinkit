@@ -73,6 +73,16 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
 
 - A skill is in English and reads well for a person. It holds rules and pointers, names its model files by class
   for `git grep -nwE '(class|interface|object) <Name>'`, and states no count or version that ages.
+- The `description` says what the skill does, then when to use it, in the third person and in the words a task
+  contains, as this skill's own description does. Every session lists it, so it puts the main use first and stays within
+  the 1,024 characters of the [Agent Skills format][skill-practices]. A placeholder such as `<number>` goes in
+  `argument-hint`: [Claude Code][claude-code-skills] shows the angle brackets of a description escaped.
+- `SKILL.md` stays short, its steps and rules. Commands, models and long examples go in files beside it, such as
+  `examples.md`, that `SKILL.md` links itself: Claude may read only the start of a file it reaches through another
+  one.
+- A glob names a module by its role suffix, `**/*-domain/src/main/**/*.kt` or `**/*-frontend/src/**`, the way
+  `Declarations.kt` of `architecture-tests` finds modules, never by an application folder such as `drinkit/`: the
+  skill then loads on every application of the monorepo.
 - Each `paths:` glob matches tracked files: `git ls-files -- ':(glob)<pattern>'` lists them. A glob that matches
   nothing leaves the skill silent, with no error, so `harness.bats` fails on it, and on a relative link under
   `.claude/` that leads to no file.
@@ -89,3 +99,6 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
 - [ ] `npm cit --prefix .hooks` and ShellCheck pass.
 - [ ] Every `paths:` glob matches tracked files.
 - [ ] The page of `docs/src/engineering/coding-assistants/` that covers the changed part describes the change.
+
+[skill-practices]: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
+[claude-code-skills]: https://code.claude.com/docs/en/skills

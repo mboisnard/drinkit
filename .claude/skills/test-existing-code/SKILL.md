@@ -16,10 +16,12 @@ caller observes, including errors and edge cases. Skip what only a framework doe
 
 Start where a test pins the most behavior:
 
-- a port: its test contract, run against the in-memory double and the real adapter, as
-  [backend.md](../test-driven-development/backend.md) of the `test-driven-development` skill describes;
-- a tech starter: through what an application that uses it sees, its beans, its properties and its effects,
-  following the test layout of the `new-backend-tech-starter` skill.
+- a port: its test contract, run against the in-memory double and the real adapter, as `ExchangeRatesTestContract`
+  is run by `InMemoryExchangeRatesTest` and `JooqExchangeRatesTest`;
+- a tech starter: through what an application that uses it sees, its beans, its properties and its effects. Test
+  its wiring with an `ApplicationContextRunner`, as `RetryableAutoConfigurationTest` does, and its behavior in a
+  contract each implementation runs, as `InMemoryConfigurationsTest` and `JooqConfigurationsRepositoryTest` run
+  `ConfigurationsTestContract`.
 
 ## 2. One test per behavior, each one proven
 

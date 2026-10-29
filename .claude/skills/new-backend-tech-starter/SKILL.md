@@ -9,11 +9,13 @@ paths:
 
 A tech starter solves one technical concern under `tech-starters/backend/<name>-starter/` and knows no business
 word (`docs/src/engineering/architecture/tech-starters.md`). The module layout, the build file and the
-code shapes are in [examples.md](examples.md).
+code shapes are in [examples.md](examples.md). Any other change to an existing starter keeps its wiring: bringing
+the starter up to convention, as step 7 does, is an issue of its own.
 
 ## Done means
 
-- [ ] No dependency on a module of `drinkit/`, and everything but the public API is `internal`.
+- [ ] No dependency on an application module (`-domain`, `-infra`, `-backend`), and everything but the public
+      API is `internal`.
 - [ ] One `@AutoConfiguration` class, listed in `AutoConfiguration.imports`, does all the wiring. `src/main` holds
       no `@Service`, `@Component`, `@Repository` or `@Configuration` stereotype, and no Spring profile.
 - [ ] Every bean is `@ConditionalOnMissingBean`, and `starters.<name>.enabled=false` switches the starter off.
@@ -24,7 +26,8 @@ code shapes are in [examples.md](examples.md).
       implementation branch, and one `*TestContract` runs against both the double and the real implementation.
 - [ ] `@TechStarterTool` marks the public API, and the README is written for the developer who consumes it.
 - [ ] `./gradlew :<name>-starter:build` passes, and the application gets the beans from
-      `implementation(project(":<name>-starter"))` alone.
+      `implementation(project(":<name>-starter"))` alone, once the lock and the verification metadata are
+      regenerated through the `dependency-change` skill.
 
 ## 1. Before writing anything
 
@@ -44,10 +47,11 @@ Settle these from the issue, and ask the maintainer what it leaves open, a new m
 
 ## 2. One auto-configuration, no stereotype
 
-`DrinkitApplication` sits in `com.drinkit`, so its component scan covers every starter package. That is why the
-older starters work with bare `@Service` annotations, and what must stop: a scanned bean ignores
-`@ConditionalOnMissingBean`, is invisible to `ApplicationContextRunner`, is registered even when the starter is
-switched off, and disappears the day an application with another base package imports the starter.
+The component scan of an application starts from the package of its `@SpringBootApplication`, `com.drinkit` for
+`drinkit-backend`, which holds every starter package. That is why the older starters work with bare `@Service`
+annotations, and what must stop: a scanned bean ignores `@ConditionalOnMissingBean`, is invisible to
+`ApplicationContextRunner`, is registered even when the starter is switched off, and disappears the day an
+application with another base package imports the starter.
 
 Traps:
 
@@ -99,7 +103,8 @@ API changes. The kinds and their models are in [examples.md](examples.md#test-fi
 `@TechStarterTool` goes on every public interface, annotation and entry point of the API. The `README.md` at
 the module root is the source of the generated page: follow the outline in
 [examples.md](examples.md#readme). A concept that needs code to explain goes in an example under
-`src/test/kotlin`, like `CarExample.kt` in `event-sourcing-starter`, linked from the README.
+`src/test/kotlin`, linked from the README, like `CarExample.kt` of `event-sourcing-starter`: a file with no class
+of that name, which `git ls-files '*/CarExample.kt'` finds.
 
 ## 7. Bringing an existing starter up to convention
 
