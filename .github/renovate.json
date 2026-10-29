@@ -30,6 +30,13 @@
       "managerFilePatterns": ["/src/testFixtures/kotlin/.+\\.kt$/"],
       "matchStrings": ["IMAGE_NAME = \"(?<depName>[^:\"]+):(?<currentValue>[^\"]+)\""],
       "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "The BuildKit image that builds the published images, pinned in the driver options of setup-buildx-action",
+      "managerFilePatterns": ["/^\\.github/workflows/.+\\.yml$/"],
+      "matchStrings": ["image=(?<depName>moby/buildkit):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]+)"],
+      "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
@@ -44,7 +51,7 @@
       "minimumReleaseAgeBehaviour": "timestamp-optional"
     },
     {
-      "description": "Test images keep plain tags: Testcontainers rejects image:tag@digest",
+      "description": "The images of the regex managers are never pinned: Testcontainers rejects image:tag@digest, and the BuildKit line holds its digest already",
       "matchManagers": ["custom.regex"],
       "pinDigests": false
     },

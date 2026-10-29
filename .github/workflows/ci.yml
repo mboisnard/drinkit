@@ -149,6 +149,24 @@ jobs:
       pages: write
       id-token: write
 
+  # After a green gate, when the Updater lane ran: its paths cover every input of the image. A path that leaves the
+  # image unchanged costs a build, never a publication, since the run compares the digest with latest
+  deploy-updater:
+    name: Deploy updater
+    needs: [decision, gate]
+    # An explicit status: the implicit success() would also skip this job when a lane above the gate was skipped
+    if: ${{ !cancelled() && needs.gate.result == 'success' && contains(fromJSON(needs.decision.outputs.lanes), 'updater') && github.repository == 'mboisnard/drinkit' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    # One deployment at a time, a newer one replacing an older one still waiting: no two runs race on `latest`
+    concurrency:
+      group: deploy-updater
+      cancel-in-progress: false
+    uses: $/.github/workflows/cd-updater.yml
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+
   gate:
     name: CI gate
     needs: [decision, workflows, backend, updater, frontend, hooks, ops, renovate, docs, dependencies]
