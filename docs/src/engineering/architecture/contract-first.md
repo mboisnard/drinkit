@@ -1,8 +1,10 @@
 # Contract first
 
-The Nuxt frontend and the Spring Boot backend talk through an HTTP API described in one OpenAPI contract:
-`api-definition.yaml` and the files it references, in the `drinkit-api-contract` module. We write that contract
-before the code, and OpenAPI Generator generates both sides from it, so a change to the API starts there. The two
+Contract first means writing the description of an API before its code, and generating the code of both sides from
+it, so that the client and the server cannot disagree on what they exchange. In DrinkIt, the Nuxt frontend and the
+Spring Boot backend talk through an HTTP API described in one OpenAPI contract: `api-definition.yaml` and the files
+it references, in the `drinkit-api-contract` module. OpenAPI Generator generates both sides from it, so a change to
+the API starts there. The two
 sides deploy separately, so a change that would break the frontend goes in steps, each in its own pull request,
 following the [expand and contract][expand-and-contract] pattern. Read this page before you change the contract,
 and follow the [`api-contract-change` skill][skill] for the steps.

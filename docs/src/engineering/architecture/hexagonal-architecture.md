@@ -1,9 +1,10 @@
 # Hexagonal architecture
 
-The backend follows the hexagonal architecture, also called ports and adapters. The business code, in
-`drinkit-domain`, depends on no infrastructure: `drinkit-backend` calls its use cases, and `drinkit-infra` implements
-the ports it declares. A use case runs in a unit test without a database, and replacing PostgreSQL or REST changes
-an adapter only. Gradle and the [architecture tests](../writing-code/testing/architecture-tests.md) fail the build when a dependency
+The hexagonal architecture, also called ports and adapters, keeps the business code of an application free of any
+infrastructure. The business declares ports, the interfaces through which it talks to the outside world, and
+adapters plug a technology into them. A use case then runs in a unit test without a database, and replacing
+PostgreSQL or REST changes an adapter only. In DrinkIt, the business code of `drinkit-domain` depends on no
+infrastructure: `drinkit-backend` calls its use cases, and `drinkit-infra` implements the ports it declares. Gradle and the [architecture tests](../writing-code/testing/architecture-tests.md) fail the build when a dependency
 points the wrong way. Read this page before you add a port, an adapter or a dependency between modules.
 
 ## 🧭 The pattern

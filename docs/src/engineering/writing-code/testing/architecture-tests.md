@@ -1,6 +1,8 @@
 # Architecture Tests
 
-DrinkIt's architecture rules are tests: breaking one fails `./gradlew build`, with the id of the rule, its reason and how to fix it. They live in `architecture-tests`, run by [Konture](https://github.com/baole/konture), which reads the Gradle module graph and the Kotlin sources of every module without compiling them. The choice of Konture is recorded in [ADR 0001](../../adr/0001-architecture-tests-with-konture).
+An architecture test turns a rule about the structure of the code, such as which module may depend on which, into a
+test: the build fails when the code breaks it, where a page would only state it. DrinkIt's architecture
+rules are tests: breaking one fails `./gradlew build`, with the id of the rule, its reason and how to fix it. They live in `architecture-tests`, run by [Konture](https://github.com/baole/konture), which reads the Gradle module graph and the Kotlin sources of every module without compiling them. The choice of Konture is recorded in [ADR 0001](../../adr/0001-architecture-tests-with-konture).
 
 ```
 ./gradlew :architecture-tests:test
