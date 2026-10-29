@@ -1,3 +1,4 @@
+# endsWithFilter exists since Liquibase 4.24: the IDE warns because SchemaStore maps this file to a Liquibase 3.2 schema
 databaseChangeLog:
   - includeAll:
       path: classpath:/db/changelog/base/
