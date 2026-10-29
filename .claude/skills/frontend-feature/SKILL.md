@@ -46,11 +46,6 @@ the user sees. When a page needs a decision the API does not give, the contract 
 - Accessible markup, which is also what tests select by: a label tied to each input, an `aria-label` on an
   icon-only button, a `Button` or a link for an action.
 
-## Traps
-
-- The existing pages and components predate these rules and are not models: `CreateCellarDialog.vue`, a
-  component, calls `CellarsApi` itself.
-
 ## Checks
 
 The frontend commands of `AGENTS.md`. The build does not check types, so a type error can pass it: also run

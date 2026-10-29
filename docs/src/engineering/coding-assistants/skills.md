@@ -53,7 +53,7 @@ already knows.
 | [`review-pr`][skill-review-pr] | Reviewing a pull request and posting inline comments ranked by severity | The maintainer, `/review-pr <number>` |
 | [`test-driven-development`][skill-tdd] | Adding or changing behavior, backend or frontend, test first | Editing Kotlin code of any module, tests included, or the sources of a `-frontend` module, and `implement-issue` |
 | [`test-existing-code`][skill-test-existing] | Covering code that works but has no tests, each test proven able to fail | Its description, or `test-driven-development` |
-| [`backend-feature`][skill-backend] | Shaping a feature of the Kotlin backend, from the API contract to the database, after the coding rules and the architecture pages | Editing production code of a `-domain`, `-infra` or `-backend` module |
+| [`backend-feature`][skill-backend] | Shaping a feature of the Kotlin backend, from the API contract to the database, proved by the architecture tests | Editing production code of a `-domain`, `-infra` or `-backend` module |
 | [`api-contract-change`][skill-contract] | Changing the OpenAPI contract, then the Kotlin interfaces and the TypeScript client generated from it | Editing an `-api-contract` module or the client generator settings of a `-frontend` module |
 | [`database-change`][skill-database] | Changing the schema or the data, checked by the changelog rules, then the jOOQ classes | Editing the changelogs or the generated jOOQ code |
 | [`frontend-feature`][skill-frontend] | Shaping a feature of a Nuxt app around the generated client | Editing the sources or the Nuxt configuration of a `-frontend` module |
