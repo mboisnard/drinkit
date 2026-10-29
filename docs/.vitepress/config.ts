@@ -68,6 +68,7 @@ export default withMermaid(
                   {text: 'Monorepo', link: 'monorepo'},
                   {text: 'Modular Monolith', link: 'modular-monolith'},
                   {text: 'Hexagonal Architecture', link: 'hexagonal-architecture'},
+                  {text: 'Clean Architecture', link: 'clean-architecture'},
                   {text: 'Contract First', link: 'contract-first'},
                   {text: 'Tech Starters', link: 'tech-starters'},
                   {text: 'Event Sourcing', link: 'event-sourcing'},

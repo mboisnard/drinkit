@@ -18,13 +18,6 @@ Sources for the importers and the scrapers of the domain mind map.
 - [TheCocktailDB on RapidAPI](https://rapidapi.com/thecocktaildb/api/the-cocktail-db)
 - [viviner, a Vivino scraper](https://github.com/gugarosa/viviner)
 
-## Use cases
-
-- [Notre implémentation de la Clean Architecture, zoom sur les Use Cases](https://medium.com/ceetiz/notre-impl%C3%A9mentation-de-la-clean-architecture-zoom-sur-les-use-cases-1da8f2022fc5),
-  Nicolas Poste, Ceetiz
-- [UseCase Red Flags and Best Practices in Clean Architecture](https://engineering.teknasyon.com/usecase-red-flags-and-best-practices-in-clean-architecture-76e2f6d921eb),
-  ilyas ipek, Teknasyon Engineering
-
 ## Gradle plugins
 
 - [GitHub dependency graph plugin](https://github.com/gradle/github-dependency-graph-gradle-plugin), which the

@@ -10,9 +10,10 @@ points the wrong way. Read this page before you add a port, an adapter or a depe
 
 The hexagon talks to the outside world through ports only. The primary side is what calls the application, the
 secondary side what the application calls, and each side has its ports and its adapters. Spring plugs each adapter
-into its port at startup.
+into its port at startup. [Clean Architecture](clean-architecture.md) describes the inside of the hexagon: its
+entities, its use cases and the pure functions that take their decisions.
 
-Each of the four parts goes by several names, depending on the article:
+Each part goes by several names, depending on the article:
 
 | Part | Also called | What it is | In DrinkIt |
 |---|---|---|---|
