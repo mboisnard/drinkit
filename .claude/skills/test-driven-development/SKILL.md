@@ -8,6 +8,8 @@ paths:
 
 # Test-driven development in DrinkIt
 
+Covering code that already works, with no new behavior: the `test-existing-code` skill.
+
 ## Why this loop
 
 - **Tests are the specification.** Their names, read in a row, say what the feature does in the business's words.

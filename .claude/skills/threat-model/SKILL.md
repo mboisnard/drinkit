@@ -1,6 +1,6 @@
 ---
 name: threat-model
-description: Builds a short STRIDE threat model of one DrinkIt feature or flow, such as login, registration or a cellar operation. Maps the data flows and trust boundaries from the code and the API contract, rates the threats, lists the mitigations that exist with their path:line and the gaps, then writes the result where the maintainer chooses. Started by the maintainer as /threat-model <feature or flow>.
+description: Builds a short STRIDE threat model of one DrinkIt feature or flow, such as login, registration or a cellar operation. Maps the data flows and trust boundaries from the code and the API contract, rates the threats, lists the mitigations that exist with their path:line and the gaps, then writes the result where the maintainer chooses. Started by the maintainer as /threat-model.
 disable-model-invocation: true
 argument-hint: <feature or flow>
 ---
@@ -12,9 +12,10 @@ the contract and runs nothing: runtime evidence is the `pentest` skill's job. On
 
 ## 1. Scope the flow
 
-Say in one sentence what the flow does, then name its entry points: the operations of the API contract by
-`operationId`, and anything else that starts it, a scheduled task or an event listener. The roles of its actors
-are in `Roles`. More than six operations is more than one flow: ask the maintainer which part to take.
+Say in one sentence what the flow does, then name its entry points: the operations of the application's API
+contract, in its `-api-contract` module, by `operationId`, and anything else that starts it, a scheduled task or an
+event listener. The roles of its actors are in the roles type of its `-domain` module, `Roles` in DrinkIt. More
+than six operations is more than one flow: ask the maintainer which part to take.
 
 ## 2. Map the data flows
 
@@ -30,7 +31,8 @@ Draw it as a Mermaid `flowchart`, one `subgraph` per trust zone, each edge label
 Take each process, data store and flow that crosses a boundary, and keep only the threats that apply; a letter
 with none gets one line saying why. Where this project differs from the textbook:
 
-- Repudiation: the `Author` carried by commands, and the events of the `User` aggregate.
+- Repudiation: the author a command carries, `Author` in DrinkIt, and the events of an event-sourced aggregate,
+  such as DrinkIt's `User`.
 - Information disclosure: also the status codes that tell an existing account apart.
 - Elevation of privilege: whether method security is on, which decides if a `@PreAuthorize` protects anything.
 
@@ -47,8 +49,8 @@ disagree, the code is the truth: say so in the result.
 ## 5. Write it down
 
 Ask the maintainer where the result goes: a section in the page of `docs/src/engineering/security/` whose topic
-matches, a new page in that folder with its entry in the Security block of `docs/.vitepress/config.ts`, or an
-ADR if the project keeps them.
+matches, or a new page in that folder with its entry in the Security block of `docs/.vitepress/config.ts`. A
+mitigation the maintainer chooses among options gets its ADR through the `new-adr` skill.
 
 The docs site is public. A gap that can be exploited today is described by the control that is missing, never as
 steps to exploit it, and `SECURITY.md` applies: ask the maintainer before writing such a gap down at all.
@@ -66,11 +68,11 @@ At <short sha>, <date>. <one sentence on the flow>
 |---|---|---|---|---|
 ````
 
-Build the site as the `documentation-change` skill describes and fix any dead link. With the maintainer's OK, each
-gap to fix becomes an issue through the `new-issue` skill.
+Write it as the `documentation-change` skill says, run its tics command on the page, then build the site and fix
+any dead link. With the maintainer's OK, each gap to fix becomes an issue through the `new-issue` skill.
 
 ## Before you finish
 
 - Every mitigation has a `path:line` you read, every rating a reason.
 - Every gap has an outcome the maintainer chose: an issue, an accepted risk, or nothing written yet.
-- The site builds.
+- The tics command prints nothing for the page, and the site builds.

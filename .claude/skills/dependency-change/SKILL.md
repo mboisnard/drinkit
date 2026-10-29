@@ -1,6 +1,6 @@
 ---
 name: dependency-change
-description: Adds or bumps a dependency of DrinkIt, Gradle or npm, so that the version lives in one place, the verification metadata and the lock follow, and the application really resolves the new version. Use it before adding, bumping or removing a library, a plugin or a package, and before adding a starter to the application.
+description: Adds or bumps a dependency of DrinkIt, Gradle or npm, so that the version lives in one place, the verification metadata and the lock follow, and the application really resolves the new version. Use it before adding, bumping or removing a library, a plugin or a package, and before adding a starter to an application.
 paths:
   - "gradle/platform/**"
   - "**/*.gradle.kts"
@@ -25,8 +25,8 @@ Modules declare the dependency without a version, and no project declares a repo
 
 ## 2. Regenerate the verification metadata and the lock
 
-After adding or bumping a dependency, and after adding a starter to the application, since the starter brings
-its own dependencies into `drinkit-backend`. From the root:
+After adding or bumping a dependency, and after adding a starter to an application, since the starter brings
+its own dependencies into the `-backend` module of the application. From the root:
 
 ```
 ./gradlew --write-verification-metadata sha256 --refresh-dependencies --write-locks dependencies
@@ -38,12 +38,13 @@ fails. To move a single dependency in the lock, use `--update-locks group:name` 
 ## 3. Review both diffs
 
 ```
-git diff gradle/verification-metadata.xml drinkit/drinkit-backend/gradle.lockfile
+git diff -- gradle/verification-metadata.xml ':(glob)**/gradle.lockfile'
 ```
 
-Expect only the artifacts of the change. A version still unchanged in `gradle.lockfile` means the application
-silently kept the old one: regenerate. A verification failure on a branch that touched no dependency means an
-upstream release landed in a version range, and the same command fixes it.
+Each `-backend` module of an application has its own `gradle.lockfile`, from `api-convention`. Expect only the
+artifacts of the change. A version still unchanged in the `gradle.lockfile` of the `-backend` module of the
+application means the application silently kept the old one: regenerate. A verification failure on a branch
+that touched no dependency means an upstream release landed in a version range, and the same command fixes it.
 
 ## 4. Build
 
@@ -58,7 +59,7 @@ refuses a dependency change in a `package.json` whose lock is not staged, and CI
 ## Before you finish
 
 - [ ] The version lives in a catalog, and in the BOM for a library, and no module or project names it.
-- [ ] `verification-metadata.xml` and `gradle.lockfile` were regenerated with `--refresh-dependencies`, and their
+- [ ] `verification-metadata.xml` and each `gradle.lockfile` were regenerated with `--refresh-dependencies`, and their
   diff holds only the expected artifacts.
 - [ ] `./gradlew build` passes.
 - [ ] Every changed `package.json` has its `package-lock.json` in the same commit.

@@ -6,19 +6,20 @@ Each model is named by class, as `AGENTS.md` says. Copy its shape, not its conte
 
 - An entity: `Cellar`, annotated `@CoreDomain`.
 - An identifier: `CellarId`, which extends `AbstractId` and checks itself in `init`. `AbstractIdJacksonModule`
-  in `drinkit-backend` serializes it as a plain string, with nothing to add.
+  in the `-backend` module serializes it as a plain string, with nothing to add.
 - An input value: `CellarName`, whose `validate()` returns its errors and never throws.
 
 ## Use case
 
-`CreateNewUser`, the reference command use case:
+`DeleteUser`, the reference command use case:
 
 - a `*Command` data class annotated `@Command`;
-- the use case: `@Service`, `@Transactional`, `@Usecase`, `@ImperativeShell`, a single `fun invoke(command)` and
-  a sealed `Result` nested in it;
-- the core: an `internal object` named `<Action>Decider`, such as `UserCreationDecider`, with a nested sealed
-  `Decision`. It receives the date as `OffsetDateTime.now(clock)` and new ids as
-  `generateId.invoke(CellarId::class)`, computed by the use case.
+- the use case: `@Service`, `@Usecase`, `@ImperativeShell`, a single `fun invoke` taking the id of what it acts on
+  and the command, and a sealed `Result` nested in it. It is `@RetryableTransactional` because it appends to the
+  `User` aggregate, as [user-events.md](user-events.md) says: a use case that saves a state is `@Transactional`;
+- the core: an `internal object` named `<Action>Decider`, such as `UserDeletionDecider`, with a nested sealed
+  `Decision`. It receives the date as `OffsetDateTime.now(clock)`, computed by the use case, and a new id the same
+  way: `generateId.invoke(UserId::class)` in `CreateNewUser`.
 
 A query: `FindExchangeRate`.
 

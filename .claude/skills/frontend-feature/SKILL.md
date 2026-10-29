@@ -1,6 +1,6 @@
 ---
 name: frontend-feature
-description: Shapes a feature of DrinkIt's Nuxt frontend the way the app is built, calling the backend only through the client generated from the OpenAPI contract and leaving business rules to the backend. Use it before adding or changing code of the Nuxt app, drinkit-frontend.
+description: Shapes a feature of DrinkIt's Nuxt frontend the way the app is built, calling the backend only through the client generated from the OpenAPI contract and leaving business rules to the backend. Use it before adding or changing code of a Nuxt app, a -frontend module.
 paths:
   - "**/*-frontend/src/**"
   - "**/*-frontend/nuxt.config.ts"
@@ -45,6 +45,11 @@ the user sees. When a page needs a decision the API does not give, the contract 
   needs a sanitizer the maintainer agrees on.
 - Accessible markup, which is also what tests select by: a label tied to each input, an `aria-label` on an
   icon-only button, a `Button` or a link for an action.
+
+## Traps
+
+- The existing pages and components predate these rules and are not models: `CreateCellarDialog.vue`, a
+  component, calls `CellarsApi` itself.
 
 ## Checks
 

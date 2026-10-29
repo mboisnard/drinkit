@@ -32,6 +32,9 @@ npm run docs:build
 npm run docs:dev
 ```
 
+`npm run docs:dev` serves the site until it is stopped: start it in the background. It renders a page in the
+browser only, so `curl` gets an empty shell and the look of the tables and diagrams is for a person to check.
+
 ## Fresh reader
 
 Start a fresh agent with this prompt and the page's path, nothing else:

@@ -37,9 +37,10 @@ those files rather than copying their commands.
 - Before renaming a page or a heading, find what links to it: `git grep -n '<page name>' -- docs/src '*.md'`.
   The same search lists `AGENTS.md` and the skills that send agents to the page. When detail leaves the page,
   update their pointer so that it still leads to that detail.
-- When the subject has an official audit or linter, such as Gradle's `gradle-best-practices` skill or Squawk, run
-  it. The page says that the build or the code goes through it, with no date, count or issue that would age. A
-  page claims that DrinkIt follows a set of practices only when a check backs the claim.
+- When the subject has an official audit or linter, run it: Squawk, or the `gradle-best-practices` skill of
+  Gradle's gradle-skills plugin when it is installed. The page says that the build or the code goes through it,
+  with no date, count or issue that would age. A page claims that DrinkIt follows a set of practices only when a
+  check backs the claim.
 
 ## 3. Choose what the page is
 
@@ -58,15 +59,13 @@ and steps go in a numbered list under a heading that names the task.
 
 1. The title names the subject. The first paragraph says what the page covers and the one idea to keep: a
    reader who stops there knows what matters. On a page about a pattern or a practice, its first sentences present
-   the pattern itself, in general terms and without DrinkIt, and how DrinkIt applies it comes next, as in
-   `clean-architecture.md`: a reader who knows the pattern recognizes it before meeting the modules. A guideline
-   page also says when to read it, such as before changing a convention. An absolute there, "every" or "never", holds for the whole page: when a later section
-   makes an exception, the first paragraph names it or says less.
-2. The next paragraph gives the fact that drives the rules, such as "a migration runs while users are still
-   using the application" in `database.md`.
-   On a page about a practice or a pattern, the concept comes first: what it is, why it helps, what it asks of
-   the code, in a few lines and without its history. How DrinkIt applies it follows in a section of its own, so
-   that the reader knows the idea before meeting the packages that carry it.
+   the pattern itself, in general terms and without DrinkIt: what it is, why it helps, what it asks of the code,
+   without its history. How DrinkIt applies it comes next, in sections of its own, as in `clean-architecture.md`:
+   a reader who knows the pattern recognizes it before meeting the modules. A guideline page also says when to read
+   it, such as before changing a convention. An absolute there, "every" or "never", holds for the whole page: when
+   a later section makes an exception, the first paragraph names it or says less.
+2. On a guideline page, the next paragraph gives the fact that drives the rules, such as "a migration runs while
+   users are still using the application" in `database.md`.
 3. Each rule says what it protects against, so that the reader can tell when it applies. When neither the code,
    its commits nor its issue gives the reason, ask the maintainer, or keep the rule and name the missing reason
    in the pull request. Never make one up.
@@ -106,18 +105,10 @@ the added words carry reasons, never more detail nor a lesson.
 
 ## 5. Write it plainly
 
-[style.md](style.md) is the reference. In short:
+[style.md](style.md) holds the rules of sentences, words, headings, links, lists and punctuation, and the tics of
+generated text, each with what it protects the reader from. Read it before writing and again before review.
 
-- short sentences in the active voice and the present tense, "you" for what the reader does, "we" for what the
-  project chose
-- one word per concept, the word of the code, defined where it first appears
-- a version, a measure or a date on every fact that ages
-- no count that announces a list, such as "for four reasons": the list changes and the count goes wrong
-- headings in sentence case that say what the section holds, a `##` heading opening with one emoji at most
-- none of the generated-text tics: emoji anywhere else, em dashes, semicolons in prose, "not X but Y", empty transitions,
-  inflated words, bold on random words, checkmark lists
-
-Keep the markdown portable, since the framework may change (#387): plain markdown with frontmatter, never a
+Keep the markdown portable, since the framework may change: plain markdown with frontmatter, never a
 VitePress `:::` container. A callout uses the GitHub alert form, `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]` or
 `> [!CAUTION]`, which GitHub and VitePress both render in the same style, and a collapsible block is an HTML
 `<details>`. Keep callouts for what must stand out, such as an exception the project accepts on purpose: a bold
@@ -157,7 +148,8 @@ generated page.
   more: `awk '/^```/{c=!c;next} !c && !/^\|/ && NF' <page> | wc -l` leaves out diagrams, tables and blank lines.
 - [ ] Each flow, exchange between parts or before and after that the page explains is a diagram, and the words it
   replaced are gone.
-- [ ] `npm run docs:dev` shows the tables and diagrams as intended.
+- [ ] The maintainer saw the tables and diagrams as intended, or the pull request says nobody has yet. Start
+  [`npm run docs:dev`](examples.md#build-the-site) in the background for them: it never returns.
 - [ ] Each concept of the page that has a page of its own links to it.
 - [ ] Each choice of the page that an ADR records links to that ADR.
 - [ ] A new page is in the sidebar of `docs/.vitepress/config.ts`, and the pages on nearby subjects link to it.

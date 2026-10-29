@@ -19,16 +19,16 @@ names stay unique across folders.
 
 ## 2. Keep the archetypes
 
-A Kotlin module applies one archetype, `common-convention`, `library-convention` or `api-convention`, plus the
-add-ons it needs. It configures neither Kotlin, Java nor repositories itself: what every module needs belongs in
-a convention. Versions come from the catalogs of `gradle/platform`, never written in a convention.
+A Kotlin module applies one archetype of `build-logic/src/main/kotlin/archetype/`, plus the add-ons it needs. It
+configures neither Kotlin, Java nor repositories itself: what every module needs belongs in a convention. Versions
+come from the catalogs of `gradle/platform`, never written in a convention. A convention that needs a new plugin
+gets it through the `dependency-change` skill first.
 
 ## 3. Stay compatible with the configuration cache
 
 The configuration cache is on for every build. A convention reads values through providers, never touches
 `project` inside a task action, and registers tasks lazily. Run the build twice: the second run must print
-"Configuration cache entry reused". A plugin that breaks it stays out until a fixed version
-exists.
+"Configuration cache entry reused". A plugin that breaks it stays out until a fixed version exists.
 
 ## 4. Prove it
 

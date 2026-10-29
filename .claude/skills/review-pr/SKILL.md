@@ -1,6 +1,6 @@
 ---
 name: review-pr
-description: Reviews an open DrinkIt pull request, from a contributor or from an agent, against its issue, AGENTS.md and the guidelines, then posts inline comments ranked by severity once the maintainer agrees. Run it as /review-pr <number>.
+description: Reviews an open DrinkIt pull request, from a contributor or from an agent, against its issue, AGENTS.md and the guidelines, then posts inline comments ranked by severity once the maintainer agrees. Run it as /review-pr.
 disable-model-invocation: true
 argument-hint: <pull request number>
 ---
@@ -28,8 +28,8 @@ Look at what a reader of the diff alone would miss:
 - **The issue.** Is each acceptance criterion met, with evidence in the description? Is anything delivered that
   the issue does not ask for and the description does not explain?
 - **Correctness.** Edge cases, error paths, concurrency, a test that cannot fail.
-- **Design.** The refactor checklists of the `test-driven-development` skill, the `backend-feature` skill for a
-  backend change, and the rules of `AGENTS.md`.
+- **Design.** The skill of each kind of change the diff makes, from the list in `AGENTS.md`, and the rules of
+  `AGENTS.md` itself.
 - **Security.** When the diff touches what the `security-reviewer` agent's description lists, start it with the
   worktree and the two commits. Its findings join yours with their severity.
 - **From outside the project.** A first-time contributor's pull request gets a closer look at workflows, scripts,
@@ -50,4 +50,4 @@ they keep, as a single review of inline comments, the event always `COMMENT`: ap
 the maintainer's call. A fix of a few lines goes in a `suggestion` block. Each comment follows the writing rules
 of `CONTRIBUTING.md`.
 
-Remove the worktree afterwards.
+Remove the worktree and its local branch afterwards.
