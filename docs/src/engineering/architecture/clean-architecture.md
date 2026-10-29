@@ -14,7 +14,8 @@ page covers what lies inside. Read this page before you add or change a use case
 ## 🧭 The pattern
 
 Clean Architecture draws an application as rings, and its dependency rule says that code depends only inward: an
-inner ring never names a class, a function or a data format of an outer ring.
+inner ring never names a class, a function or a data format of an outer ring. In DrinkIt, the domain is split into
+bounded contexts, parts of the business with their own words such as `user` or `cellar`.
 
 | Ring | What it holds | In DrinkIt |
 |---|---|---|
@@ -25,9 +26,8 @@ inner ring never names a class, a function or a data format of an outer ring.
 
 ## 🧱 The rings in the code
 
-A bounded context, a part of the business with its own words such as `user` or `cellar`, is a package of
-`drinkit-domain`. A `common` package holds the types the contexts share, such as the base class of the ids. Each arrow
-below is a dependency, and every one points inward, or to the shared `common`:
+Each bounded context is a package of `drinkit-domain`. A `common` package holds the types the contexts share, such as
+the base class of the ids. Each arrow below is a dependency, and every one points inward, or to the shared `common`:
 
 ```mermaid
 flowchart LR
@@ -90,11 +90,11 @@ Each rule answers a red flag of the use case articles in Sources:
 - **No interface and no state.** An interface with one implementation adds a file and no seam a test needs, and a
   use case is a Spring singleton that concurrent requests share.
 
-A read that decides nothing needs no use case, which would only pass the call through: the controller calls the
-port in a read-only transaction. A query, a
-read with a rule of its own such as the currency conversion of `FindExchangeRate`, is a use case that returns its
-value, with no command and no sealed `Result`. The cellar use cases, `CreateCellar` and `DeleteCellar`, predate these
-rules and return no sealed `Result`: they are no model to copy.
+A read that decides nothing needs no use case, which would only pass the call through: the controller calls the port
+in a read-only transaction. A query, a read with a rule of its own such as the currency conversion of
+`FindExchangeRate`, is a use case that returns its value, with no command and no sealed `Result`. The cellar use
+cases, `CreateCellar` and `DeleteCellar`, predate these rules and return no sealed `Result`: they are no model to
+copy.
 
 ## 🧮 Functional core, imperative shell, when it pays
 
