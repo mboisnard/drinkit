@@ -38,6 +38,10 @@ exists.
 
 detekt also checks every `*.gradle.kts`, `build-logic`'s included, through the root project's `detekt` task.
 
+When the `gradle-best-practices` skill of Gradle's gradle-skills plugin is installed, an audit with it checks the
+change against the official Gradle best practices:
+[Auditing the build](../../../docs/src/engineering/build-and-data/build-tool.md#auditing-the-build) says how to run it.
+
 ## Before you finish
 
 - [ ] The file name gives the plugin id, there is no `package`, and no other file has that name.

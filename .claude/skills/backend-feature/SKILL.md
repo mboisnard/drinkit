@@ -1,25 +1,39 @@
 ---
-name: hexagonal-backend
-description: Places and shapes each piece of a DrinkIt backend feature as a vertical slice, from the API contract to the database, in drinkit-domain, drinkit-infra and drinkit-backend. Use it before adding or changing backend production code, such as a use case, an entity or value type, a port, an adapter, a controller, a security rule, an HTTP client or an event of the User aggregate.
+name: backend-feature
+description: Shapes a feature of DrinkIt's Kotlin backend as a vertical slice, from the API contract to the database, in drinkit-domain, drinkit-infra and drinkit-backend, and points to the coding rules and architecture pages it follows. Use it before adding or changing backend production code, such as a use case, an entity or value type, a port, an adapter, a controller, a security rule, an HTTP client or an event of the User aggregate.
 paths:
   - "drinkit/drinkit-*/src/main/**/*.kt"
 ---
 
 # A backend feature in DrinkIt
 
-The architecture tests check the rules, which `docs/src/engineering/writing-code/testing/architecture-tests.md`
-lists with their reason and fix. Read `docs/src/engineering/architecture/hexagonal-architecture.md` before adding a
-port or a module dependency, and `docs/src/engineering/writing-code/best-practices/coding-rules.md` before
-naming things. This skill says where each piece goes, in which order, and what to avoid. The model to copy for each
-step is in [examples.md](examples.md).
+This skill says where each piece of a backend feature goes, in which order, and what to avoid. The model to copy
+for each step is in [examples.md](examples.md). Tests come first: invoke the `test-driven-development` skill
+before writing code. Its test order follows the steps below.
+
+## The pages to apply
+
+The rules of backend code live in these pages. Read each one before the code it covers and apply it as it stands:
+
+- `docs/src/engineering/writing-code/best-practices/coding-rules.md`, before naming or typing anything: strong
+  typing, idempotency, the language of the domain, testability.
+- `docs/src/engineering/architecture/clean-architecture.md`, before writing a use case: what it holds, and the
+  Functional Core, Imperative Shell split between its decisions and its I/O.
+- `docs/src/engineering/architecture/hexagonal-architecture.md`, before adding a port or a module dependency.
+- `docs/src/engineering/architecture/event-sourcing.md`, before touching the `User` aggregate.
+- `docs/src/engineering/writing-code/best-practices/living-documentation.md`, which lists the annotations of
+  `documentation-starter` that mark each pattern in the code.
+
+The architecture tests enforce the dependency rules: `docs/src/engineering/writing-code/testing/architecture-tests.md`
+gives each rule's reason and fix. What they cannot check, such as strong typing, is checked against these pages by
+the `issue-judge` agent and by the reviewer of the pull request.
+
+Two of these rules hold in every class:
 
 - Annotate new classes with the `documentation-starter` annotations. `@CoreDomain`, `@Usecase` and
   `@TechStarterTool` generate the documentation pages, the others mark a pattern in the code.
 - Business values are types, never primitives. An input value exposes `validate()`, whose errors the use case, or
   its functional core, turns into a decision. An identifier or an invariant checks itself in `init`.
-
-Tests come first: invoke the `test-driven-development` skill before writing code. Its test order follows the
-steps below.
 
 ## Order of work
 

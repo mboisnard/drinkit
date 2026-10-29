@@ -11,7 +11,7 @@ through jOOQ. Exact versions live in the catalogs of `gradle/platform`, `gradle/
 ./gradlew :drinkit-domain:test                 # one module, named after its folder
 ./gradlew :drinkit-infra:test --tests '*JooqUserEventsTest'
 ./gradlew detektAll -Pdetekt.autoCorrect=true  # fixes formatting and auto-correctable findings
-./gradlew :drinkit-backend:bootRun             # dev profile: starts the compose services, logs emails instead of sending
+./gradlew :drinkit-backend:bootRun             # dev profile: starts the compose services, logs emails, sends none
 git config core.hooksPath .hooks/git           # once per clone: pre-commit formats Kotlin, pre-push refuses master
 ```
 
@@ -27,7 +27,7 @@ changelogs and the documentation site are in the skill of that kind of change.
 Each folder of `.claude/skills/` says how to carry out one kind of change. Read its `SKILL.md` before that change,
 whatever the agent, even when no tool loaded it for you.
 
-- Backend production code, such as a use case, a port, an adapter or a controller: `hexagonal-backend`
+- Backend production code, such as a use case, a port, an adapter or a controller: `backend-feature`
 - A test: `test-driven-development` for new behavior, `test-existing-code` for code that has none
 - The OpenAPI contract, never the code generated from it: `api-contract-change`. A breaking change goes through
   expand and contract, even for the frontend.

@@ -17,7 +17,7 @@ a skill per kind of change in [`.claude/skills`][skills-folder]. A skill stays a
 - **By name.** `/implement-issue <issue number>` starts a skill. A skill with side effects, such as one that opens a
   pull request, sets `disable-model-invocation: true` in its frontmatter so that only a person starts it.
 - **By [`AGENTS.md`][agents-md] and other skills.** `AGENTS.md` sends every agent to the skill of each kind of
-  change, and skills chain: the first step of `hexagonal-backend` is to load `test-driven-development`.
+  change, and skills chain: the first step of `backend-feature` is to load `test-driven-development`.
 
 The format is an open standard, Agent Skills, which Codex and other agents read too.
 
@@ -49,7 +49,7 @@ already knows.
 | [`review-pr`][skill-review-pr] | Reviewing a pull request and posting inline comments ranked by severity | The maintainer, `/review-pr <number>` |
 | [`test-driven-development`][skill-tdd] | Adding or changing behavior, backend or frontend, test first | Editing code under `drinkit/` or a backend tech starter |
 | [`test-existing-code`][skill-test-existing] | Covering code that works but has no tests, each test proven able to fail | Its description |
-| [`hexagonal-backend`][skill-hexagonal] | Where each piece of a backend feature goes, from use case to controller | Editing backend production code |
+| [`backend-feature`][skill-backend] | Shaping a feature of the Kotlin backend, from use case to controller, after the coding rules and the architecture pages | Editing backend production code |
 | [`api-contract-change`][skill-contract] | Changing the OpenAPI contract, then the Kotlin interfaces and the TypeScript client generated from it | Editing the contract or the client generator settings |
 | [`database-change`][skill-database] | Changing the schema or the data, checked by the changelog rules, then the jOOQ classes | Editing the changelogs or the generated jOOQ code |
 | [`frontend-feature`][skill-frontend] | Shaping a feature of the Nuxt app around the generated client | Editing frontend sources |
@@ -87,7 +87,7 @@ already knows.
 [skill-review-pr]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/review-pr/SKILL.md
 [skill-tdd]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/test-driven-development/SKILL.md
 [skill-test-existing]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/test-existing-code/SKILL.md
-[skill-hexagonal]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/hexagonal-backend/SKILL.md
+[skill-backend]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/backend-feature/SKILL.md
 [skill-contract]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/api-contract-change/SKILL.md
 [skill-database]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/database-change/SKILL.md
 [skill-frontend]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/frontend-feature/SKILL.md
