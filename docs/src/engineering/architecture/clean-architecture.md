@@ -2,12 +2,12 @@
 
 Robert C. Martin's Clean Architecture puts the business rules at the center of an application: the entities in the
 middle, the use cases around them, and every dependency of the code pointing inward, so that the database and the web
-framework stay details. Gary Bernhardt's Functional Core / Imperative Shell fits inside a use case: its decisions are
-a pure function, and a thin shell around it does the input and output. In DrinkIt, the domain module,
-`drinkit-domain`, holds these rings. Each business action is one use case, which returns its outcomes as a sealed
-`Result` of its own, and its decisions live in the pure function of its decider. The build fails on a dependency
-that points outward. The [hexagonal architecture](hexagonal-architecture.md) page covers the ports and adapters
-around the domain, and this page what lies inside. Read this page before you add or change a use case.
+framework stay details. In DrinkIt, the domain module, `drinkit-domain`, holds these rings, and each business action
+is one use case that returns its outcomes as a sealed `Result` of its own. The build fails on a dependency that points
+outward. Where a use case takes decisions worth isolating, as on an event-sourced aggregate, it moves them into a pure
+function, after Gary Bernhardt's Functional Core / Imperative Shell: a tool taken off the shelf when it pays, not a
+rule. The [hexagonal architecture](hexagonal-architecture.md) page covers the ports and adapters around the domain,
+and this page what lies inside. Read this page before you add or change a use case.
 
 ## 🧭 The pattern
 
@@ -18,64 +18,89 @@ reasons only, and the database or the web framework is a detail that an outer ri
 | Ring | What it holds | In DrinkIt |
 |---|---|---|
 | Entities | The business rules that hold in any application | The entities and values of the `core` packages, such as `User` |
-| Use cases | The rules of this application, one action each, which drive the entities | The use cases with their commands and deciders, and the ports of the `spi` packages |
+| Use cases | The rules of this application, one action each, which drive the entities | The use cases with their commands, and the ports of the `spi` packages |
 | Interface adapters | The conversion between the use cases and the outside | The controllers and event handlers of `drinkit-backend`, the adapters of `drinkit-infra` |
 | Frameworks and drivers | The tools themselves | Spring Boot, PostgreSQL, jOOQ, the [tech starters](tech-starters.md) |
 
-When a use case writes to the database, the call flows outward while the dependency still points inward. The use
-case calls a port, an interface of its own ring, and an adapter of an outer ring implements it. Like the hexagonal
-architecture, Clean Architecture keeps the business code free of technology. It also splits the inside into entities
-and use cases, with the same rule between them.
+When a use case writes to the database, the call flows outward while the dependency still points inward: the use
+case calls a port, an interface of its own ring, and an adapter of an outer ring implements it.
 
 ## 🧱 The rings in the code
 
-A bounded context is a package of `drinkit-domain`, such as `user` or `cellar`. Its use cases sit at its root, beside
-their commands and deciders, its entities and values in `core` and its ports in `spi`. The `common` package holds the
-types the contexts share. Gradle keeps the outer rings out of the domain: `drinkit-domain` depends on no other module
-of the application, so it cannot compile against a controller or an adapter. The
-[architecture tests](../writing-code/testing/architecture-tests.md) keep the rule between packages. An entity or a
-value never uses a use case, a command, a decider or a port. A port speaks only the types of `core` and `common`. A
-dependency that points outward fails the build, with its fix in the message.
+A bounded context is a package of `drinkit-domain`, such as `user` or `cellar`. Each arrow below is a dependency, and
+every one points inward:
 
-DrinkIt leaves out some parts of Martin's article. A use case hands its `Result` back to the controller, with no
-presenter behind an output port. The data that crosses the boundary is the domain's own types, with no request and
-response models. The controller maps them to the API models generated from the [OpenAPI contract](contract-first.md).
-These generated models already keep the HTTP shape out of the domain. The domain also carries a few Spring
-annotations, an exception that the [hexagonal architecture](hexagonal-architecture.md) page accepts and explains.
+```mermaid
+flowchart LR
+  subgraph outside["Outer rings, other modules"]
+    backend["drinkit-backend<br/>controllers, event handlers"]
+    infra["drinkit-infra<br/>adapters"]
+  end
+  subgraph domain["drinkit-domain"]
+    subgraph context["A bounded context, such as user"]
+      usecases["Root of the package<br/>use cases, commands, deciders"]
+      spi["spi<br/>ports"]
+      core["core<br/>entities, values"]
+    end
+    common["common<br/>types the contexts share"]
+  end
+  backend --> usecases
+  backend -. "a read with no rule" .-> spi
+  infra -- implements --> spi
+  usecases --> spi
+  usecases --> core
+  spi --> core
+  core --> common
+```
+
+Gradle keeps the outer rings out: `drinkit-domain` depends on no other module of the application, so it cannot
+compile against a controller or an adapter. The [architecture tests](../writing-code/testing/architecture-tests.md)
+check the arrows between packages, and a dependency that points outward fails the build with its fix in the message.
+
+DrinkIt leaves out the presenter and the request and response models of Martin's article. A use case hands its
+`Result` back to the controller, which maps it to the API models generated from the
+[OpenAPI contract](contract-first.md). The domain also carries a few Spring annotations, an exception that the
+[hexagonal architecture](hexagonal-architecture.md) page accepts and explains.
 
 ## 🎯 One use case per business action
 
-A use case, also called an interactor, carries one business action and is named after it with a verb:
-`CreateNewUser`, `CompleteProfileInformation`, `PromoteAsAdmin`. It takes no pattern suffix such as `UseCase`, so its
-name says what it does, never what it is. Each rule below answers a red flag of the use case articles in Sources:
+A use case, also called an interactor, carries one business action and is named after it with a verb, such as
+`CreateNewUser` or `PromoteAsAdmin`, never with a `UseCase` suffix that says what it is rather than what it does:
 
-- **One public `invoke`.** It takes a command, an immutable data class such as `PromoteAsAdminCommand`, and the id of
-  what it acts on, when that exists. A second action gets a class of its own, so the name of a class says what it does.
-- **Domain types only.** The command, the arguments and the `Result` are types of the domain. The controller builds
-  the command from the request and an adapter maps the database rows, so a use case never converts either.
-- **A sealed `Result`, nested in the use case.** Its cases name business outcomes, such as `Success`, `UserNotFound`
-  or `Forbidden`, never an HTTP status or a message, which are the caller's to choose. The controller maps each case
-  to a status in an exhaustive `when`, so a new case fails the compilation until the controller answers it.
-- **Every decision is a `Result` case.** An exception answers 500, whatever the decision. A few validation failures
-  of the `user` context still end that way.
-- **A class, with no interface.** A use case has one implementation, and its tests run it with the
-  [test doubles](../writing-code/testing/testdouble.md) of its ports.
-- **No state.** A use case is a Spring singleton that concurrent requests share: it holds its dependencies and
-  nothing else.
+```mermaid
+flowchart LR
+  request["HTTP request"] --> controller["Controller"]
+  controller -- "command, domain types" --> usecase["Use case<br/>invoke"]
+  usecase -- "sealed Result" --> controller
+  controller -- "exhaustive when" --> status["HTTP status"]
+```
 
-A read that decides nothing needs no use case. The controller calls the port in a read-only transaction, as the
-hexagonal architecture page says: a use case would only pass the call through. A read with a rule of its own is a
-query, such as `FindExchangeRate`, which computes a cross rate through the euro. It is a use case with no command, no
-decider and no sealed `Result`, in a read-only transaction.
+Each rule answers a red flag of the use case articles in Sources:
 
-A use case that changes something and returns no sealed `Result` predates these rules: it is no model to copy.
+- **One public `invoke`**, taking a command, an immutable data class such as `PromoteAsAdminCommand`, and the id of
+  what it acts on. A second action gets a class of its own.
+- **Domain types only.** The controller builds the command from the request and an adapter maps the database rows,
+  so a use case converts neither.
+- **Every decision is a case of the sealed `Result`**, such as `Success`, `UserNotFound` or `Forbidden`, never an HTTP
+  status or a message, which are the caller's to choose. A new case fails the compilation of the controller's `when`
+  until it answers it. A decision thrown as an exception answers 500, as a few validation failures of `user` still do.
+- **No interface and no state.** A use case has one implementation, and it is a Spring singleton that concurrent
+  requests share.
 
-## 🧮 Functional core, imperative shell
+A read that decides nothing needs no use case: the controller calls the port in a read-only transaction. A read with
+a rule of its own, such as `FindExchangeRate`, which computes a cross rate through the euro, is a use case with no
+command and no sealed `Result`. A use case that changes something and returns no sealed `Result` predates these
+rules: it is no model to copy.
+
+## 🧮 Functional core, imperative shell, when it pays
 
 Gary Bernhardt's Functional Core / Imperative Shell splits code into a pure core and a thin shell around it, which
-does the input and output. Clean Architecture says nothing of how a use case is written inside, and the
-pattern fits there. In DrinkIt, the use case is the imperative shell. Its decider is the functional core, which
-returns a sealed `Decision` of what the shell must do. Only the shell talks to the ports:
+does the input and output. Clean Architecture says nothing of how a use case is written inside, and the pattern fits
+there: the use case is the shell, and a decider is the core, which returns a sealed `Decision` of what the shell must
+do. It pays when the decisions are rich enough to deserve tests of their own, and most of all on an
+[event-sourced aggregate](event-sourcing.md), where the decider reads the state folded from the events and returns the
+event to append. Today the six deciders of DrinkIt belong to the `User` aggregate, while the cellar and exchange rate
+use cases decide in their own body. Add a decider when the decisions of a use case grow, not by default:
 
 ```mermaid
 sequenceDiagram
@@ -94,18 +119,12 @@ sequenceDiagram
     UC->>UC: no write
   end
   UC-->>C: Result
-  C->>C: map the Result to a status
 ```
 
-The date comes from the injected `Clock` and new ids from the `GenerateId` port. The decider is an `internal object`
-with no state, which only its use case calls, named after the decision, such as `AdminPromotionDecider`. Its
-`Decision` cases, such as `EventToPersist`, `AlreadyAdmin` or `Unauthorized`, say what to do, and the use case maps
-each one to a `Result`. What happened may also go out as a [platform event](platform-events.md). On an event-sourced
-aggregate, the decider reads the state folded from the events, as [event sourcing](event-sourcing.md) shows.
-
-Each business rule then lives in one place, a function of its arguments. A test calls the decider with plain values,
-with no double and no clock to control. The architecture tests keep it pure: a decider uses only the domain's own
-types, Kotlin, `java.time` and `java.math`, never a port or a clock.
+A decider is an `internal object` with no state, named after the decision, such as `AdminPromotionDecider`, and the
+use case maps each of its `Decision` cases, such as `EventToPersist` or `AlreadyAdmin`, to a `Result`. A test calls it
+with plain values, with no double and no clock to control. The architecture tests keep it pure: it uses only the
+domain's own types, Kotlin, `java.time` and `java.math`, never a port or a clock.
 
 ## 🏷️ The annotations that mark the patterns
 
