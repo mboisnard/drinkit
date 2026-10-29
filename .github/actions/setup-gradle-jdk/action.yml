@@ -8,6 +8,9 @@ inputs:
   cache-encryption-key:
     description: Lets setup-gradle keep the configuration cache between runs. Empty on fork pull requests
     default: ''
+  cache-disabled:
+    description: Neither restore nor save any Gradle cache, for a build whose output is published
+    default: 'false'
 
 runs:
   using: composite
@@ -24,3 +27,4 @@ runs:
       with:
         cache-read-only: ${{ inputs.cache-read-only }}
         cache-encryption-key: ${{ inputs.cache-encryption-key }}
+        cache-disabled: ${{ inputs.cache-disabled }}
