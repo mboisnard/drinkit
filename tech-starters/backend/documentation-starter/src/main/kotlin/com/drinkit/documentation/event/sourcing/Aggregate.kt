@@ -10,8 +10,8 @@ package com.drinkit.documentation.event.sourcing
  *
  * ## Role in Event Sourcing
  *
- * In an Event Sourcing context, the Aggregate's role is to process incoming [com.drinkit.documentation.cqrs.Command]s and
- * produce a sequence of Events as a result.
+ * In an Event Sourcing context, the Aggregate's role is to process incoming [com.drinkit.documentation.cqrs.Command]s
+ * and produce a sequence of Events as a result.
  *
  * - **Command Processing:** It is the sole entry point for any modification. A command handler
  * method within the Aggregate decides whether the requested action is valid based on its
