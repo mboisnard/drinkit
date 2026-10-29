@@ -19,8 +19,8 @@ The rules of backend code live in these pages. Read each one before the code it 
 
 - `docs/src/engineering/writing-code/best-practices/coding-rules.md`, before naming or typing anything: strong
   typing, idempotency, the language of the domain, testability.
-- `docs/src/engineering/architecture/clean-architecture.md`, before writing a use case: what it holds, and the
-  Functional Core, Imperative Shell split between its decisions and its I/O.
+- `docs/src/engineering/architecture/clean-architecture.md`, before writing a use case: what it holds, and when
+  its decisions deserve a pure decider of their own, after Functional Core / Imperative Shell.
 - `docs/src/engineering/architecture/hexagonal-architecture.md`, before adding a port or a module dependency.
 - `docs/src/engineering/architecture/event-sourcing.md`, before touching the `User` aggregate.
 - `docs/src/engineering/writing-code/best-practices/living-documentation.md`, which lists the annotations of
@@ -43,7 +43,7 @@ Two of these rules hold in every class:
    skill. The generated `<Tag>Api` interface gives the controller its signatures and mappings.
 2. **Domain types**, in `drinkit-domain`, package `com.drinkit.<context>.core`. A value several contexts use
    goes in `com.drinkit.common`.
-3. **Use case**, and its functional core when it takes decisions, in `com.drinkit.<context>`.
+3. **Use case**, and a decider when its decisions deserve one, in `com.drinkit.<context>`.
 4. **Ports**, in `com.drinkit.<context>.spi`, with their test doubles in the test fixtures of `drinkit-domain`.
 5. **Adapters**, in `drinkit-infra`, in the package of the context. A new table or column first goes through
    the `database-change` skill.
