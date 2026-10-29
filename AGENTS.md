@@ -34,7 +34,7 @@ whatever the agent, even when no tool loaded it for you.
 - The schema or the jOOQ classes: `database-change`
 - A dependency, a version or the lock: `dependency-change`
 - A convention plugin of `build-logic`: `build-convention-change`
-- A workflow, the compose file or the Renovate configuration: `ci-workflow-change`
+- A workflow, a Dockerfile, the compose file or the Renovate configuration: `ci-workflow-change`
 - A hook, a setting, a skill or an agent: `harness-change`
 - A page under `docs/src` or a README: `documentation-change`
 - The Nuxt app: `frontend-feature`. A tech starter: `new-backend-tech-starter` or `new-frontend-tech-starter`

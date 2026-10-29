@@ -1,18 +1,19 @@
 ---
 name: ci-workflow-change
-description: Changes DrinkIt's GitHub Actions workflows, its in-repo actions and the lanes of the CI, in a way the repository accepts and that never skips a check by mistake. Use it before adding or changing a workflow, a job, a step, an action reference or a path of a lane, and before changing the local compose file or the Renovate configuration, which CI checks too.
+description: Changes DrinkIt's GitHub Actions workflows, its in-repo actions and the lanes of the CI, in a way the repository accepts and that never skips a check by mistake. Use it before adding or changing a workflow, a job, a step, an action reference or a path of a lane, and before changing a Dockerfile, the local compose file or the Renovate configuration, which CI checks too.
 paths:
   - ".github/workflows/**"
   - ".github/actions/**"
   - ".github/actionlint.yaml"
   - ".github/renovate.json"
   - "deployment/local/compose.yml"
+  - "**/Dockerfile"
 ---
 
 # Changing a workflow
 
-The reasons behind each rule are in `docs/src/engineering/delivery/ci-cd.md`. This skill gives the order and what
-proves each step.
+The reasons behind each rule are in `docs/src/engineering/delivery/ci-cd.md`, and those of a Dockerfile or a
+published image in `container-images.md` beside it. This skill gives the order and what proves each step.
 
 ## 1. Shape the job
 
@@ -53,9 +54,12 @@ docker run --rm -v "$PWD:/repo:ro" -w /repo \
 docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/zizmorcore/zizmor --offline .
 ```
 
-A change to the compose file or to the Renovate configuration has checks of its own, which CI runs too:
+A change to a Dockerfile, the compose file or the Renovate configuration has checks of its own, which CI runs too.
+A Dockerfile goes through hadolint, and an image that ships through Trivy before it is published:
 
 ```
+docker run --rm -v "$PWD:/repo:ro" -w /repo "$(grep -o 'hadolint/hadolint[^ ]*' .github/workflows/ci-updater.yml)" \
+  hadolint $(git ls-files '*Dockerfile')
 docker compose -f deployment/local/compose.yml config --quiet
 docker compose -f deployment/local/compose.yml up --detach --wait   # the dev services, until each healthcheck passes
 docker run --rm -v "$PWD:/repo:ro" -w /repo \
@@ -65,14 +69,14 @@ docker run --rm -v "$PWD:/repo:ro" -w /repo \
 
 ## 5. Read the run
 
-The `CI files`, `Ops` and `Renovate` jobs run the same checks on the pull request. `CI gate` is the only check
-the master ruleset requires, so renaming or adding a job never touches the ruleset. When a lane ran and should not
-have, the `Decision` log lists the files each list matched.
+The `CI files`, `Ops` and `Renovate` jobs run the same checks on the pull request, and `Updater` lints its
+Dockerfile. `CI gate` is the only check the master ruleset requires, so renaming or adding a job never touches the
+ruleset. When a lane ran and should not have, the `Decision` log lists the files each list matched.
 
 ## Before you finish
 
 - [ ] Every new job has its permissions, its timeout and a checkout without credentials.
 - [ ] Every external action is pinned by SHA with its version comment, every in-repo one goes by `$/`.
 - [ ] Every new path is in a lane or in `none`.
-- [ ] actionlint and zizmor pass locally, and the compose or Renovate check when that file changed.
+- [ ] actionlint and zizmor pass locally, and hadolint, the compose or the Renovate check when that file changed.
 - [ ] `ci-cd.md` says what changed when a lane, a job or a choice changed.

@@ -61,7 +61,7 @@ already knows.
 | [`new-frontend-tech-starter`][skill-frontend-starter] | Creating the first frontend tech starter, a Nuxt layer | Its description |
 | [`pentest`][skill-pentest] | Scanning the running application with OWASP ZAP, then triaging the findings | The maintainer, `/pentest` |
 | [`threat-model`][skill-threat-model] | A STRIDE threat model of one feature or flow | The maintainer, `/threat-model` |
-| [`ci-workflow-change`][skill-ci-workflow] | Changing a workflow, an action reference or a lane of the [CI](../delivery/ci-cd.md) | Editing the workflows, the in-repo actions, the local compose file or the Renovate configuration |
+| [`ci-workflow-change`][skill-ci-workflow] | Changing a workflow, an action reference or a lane of the [CI](../delivery/ci-cd.md) | Editing the workflows, the in-repo actions, a Dockerfile, the local compose file or the Renovate configuration |
 | [`harness-change`][skill-harness] | Changing a hook, its test, the Claude Code settings, a skill or a subagent | Editing any of them |
 | [`dependency-change`][skill-dependency] | Adding or bumping a dependency, then the verification metadata and the lock | Editing `gradle/platform`, a build script or a `package.json` |
 | [`build-convention-change`][skill-build-convention] | Changing a convention plugin of `build-logic` | Editing `build-logic` |

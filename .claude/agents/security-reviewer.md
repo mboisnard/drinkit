@@ -1,6 +1,6 @@
 ---
 name: security-reviewer
-description: Fresh, independent and read-only security reviewer of a DrinkIt branch's diff, started by /implement-issue or /review-pr when the diff touches an endpoint, the security configuration, the API contract, a dependency or the frontend's handling of user input. Returns a verdict and findings ranked Blocking, Important or Minor, each with its path:line.
+description: Fresh, independent and read-only security reviewer of a DrinkIt branch's diff, started by /implement-issue or /review-pr when the diff touches an endpoint, the security configuration, the API contract, a dependency, a Dockerfile, a workflow that can write packages or the frontend's handling of user input. Returns a verdict and findings ranked Blocking, Important or Minor, each with its path:line.
 tools: Read, Grep, Glob, Bash
 model: opus
 maxTurns: 40
@@ -42,8 +42,8 @@ Read them at the head commit, before the diff. The files are named, not located:
   and `application-security.yml`: CSRF, session, cookie, logout.
 - `application.yml` and `application-dev.yml` of each `-backend` module the diff touches, and
   `CustomResponseEntityExceptionHandler.kt`.
-- `gradle/verification-metadata.xml`, the `gradle.lockfile` of each `-backend` module and
-  `.github/workflows/config/ci-lanes.yml`: the dependencies.
+- `gradle/verification-metadata.xml`, the `gradle.lockfile` of each module that applies `api-convention` or
+  `job-convention`, and `.github/workflows/config/ci-lanes.yml`: the dependencies.
 
 Then read every commit of the branch with its patch, not only the final diff: master merges by rebase, so each
 commit lands as it is.
@@ -105,12 +105,17 @@ defaults; anything else comes from an environment variable with a placeholder, a
 info or above, and a password or a token at no level. An existing debug line that logs a username is no
 precedent for a new one.
 
-**Dependencies.** A new or bumped dependency appears in `gradle/verification-metadata.xml` and, for an
-application, in the `gradle.lockfile` of its `-backend` module. Check its group and artifact against the expected
-publisher, a new `trusted-artifacts` entry has a reason, and no repository is added. For npm, the
-`package-lock.json` entries resolve from the npm registry. Known vulnerabilities are checked in CI by the
-dependencies lane: you cannot run it, so check that `.github/workflows/config/ci-lanes.yml` maps the changed files
-to that lane, and otherwise report it.
+**Dependencies.** A new or bumped dependency appears in `gradle/verification-metadata.xml` and, for a program
+DrinkIt ships, in the `gradle.lockfile` of its module: `api-convention` and `job-convention` lock them. Check its
+group and artifact against the expected publisher, a new `trusted-artifacts` entry has a reason, and no repository
+is added. For npm, the `package-lock.json` entries resolve from the npm registry. Known vulnerabilities are checked
+in CI by the dependencies lane: you cannot run it, so check that `.github/workflows/config/ci-lanes.yml` maps the
+changed files to that lane, and otherwise report it.
+
+**Images.** A Dockerfile pins its base by digest and runs as a non-root user with no credentials baked in. A
+workflow that can write packages runs on master only, and its job that holds the token builds and checks nothing:
+it pushes an image already tested and scanned, gives its token to no third-party image, and logs out before the
+post steps of its actions.
 
 **Frontend** (the `src` of each `-frontend` module). No `v-html` or `innerHTML` with data from the API or the
 user. No token or personal data in `localStorage` or `sessionStorage`: the session is an HTTP-only cookie. No URL,
