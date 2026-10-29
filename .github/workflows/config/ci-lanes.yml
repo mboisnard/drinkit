@@ -32,6 +32,7 @@ updater: &updater
   - '**/*.gradle.kts'
   - '**/*.lockfile'
   - 'deployment/updater/**'
+  - 'deployment/local/compose.yml' # its PostgreSQL runs the image under test
 
 frontend: &frontend
   - *workflows

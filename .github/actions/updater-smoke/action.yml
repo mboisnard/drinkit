@@ -1,0 +1,48 @@
+name: Smoke-test the updater image
+description: Runs an updater image against a new PostgreSQL of the local compose file, with the changelogs mounted and a read-only, unprivileged container. The first run applies them, the second must apply nothing, and a run without credentials must fail
+
+inputs:
+  image:
+    description: The image to run, by tag or by digest
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Start PostgreSQL
+      shell: bash
+      run: docker compose --file deployment/local/compose.yml --project-name updater-smoke up --wait postgresql
+
+    - name: Apply the changelogs, then apply nothing
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+      run: |
+        update() {
+          docker run --rm --network updater-smoke_default \
+            --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges \
+            --volume "$PWD/deployment/updater/src/main/resources/db:/workspace/db:ro" \
+            "$@" "$IMAGE"
+        }
+        credentials=(--env SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/drinkit
+          --env SPRING_DATASOURCE_USERNAME=drinkit --env SPRING_DATASOURCE_PASSWORD=admin)
+        update "${credentials[@]}"
+        second=$(update "${credentials[@]}") || { echo "$second"; exit 1; }
+        echo "$second"
+        grep -q 'Database is up to date, no changesets to execute' <<< "$second"
+
+    # A deployment that forgets its credentials must stop, never reach a database through defaults in the image
+    - name: Fail without credentials
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+      run: |
+        output=$(docker run --rm --network updater-smoke_default --read-only --tmpfs /tmp \
+          --volume "$PWD/deployment/updater/src/main/resources/db:/workspace/db:ro" "$IMAGE" 2>&1) || true
+        grep -q "'url' attribute is not specified" <<< "$output" \
+          || { echo "$output"; echo "::error::the image did not stop for want of a database URL"; exit 1; }
+
+    - name: Remove PostgreSQL
+      if: always()
+      shell: bash
+      run: docker compose --file deployment/local/compose.yml --project-name updater-smoke down --volumes
