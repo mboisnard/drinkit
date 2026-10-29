@@ -27,7 +27,7 @@ names the agent to start it.
 | Agent | What it checks | Started by |
 |---|---|---|
 | [`issue-judge`][judge] | Each acceptance criterion, rerunning the proof of the test list itself, then the design against `AGENTS.md`, the skill of each kind of change the diff makes and, for a backend change, the result of the architecture tests, then what they cannot check: the [coding rules](../writing-code/best-practices/coding-rules.md) and [Clean Architecture](../architecture/clean-architecture.md). Returns `OK` or `NEEDS_WORK` for the head commit, with the gaps it found | `/implement-issue`, before the pull request opens |
-| [`security-reviewer`][security] | Authorization of each endpoint, CSRF, CORS, headers, input validation, secrets, new dependencies, the frontend's handling of user input. Ranks its findings Blocking, Important or Minor, each with its `path:line`. It runs nothing from the branch, which on a contributor's branch would execute their code | `/implement-issue` or [`/review-pr`][skill-review-pr], when the diff touches those areas |
+| [`security-reviewer`][security] | Authorization of each endpoint, CSRF, CORS, headers, input validation, secrets, new dependencies, Dockerfiles and the workflows that publish images, the frontend's handling of user input. Ranks its findings Blocking, Important or Minor, each with its `path:line`. It runs nothing from the branch, which on a contributor's branch would execute their code | `/implement-issue` or [`/review-pr`][skill-review-pr], when the diff touches those areas |
 
 ## 🔁 The judge in /implement-issue
 

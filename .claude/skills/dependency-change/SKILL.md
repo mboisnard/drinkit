@@ -41,9 +41,9 @@ fails. To move a single dependency in the lock, use `--update-locks group:name` 
 git diff -- gradle/verification-metadata.xml ':(glob)**/gradle.lockfile'
 ```
 
-Each `-backend` module of an application has its own `gradle.lockfile`, from `api-convention`. Expect only the
-artifacts of the change. A version still unchanged in the `gradle.lockfile` of the `-backend` module of the
-application means the application silently kept the old one: regenerate. A verification failure on a branch
+Each module that applies `api-convention` or `job-convention` has its own `gradle.lockfile`. Expect only the
+artifacts of the change. A version still unchanged in the `gradle.lockfile` of a module that uses it means that
+module silently kept the old one: regenerate. A verification failure on a branch
 that touched no dependency means an upstream release landed in a version range, and the same command fixes it.
 
 ## 4. Build
