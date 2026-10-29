@@ -84,3 +84,4 @@ double cannot drift from the adapter. Use cases are tested against these doubles
 - [DDD, Hexagonal, Onion, Clean, CQRS, … How I put it all together](https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together/), Herberto Graça
 - [Ready for changes with Hexagonal Architecture](https://netflixtechblog.com/ready-for-changes-with-hexagonal-architecture-b315ec967749), Netflix Technology Blog
 - [Ubiquitous Language](https://martinfowler.com/bliki/UbiquitousLanguage.html), Martin Fowler
+- [Model Mitosis](https://gitlab.com/beyondxscratch/model-mitosis), Julien Topçu and Josian Chevalier, whose ports, such as `Bookings`, name what they hold

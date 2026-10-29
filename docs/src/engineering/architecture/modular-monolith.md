@@ -33,12 +33,17 @@ modules. Read this page before you add a bounded context or make one context use
 
 - **A module is a bounded context**, a package `com.drinkit.<context>`: `cellar`, `bottle`, `user`, `money`,
   `notification`. The same package name runs through the three Gradle modules of the hexagonal architecture, so a
-  context reads as one slice across them. A shared `common` package holds the types every context uses.
+  context reads as one slice across them. A `common` package holds the types the contexts share, such as the base
+  class of the ids.
 - **Its contract** is its business types and its ports. When a context only needs to say that something happened,
   it publishes a [platform event](platform-events.md) that other parts of the application handle asynchronously,
   as the creation of a user triggers the verification email. Events travel inside the process today.
 - **No cycle between contexts**, and `common` depends on none of them. The
   [architecture tests](../writing-code/testing/architecture-tests.md) check it on every build.
+- **A type splits when its contexts stop agreeing on it.** No type has split yet: when a rule holds for one context
+  and not for another, each context gets its own copy of the type, rather than one type serving both.
+  [Model Mitosis](https://gitlab.com/beyondxscratch/model-mitosis), by Julien Topçu and Josian Chevalier, splits a
+  model this way, one commit per step, and is where DrinkIt took its use cases and the names of its ports from.
 - **Extracting a context** would follow its boundaries: its packages become Gradle modules of their own, its
   interfaces get adapters that call the new service, events go through a message broker, and its tables move to a
   database of its own.
@@ -57,3 +62,4 @@ modules. Read this page before you add a bounded context or make one context use
 - [Monolith First](https://martinfowler.com/bliki/MonolithFirst.html), Martin Fowler
 - [Microservice Premium](https://martinfowler.com/bliki/MicroservicePremium.html), Martin Fowler
 - [Strangler Fig Application](https://martinfowler.com/bliki/StranglerFigApplication.html), Martin Fowler
+- [Model Mitosis: dealing with model tensions](https://youtu.be/VO6BSb52K5g), Julien Topçu and Josian Chevalier, DDD Europe 2023
