@@ -62,7 +62,7 @@ Some annotations of `documentation-starter` feed the generated pages, the others
 | `@TechStarterTool` | A class of a tech starter's public API | A line on the page of its starter, which opens with the starter's `README.md` | [Tech starters](../../architecture/tech-starters.md) |
 | `@Command` | The input of a use case that changes the state | Nothing | [CQRS](https://martinfowler.com/bliki/CQRS.html) |
 | `@Query` | The model a query returns, such as `User`, also a domain type and a projection | Nothing | [CQRS](https://martinfowler.com/bliki/CQRS.html) |
-| `@Aggregate` | Each decider of an aggregate (the pure function that picks the event a command appends), and the state it decides from | Nothing | [Event sourcing](../../architecture/event-sourcing.md) |
+| `@Aggregate` | The decision state of an aggregate, and most of its deciders (the pure functions that pick the event a command appends) | Nothing | [Event sourcing](../../architecture/event-sourcing.md) |
 | `@Projection` | A read model folded from events | Nothing | [Event sourcing](../../architecture/event-sourcing.md) |
 | `@FunctionalCore` | Pure code with no I/O, such as a decider | Nothing | [Clean architecture](../../architecture/clean-architecture.md) |
 | `@ImperativeShell` | The code that does the I/O around the core, such as a use case | Nothing | [Clean architecture](../../architecture/clean-architecture.md) |
