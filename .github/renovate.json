@@ -91,6 +91,12 @@
       "rebaseWhen": "behind-base-branch"
     },
     {
+      "description": "The updater image that master publishes from reviewed code: compose gets its new digest at once, and the Ops lane runs it on the changelogs before it merges itself",
+      "matchPackageNames": ["ghcr.io/mboisnard/drinkit-updater"],
+      "minimumReleaseAge": null,
+      "schedule": ["at any time"]
+    },
+    {
       "matchCategories": ["java"],
       "addLabels": ["gradle"]
     },
