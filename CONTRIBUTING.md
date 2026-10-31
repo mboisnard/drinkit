@@ -38,12 +38,9 @@ In IntelliJ, install the detekt plugin: `.idea/detekt.xml` points it at the proj
 editor reports what the build reports.
 
 `./gradlew :drinkit-backend:bootRun` starts the containers of `deployment/local/compose.yml` before the
-application, and leaves them running when it stops. The database starts empty, though: nothing in the
-application creates its schema. On the first run, once PostgreSQL is up, run the updater,
-`UpdaterApplication` in `deployment/updater`, from IntelliJ with the `dev` profile: it applies the Liquibase
-changelogs and exits.
-From a terminal, the `psql` command of the [`database-change` skill](.claude/skills/database-change/SKILL.md)
-does the same.
+application, and leaves them running when it stops. On each start, one of them, the updater, applies the
+Liquibase changelogs and the demo data. Running `DrinkitApplication` from IntelliJ with the `dev` profile does the
+same. [Developer experience](docs/src/engineering/writing-code/best-practices/dev-exp.md) describes the local start.
 
 ## Pull requests
 

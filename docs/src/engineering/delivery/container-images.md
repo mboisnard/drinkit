@@ -13,6 +13,9 @@ changelogs, so a new changelog needs no new image. The updater reads them from t
 where they are mounted, or copied by an image built from this one.
 [ADR 0004](../adr/0004-one-updater-image-for-every-environment.md) records why one image serves every environment.
 
+`deployment/local/compose.yml` pins `latest` by digest and runs it on each start of the backend, with the `db/`
+folder of the checkout mounted. Renovate proposes each new digest as soon as master publishes it.
+
 Gradle and the Dockerfile build it:
 
 1. Gradle's `extractLayers` task splits the jar into Spring Boot's layers, the dependencies apart from the

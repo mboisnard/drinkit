@@ -82,7 +82,7 @@ flowchart LR
 | Frontend | The Nuxt app, the API contract, `.nvmrc` | Generates the API client and builds the app. No linter or test runs on it yet |
 | Hooks | `.hooks/`, `.claude/`, `.nvmrc` | ShellCheck on the git and Claude Code [hooks](../coding-assistants/hooks.md), then the bats suites of the hooks and of the harness files, under dash, `bash --posix` and macOS `sh` |
 | Docs | `docs/`, the tech starter READMEs, every path of Backend, `.nvmrc` | Generates the [living documentation](../writing-code/best-practices/living-documentation.md) and builds the site, which fails on a dead link |
-| Ops | `deployment/local/` | Validates the compose file, pulls its images and starts the services until each one is healthy |
+| Ops | `deployment/local/`, the database changelogs | Validates the compose file, pulls its images and starts the services until each one is healthy, once the updater applied every changelog and the demo data |
 | Renovate | `.github/renovate.json` | Renovate's own validator, in strict mode |
 | Dependencies | Every run on master. On a pull request, a Gradle script or lock file, `gradle/`, a `package.json` or its lock | Submits the Gradle dependency graph, and on a pull request fails on an added dependency with a known vulnerability |
 
@@ -97,6 +97,8 @@ flowchart LR
 - **Ops starts the services**, because Renovate merges a new image digest on its own: the image must exist and
   start. The integration tests do not use these images, [Testcontainers](../writing-code/testing/testcontainers.md)
   starts its own.
+- **Ops watches the changelogs**, because the updater of the compose file applies them before the demo data: a
+  changelog that a demo row no longer fits fails there.
 
 Some jobs are not lanes: `Decision` picks the lanes, `CI gate` sums up their results, `CodeQL` runs with
 Backend, and on master `Deploy docs` publishes the site and `Deploy updater` the updater image.
@@ -168,9 +170,10 @@ digest. Security fixes and undated releases skip the wait, and majors and lock f
 the Dependency Dashboard, as [`renovate.json`][renovate] configures it. The minor and patch updates of GitHub Actions
 and of the Renovate image, and new digests of an image tag, merge themselves once `CI gate` is green: the run of their
 pull request already uses them, except for the tools that only `Deploy updater` uses, which first run on master, as
-[ADR 0004](../adr/0004-one-updater-image-for-every-environment.md) records. Renovate rebases these updates when they
-fall behind master, as the ruleset requires, and the others only on conflict, which keeps the runs within the 20 jobs
-the repository runs at once.
+[ADR 0004](../adr/0004-one-updater-image-for-every-environment.md) records. The updater image of the compose file
+skips the wait and the schedule: master publishes it from reviewed code, and the Ops lane runs the new digest on the
+changelogs. Renovate rebases these updates when they fall behind master, as the ruleset requires, and the others
+only on conflict, which keeps the runs within the 20 jobs the repository runs at once.
 
 ## ⚡ Caches
 
