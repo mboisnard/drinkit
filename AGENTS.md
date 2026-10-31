@@ -50,8 +50,8 @@ directory: never in the tree, never elsewhere on the machine.
   (`@JsonProperty`, `@JsonTypeInfo`…) stay in `com.fasterxml.jackson.annotation`.
 - A tech starter without an `AutoConfiguration.imports` file is wired by component scan, often with a profile of
   `spring.profiles.include`. Copy its tests, never its wiring: a new or migrated one follows `new-backend-tech-starter`.
-- Nothing in the application creates the database schema: on a new database, apply the changelogs as
-  `database-change` says before using the app.
+- The backend never applies the changelogs: the updater that compose runs at each `bootRun` does. A changelog
+  reaches the local database at the next start, or earlier with the commands of `database-change`.
 - detekt fails the build on any finding, formatting included. Fix the code, never add to
   `code-analysis/detekt/baseline.xml`.
 - The architecture tests fail the build on any broken rule. Fix the code, or tolerate the violation in the rule's

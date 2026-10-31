@@ -33,9 +33,8 @@ an existing one: `deployment/local/compose.yml` keeps its data in a volume.
 
 ## 2. Apply it twice
 
-From the root, with Docker, these commands apply every changelog in the order Liquibase runs them. They are also
-the first-run step of a new database. Run them, then run them a second time: an error on the second run means a
-statement is not idempotent, so fix it before going on.
+From the root, with Docker, these commands apply every changelog in the order Liquibase runs them. Run them, then
+run them a second time: an error on the second run means a statement is not idempotent, so fix it before going on.
 
 ```
 docker compose -f deployment/local/compose.yml up -d postgresql
