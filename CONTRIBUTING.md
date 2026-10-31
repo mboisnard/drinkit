@@ -1,28 +1,9 @@
 # Contributing to DrinkIt
 
 Every change goes through an issue and a pull request, whether a person or a coding agent writes it, and a
-person reads both. This guide says how to set up the project and how to write them. [AGENTS.md](AGENTS.md)
+person reads both. This guide says how to run DrinkIt locally, then how to propose a change. [AGENTS.md](AGENTS.md)
 holds the build commands, the git rules and which skill to read before each kind of change, for people as much as
 for agents.
-
-## Issues
-
-"New issue" offers three forms:
-
-- **Work item**: planned work, with a goal, its context and acceptance criteria.
-- **Epic**: a theme of work whose scope items become sub-issues.
-- **Bug**: something that does not work as it should.
-
-An issue is ready to pick up when its Status in the
-[DrinkIt Roadmap](https://github.com/users/mboisnard/projects/2) project is Ready, which means no
-`blocked by` link is still open.
-
-Labels:
-
-- `epic` for a theme of work, set by the Epic form, and `bug`, set by the Bug form.
-- `kind:feature` for a product capability, `kind:tech` for technical or tooling work, `kind:spike` for
-  time-boxed research that ends with a decision.
-- `area:*` for the part of the project, such as `area:backend`, `area:build` or `area:harness`.
 
 ## Setup
 
@@ -37,17 +18,58 @@ git config blame.ignoreRevsFile .git-blame-ignore-revs     # skip the reformatti
 In IntelliJ, install the detekt plugin: `.idea/detekt.xml` points it at the project's configuration, so the
 editor reports what the build reports.
 
-`./gradlew :drinkit-backend:bootRun` starts the containers of `deployment/local/compose.yml` before the
-application, and leaves them running when it stops. On each start, one of them, the updater, applies the
-Liquibase changelogs and the demo data. Running `DrinkitApplication` from IntelliJ with the `dev` profile does the
-same. [Developer experience](docs/src/engineering/writing-code/best-practices/dev-exp.md) describes the local start.
+## Running the applications
 
-## Pull requests
+[Developer experience](docs/src/engineering/writing-code/best-practices/dev-exp.md) describes the local start and
+gives the account to log in with.
 
-Branch names, commit subjects, the pull request title, how a pull request links its issue and how it gets
-merged are in [AGENTS.md](AGENTS.md#git-and-pull-requests). The template prefills the body.
+### Backend
 
-## Writing issues, pull requests and comments
+```
+./gradlew :drinkit-backend:bootRun     # http://localhost:8080/drinkit
+```
+
+It starts the containers of `deployment/local/compose.yml` first, and leaves them running when it stops. On each
+start, one of them, the updater, applies the Liquibase changelogs and the demo data. Running `DrinkitApplication`
+from IntelliJ with the `dev` profile does the same.
+
+### Frontend
+
+From `drinkit/drinkit-frontend`, with `java` on the `PATH` for the client generation:
+
+```
+npm ci
+npm run generate:client-api     # the TypeScript client of the API contract
+npm run dev                     # http://localhost:3000
+```
+
+## Proposing a change
+
+1. Pick an issue whose Status is Ready in the [DrinkIt Roadmap](https://github.com/users/mboisnard/projects/2)
+   project, or open one.
+2. Work on a branch named after it, with commits in the format of
+   [AGENTS.md](AGENTS.md#git-and-pull-requests).
+3. Open a pull request from the template, linked to its issue. CI runs on it, and `CI gate` must be green.
+4. The maintainer reviews it and merges it by rebase.
+
+### Issues
+
+"New issue" offers three forms:
+
+- **Work item**: planned work, with a goal, its context and acceptance criteria.
+- **Epic**: a theme of work whose scope items become sub-issues.
+- **Bug**: something that does not work as it should.
+
+An issue is ready to pick up when its Status is Ready, which means no `blocked by` link is still open.
+
+Labels:
+
+- `epic` for a theme of work, set by the Epic form, and `bug`, set by the Bug form.
+- `kind:feature` for a product capability, `kind:tech` for technical or tooling work, `kind:spike` for
+  time-boxed research that ends with a decision.
+- `area:*` for the part of the project, such as `area:backend`, `area:build` or `area:harness`.
+
+### Writing issues, pull requests and comments
 
 The reader is a person who may stop after two lines. That holds for text an agent writes too.
 
@@ -68,7 +90,7 @@ drafted: no placeholder, no restated instruction, no comment on the text itself.
 Pages of the documentation site and READMEs follow these rules too, and those of the
 [`documentation-change` skill](.claude/skills/documentation-change/SKILL.md).
 
-## AI-assisted contributions
+### AI-assisted contributions
 
 Coding agents are welcome, and most of this project is written with them. Whoever opens an issue or a pull
 request has reviewed every line of it, the code included, and answers for it as if they had typed it. The
