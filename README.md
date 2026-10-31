@@ -58,12 +58,15 @@ Links and tools to look at later are on the [ideas page](docs/src/engineering/id
 
 ## Quick start
 
-[CONTRIBUTING.md](CONTRIBUTING.md#setup) lists what it needs. The backend starts its own containers, but on
-the first run the database has no schema yet: run the updater once, as the same section explains.
+[CONTRIBUTING.md](CONTRIBUTING.md#setup) lists what it needs. One command starts the containers, applies the
+database changelogs and the demo data, then starts the API:
 
 ```
 ./gradlew :drinkit-backend:bootRun     # starts deployment/local/compose.yml, then the API
 ```
+
+[Developer experience](docs/src/engineering/writing-code/best-practices/dev-exp.md) describes the local start
+and gives the account to log in with.
 
 - API: `http://localhost:8080/drinkit/api/cellars`
 - OpenAPI documentation: `http://localhost:8080/drinkit/openapi/ui` (admin role)

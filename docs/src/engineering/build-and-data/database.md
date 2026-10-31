@@ -22,6 +22,9 @@ schema, while only the updater's role can. Locally, both use the `drinkit` role 
 changelog runs with the updater's rights, so it could widen any access: it never changes roles, privileges or
 server settings, which belong to whoever runs the database.
 
+Locally, the updater runs on each start of the backend, so a changelog you write or pull reaches your database at
+the next start. [Developer experience](../writing-code/best-practices/dev-exp.md) describes the local start.
+
 [ADR 0004](../adr/0004-one-updater-image-for-every-environment.md) records why the updater runs
 from one [container image](../delivery/container-images.md) in every environment.
 [ADR 0002](../adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) records why the changelogs are organized
