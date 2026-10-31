@@ -56,6 +56,7 @@ hooks: &hooks
 ops: &ops
   - *workflows
   - 'deployment/local/**'
+  - 'deployment/updater/src/main/resources/db/**' # compose's updater applies them, with the demo data
 
 renovate: &renovate
   - *workflows
