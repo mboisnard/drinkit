@@ -3,6 +3,11 @@ spring.docker.compose:
   file: ${ROOT_FOLDER:}deployment/local/compose.yml
   skip.in-tests: true
   enabled: true
+  # Compose runs on every start, even with the services up, so that the updater applies each new changelog. Within
+  # 2 minutes: a lock left by a killed updater would otherwise hold the start for Liquibase's 5
+  start:
+    skip: never
+    arguments: --wait-timeout=120
 
 email.sender.enabled: false
 
