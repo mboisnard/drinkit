@@ -21,6 +21,36 @@ services:
       retries: 10
       start_period: 30s
 
+  # Applies the changelogs of deployment/updater, then its demo data, each time compose starts. Local only: a
+  # deployment runs the default changelog, never the demo one, whose admin has a public password
+  updater:
+    image: ghcr.io/mboisnard/drinkit-updater:latest@sha256:839cfa2acbb037f42d0c03b9da897ffd67b0dddcc03d057edcec948c43cc4a56
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    volumes:
+      - ../updater/src/main/resources/db:/workspace/db:ro,z
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/drinkit
+      SPRING_DATASOURCE_USERNAME: drinkit
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_LIQUIBASE_CHANGE_LOG: classpath:db/demo/db.changelog-demo.yml
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  # `up --wait` counts the running updater as ready and returns before it ends: this service starts only once the
+  # updater succeeded, so that compose, and the backend after it, wait for the changelogs
+  updater-done:
+    image: registry.k8s.io/pause:3.10.2@sha256:f548e0e8e3dc1896ca956272154dde3314e8cc4fde0a57577ee9fa1c63f5baf4
+    depends_on:
+      updater:
+        condition: service_completed_successfully
+
   meilisearch:
     image: getmeili/meilisearch:v1.55.0@sha256:ff546679970126f8822e15d1b6a06bfbff1f2ce2e43f810cfb5258012f92de5c
     ports:

@@ -1,0 +1,7 @@
+# The changelog that compose applies: the one of every environment, then the demo data of this folder
+databaseChangeLog:
+  - include:
+      file: classpath:/db/changelog/db.changelog-master.yml
+  - includeAll:
+      path: classpath:/db/demo/
+      endsWithFilter: .sql
