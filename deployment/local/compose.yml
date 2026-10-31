@@ -20,6 +20,8 @@ services:
       timeout: 3s
       retries: 10
       start_period: 30s
+      # Probes every second until healthy: without it, Docker Engine 25+ waits 5 s before the first probe
+      start_interval: 1s
 
   # Applies the changelogs of deployment/updater, then its demo data, each time compose starts. Local only: a
   # deployment runs the default changelog, never the demo one, whose admin has a public password
@@ -67,6 +69,7 @@ services:
       timeout: 3s
       retries: 10
       start_period: 30s
+      start_interval: 1s
 
   flipt:
     image: flipt/flipt:v2.14.0@sha256:cb79f6359dcf9b2b9d605b9d998f71793d17125ed8cf8b5a3d9daa928df3ee89
@@ -80,3 +83,4 @@ services:
       timeout: 3s
       retries: 10
       start_period: 30s
+      start_interval: 1s
