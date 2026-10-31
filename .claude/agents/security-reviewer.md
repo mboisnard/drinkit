@@ -98,7 +98,8 @@ not", beyond what an existing operation already tells, such as a 409 on registra
 
 **Secrets.** No key, token, password or certificate in code, configuration, tests, fixtures or logs, in any
 commit of the branch. The values of `application-dev.yml` and `deployment/local/compose.yml` are local container
-defaults; anything else comes from an environment variable with a placeholder, as the OCR starter's
+defaults, like the other local values that `docs/src/engineering/writing-code/best-practices/dev-exp.md` lists;
+anything else comes from an environment variable with a placeholder, as the OCR starter's
 `application-ocr.yml` does. GitHub push protection only knows the common formats: you catch the rest.
 
 **Personal data in logs.** An email, a name, a birth date, a password, a token or a session id is never logged at
