@@ -1,0 +1,12 @@
+spring:
+  mail:
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+          # In milliseconds: JavaMail waits forever by default, holding the thread of the handler that sends
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000

@@ -1,9 +1,11 @@
 package com.drinkit.mail
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.drinkit.utils.isEmail
 
+@TechStarterTool
 data class Email(
-    val sender: Sender,
+    val sender: Sender? = null,
     val recipients: Recipients,
     val subject: Subject,
     val content: Content,
@@ -12,12 +14,14 @@ data class Email(
     val hasAttachments: Boolean = !attachments.isEmpty
 }
 
+@TechStarterTool
 data class Sender(val value: String) {
     init {
         require(value.isEmail())
     }
 }
 
+@TechStarterTool
 data class Recipients(val values: Set<Recipient>) {
     init {
         require(values.isNotEmpty())
@@ -32,8 +36,10 @@ data class Recipients(val values: Set<Recipient>) {
     }
 }
 
+@TechStarterTool
 data class Subject(val value: String)
 
+@TechStarterTool
 data class Content(val format: TextFormat, val value: String) {
     val isHtmlFormat: Boolean = format == TextFormat.HTML
 
@@ -43,6 +49,7 @@ data class Content(val format: TextFormat, val value: String) {
     }
 }
 
+@TechStarterTool
 data class Attachments(val values: Set<Attachment>) {
     val isEmpty: Boolean = values.isEmpty()
 

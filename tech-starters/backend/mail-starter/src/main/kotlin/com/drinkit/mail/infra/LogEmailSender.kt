@@ -3,18 +3,17 @@ package com.drinkit.mail.infra
 import com.drinkit.mail.Email
 import com.drinkit.mail.EmailSender
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Profile
-import org.springframework.stereotype.Service
 
-@Service
-@Profile("dev")
-@ConditionalOnProperty(name = ["email.sender.enabled"], havingValue = "false")
+// The email holds its recipients and, for a verification, its code: only a developer's machine logs it, at DEBUG
 internal class LogEmailSender : EmailSender {
 
     private val logger = KotlinLogging.logger { }
 
+    init {
+        logger.warn { "Emails are written to the logs and never sent: select the SMTP sender outside development" }
+    }
+
     override fun send(email: Email) {
-        logger.info { "Log email sender: $email" }
+        logger.debug { "Log email sender: $email" }
     }
 }
