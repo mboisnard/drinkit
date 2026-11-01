@@ -18,8 +18,8 @@ OpenAPI page, which requires that role, opens. With its password public, it must
 
 ## Decision
 
-The demo data sits in the updater, beside the changelogs, in `src/main/resources/db/demo/`. Compose runs its
-`db.changelog-demo.yml`, which includes the changelog of every environment, then the SQL files of that folder.
+The demo data sits with the changelogs, in their `demo/` folder. Compose runs `db.changelog-demo.yml`, beside the
+master changelog, which includes the changelog of every environment, then the SQL files of `demo/`.
 Those files insert the rows that the API would write: the events of `demo@drinkit.test` from its registration to
 its promotion as admin, its projection, and a cellar, with fixed ids and `ON CONFLICT DO NOTHING`. The demo
 changesets carry no Liquibase context or label: deployments run the changelog of every environment, which does not
@@ -31,7 +31,7 @@ local values, the page the security reviewer reads.
 ## How it is checked
 
 The Ops lane starts compose on every change to `deployment/local` or to the updater's `db/` folder, so a demo row
-that the schema refuses fails it. Squawk and `ChangelogConventionsTest` read `db/changelog/` only.
+that the schema refuses fails it. Squawk and `ChangelogConventionsTest` check the demo files like every changelog.
 
 ## Consequences
 
@@ -40,8 +40,8 @@ that the schema refuses fails it. Squawk and `ChangelogConventionsTest` read `db
   the demo files by hand: the Ops lane catches a row the schema refuses, not a payload the backend no longer reads.
 - A demo file that changes runs again, but `ON CONFLICT DO NOTHING` keeps the rows already there: a changed row
   reaches a local database once it is recreated.
-- All the SQL lives in the updater. The image that a deployment builds copies `db/changelog/`, not the whole `db/`,
-  or it would carry the demo password, even though nothing there runs it.
+- All the SQL lives with the changelogs. The image that a deployment builds copies the folders that the master
+  changelog runs, never `demo/`, or it would carry the demo password, even though nothing there runs it.
 - Whoever reaches a developer's port 8080, from the same network too, can log in as an admin of that local
   database.
 
@@ -54,3 +54,5 @@ that the schema refuses fails it. Squawk and `ChangelogConventionsTest` read `db
 - A dump restored into the volume: the whole database at once, but every changelog change would mean a new dump.
 - The demo files under `deployment/local`, mounted apart from the changelogs: nothing of the demo in the updater,
   but the SQL of the database in two places.
+- The demo files in `db/demo/`, beside `db/changelog/`: apart from the changelogs, but neither Squawk nor the
+  convention tests read them.

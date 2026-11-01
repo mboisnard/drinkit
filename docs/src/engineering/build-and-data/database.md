@@ -30,16 +30,20 @@ from one [container image](../delivery/container-images.md) in every environment
 [ADR 0002](../adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) records why the changelogs are organized
 as below.
 
-### Three folders
+### Folders
 
-The changelogs live in `deployment/updater/src/main/resources/db/changelog/`. `db.changelog-master.yml` runs three
-folders, always in this order, and the `.sql` files of a folder in the order of their names:
+The changelogs live in `deployment/updater/src/main/resources/db/changelog/`. `db.changelog-master.yml` runs the
+folders below, always in this order, and the `.sql` files of a folder in the order of their names:
 
 | Folder | What goes there | When a file runs |
 |---|---|---|
 | `base/` | The schema as it stands: schemas, tables with their constraints, indexes, comments | Every time its content changes |
 | `ddl/` | A change to the schema made after the base: a new column, an index, a constraint, a type change, a drop | Once |
 | `dml/` | A change to the data: reference rows, a backfill, a fix | Once, after every `ddl/` file |
+
+The demo data of a local start sits with the changelogs, in a folder that no deployment runs, and the
+[checked rules](#checked-rules) apply to it too. [ADR 0005](../adr/0005-demo-data-from-a-local-only-changelog.md)
+records why.
 
 An empty `ddl/` or `dml/` holds a `.gitkeep`, since git keeps no empty folder: the folder shows where the first
 change goes.
@@ -361,7 +365,7 @@ apply, as the examples of [Foreign keys](#foreign-keys) show.
 | `no-do-block` | No `DO` block | Squawk does not read the statements inside one |
 | `timeouts-first` | `SET lock_timeout` and `SET statement_timeout` before any other statement | A statement that waits for its lock, or runs too long, fails instead of blocking the queries behind it |
 | `squawk-ignore-reason` | Each Squawk directive on a line of its own, right below a `-- <reason>` comment | Every tolerated violation says why. Squawk also obeys a directive buried in a longer comment, where nobody would see it |
-| `known-folder` | Every file directly in `base/`, `ddl/` or `dml/` | Liquibase runs the three folders in that order, and a file in a subfolder would run where its path sorts |
+| `known-folder` | Every file directly in a folder that a changelog runs | Liquibase runs each folder in its order, and a file in a subfolder would run where its path sorts |
 | `base-runs-on-change` | `runOnChange:true` in `base/` | Without it, Liquibase refuses an edited or rebaselined `base/` file, whose checksum changed |
 | `base-creates-only` | Only `SET`, `CREATE ... IF NOT EXISTS`, `CREATE INDEX CONCURRENTLY IF NOT EXISTS` and `COMMENT ON` in `base/` | `base/` runs again on existing databases, where it must change nothing and block no read or write |
 | `base-file-name` | A name such as `01-initial-schema.sql` | The level orders the files of `base/` |
