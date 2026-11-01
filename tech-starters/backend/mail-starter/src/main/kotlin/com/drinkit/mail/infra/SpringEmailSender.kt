@@ -2,26 +2,24 @@ package com.drinkit.mail.infra
 
 import com.drinkit.mail.Email
 import com.drinkit.mail.EmailSender
+import com.drinkit.mail.Sender
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.mail.MailException
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
-import org.springframework.stereotype.Service
 
-@Service
-@ConditionalOnProperty(name = ["email.sender.enabled"], havingValue = "true")
-internal class SpringEmailSender(private val emailSender: JavaMailSender) : EmailSender {
+internal class SpringEmailSender(private val emailSender: JavaMailSender?, private val from: Sender) : EmailSender {
 
     private val logger = KotlinLogging.logger { }
 
+    // The email and the message of a failure hold the recipients and, for a verification, its code
     override fun send(email: Email) {
-        logger.debug { "Sending email $email" }
+        val emailSender = emailSender ?: return logger.error { "No mail server configured, an email was not sent" }
 
         val message = emailSender.createMimeMessage()
         val helper = MimeMessageHelper(message, true)
 
-        helper.setFrom(email.sender.value)
+        helper.setFrom((email.sender ?: from).value)
         helper.setTo(email.recipients.allAsString().toTypedArray())
         helper.setSubject(email.subject.value)
         helper.setText(email.content.value, email.content.isHtmlFormat)
@@ -37,9 +35,8 @@ internal class SpringEmailSender(private val emailSender: JavaMailSender) : Emai
 
         try {
             emailSender.send(message)
-            logger.debug { "Email sent to ${email.recipients}, $message" }
         } catch (ex: MailException) {
-            logger.error(ex) { "Error while sending email $email" }
+            logger.error { "Sending an email failed with ${ex.javaClass.simpleName}" }
         }
     }
 }

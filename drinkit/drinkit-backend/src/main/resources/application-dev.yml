@@ -9,8 +9,6 @@ spring.docker.compose:
     skip: never
     arguments: --wait-timeout=120
 
-email.sender.enabled: false
-
 springdoc:
   api-docs.enabled: true
   swagger-ui.enabled: true
@@ -27,8 +25,12 @@ spring:
 
 logging.level:
     org.springframework.security: DEBUG
+    # The logging sender of mail-starter writes each email, verification code included, at DEBUG only
+    com.drinkit.mail.infra.LogEmailSender: DEBUG
 
 starters:
+  mail:
+    sender: logging
   feature-flags:
     flipt:
       url: http://localhost:8082
