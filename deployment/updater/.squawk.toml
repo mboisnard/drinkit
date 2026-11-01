@@ -5,7 +5,8 @@
 
 pg_version = "18.0"
 
-# Every migration runs outside a transaction: runInTransaction:false, checked by ChangelogConventionsTest
+# Schema migrations run outside a transaction, data migrations inside one, as ChangelogConventionsTest checks. With
+# this one setting, Squawk accepts a BEGIN and COMMIT pair in a data file, which would cut that transaction
 assume_in_transaction = false
 
 included_rules = [

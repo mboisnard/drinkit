@@ -16,6 +16,7 @@ internal class ChangelogConventionsTest {
     private val baseMigrations = liquibaseMigrations.filter { it.folder == BASE }
     private val ddlMigrations = liquibaseMigrations.filter { it.folder == DDL }
     private val dmlMigrations = liquibaseMigrations.filter { it.folder == DML }
+    private val demoMigrations = liquibaseMigrations.filter { it.folder == DEMO }
 
     @Test
     fun `the migrations are found`() {
@@ -64,9 +65,9 @@ internal class ChangelogConventionsTest {
     }
 
     @Test
-    fun `every migration runs its statements outside a transaction`() {
+    fun `every schema migration runs its statements outside a transaction`() {
         // When
-        val transactional = liquibaseMigrations.filter { migration ->
+        val transactional = (baseMigrations + ddlMigrations).filter { migration ->
             migration.changeSets.any { it.isRunInTransaction }
         }
 
@@ -75,6 +76,23 @@ internal class ChangelogConventionsTest {
             "no-transaction",
             why = "each statement then holds its locks alone, and `CONCURRENTLY` can run",
             fix = "add `runInTransaction:false` to the changeset",
+        )
+    }
+
+    @Test
+    fun `every data migration runs in one transaction, or says why not`() {
+        // When
+        val outside = (dmlMigrations + demoMigrations).filter { migration ->
+            migration.changeSets.any { !it.isRunInTransaction } &&
+                migration.lines.none { it.givesWhyOutsideATransaction() }
+        }
+
+        // Then
+        outside shouldBreak rule(
+            "data-in-transaction",
+            why = "all the rows of the file land, or none",
+            fix = "remove `runInTransaction:false`, or, for a backfill in batches, give the reason on a line " +
+                "`$OUTSIDE_A_TRANSACTION <reason>`",
         )
     }
 
@@ -299,9 +317,13 @@ internal class ChangelogConventionsTest {
     // `--changeset` and the other Liquibase directives have no space after the dashes
     private fun String.isReason() = trim().startsWith("-- ") && SQUAWK_DIRECTIVE !in this
 
+    private fun String.givesWhyOutsideATransaction() =
+        trim().startsWith(OUTSIDE_A_TRANSACTION) && trim().removePrefix(OUTSIDE_A_TRANSACTION).isNotBlank()
+
     companion object {
         private val FOLDERS = listOf(BASE, DDL, DML, DEMO)
         private val RUN_ONCE_FOLDERS = listOf(DDL, DML)
+        private const val OUTSIDE_A_TRANSACTION = "-- Outside a transaction:"
         private val TIMEOUTS = listOf("LOCK_TIMEOUT", "STATEMENT_TIMEOUT")
         private val BASE_FILE_NAME = Regex("""\d{2}-[a-z0-9-]+\.sql""")
         private val NUMBERED_FILE_NAME = Regex("""\d{4}-[a-z0-9-]+\.sql""")
