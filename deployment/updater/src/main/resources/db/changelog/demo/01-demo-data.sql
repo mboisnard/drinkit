@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset demo:01-demo-data logicalFilePath:fixed runInTransaction:false runOnChange:true
+--changeset demo:01-demo-data logicalFilePath:fixed runOnChange:true
 
 -- demo@drinkit.test, password Drinkit-demo1: a verified admin with a cellar, as the API would have written them
 SET lock_timeout = '5s';
