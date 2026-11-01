@@ -4,7 +4,7 @@ The updater applies the database changes of DrinkIt to PostgreSQL, with Liquibas
 
 ## How It Works
 
-`UpdaterApplication` is a Spring Boot application that runs Liquibase once, then stops. Liquibase reads `src/main/resources/db/changelog/db.changelog-master.yml`, which runs three folders, always in this order:
+`UpdaterApplication` is a Spring Boot application that runs Liquibase once, then stops. Liquibase reads `src/main/resources/db/changelog/db.changelog-master.yml`, which runs the folders below, always in this order:
 
 - **`base/`**: the schema, such as schemas, tables and indexes. A file runs again whenever it changes, and only creates what is missing.
 - **`ddl/`**: the schema changes made after the base, one numbered file per change, run once.
@@ -12,7 +12,7 @@ The updater applies the database changes of DrinkIt to PostgreSQL, with Liquibas
 
 Liquibase records each file it runs in `DRINKIT_DATABASECHANGELOG`, and skips it the next time.
 
-Beside them, `src/main/resources/db/demo/` holds the demo data that only a local start applies: its `db.changelog-demo.yml` runs the master changelog, then the `.sql` files of that folder. No deployment runs it, and neither Squawk nor the convention tests read it.
+Beside them, `demo/` holds the demo data that only a local start applies: `db.changelog-demo.yml`, beside the master, runs the master changelog, then the `.sql` files of `demo/`. No deployment runs it, and an image built for a deployment leaves it out. Squawk and the convention tests check it like the other folders.
 
 The `Dockerfile` of this folder builds it into an image, which master publishes as `ghcr.io/mboisnard/drinkit-updater`. The image holds no changelog: it reads them from the classpath under `/workspace`, so `db/` mounted at `/workspace/db` gives it the changelogs of your checkout. [Container images](../../docs/src/engineering/delivery/container-images.md) explains how master publishes it.
 
