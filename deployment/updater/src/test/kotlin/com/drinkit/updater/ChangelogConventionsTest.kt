@@ -2,6 +2,7 @@ package com.drinkit.updater
 
 import com.drinkit.updater.Migration.Companion.BASE
 import com.drinkit.updater.Migration.Companion.DDL
+import com.drinkit.updater.Migration.Companion.DEMO
 import com.drinkit.updater.Migration.Companion.DML
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldNotBeEmpty
@@ -138,15 +139,15 @@ internal class ChangelogConventionsTest {
     }
 
     @Test
-    fun `every migration sits directly in base, ddl or dml`() {
+    fun `every migration sits directly in a folder that a changelog runs`() {
         // When
         val elsewhere = migrations.filterNot { it.folder in FOLDERS }
 
         // Then
         elsewhere shouldBreak rule(
             "known-folder",
-            why = "Liquibase runs base/, then ddl/, then dml/, and orders a subfolder by its whole path",
-            fix = "move the file into base/, ddl/ or dml/",
+            why = "Liquibase runs each folder in its order, and orders a subfolder by its whole path",
+            fix = "move the file into one of ${FOLDERS.joinToString { "$it/" }}",
         )
     }
 
@@ -299,7 +300,7 @@ internal class ChangelogConventionsTest {
     private fun String.isReason() = trim().startsWith("-- ") && SQUAWK_DIRECTIVE !in this
 
     companion object {
-        private val FOLDERS = listOf(BASE, DDL, DML)
+        private val FOLDERS = listOf(BASE, DDL, DML, DEMO)
         private val RUN_ONCE_FOLDERS = listOf(DDL, DML)
         private val TIMEOUTS = listOf("LOCK_TIMEOUT", "STATEMENT_TIMEOUT")
         private val BASE_FILE_NAME = Regex("""\d{2}-[a-z0-9-]+\.sql""")
