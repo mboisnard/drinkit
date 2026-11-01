@@ -20,7 +20,7 @@ A new rule is shown failing once, on a violation written for the occasion, befor
 
 ## Tolerated violations
 
-The code written before a rule may break it. Each rule lists those violations in its own `suppress` block, by name, each with the reason it waits: the issue that removes it. A file is named by the path of its package, `*/com/drinkit/user/GenerateVerificationToken.kt`, which holds whatever its module or folder. A name never depends on a line, so editing the file around a violation keeps it tolerated. A name tolerates every violation of its rule by that class or file, not only the one it was written for, and a slice may also hide another cycle through the same packages. Once the violation is fixed, delete its line.
+The code written before a rule may break it. Each rule lists those violations in its own `suppress` block, by name, each with its reason: the issue that removes it, or, for a violation the maintainer keeps on purpose, why it stays. A file is named by the path of its package, `*/com/drinkit/user/GenerateVerificationToken.kt`, which holds whatever its module or folder. A name never depends on a line, so editing the file around a violation keeps it tolerated. A name tolerates every violation of its rule by that class or file, not only the one it was written for, and a slice may also hide another cycle through the same packages. Once the violation is fixed, delete its line.
 
 Konture's own baseline is not used: it records the line of each violation, so a line added above a tolerated one failed the build as a new violation.
 

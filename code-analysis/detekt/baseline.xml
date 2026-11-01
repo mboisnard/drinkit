@@ -36,7 +36,6 @@
     <ID>MaxLineLength:ExchangeRateApiProvider.kt:ExchangeRateApiProvider$"Fetched ${allRates.size} exchange rates from ExchangeRate API across ${baseCurrencies.size} base currencies"</ID>
     <ID>MaxLineLength:JooqConfig.kt:JooqConfig$// Override Dialect here to be sure this tech-starter will work with postgresql and not with a dialect determined by a property</ID>
     <ID>MaxLineLength:JooqPostgresExtension.kt:JooqPostgresExtension$"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$dbName';"</ID>
-    <ID>NestedBlockDepth:PlatformEventHandlerPostProcessor.kt:PlatformEventHandlerPostProcessor$override fun afterSingletonsInstantiated</ID>
     <ID>NullableBooleanCheck:AnnotatedInfo.kt:UseCaseInfo$domain.customName?.let { className.contains(it.replace(" ", ""), ignoreCase = true) } ?: false</ID>
     <ID>ReturnCount:AbstractApi.kt:AbstractApi$fun maybeConnectedUserId: UserId?</ID>
     <ID>ReturnCount:AnnotatedInfo.kt:CoreDomainInfo$fun findAssociatedUseCases: List&lt;UseCaseInfo&gt;</ID>
