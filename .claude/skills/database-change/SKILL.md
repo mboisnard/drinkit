@@ -13,7 +13,7 @@ commands and what proves each step.
 
 ## 1. Write the change
 
-The "Three folders" section of `database.md` says where a change goes, `git ls-files '*/db/changelog/**/*.sql'`
+The "Folders" section of `database.md` says where a change goes, `git ls-files '*/db/changelog/**/*.sql'`
 lists the files, "Schema conventions" gives the schema and the names, and "Writing safe migrations" the
 statements:
 
@@ -38,7 +38,7 @@ run them a second time: an error on the second run means a statement is not idem
 
 ```
 docker compose -f deployment/local/compose.yml up -d postgresql
-find deployment/updater/src/main/resources/db/changelog -name '*.sql' | sort | xargs cat \
+find deployment/updater/src/main/resources/db/changelog -name '*.sql' -not -path '*/demo/*' | sort | xargs cat \
   | docker compose -f deployment/local/compose.yml exec -T postgresql psql -v ON_ERROR_STOP=1 -U drinkit -d drinkit
 ```
 
