@@ -22,7 +22,7 @@ The changelogs live in three folders, which Liquibase runs in this order:
 - `ddl/` holds the later schema changes, one numbered file per change, run once.
 - `dml/` holds the data changes, one numbered file per change, run once, after every `ddl/` file.
 
-Every file runs outside a transaction, its statements split by Liquibase, with no `DO` block, and sets `lock_timeout` and `statement_timeout` first. A `ddl/` file drops an index right before it builds it, so that an interrupted build is not kept as an invalid index.
+A schema file runs outside a transaction, and a data file inside one, unless a backfill in batches says why not. Every file has its statements split by Liquibase, with no `DO` block, and sets `lock_timeout` and `statement_timeout` first. A `ddl/` file drops an index right before it builds it, so that an interrupted build is not kept as an invalid index.
 
 `./gradlew :updater:check`, part of the build, runs two checks without a database. `ChangelogConventionsTest` reads the files with Liquibase's own parser for the rules of each folder. Squawk lints the SQL, with `.squawk.toml` listing each of its rules on or off: Gradle downloads its binary for the platform from Squawk's GitHub releases, checked against its checksum. An exception to a rule stands in its file, below its reason. A CI lane of its own, Updater, runs the same command.
 
