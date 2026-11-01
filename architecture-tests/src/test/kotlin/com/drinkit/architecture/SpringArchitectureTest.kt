@@ -123,7 +123,6 @@ internal class SpringArchitectureTest {
                 classFqName("com.drinkit.postgresql.jooq.JooqConfig", DATA_STARTERS)
                 classFqName("com.drinkit.search.engine.MeilisearchConfig", DATA_STARTERS)
                 classFqName("com.drinkit.security.SecurityConfig", WEB_STARTERS)
-                classFqName("com.drinkit.messaging.springevents.SpringEventsConfig", MESSAGING_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.FeatureFlagsConfig", OPS_STARTERS)
             }
             classes {

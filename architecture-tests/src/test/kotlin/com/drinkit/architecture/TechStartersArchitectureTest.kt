@@ -61,7 +61,7 @@ internal class TechStartersArchitectureTest {
                 classFqName("com.drinkit.mail.Subject", MESSAGING_STARTERS)
                 classFqName("com.drinkit.mail.Content", MESSAGING_STARTERS)
                 classFqName("com.drinkit.mail.Attachments", MESSAGING_STARTERS)
-                classFqName("com.drinkit.messaging.events.SendSseEvent", MESSAGING_STARTERS)
+                classFqName("com.drinkit.messaging.events.SendSseEvent", NOT_A_TOOL)
                 classFqName("com.drinkit.featureflags.FeatureFlagContext", OPS_STARTERS)
                 classFqName("com.drinkit.ocr.OCRResponse", OPS_STARTERS)
                 classFqName("com.drinkit.documentation.cqrs.Command", LIBRARY_STARTERS)
@@ -113,9 +113,6 @@ internal class TechStartersArchitectureTest {
                 classFqName("com.drinkit.webclient.rest.RestClientRetryConfiguration", WEB_STARTERS)
                 classFqName("com.drinkit.mail.infra.LogEmailSender", MESSAGING_STARTERS)
                 classFqName("com.drinkit.mail.infra.SpringEmailSender", MESSAGING_STARTERS)
-                classFqName("com.drinkit.messaging.springevents.SpringEventsPublisherPlatform", MESSAGING_STARTERS)
-                classFqName("com.drinkit.messaging.springevents.PlatformEventHandlerPostProcessor", MESSAGING_STARTERS)
-                classFqName("com.drinkit.messaging.springevents.SpringEventsConfig", MESSAGING_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.FeatureFlagsConfig", OPS_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.OpenFeatureFeatureFlags", OPS_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.OpenFeatureHealthIndicator", OPS_STARTERS)
@@ -158,10 +155,6 @@ internal class TechStartersArchitectureTest {
                 function(
                     "com.drinkit.webclient.rest.RestClientRetryConfiguration.retryingHttpServiceGroupConfigurer",
                     WEB_STARTERS,
-                )
-                function(
-                    "com.drinkit.messaging.springevents.SpringEventsConfig.applicationEventMulticaster",
-                    MESSAGING_STARTERS,
                 )
                 function("com.drinkit.featureflags.infra.FeatureFlagsConfig.openFeatureAPI", OPS_STARTERS)
                 function("com.drinkit.featureflags.infra.FeatureFlagsConfig.featureFlagFilter", OPS_STARTERS)

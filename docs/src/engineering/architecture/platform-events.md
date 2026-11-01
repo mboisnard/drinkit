@@ -41,20 +41,45 @@ what a use case published. The attributes of the annotation ask a broker for:
 - **`exchange`**: the exchange that the event is published to, and that the handler's queue is bound to.
 - **`oneQueuePerInstance`**: a queue per instance, so that every instance gets every event. It serves what lives in
   the memory of one instance, such as the browser connection that a server-sent event must reach.
-- **`delay`**, not built yet: handle the event after a delay.
+- **`delay`**: the time in milliseconds to wait before the first delivery to the handler.
+- **`maxAttempts`**: how many deliveries the handler gets before its event is given up, 3 by default.
 
-Spring events ignore these attributes today. Every handler still sets its `name`, so that the move to a broker
-changes no handler.
+Spring events honor `delay` and `maxAttempts` today, and ignore the other attributes. Every handler still sets
+its `name`, so that the move to a broker changes no handler.
+
+## 🔁 Retries with an exponential backoff
+
+A handler that fails gets its event again, after a wait that starts at `starters.messaging.retry.delay`, 30 seconds
+by default, and doubles each time, up to one hour, until its `maxAttempts`. The growing wait gives a failing dependency
+time to recover. With `starters.messaging.retry.exponential-backoff` switched off, every retry waits the same delay.
+The rule is the same whatever the transport: with Spring events, the next attempt waits on a thread of its own, and
+RabbitMQ will send the event back to that handler's queue only, so that the other handlers do not get it twice, with
+the attempt number in a header. The handler's `delay` applies to the first delivery only.
+
+```mermaid
+flowchart LR
+  publisher[Publisher] -- "after the commit" --> springEvents{{Spring events}}
+  springEvents -- "after the handler's delay" --> handler[Handler]
+  handler -- "fails, attempts left" --> wait["Waits retry.delay,<br/>then twice as long… up to 1 h"]
+  wait --> handler
+  handler -- "succeeds" --> handled[Handled]
+  handler -- "last attempt fails" --> givenUp[Given up, logged]
+```
 
 ## ⚙️ Today: Spring events in the process
 
-The publisher hands the event to Spring, which calls each handler on a new thread. An exception in a handler is
-logged, and the event is dropped. It keeps the starter simple while one instance runs, with these limits:
+The publisher publishes the event as a Spring application event once the publishing transaction commits, never when
+it rolls back, and at once when there is no transaction. A Spring listener per handler calls it on a virtual thread of
+its own. This keeps the starter simple as long as one instance runs, with these limits:
 
-- an event not handled yet is lost when the application stops
-- a failed handler is never retried
-- a handler can run before the transaction that published the event commits, and miss what that transaction wrote
-  ([#528](https://github.com/mboisnard/drinkit/issues/528))
+- an event still waiting, for its delay or its next attempt, is lost when the application stops
+- the event of a handler that fails every attempt is dropped, after a log line
+- an event published inside a nested transaction that rolls back to its savepoint still goes out when the outer
+  transaction commits. The retry of an [event-sourced](event-sourcing.md) write runs in such a nested transaction:
+  publish once that write has succeeded, never inside it, as the creation of a user does
+
+[#549](https://github.com/mboisnard/drinkit/issues/549) plans to keep these events in the database until a handler
+succeeds.
 
 ## 🐇 Toward RabbitMQ
 
@@ -69,7 +94,7 @@ flowchart LR
   shared -- "each message<br/>to one instance" --> any[Instance A or B]
   exchange --> qa[("Queue of handler 2,<br/>instance A")] --> a[Instance A]
   exchange --> qb[("Queue of handler 2,<br/>instance B")] --> b[Instance B]
-  exchange -. "no delay attribute yet" .-> waiting[("Waiting queue<br/>of handler 3")] -. "expires into" .-> delayed[("Queue of handler 3")]
+  exchange -. "with a delay" .-> waiting[("Waiting queue<br/>of handler 3")] -. "expires into" .-> delayed[("Queue of handler 3")]
   delayed -. "each message<br/>to one instance" .-> any
 ```
 
@@ -81,15 +106,16 @@ flowchart LR
 - **Broadcast to the instances, through a queue per instance.** Each instance binds a queue of its own, which
   expires once the instance is gone. An event published before an instance started never reaches it.
 - **Delayed delivery, through a waiting queue.** Its messages expire after the delay into the handler's queue.
-  Declared as an argument of the waiting queue, the delay changes only with a new queue. It does not combine with a
-  queue per instance: the waiting queue would outlive the instance it feeds.
+  Declared as an argument of the waiting queue, the delay changes only with a new queue. A delay does not combine
+  with a queue per instance, since the waiting queue would outlive the instance it feeds: the starter refuses to
+  start on a handler that sets both.
 
-The starter will publish an event only once its transaction commits, so that no handler sees an event whose
-transaction rolled back. An event can still be lost if the application stops between the commit and the publication:
-a transactional outbox, which stores the event in the same transaction, would close that gap. A failed message will
-come back after a growing delay, which gives a failing dependency time to recover, then wait in a dead-letter queue
-for someone to look at it. Delivery will be at least once, and in no set order. Write events and handlers by these
-rules now, so that the move costs nothing:
+The starter already publishes an event only once its transaction commits, so that no handler sees an event whose
+transaction rolled back. With a broker, an event can still be lost if the application stops between the commit and
+the publication: a transactional outbox, which stores the event in the same transaction, would close that gap. A
+failed message will come back after the same growing delay as today, which gives a failing dependency time to
+recover, then wait in a dead-letter queue for someone to look at it. Delivery will be at least once, and in no set
+order. Write events and handlers by these rules now, so that the move costs nothing:
 
 - **An event is named in the past tense,** such as `UserCreated`: it states a fact, so the publisher depends on none
   of the handlers that react to it.
