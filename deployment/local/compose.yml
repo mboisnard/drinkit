@@ -36,7 +36,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/drinkit
       SPRING_DATASOURCE_USERNAME: drinkit
       SPRING_DATASOURCE_PASSWORD: admin
-      SPRING_LIQUIBASE_CHANGE_LOG: classpath:db/demo/db.changelog-demo.yml
+      SPRING_LIQUIBASE_CHANGE_LOG: classpath:db/changelog/db.changelog-demo.yml
     read_only: true
     tmpfs:
       - /tmp

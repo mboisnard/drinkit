@@ -41,6 +41,7 @@ internal class Migration(private val resource: Resource) {
 
     companion object {
         const val BASE = "base"
+        const val DEMO = "demo"
         const val DDL = "ddl"
         const val DML = "dml"
 
