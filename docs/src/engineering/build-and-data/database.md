@@ -77,21 +77,22 @@ Every file starts the same way:
 
 ```sql
 --liquibase formatted sql
---changeset <author>:0001-add-cellar-description logicalFilePath:fixed runInTransaction:false
+--changeset <author>:0001-add-cellar-description logicalFilePath:fixed
 
 SET lock_timeout = '5s';
 SET statement_timeout = '1min';
 ```
 
 1. The header line. Without it, Liquibase runs the file as plain SQL and ignores every option of its changeset.
-2. The single changeset of the file, named after the file, with the options below: a `base/` file adds
-   `runOnChange:true`. The author is free: the existing files use the maintainer's GitHub login.
+2. The single changeset of the file, named after the file, with the options below: a schema file adds
+   `runInTransaction:false`, and a `base/` file `runOnChange:true` too.
 3. The two timeouts, before the first statement, as [Bounded waits](#bounded-waits) explains.
 
 | Option | Where | Why |
 |---|---|---|
 | `logicalFilePath:fixed` | Every file | Liquibase identifies a changeset by its id, its author and its file path. The literal path `fixed` keeps a moved file from running again. A renamed file changes its id, so it would run again: never rename a file that has run |
-| `runInTransaction:false` | Every file | Each statement commits on its own, so a lock lasts one statement instead of the whole file, and `CREATE INDEX CONCURRENTLY`, which refuses a transaction, can run. A file that fails halfway then runs again from its first statement, which is why every statement is idempotent |
+| `runInTransaction:false` | A schema file | Each statement commits on its own, so a lock lasts one statement instead of the whole file, and `CREATE INDEX CONCURRENTLY`, which refuses a transaction, can run. A file that fails halfway then runs again from its first statement, which is why every statement is idempotent |
+| None: the default transaction | A data file | All the rows of the file land, or none, so a failure leaves no half-written data. A backfill in batches runs outside a transaction instead, so that each batch releases its row locks, and says why on a `-- Outside a transaction: <reason>` line |
 | `runOnChange:true` | `base/` only | The file runs again when its content changes |
 | `splitStatements` | Left to its default, `true` | Liquibase splits the file and sends one statement at a time, the same statements that Squawk, the SQL linter of the [checked rules](#checked-rules), checks. Liquibase's splitter also cuts a `$$` body at an inner `END IF;`, so a `DO` block, which Squawk cannot read anyway, would break |
 
@@ -189,7 +190,7 @@ first, as [Foreign keys](#foreign-keys) shows.
 A plain `CREATE INDEX` or `DROP INDEX` blocks the writes to the table while it runs, minutes on a large table.
 
 - **Build concurrently**, with `CREATE INDEX CONCURRENTLY IF NOT EXISTS`, on a new table too. Squawk accepts a plain
-  build on a new table only inside a transaction, and every file runs outside one. In `base/`, the statement also
+  build on a new table only inside a transaction, and every schema file runs outside one. In `base/`, the statement also
   runs again once the table holds rows.
 - **Drop before you build, in `ddl/`.** A concurrent build that stops halfway, on a timeout or a duplicate value,
   leaves an invalid index behind. When the file runs again, `IF NOT EXISTS` finds that index and skips the build:
@@ -302,8 +303,12 @@ line above, why the data is no longer needed.
 
 - **Idempotent.** Write `INSERT ... ON CONFLICT DO NOTHING`, or an `UPDATE` whose `WHERE` skips the rows already
   done, so that running it again changes nothing.
+- **In one transaction.** A data file runs in the default transaction of its changeset: its rows land together, or
+  none of them, and a failure leaves no half-written data behind.
 - **In batches.** An `UPDATE` of many rows holds the lock of each row until it ends, and leaves as many dead rows to
-  clean. Split a large backfill into several statements, each bounded by a range of ids of a few thousand rows.
+  clean. Split a large backfill into several statements, each bounded by a range of ids of a few thousand rows. Such
+  a file runs outside a transaction, or the batches would keep every lock until the last one: add
+  `runInTransaction:false` and a `-- Outside a transaction: <reason>` line.
 
 ## 🔍 Checked rules
 
@@ -360,7 +365,8 @@ apply, as the examples of [Foreign keys](#foreign-keys) show.
 | `formatted-sql-header` | The first line is `--liquibase formatted sql` | Without it, Liquibase runs the file as plain SQL and ignores its options |
 | `one-changeset-per-file` | One changeset, whose id is the file name without `.sql` | Liquibase records a run per changeset: with one per file, the file name tells which change a database has received |
 | `fixed-logical-file-path` | `logicalFilePath:fixed` | A moved file would run again |
-| `no-transaction` | `runInTransaction:false` | Each statement holds its locks alone, and `CONCURRENTLY` can run |
+| `no-transaction` | `runInTransaction:false` in a schema file | Each statement holds its locks alone, and `CONCURRENTLY` can run |
+| `data-in-transaction` | No `runInTransaction:false` in a data file, unless a `-- Outside a transaction: <reason>` line says why | All the rows of a file land, or none |
 | `split-statements` | No `splitStatements:false` | Liquibase and Squawk see the same statements |
 | `no-do-block` | No `DO` block | Squawk does not read the statements inside one |
 | `timeouts-first` | `SET lock_timeout` and `SET statement_timeout` before any other statement | A statement that waits for its lock, or runs too long, fails instead of blocking the queries behind it |
@@ -434,6 +440,10 @@ Neither check starts a database, so a few rules wait for a test against PostgreS
 ([#502](https://github.com/mboisnard/drinkit/issues/502)): a primary key on each table, an index behind each foreign
 key, no invalid index left behind, names without hyphens, the same schema for a new and an existing database after a
 rebaseline, and no read or write blocked when `base/` runs again.
+
+Squawk reads every file as if it ran outside a transaction, the data files too. It accepts a `BEGIN` and `COMMIT`
+pair in a data file, which would cut the transaction that Liquibase opens around that file: `dml-changes-no-schema`
+refuses one in `dml/`, but nothing refuses one in the demo data.
 
 ## ⚙️ jOOQ code generation
 
