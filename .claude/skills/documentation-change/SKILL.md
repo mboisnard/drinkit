@@ -103,6 +103,11 @@ in turn buries the reasons: give the shape in a sentence and link the code. A re
 item, as the convention tables of `build-tool.md` do. When a rewrite comes out longer than the page it replaces,
 the added words carry reasons, never more detail nor a lesson.
 
+Name a set by what its members share, never by counting or listing them when the code defines the set: "the
+folders a changelog runs", not "four folders: `base/`, `ddl/`, `dml/` and `demo/`". The next member added to the
+code would make the count and the list wrong, and nothing would warn the page. The members themselves get a line
+each only in a reference table, where each one carries a rule of its own.
+
 ## 5. Write it plainly
 
 [style.md](style.md) holds the rules of sentences, words, headings, links, lists and punctuation, and the tics of
