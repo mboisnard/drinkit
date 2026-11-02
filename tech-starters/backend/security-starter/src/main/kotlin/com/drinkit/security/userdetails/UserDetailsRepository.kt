@@ -1,6 +1,6 @@
 package com.drinkit.security.userdetails
 
-import com.drinkit.postgresql.jooq.JooqRepository
+import com.drinkit.postgresql.JooqRepository
 import com.drinkit.security.generated.jooq.tables.User.Companion.USER
 import com.drinkit.security.generated.jooq.tables.records.UserRecord
 import org.jooq.DSLContext

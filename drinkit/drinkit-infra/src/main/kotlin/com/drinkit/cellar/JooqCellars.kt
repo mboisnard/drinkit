@@ -9,9 +9,9 @@ import com.drinkit.cellar.spi.Cellars
 import com.drinkit.common.CityLocation
 import com.drinkit.generated.jooq.tables.records.CellarRecord
 import com.drinkit.generated.jooq.tables.references.CELLAR
-import com.drinkit.postgresql.jooq.JSONBToJacksonConverter
-import com.drinkit.postgresql.jooq.JooqRepository
-import com.drinkit.postgresql.jooq.fetchSequence
+import com.drinkit.postgresql.JSONBToJacksonConverter
+import com.drinkit.postgresql.JooqRepository
+import com.drinkit.postgresql.fetchSequence
 import com.drinkit.user.core.UserId
 import org.jooq.DSLContext
 import tools.jackson.databind.json.JsonMapper

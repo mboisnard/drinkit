@@ -2,7 +2,7 @@ package com.drinkit.user
 
 import com.drinkit.generated.jooq.tables.User.Companion.USER
 import com.drinkit.generated.jooq.tables.records.UserRecord
-import com.drinkit.postgresql.jooq.JooqRepository
+import com.drinkit.postgresql.JooqRepository
 import com.drinkit.user.core.BirthDate
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.EncodedPassword
