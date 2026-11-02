@@ -54,7 +54,7 @@ services:
         condition: service_completed_successfully
 
   meilisearch:
-    image: getmeili/meilisearch:v1.55.0@sha256:ff546679970126f8822e15d1b6a06bfbff1f2ce2e43f810cfb5258012f92de5c
+    image: getmeili/meilisearch:v1.56.0@sha256:1f578fa865f8251894b3bf38d6668d6209a3f451f8f65ab953e129d4c1db5ef4
     ports:
       - "7700:7700"
     volumes:
@@ -72,7 +72,7 @@ services:
       start_interval: 1s
 
   flipt:
-    image: flipt/flipt:v2.14.0@sha256:cb79f6359dcf9b2b9d605b9d998f71793d17125ed8cf8b5a3d9daa928df3ee89
+    image: flipt/flipt:v2.14.1@sha256:fb8087a8819ae06a4ca84aaa7ab31bb4acb65006a38f4cc04c30fdf16e4e2630
     ports:
       - "8082:8080"
     volumes:
