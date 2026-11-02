@@ -2,7 +2,7 @@ package com.drinkit.user
 
 import com.drinkit.generated.jooq.tables.records.VerificationTokenRecord
 import com.drinkit.generated.jooq.tables.references.VERIFICATION_TOKEN
-import com.drinkit.postgresql.jooq.JooqRepository
+import com.drinkit.postgresql.JooqRepository
 import com.drinkit.user.core.UserId
 import com.drinkit.user.core.VerificationToken
 import com.drinkit.user.spi.VerificationTokens

@@ -1,4 +1,4 @@
-package com.drinkit.postgresql.jooq
+package com.drinkit.postgresql
 
 import com.drinkit.documentation.tech.starter.TechStarterTool
 import org.springframework.stereotype.Repository

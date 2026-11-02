@@ -1,4 +1,4 @@
-package com.drinkit.postgresql.jooq
+package com.drinkit.postgresql
 
 import org.jooq.Record
 import org.jooq.RecordMapper

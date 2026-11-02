@@ -3,10 +3,10 @@ package com.drinkit.user
 import com.drinkit.event.sourcing.transaction.DuplicateSequenceException
 import com.drinkit.generated.jooq.keys.USER_EVENT_PKEY
 import com.drinkit.generated.jooq.tables.references.USER_EVENT
-import com.drinkit.postgresql.jooq.JSONBToJacksonConverter
-import com.drinkit.postgresql.jooq.JooqRepository
-import com.drinkit.postgresql.jooq.fetchSequence
-import com.drinkit.postgresql.jooq.isEventSourcingSequenceException
+import com.drinkit.postgresql.JSONBToJacksonConverter
+import com.drinkit.postgresql.JooqRepository
+import com.drinkit.postgresql.fetchSequence
+import com.drinkit.postgresql.isEventSourcingSequenceException
 import com.drinkit.user.core.Author
 import com.drinkit.user.core.Initialized
 import com.drinkit.user.core.User

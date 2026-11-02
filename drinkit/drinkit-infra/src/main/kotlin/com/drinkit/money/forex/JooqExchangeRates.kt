@@ -5,7 +5,7 @@ import com.drinkit.generated.jooq.tables.records.ExchangeRateRecord
 import com.drinkit.money.core.Currency
 import com.drinkit.money.core.ExchangeRate
 import com.drinkit.money.forex.spi.ExchangeRates
-import com.drinkit.postgresql.jooq.JooqRepository
+import com.drinkit.postgresql.JooqRepository
 import org.jooq.DSLContext
 import java.time.Clock
 import java.time.OffsetDateTime
