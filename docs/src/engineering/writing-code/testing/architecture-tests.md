@@ -93,7 +93,7 @@ Konture reads neither `build-logic`, nor the text of the build files, nor the re
 |---|---|---|
 | A tech starter depends on no application | `starters.depend-on-no-application` | A tech starter works without business code: replace the dependency on an application module with a port that the application implements |
 | A tech starter reads no table of a bounded context | `starters.read-no-business-table` | A starter that reads a table of a context, such as `USER`, ties itself to the schema of one application: ask the application for the data through a port |
-| Only the public API of a tech starter is public, and it says so | `starters.public-api-is-marked` | A tech starter documents its public API with `@TechStarterTool` and keeps the rest internal: mark the class, or make it internal |
+| Only the public API of a tech starter is public, and it says so | `starters.public-api-is-marked` | A tech starter documents its public API with `@TechStarterTool` and keeps the rest internal: mark the class, or make it internal. A data or value class is a value that a tool takes, and needs no mark |
 | A tech starter wires its beans without stereotype annotations | `starters.no-stereotype` | Only a scan of the starter's packages finds a `@Component` or `@Service`: declare the bean in the starter's `@AutoConfiguration` |
 | A bean of a tech starter backs off when the application defines its own | `starters.beans-back-off` | The application's own bean wins over a starter's: annotate the `@Bean` `@ConditionalOnMissingBean` |
 | The settings of a tech starter live under starters | `starters.settings-under-starters-prefix` | Settings of a tech starter never clash with Spring's or the application's: put them under `starters.<name>` |
