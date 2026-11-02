@@ -62,7 +62,14 @@ internal class JooqCellars(private val dslContext: DSLContext) : Cellars {
 `JSONBToJacksonConverter(CityLocation::class.java, jsonMapper)` maps a JSONB column to a Kotlin type with the
 application's `JsonMapper`. A read whose size the repository cannot know returns a `Sequence` from `fetchSequence`,
 an extension of a jOOQ `Select` that streams the rows from a cursor, a thousand at a time. The cursor lives as long as
-the transaction, so the caller reads the `Sequence` inside it.
+the transaction, so the caller reads the `Sequence` inside it: a use case that returns one is
+`@Transactional(propagation = MANDATORY)`, and the controller that maps it opens the transaction, as the architecture
+tests check.
+
+```kotlin
+@Transactional(readOnly = true)
+override fun findCellars() = ResponseEntity.ok(CellarsResponse(findCellars.byOwnerId(owner).map { it.toResponse() }.toList()))
+```
 
 `@JooqIntegrationTest(schemas = [DrinkitApplication::class])` gives the test a `DSLContext` on a database of its
 own, in a PostgreSQL container, with the tables of the generated schema classes it names, such as

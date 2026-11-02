@@ -7,6 +7,21 @@ import org.junit.jupiter.api.Test
 internal class BackendArchitectureTest {
 
     @Test
+    fun `a backend method that reads the lazy result of a use case runs in a transaction`() {
+        rule("backend.lazy-result-read-in-transaction") {
+            description = "A Sequence or a Stream of a use case reads its rows in the transaction of its caller: " +
+                "annotate the method that calls the use case @Transactional(readOnly = true)"
+            lazyUseCaseMethods.forEach { useCaseMethod ->
+                functions {
+                    that().resideInModules(BACKENDS)
+                    that().notBeAnnotatedWith("Transactional")
+                    should().notCall(useCaseMethod)
+                }
+            }
+        }.check()
+    }
+
+    @Test
     fun `a backend class that uses a port needing a transaction runs in one`() {
         rule("backend.port-used-in-transaction") {
             description = "A port whose adapter is a @JooqRepository needs a running transaction: annotate the class " +

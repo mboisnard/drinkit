@@ -1,11 +1,14 @@
 package com.drinkit.architecture
 
+import io.github.baole.konture.AnnotationDeclaration
 import io.github.baole.konture.ClassDeclaration
+import io.github.baole.konture.FunctionDeclaration
 import io.github.baole.konture.Konture
 import io.github.baole.konture.SourceSetSelector
 import io.github.baole.konture.SourceSets
 import io.github.baole.konture.SourceUsage
 import io.github.baole.konture.UsageKind
+import io.github.baole.konture.Visibility
 import io.github.baole.konture.isEnclosedInClass
 import io.github.baole.konture.scope
 import java.io.File
@@ -170,8 +173,30 @@ internal val transactionalPorts by lazy {
         .values.flatten().toSet()
 }
 
-private fun ClassDeclaration.demandsTransaction() = annotations.any { annotation ->
-    annotation.name == "Transactional" && annotation.arguments.any { it.value.endsWith("MANDATORY") }
+internal fun ClassDeclaration.demandsTransaction() = annotations.demandTransaction()
+
+internal fun FunctionDeclaration.demandsTransaction() = annotations.demandTransaction()
+
+private fun List<AnnotationDeclaration>.demandTransaction() = any { annotation ->
+    annotation.isTransactional() && annotation.arguments.any { it.value.endsWith("MANDATORY") }
+}
+
+// The simple or the qualified name, however the source writes it
+internal fun AnnotationDeclaration.isTransactional() = name.substringAfterLast('.') == "Transactional"
+
+// A Sequence or a Stream reads its rows from a cursor that the end of the transaction closes
+internal fun FunctionDeclaration.returnsLazyResult() =
+    returnType.substringBefore('<').substringAfterLast('.') in setOf("Sequence", "Stream")
+
+// The use case methods whose lazy result their caller reads, named as Konture names a call:
+// com.drinkit.cellar.FindCellars.byOwnerId
+internal val lazyUseCaseMethods by lazy {
+    classesOf(DOMAINS)
+        .filter { cls -> cls.annotations.any { it.name == "Usecase" } }
+        .flatMap { useCase ->
+            useCase.functions.filter { it.visibility != Visibility.PRIVATE && it.returnsLazyResult() }
+                .map { "${useCase.fqName}.${it.name}" }
+        }
 }
 
 // The bounded contexts of each application, common included: com.drinkit.cellar for a class of drinkit-domain
