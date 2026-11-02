@@ -60,6 +60,8 @@ the `User` aggregate appends events rather than saving a state: read [user-event
 The controller builds the command from the request, calls the use case, and maps every `Result` case to a
 status with an exhaustive `when`. A plain read with no rule to apply calls the port directly, from a method
 annotated `@Transactional(readOnly = true)`, since a jOOQ adapter demands a running transaction: `UserController`.
+A use case that returns a `Sequence` is `@Transactional(propagation = MANDATORY)`, and the controller method that
+reads it is `@Transactional(readOnly = true)`, so the rows stream inside one transaction: `CellarsController`.
 
 Then open the `SecurityConfiguration` of the `-backend` module. The first matching rule wins, and paths are written
 without the `server.servlet.context-path` of the backend's `application.yml`. In `drinkit-backend`, `/api/**`

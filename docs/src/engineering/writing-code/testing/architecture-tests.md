@@ -43,6 +43,7 @@ Konture reads neither `build-logic`, nor the text of the build files, nor the re
 | A port is an interface in a spi package | `domain.ports-are-interfaces-in-spi` | A port is an interface in the `spi` package of its context, or of `common`: move it there, or out of `spi` when it is not a port |
 | A core domain type lives in a core package | `domain.core-domain-in-core` | A `@CoreDomain` type is an entity or a value: move it into the `core` package of its context |
 | A use case is a service annotated as a use case | `domain.use-cases-are-annotated` | The documentation lists the use cases by their `@Usecase`: annotate the `@Service` |
+| A use case that returns a lazy result runs in the transaction of its caller | `domain.lazy-use-cases-are-mandatory` | A `Sequence` or a `Stream` is read once the use case has returned, and the end of its own transaction would close the cursor first: annotate the use case `@Transactional(propagation = MANDATORY)` |
 | A command is a data class annotated as a command | `domain.commands-are-annotated-data-classes` | A command is the immutable and documented input of a use case: make it a data class annotated `@Command` |
 | A decider is an internal object | `domain.decider-is-internal-object` | A decider holds no state and only its use case calls it: make it an internal object |
 | A domain name says what a thing is, never its pattern | `domain.names-say-what-not-pattern` | A domain name says what a thing is, not its pattern, such as `Cellars` or `CreateCellar`: drop the `UseCase`, `Service`, `Repository`, `Impl` or `Dto` suffix |
@@ -62,6 +63,7 @@ Konture reads neither `build-logic`, nor the text of the build files, nor the re
 | jOOQ appears only in infra and in starters | `infra.jooq-only-in-infra-and-starters` | SQL lives in the infra adapters and in the starters that own a table: move this jOOQ code behind a port |
 | An adapter uses the core and spi types of the domain only | `infra.uses-domain-through-core-and-spi` | The domain drives the adapters, never the reverse: an adapter uses only `core`, `spi` and `common` types. Move the call into the use case, or the type into `core` |
 | Every class of infra is internal | `infra.classes-are-internal` | Infra is reached through the ports only: make the class internal |
+| A jOOQ repository reads a lazy result in the transaction of its caller | `infra.lazy-results-stay-mandatory` | A transaction of the repository's own would commit, and close the cursor, before the caller reads the `Sequence` or the `Stream`: keep `@Transactional(propagation = MANDATORY)`, or drop the annotation |
 | A jOOQ adapter is a jOOQ repository | `infra.jooq-adapter-is-jooq-repository` | `@JooqRepository` demands a transaction and translates the database errors: annotate the jOOQ adapter with it |
 | An adapter sits in the package of its port's context | `infra.adapter-in-context-of-its-port` | A context reads as one package across the modules: move the adapter into the package of its port's context |
 | An adapter is named after its technology and its port | `infra.adapter-named-after-port` | An adapter is named after its technology, then its port or the port's last word: `JooqCellars` for `Cellars`, `EuropeanCentralBankProvider` for `ExchangeRateProvider` |
@@ -70,6 +72,7 @@ Konture reads neither `build-logic`, nor the text of the build files, nor the re
 
 | Rule | Id | Why, and how to fix a violation |
 |---|---|---|
+| A backend method that reads the lazy result of a use case runs in a transaction | `backend.lazy-result-read-in-transaction` | A `Sequence` or a `Stream` of a use case reads its rows in the transaction of its caller: annotate the method that calls the use case `@Transactional(readOnly = true)` |
 | A backend class that uses a port needing a transaction runs in one | `backend.port-used-in-transaction` | A port whose adapter is a `@JooqRepository` needs a running transaction: annotate the class that uses it, or each of its non-private methods, `@Transactional` or `@RetryableTransactional` |
 | A controller is internal and implements an interface generated from the contract | `backend.controllers-implement-generated-interfaces` | The contract generates each endpoint's interface: implement it in an internal `@RestController` named after it, `CellarsController` for `CellarsApi` |
 | No endpoint of the backend is mapped by hand | `backend.no-endpoint-mapped-by-hand` | An endpoint outside the contract escapes its review and the generated client: add it to the contract and implement the generated interface |

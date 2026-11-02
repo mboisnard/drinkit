@@ -1,6 +1,7 @@
 package com.drinkit.architecture
 
 import io.github.baole.konture.Modifier
+import io.github.baole.konture.Visibility
 import io.github.baole.konture.rule
 import org.junit.jupiter.api.Test
 
@@ -214,6 +215,27 @@ internal class DomainArchitectureTest {
                 that().inModule(DOMAINS)
                 that().annotatedWith("Service")
                 should().annotatedWith("Usecase")
+            }
+        }.check()
+    }
+
+    @Test
+    fun `a use case that returns a lazy result runs in the transaction of its caller`() {
+        rule("domain.lazy-use-cases-are-mandatory") {
+            description = "A Sequence or a Stream is read once the use case has returned, and the end of its own " +
+                "transaction would close the cursor first: annotate the use case @Transactional(propagation = MANDATORY)"
+            classes {
+                that().inModule(DOMAINS)
+                that().annotatedWith("Usecase")
+                should().satisfy { useCase, violations ->
+                    useCase.functions
+                        .filter { it.visibility != Visibility.PRIVATE && it.returnsLazyResult() }
+                        .filterNot { useCase.demandsTransaction() || it.demandsTransaction() }
+                        .forEach {
+                            violations +=
+                                "${useCase.fqName}.${it.name} returns ${it.returnType} in a transaction of its own"
+                        }
+                }
             }
         }.check()
     }

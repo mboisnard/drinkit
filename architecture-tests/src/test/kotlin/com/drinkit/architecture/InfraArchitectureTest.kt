@@ -47,6 +47,33 @@ internal class InfraArchitectureTest {
     }
 
     @Test
+    fun `a jOOQ repository reads a lazy result in the transaction of its caller`() {
+        rule("infra.lazy-results-stay-mandatory") {
+            description =
+                "A transaction of the repository's own would commit, and close the cursor, before the caller " +
+                "reads the Sequence or the Stream: keep @Transactional(propagation = MANDATORY), or drop the annotation"
+            classes {
+                that().inModule(INFRAS)
+                that().annotatedWith("JooqRepository")
+                should().satisfy { repository, violations ->
+                    val ownTransaction = repository.annotations.any { it.isTransactional() } &&
+                        !repository.demandsTransaction()
+                    repository.functions
+                        .filter { it.returnsLazyResult() }
+                        .filter { function ->
+                            ownTransaction ||
+                                (function.annotations.any { it.isTransactional() } && !function.demandsTransaction())
+                        }
+                        .forEach {
+                            violations +=
+                                "${repository.fqName}.${it.name} returns ${it.returnType} in a transaction of its own"
+                        }
+                }
+            }
+        }.check()
+    }
+
+    @Test
     fun `a jOOQ adapter is a jOOQ repository`() {
         rule("infra.jooq-adapter-is-jooq-repository") {
             description = "@JooqRepository demands a transaction and translates the database errors: annotate the " +
