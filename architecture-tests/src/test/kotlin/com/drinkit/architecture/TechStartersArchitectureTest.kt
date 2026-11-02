@@ -104,8 +104,6 @@ internal class TechStartersArchitectureTest {
                 classFqName("com.drinkit.sse.SseApi", WEB_STARTERS)
                 classFqName("com.drinkit.sse.InMemoryEmitters", WEB_STARTERS)
                 classFqName("com.drinkit.webclient.rest.RestClientRetryConfiguration", WEB_STARTERS)
-                classFqName("com.drinkit.mail.infra.LogEmailSender", MESSAGING_STARTERS)
-                classFqName("com.drinkit.mail.infra.SpringEmailSender", MESSAGING_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.FeatureFlagsConfig", OPS_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.OpenFeatureFeatureFlags", OPS_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.OpenFeatureHealthIndicator", OPS_STARTERS)

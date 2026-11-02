@@ -4,5 +4,9 @@ plugins {
 }
 
 dependencies {
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.boot:spring-boot-starter-mail")
+
+    testFixturesApi("org.springframework.boot:spring-boot-starter-mail")
+    testFixturesImplementation("org.testcontainers:testcontainers")
 }

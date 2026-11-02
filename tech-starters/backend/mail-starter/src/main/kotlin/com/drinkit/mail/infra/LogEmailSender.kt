@@ -3,18 +3,16 @@ package com.drinkit.mail.infra
 import com.drinkit.mail.Email
 import com.drinkit.mail.EmailSender
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Profile
-import org.springframework.stereotype.Service
 
-@Service
-@Profile("dev")
-@ConditionalOnProperty(name = ["email.sender.enabled"], havingValue = "false")
 internal class LogEmailSender : EmailSender {
 
     private val logger = KotlinLogging.logger { }
 
+    init {
+        logger.warn { "No mail server in spring.mail.host: emails are written to the logs at DEBUG, never sent" }
+    }
+
     override fun send(email: Email) {
-        logger.info { "Log email sender: $email" }
+        logger.debug { "Log email sender: $email" }
     }
 }

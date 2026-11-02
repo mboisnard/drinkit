@@ -58,6 +58,7 @@ that brings the technology, so that every module testing with that technology re
 |---|---|---|---|---|
 | `@JooqIntegrationTest` | PostgreSQL | a jOOQ `DSLContext`, or a JDBC `Connection` for plain SQL | a database per test class, each test rolled back | `postgresql-starter` |
 | `@MeilisearchIntegrationTest` | Meilisearch | the Meilisearch `Client` | every index deleted after the class | `search-engine-starter` |
+| `@MailpitIntegrationTest` | Mailpit, an SMTP server | a `Mailpit`, to send to it and read what it received | every email deleted after the class | `mail-starter` |
 
 ## 🐘 PostgreSQL, with `@JooqIntegrationTest`
 
@@ -108,6 +109,12 @@ Meilisearch is the search engine that `search-engine-starter` brings. It has no 
 of a class share the same indexes, and the extension deletes every index after the class. Meilisearch applies each
 write as an asynchronous task, so a test waits for the task with `client.waitForTask` before it reads. No adapter of
 the application uses Meilisearch yet: only the test of the extension runs it.
+
+## 📬 Mailpit, with `@MailpitIntegrationTest`
+
+Mailpit is an SMTP server that keeps the emails it receives and serves them over an HTTP API. A test sends through
+`mailpit.javaMailSender()`, then reads what the server received with `mailpit.lastEmail()`. The extension deletes
+every email after the class. [ADR 0006](../../adr/0006-mailpit-as-the-smtp-server-of-the-tests.md) says why Mailpit.
 
 ## ♻️ One container for every run
 

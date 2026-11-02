@@ -153,6 +153,7 @@ export default withMermaid(
                   { text: '0003. API contract by expand and contract', link: '0003-api-contract-changes-by-expand-and-contract' },
                   { text: '0004. One updater image for every environment', link: '0004-one-updater-image-for-every-environment' },
                   { text: '0005. Demo data from a local-only changelog', link: '0005-demo-data-from-a-local-only-changelog' },
+                  { text: '0006. Mailpit as the SMTP server of the tests', link: '0006-mailpit-as-the-smtp-server-of-the-tests' },
                 ],
               },
 
