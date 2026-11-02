@@ -94,7 +94,6 @@ internal class TechStartersArchitectureTest {
                 classFqName("com.drinkit.configuration.infra.JooqConfigurationsRepository", DATA_STARTERS)
                 classFqName("com.drinkit.configuration.infra.ConfigurationSpringConfig", DATA_STARTERS)
                 classFqName("com.drinkit.configuration.infra.CachedConfigurationsRepository", DATA_STARTERS)
-                classFqName("com.drinkit.postgresql.jooq.JooqConfig", DATA_STARTERS)
                 classFqName("com.drinkit.search.engine.MeilisearchConfig", DATA_STARTERS)
                 classFqName("com.drinkit.security.password.encoder.InternalUserPasswordEncoder", WEB_STARTERS)
                 classFqName("com.drinkit.security.InternalAuthenticationService", WEB_STARTERS)
@@ -138,7 +137,6 @@ internal class TechStartersArchitectureTest {
             description = "The application's own bean wins over a starter's: annotate the @Bean " +
                 "@ConditionalOnMissingBean"
             suppress {
-                function("com.drinkit.postgresql.jooq.JooqConfig.jooqConfigurationCustomizer", DATA_STARTERS)
                 function("com.drinkit.search.engine.MeilisearchConfig.meilisearchClient", DATA_STARTERS)
                 function("com.drinkit.security.SecurityConfig.authenticationManager", WEB_STARTERS)
                 function("com.drinkit.security.SecurityConfig.sessionContextRepository", WEB_STARTERS)

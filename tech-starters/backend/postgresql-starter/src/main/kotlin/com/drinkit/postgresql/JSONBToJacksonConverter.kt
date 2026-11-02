@@ -26,9 +26,12 @@ class JSONBToJacksonConverter<U>(toType: Class<U>, private val mapper: JsonMappe
 
     override fun to(userObject: U): JSONB {
         try {
-            return JSONB.jsonb(mapper.writeValueAsString(userObject))
+            return JSONB.jsonb(mapper.writeValueAsString(userObject).replace(NULL_CHARACTER, "$1"))
         } catch (e: JacksonException) {
             throw DataTypeException("Error when converting object of type ${toType()} to JSON", e)
         }
     }
 }
+
+// PostgreSQL refuses \u0000 in jsonb: drop the escape, not a backslash that escapes the backslash before it
+private val NULL_CHARACTER = Regex("""(?<!\\)((?:\\\\)*)\\u0000""")
