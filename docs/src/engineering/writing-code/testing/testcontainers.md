@@ -86,6 +86,9 @@ sequenceDiagram
 A module that applies the `jooq-codegen-convention` plugin of the [build](../../build-and-data/build-tool.md) gets
 the annotation in its tests.
 
+The `DSLContext` has the jOOQ settings of the application, and adds jOOQ's diagnostics: the same statement run again
+and again, as an N+1 does, is logged at `INFO` with "Repeated statements were encountered".
+
 The extension builds the schema of the test database from the jOOQ classes named in `schemas`, such as
 `DrinkitApplication` for the PostgreSQL schema `drinkit_application`. These classes are generated from the database
 and committed with the code. Applying every Liquibase changelog to a blank database would make each test class pay for

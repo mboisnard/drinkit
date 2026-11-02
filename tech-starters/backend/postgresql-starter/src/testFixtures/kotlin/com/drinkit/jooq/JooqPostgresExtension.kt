@@ -1,12 +1,13 @@
 package com.drinkit.jooq
 
+import com.drinkit.postgresql.infra.postgresqlSettings
 import com.drinkit.utils.orNull
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jooq.DDLExportConfiguration
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.Schema
-import org.jooq.conf.Settings
+import org.jooq.conf.DiagnosticsConnection
 import org.jooq.impl.DefaultConfiguration
 import org.jooq.impl.DefaultDSLContext
 import org.junit.jupiter.api.extension.AfterAllCallback
@@ -132,11 +133,8 @@ class JooqPostgresExtension :
         val jooqConfiguration = DefaultConfiguration()
             .set(connection)
             .set(SQLDialect.POSTGRES)
-            .set(
-                Settings()
-                    .withExecuteWithOptimisticLocking(true)
-                    .withExecuteWithOptimisticLockingExcludeUnversioned(true),
-            )
+            // Logs an N+1 or a duplicate query of the adapter under test
+            .set(postgresqlSettings().withDiagnosticsConnection(DiagnosticsConnection.ON).withDiagnosticsLogging(true))
         return DefaultDSLContext(jooqConfiguration)
     }
 
