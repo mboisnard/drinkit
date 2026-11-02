@@ -36,6 +36,7 @@ the other. The status says where a decision stands:
 | [0004](0004-one-updater-image-for-every-environment.md) | One updater image for every environment | Accepted | 2026-10-29 |
 | [0005](0005-demo-data-from-a-local-only-changelog.md) | Demo data from a local-only changelog | Accepted | 2026-10-29 |
 | [0006](0006-mailpit-as-the-smtp-server-of-the-tests.md) | Mailpit as the SMTP server of the tests | Accepted | 2026-11-02 |
+| [0007](0007-jooq-kotlin-maps-nested-multiset-reads.md) | jooq-kotlin maps nested MULTISET reads | Accepted | 2026-11-02 |
 
 ## How to write one
 

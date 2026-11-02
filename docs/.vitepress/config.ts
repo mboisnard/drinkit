@@ -154,6 +154,7 @@ export default withMermaid(
                   { text: '0004. One updater image for every environment', link: '0004-one-updater-image-for-every-environment' },
                   { text: '0005. Demo data from a local-only changelog', link: '0005-demo-data-from-a-local-only-changelog' },
                   { text: '0006. Mailpit as the SMTP server of the tests', link: '0006-mailpit-as-the-smtp-server-of-the-tests' },
+                  { text: '0007. jooq-kotlin maps nested MULTISET reads', link: '0007-jooq-kotlin-maps-nested-multiset-reads' },
                 ],
               },
 
