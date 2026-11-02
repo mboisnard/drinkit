@@ -35,6 +35,7 @@ the other. The status says where a decision stands:
 | [0003](0003-api-contract-changes-by-expand-and-contract.md) | The API contract changes by expand and contract, frontend included | Accepted | 2026-10-28 |
 | [0004](0004-one-updater-image-for-every-environment.md) | One updater image for every environment | Accepted | 2026-10-29 |
 | [0005](0005-demo-data-from-a-local-only-changelog.md) | Demo data from a local-only changelog | Accepted | 2026-10-29 |
+| [0006](0006-mailpit-as-the-smtp-server-of-the-tests.md) | Mailpit as the SMTP server of the tests | Accepted | 2026-11-02 |
 
 ## How to write one
 

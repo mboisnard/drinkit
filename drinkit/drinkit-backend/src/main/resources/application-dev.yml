@@ -9,8 +9,6 @@ spring.docker.compose:
     skip: never
     arguments: --wait-timeout=120
 
-email.sender.enabled: false
-
 springdoc:
   api-docs.enabled: true
   swagger-ui.enabled: true
@@ -27,6 +25,7 @@ spring:
 
 logging.level:
     org.springframework.security: DEBUG
+    com.drinkit.mail: DEBUG
 
 starters:
   feature-flags:
