@@ -56,11 +56,22 @@
       "pinDigests": false
     },
     {
-      "description": "Squawk is a binary of its GitHub releases that the Gradle catalog names. Its upgrades never merge themselves: a new version can bring rules that .squawk.toml must list",
+      "description": "Squawk is a binary of its GitHub releases that the Gradle catalog names, so its lookup goes to GitHub, not to the Gradle repositories. Its upgrades never merge themselves: a new version can bring rules that .squawk.toml must list",
       "matchPackageNames": ["sbdchd:squawk"],
       "overrideDatasource": "github-releases",
       "overridePackageName": "sbdchd/squawk",
+      "registryUrls": ["https://github.com"],
       "extractVersion": "^v(?<version>.+)$"
+    },
+    {
+      "description": "The Maven Central metadata of the Konture library lists no version, only a Maven plugin prefix: its versions come from the Gradle plugin, released with it, and both move in one pull request",
+      "matchPackageNames": ["io.github.baole:konture"],
+      "overridePackageName": "io.github.baole.konture:plugin-gradle",
+      "registryUrls": ["https://plugins.gradle.org/m2"]
+    },
+    {
+      "matchPackageNames": ["io.github.baole.konture:plugin-gradle"],
+      "groupName": "Konture"
     },
     {
       "description": "Majors need code changes: open them from the Dependency Dashboard",
