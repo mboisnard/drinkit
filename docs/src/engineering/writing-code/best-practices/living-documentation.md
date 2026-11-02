@@ -90,7 +90,8 @@ with a blank one, the processor takes the KDoc of the class, as `EventsReducer` 
 gets no entry.
 
 The [architecture tests](../testing/architecture-tests.md) keep the generated lists complete. A `@Service` of the
-domain without `@Usecase` fails the build, and so does a public class of a tech starter without `@TechStarterTool`.
+domain without `@Usecase` fails the build, and so does a public class of a tech starter without `@TechStarterTool`,
+unless it is a data or value class that a tool takes.
 
 Every annotation of the starter has `AnnotationRetention.SOURCE`, since KSP reads them from the source. The compiler
 drops them, so the compiled classes hold none. Unlike the annotations, the jar of the starter ships:

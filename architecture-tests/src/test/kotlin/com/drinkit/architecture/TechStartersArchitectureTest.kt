@@ -47,22 +47,14 @@ internal class TechStartersArchitectureTest {
     fun `only the public API of a tech starter is public, and it says so`() {
         rule("starters.public-api-is-marked") {
             description = "A tech starter documents its public API with @TechStarterTool and keeps the rest " +
-                "internal: mark the class, or make it internal"
+                "internal: mark the class, or make it internal. A data or value class is a value that a tool " +
+                "takes, and needs no mark"
             suppress {
                 classFqName("com.drinkit.configuration.ConfigurationKey", DATA_STARTERS)
                 classFqName("com.drinkit.security.configuration.SecurityConfiguration", WEB_STARTERS)
                 classFqName("com.drinkit.security.AuthenticationFailedException", WEB_STARTERS)
-                classFqName("com.drinkit.security.userdetails.InternalUserDetails", WEB_STARTERS)
                 classFqName("com.drinkit.security.filter.MaintenanceModeFilter", WEB_STARTERS)
                 classFqName("com.drinkit.sse.SseApi", WEB_STARTERS)
-                classFqName("com.drinkit.mail.Email", MESSAGING_STARTERS)
-                classFqName("com.drinkit.mail.Sender", MESSAGING_STARTERS)
-                classFqName("com.drinkit.mail.Recipients", MESSAGING_STARTERS)
-                classFqName("com.drinkit.mail.Subject", MESSAGING_STARTERS)
-                classFqName("com.drinkit.mail.Content", MESSAGING_STARTERS)
-                classFqName("com.drinkit.mail.Attachments", MESSAGING_STARTERS)
-                classFqName("com.drinkit.messaging.events.SendSseEvent", NOT_A_TOOL)
-                classFqName("com.drinkit.featureflags.FeatureFlagContext", OPS_STARTERS)
                 classFqName("com.drinkit.ocr.OCRResponse", OPS_STARTERS)
                 classFqName("com.drinkit.documentation.cqrs.Command", LIBRARY_STARTERS)
                 classFqName("com.drinkit.documentation.cqrs.Query", LIBRARY_STARTERS)
@@ -76,12 +68,13 @@ internal class TechStartersArchitectureTest {
                 classFqName("com.drinkit.event.sourcing.transaction.DuplicateSequenceException", LIBRARY_STARTERS)
                 classFqName("com.drinkit.event.sourcing.transaction.RetryableTransactional", LIBRARY_STARTERS)
                 classFqName("com.drinkit.event.sourcing.DomainEvent", LIBRARY_STARTERS)
-                classFqName("com.drinkit.event.sourcing.SequenceId", LIBRARY_STARTERS)
             }
             classes {
                 that().inModule(STARTERS)
                 that().areTopLevel()
                 that().bePublic()
+                not().beData()
+                not().beInline()
                 should().annotatedWith("TechStarterTool")
             }
             classes {
