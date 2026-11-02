@@ -60,7 +60,11 @@ internal class JooqCellars(private val dslContext: DSLContext) : Cellars {
 ```
 
 `JSONBToJacksonConverter(CityLocation::class.java, jsonMapper)` maps a JSONB column to a Kotlin type with the
-application's `JsonMapper`. A read whose size the repository cannot know returns a `Sequence` from `fetchSequence`,
+application's `JsonMapper`. The starter brings `jooq-kotlin`: `multiset(...).mapping(::Bottle)` reads a nested
+collection, such as the bottles of each cellar, in the same query as its parent, into Kotlin constructors that the
+compiler checks.
+[ADR 0007](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0007-jooq-kotlin-maps-nested-multiset-reads.md)
+says why. A read whose size the repository cannot know returns a `Sequence` from `fetchSequence`,
 an extension of a jOOQ `Select` that streams the rows from a cursor, a thousand at a time. The cursor lives as long as
 the transaction, so the caller reads the `Sequence` inside it: a use case that returns one is
 `@Transactional(propagation = MANDATORY)`, and the controller that maps it opens the transaction, as the architecture

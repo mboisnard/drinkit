@@ -20,6 +20,7 @@ dependencies {
         // Runtime Dependencies
         api(libs.bson)
         api(libs.jooq)
+        api(libs.jooq.kotlin)
         api(libs.kotlin.logging.jvm)
         api(libs.meilisearch.java.client)
         api(libs.springdoc.openapi.starter.webmvc.ui)

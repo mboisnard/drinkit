@@ -10,6 +10,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-jooq")
     api("org.postgresql:postgresql")
     api(libs.jooq)
+    api(libs.jooq.kotlin) // mapping(::Type) of nested MULTISET rows
 
     testFixturesApi("org.testcontainers:testcontainers-postgresql")
 }

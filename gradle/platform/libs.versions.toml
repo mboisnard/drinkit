@@ -43,6 +43,7 @@ squawk = { module = "sbdchd:squawk", version.ref = "squawk" }
 # Runtime Dependencies
 bson = { module = "org.mongodb:bson", version.ref = "bson" }
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
+jooq-kotlin = { module = "org.jooq:jooq-kotlin", version.ref = "jooq" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 ksp-symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 meilisearch-java-client = { module = "com.meilisearch.sdk:meilisearch-java", version.ref = "meilisearch" }
