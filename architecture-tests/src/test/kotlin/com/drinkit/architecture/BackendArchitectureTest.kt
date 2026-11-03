@@ -11,11 +11,16 @@ internal class BackendArchitectureTest {
     fun `a backend method that reads the lazy result of a use case runs in a transaction`() {
         rule("backend.lazy-result-read-in-transaction") {
             description = "A Sequence or a Stream of a use case reads its rows in the transaction of its caller: " +
-                "annotate the method that calls the use case @Transactional(readOnly = true)"
+                "annotate the method that calls the use case, its class or each non-private method of its class " +
+                "@Transactional(readOnly = true) or @RetryableTransactional"
+            val classesInTransaction = classesOf(BACKENDS).filter { it.runsInTransaction() }.map { it.fqName }.toSet()
             lazyUseCaseMethods.forEach { useCaseMethod ->
                 functions {
                     that().resideInModules(BACKENDS)
-                    that().notBeAnnotatedWith("Transactional")
+                    that().satisfy { function ->
+                        function.declaration.annotations.none { it.name in TRANSACTIONAL } &&
+                            function.qualifiedName.substringBeforeLast('.') !in classesInTransaction
+                    }
                     should().notCall(useCaseMethod)
                 }
             }

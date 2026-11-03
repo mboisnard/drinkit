@@ -72,7 +72,7 @@ Konture reads neither `build-logic`, nor the text of the build files, nor the re
 
 | Rule | Id | Why, and how to fix a violation |
 |---|---|---|
-| A backend method that reads the lazy result of a use case runs in a transaction | `backend.lazy-result-read-in-transaction` | A `Sequence` or a `Stream` of a use case reads its rows in the transaction of its caller: annotate the method that calls the use case `@Transactional(readOnly = true)` |
+| A backend method that reads the lazy result of a use case runs in a transaction | `backend.lazy-result-read-in-transaction` | A `Sequence` or a `Stream` of a use case reads its rows in the transaction of its caller: annotate the method that calls the use case, its class or each non-private method of its class `@Transactional(readOnly = true)` or `@RetryableTransactional` |
 | A backend class that uses a port needing a transaction runs in one | `backend.port-used-in-transaction` | A port whose adapter is a `@JooqRepository` needs a running transaction: annotate the class that uses it, or each of its non-private methods, `@Transactional` or `@RetryableTransactional` |
 | A controller is internal and implements an interface generated from the contract | `backend.controllers-implement-generated-interfaces` | The contract generates each endpoint's interface: implement it in an internal `@RestController` named after it, `CellarsController` for `CellarsApi` |
 | No endpoint of the backend is mapped by hand | `backend.no-endpoint-mapped-by-hand` | An endpoint outside the contract escapes its review and the generated client: add it to the contract and implement the generated interface |
