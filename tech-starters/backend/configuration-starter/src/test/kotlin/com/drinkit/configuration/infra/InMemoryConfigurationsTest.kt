@@ -4,5 +4,5 @@ import com.drinkit.configuration.Configurations
 
 internal class InMemoryConfigurationsTest : ConfigurationsTestContract() {
 
-    override fun fetchRepository(): Configurations = InMemoryConfigurations()
+    override fun fetchConfigurations(): Configurations = InMemoryConfigurations()
 }

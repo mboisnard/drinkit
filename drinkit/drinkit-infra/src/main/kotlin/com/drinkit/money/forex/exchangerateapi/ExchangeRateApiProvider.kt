@@ -1,8 +1,7 @@
 package com.drinkit.money.forex.exchangerateapi
 
-import com.drinkit.configuration.ConfigurationKey
 import com.drinkit.configuration.Configurations
-import com.drinkit.configuration.get
+import com.drinkit.configuration.configurationKey
 import com.drinkit.money.core.Currency
 import com.drinkit.money.core.ExchangeRate
 import com.drinkit.money.forex.spi.ExchangeRateProvider
@@ -16,11 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientException
 import java.math.BigDecimal
 
-internal object ExchangeRateApiConfiguration {
-    object ExchangeRateApiKey : ConfigurationKey<String> {
-        override val key: String = "currency.exchangerate-api.key"
-    }
-}
+internal val exchangeRateApiKey = configurationKey<String?>("currency.exchangerate-api.key", default = null)
 
 @Service
 internal class ExchangeRateApiProvider(
@@ -90,5 +85,5 @@ internal class ExchangeRateApiProvider(
 
     override fun priority(): Int = 1 // Higher priority than ECB
 
-    private fun getApiKey(): String? = configurations.get(ExchangeRateApiConfiguration.ExchangeRateApiKey)
+    private fun getApiKey(): String? = configurations[exchangeRateApiKey]
 }

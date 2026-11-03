@@ -20,7 +20,7 @@ Start where a test pins the most behavior:
   is run by `InMemoryExchangeRatesTest` and `JooqExchangeRatesTest`;
 - a tech starter: through what an application that uses it sees, its beans, its properties and its effects. Test
   its wiring with an `ApplicationContextRunner`, as `RetryableAutoConfigurationTest` does, and its behavior in a
-  contract each implementation runs, as `InMemoryConfigurationsTest` and `JooqConfigurationsRepositoryTest` run
+  contract each implementation runs, as `InMemoryConfigurationsTest` and `JooqConfigurationsTest` run
   `ConfigurationsTestContract`.
 
 ## 2. One test per behavior, each one proven

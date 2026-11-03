@@ -1,25 +1,27 @@
 package com.drinkit.configuration
 
-import com.drinkit.utils.toKebabCase
+import com.drinkit.documentation.tech.starter.TechStarterTool
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 
 /**
- * Type-safe key for accessing configuration values.
+ * A setting that can change without a restart: its stable [name] in the table, and the [default] read while none is
+ * stored. Built by [configurationKey].
  *
- * Each key is parameterized with its value type [T]. The key name is automatically derived
- * from the class name in kebab-case format (e.g., `MaintenanceMode` becomes `maintenance-mode`).
- *
- * Supports primitives (Int, Boolean, String, etc.) and complex types (data classes).
- *
- * Example:
- * ```kotlin
- * object AppConfig {
- *     object MaintenanceMode : ConfigurationKey<Boolean>
- *     object MaxRetries : ConfigurationKey<Int>
- * }
- * ```
+ * The key holds the full type of its value, generics included, for Jackson to read a `List<Tag>` back as tags. Only an
+ * inline function with a reified type gets that type from `typeOf<T>()`, so the constructor stays internal and
+ * `@PublishedApi` lets that function, copied into the caller's module, still call it.
  */
-interface ConfigurationKey<T> {
+@TechStarterTool
+class ConfigurationKey<T>
+    @PublishedApi
+    internal constructor(
+        val name: String,
+        val default: T,
+        internal val type: KType,
+    )
 
-    val key: String
-        get() = this::class.simpleName!!.toKebabCase()
-}
+/** Builds the key of a setting stored under [name], which reads [default] while none is stored. */
+@TechStarterTool
+inline fun <reified T> configurationKey(name: String, default: T): ConfigurationKey<T> =
+    ConfigurationKey(name, default, typeOf<T>())
