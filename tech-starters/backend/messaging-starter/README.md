@@ -64,7 +64,8 @@ graph LR
 - **Delay.** A handler with a `delay`, in milliseconds, gets the event that long after the commit. A retry does not
   repeat that delay.
 - **Failures logged.** A failed attempt and a given-up event are logged with the handler's name and the class of the
-  failure.
+  failure. The `DEBUG` level of `com.drinkit.messaging` adds the whole failure, whose message can hold the personal
+  data of the event: turn it on only where those logs may hold them.
 - **Checked at startup.** The application refuses to start on a handler that does not take exactly one platform
   event, or that sets `maxAttempts` below 1 or a negative `delay`. It also refuses a `name` that another handler
   uses, since a broker would make them share one queue, and a `delay` together with `oneQueuePerInstance`, which asks

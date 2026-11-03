@@ -28,6 +28,7 @@ internal class PlatformEventHandlerListener(
     private fun deliver(event: PlatformEvent<*>, retry: Retry, after: Duration) {
         schedule(after) {
             runCatching { callHandler(event) }.onFailure { failure ->
+                logger.debug(failure) { "Attempt ${retry.attempt} of handler ${handler.name} failed" }
                 retryOrGiveUp(event, retry, failure.javaClass.simpleName)
             }
         }
