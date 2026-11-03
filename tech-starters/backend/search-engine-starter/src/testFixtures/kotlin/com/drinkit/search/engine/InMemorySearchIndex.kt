@@ -35,6 +35,8 @@ class InMemorySearchIndex<T : Any>(
         documents.keys.removeAll(ids.toSet())
     }
 
+    fun size(): Long = documents.size.toLong()
+
     private fun idOf(json: JsonNode): String {
         val id = json.get(primaryKey)?.asString()
             ?: throw SearchIndexingFailed(name, "missing_document_id", "a document has no $primaryKey")

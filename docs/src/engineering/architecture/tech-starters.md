@@ -38,7 +38,10 @@ The rules below are the target of every backend starter, and the existing starte
   clashes with Spring's keys.
 - **A small public API.** Everything but what an application injects is Kotlin `internal`, so no application
   depends on what the starter may change. `@TechStarterTool` marks the public part, and the
-  [generated page](../resources/tech-starters/tech-starters.md) of each starter lists it.
+  [generated page](../resources/tech-starters/tech-starters.md) of each starter lists it. A starter over a vendor
+  SDK wraps what it must control and exposes the SDK for the rest, as
+  [ADR 0009](../adr/0009-search-index-writes-through-the-starter-searches-through-the-engine-sdk.md) records for the
+  search engine.
 - **Tests come with it.** The starter's test fixtures hold a [hand-written double](../writing-code/testing/testdouble.md), so that applications test
   against it without the real infrastructure. A test contract, passed by both the double and the real
   implementation, keeps the double faithful.

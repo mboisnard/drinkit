@@ -1,7 +1,9 @@
 package com.drinkit.search.engine.infra
 
 import com.drinkit.messaging.PlatformEventPublisher
+import com.drinkit.search.engine.SearchEngine
 import com.drinkit.search.engine.SearchIndexes
+import com.drinkit.search.engine.infra.meilisearch.MeilisearchEngine
 import com.drinkit.search.engine.infra.meilisearch.MeilisearchIndexes
 import com.drinkit.search.engine.infra.meilisearch.MeilisearchTasks
 import com.drinkit.search.engine.infra.rebuild.JooqRebuildState
@@ -57,4 +59,9 @@ internal class SearchEngineAutoConfiguration {
         jsonMapper: JsonMapper,
         rebuilds: Rebuilds,
     ): SearchIndexes = MeilisearchIndexes(client, tasks, jsonMapper, rebuilds)
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun searchEngine(client: Client, indexes: SearchIndexes, jsonMapper: JsonMapper): SearchEngine =
+        MeilisearchEngine(client, indexes, jsonMapper)
 }

@@ -79,7 +79,9 @@ its own. This keeps the starter simple as long as one instance runs, with these 
   publish once that write has succeeded, never inside it, as the creation of a user does
 
 [#549](https://github.com/mboisnard/drinkit/issues/549) plans to keep these events in the database until a handler
-succeeds.
+succeeds. The rebuild of a search index does not wait for it: it counts its batches done in the database and starts
+over a rebuild left without its end, as [ADR 0010](../adr/0010-search-index-rebuilds-in-batches-tracked-in-postgresql.md)
+records.
 
 ## 🐇 Toward RabbitMQ
 

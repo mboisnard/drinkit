@@ -43,6 +43,8 @@ internal class MeilisearchIndexes(
         return MeilisearchIndex(definition, client, tasks, jsonMapper, rebuilds).also { declared += it }
     }
 
+    override fun all(): List<SearchIndex<*>> = declared.toList()
+
     @PlatformEventHandler(name = "search-engine.rebuild-batch")
     fun onBatchRequested(event: SearchIndexBatchRequested) {
         val index = declared.firstOrNull { it.name == event.index }

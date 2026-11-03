@@ -4,11 +4,13 @@ import com.drinkit.jooq.JooqIntegrationTest
 import com.drinkit.search.engine.Cellar
 import com.drinkit.search.engine.MeilisearchIntegrationTest
 import com.drinkit.search.engine.MeilisearchServer
+import com.drinkit.search.engine.SearchEngine
 import com.drinkit.search.engine.SearchIndex
 import com.drinkit.search.engine.SearchIndexes
 import com.drinkit.search.engine.Wine
 import com.drinkit.search.engine.declare
 import com.drinkit.search.engine.generated.jooq.DrinkitApplication
+import com.drinkit.search.engine.infra.meilisearch.MeilisearchEngine
 import com.drinkit.search.engine.infra.meilisearch.MeilisearchIndexes
 import com.meilisearch.sdk.Client
 import io.kotest.assertions.nondeterministic.eventually
@@ -51,9 +53,10 @@ internal class SearchEngineAutoConfigurationTest {
     }
 
     @Test
-    fun `provides the indexes of Meilisearch`(server: MeilisearchServer) {
+    fun `provides the indexes and the engine of Meilisearch`(server: MeilisearchServer) {
         runner(server).run { context ->
             context.getBean<SearchIndexes>().shouldBeInstanceOf<MeilisearchIndexes>()
+            context.getBean<SearchEngine>().shouldBeInstanceOf<MeilisearchEngine>()
         }
     }
 

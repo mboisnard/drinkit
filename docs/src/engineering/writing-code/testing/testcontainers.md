@@ -57,7 +57,7 @@ that brings the technology, so that every module testing with that technology re
 | Annotation | Service | The test receives | Isolation | Tech starter |
 |---|---|---|---|---|
 | `@JooqIntegrationTest` | PostgreSQL | a jOOQ `DSLContext`, or a JDBC `Connection` for plain SQL | a database per test class, each test rolled back | `postgresql-starter` |
-| `@MeilisearchIntegrationTest` | Meilisearch | the Meilisearch `Client` | every index deleted after the class | `search-engine-starter` |
+| `@MeilisearchIntegrationTest` | Meilisearch | the Meilisearch `Client`, or a `MeilisearchServer`, its URL and key, to start an application on it | every index deleted after the class | `search-engine-starter` |
 | `@MailpitIntegrationTest` | Mailpit, an SMTP server | a `Mailpit`, to send to it and read what it received | every email deleted after the class | `mail-starter` |
 
 ## 🐘 PostgreSQL, with `@JooqIntegrationTest`
@@ -109,9 +109,10 @@ page explains.
 ## 🔎 Meilisearch, with `@MeilisearchIntegrationTest`
 
 Meilisearch is the search engine that `search-engine-starter` brings. It has no transaction to roll back, so the tests
-of a class share the same indexes, and the extension deletes every index after the class. Meilisearch applies each
-write as an asynchronous task, so a test waits for the task with `client.waitForTask` before it reads. No adapter of
-the application uses Meilisearch yet: only the test of the extension runs it.
+of a class share the same indexes, and the extension deletes every index after the class: a test names its index
+after a random id, so that another test of the class cannot see it. A write through the starter's `SearchIndex` is
+applied when it returns, so a test reads right after it. A rebuild returns before its batches are loaded through
+platform events, so a test waits for its end before it reads.
 
 ## 📬 Mailpit, with `@MailpitIntegrationTest`
 
