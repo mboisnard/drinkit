@@ -31,7 +31,8 @@ local values, the page the security reviewer reads.
 ## How it is checked
 
 The Ops lane starts compose on every change to `deployment/local` or to the updater's `db/` folder, so a demo row
-that the schema refuses fails it. Squawk and `ChangelogConventionsTest` check the demo files like every changelog.
+that the schema refuses fails it. Squawk and `ChangelogConventionsTest` check the demo files like every changelog,
+and the test's `demo-stays-local` rule fails when `db.changelog-master.yml` runs one of them.
 
 ## Consequences
 

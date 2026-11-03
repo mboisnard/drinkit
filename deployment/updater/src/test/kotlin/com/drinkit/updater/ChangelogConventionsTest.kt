@@ -5,6 +5,7 @@ import com.drinkit.updater.Migration.Companion.DDL
 import com.drinkit.updater.Migration.Companion.DEMO
 import com.drinkit.updater.Migration.Companion.DML
 import io.kotest.assertions.withClue
+import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -289,17 +290,33 @@ internal class ChangelogConventionsTest {
     }
 
     @Test
-    fun `no dml migration changes the schema`() {
+    fun `no data migration changes the schema`() {
         // When
-        val changingSchema = dmlMigrations.filter { migration ->
+        val changingSchema = (dmlMigrations + demoMigrations).filter { migration ->
             migration.statements.any { it.firstWord !in DML_STATEMENTS }
         }
 
         // Then
         changingSchema shouldBreak rule(
             "dml-changes-no-schema",
-            why = "a schema change in dml/ runs after the ddl/ files of its deployment and escapes their rules",
-            fix = "move the statement to a ddl/ file",
+            why = "a schema change in dml/ or demo/ runs after the ddl/ files and escapes their rules, and a " +
+                "`BEGIN` or `COMMIT` cuts the transaction that Liquibase opens around the file",
+            fix = "move the statement to a ddl/ file, and leave the transaction to Liquibase",
+        )
+    }
+
+    @Test
+    fun `no deployment runs the demo data`() {
+        // When
+        val deployedPaths = Migration.runBy(MASTER_CHANGELOG)
+        val deployed = demoMigrations.filter { it.path in deployedPaths }
+
+        // Then
+        deployedPaths shouldContainAll baseMigrations.map { it.path }
+        deployed shouldBreak rule(
+            "demo-stays-local",
+            why = "every deployment runs $MASTER_CHANGELOG, and the password of the demo admin is public",
+            fix = "include demo/ from db.changelog-demo.yml only",
         )
     }
 
@@ -321,6 +338,7 @@ internal class ChangelogConventionsTest {
         trim().startsWith(OUTSIDE_A_TRANSACTION) && trim().removePrefix(OUTSIDE_A_TRANSACTION).isNotBlank()
 
     companion object {
+        private const val MASTER_CHANGELOG = "db.changelog-master.yml"
         private val FOLDERS = listOf(BASE, DDL, DML, DEMO)
         private val RUN_ONCE_FOLDERS = listOf(DDL, DML)
         private const val OUTSIDE_A_TRANSACTION = "-- Outside a transaction:"
