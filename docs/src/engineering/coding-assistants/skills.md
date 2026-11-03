@@ -50,7 +50,7 @@ already knows.
 |---|---|---|
 | [`implement-issue`][skill-issue] | Taking an open issue to a pull request, and cleaning up once it is merged | The maintainer, `/implement-issue <number>` |
 | [`new-issue`][skill-new-issue] | Turning an idea, a bug or discovered work into an issue that follows its form | Its description, or `implement-issue` |
-| [`review-pr`][skill-review-pr] | Reviewing a pull request and posting inline comments ranked by severity | The maintainer, `/review-pr <number>` |
+| [`review-pr`][skill-review-pr] | Reviewing a pull request and posting inline comments ranked by severity | The maintainer, `/review-pr <number>`, or a fresh agent that `implement-issue` starts once its pull request opens |
 | [`test-driven-development`][skill-tdd] | Adding or changing behavior, backend or frontend, test first | Editing Kotlin code of any module, tests included, or the sources of a `-frontend` module, and `implement-issue` |
 | [`test-existing-code`][skill-test-existing] | Covering code that works but has no tests, each test proven able to fail | Its description, or `test-driven-development` |
 | [`backend-feature`][skill-backend] | Shaping a feature of the Kotlin backend, from the API contract to the database, proved by the architecture tests | Editing production code of a `-domain`, `-infra` or `-backend` module |
