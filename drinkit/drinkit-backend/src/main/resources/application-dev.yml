@@ -13,10 +13,6 @@ springdoc:
   api-docs.enabled: true
   swagger-ui.enabled: true
 
-meilisearch:
-  url: http://localhost:7700
-  apiKey: masterKey
-
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/drinkit
@@ -28,6 +24,9 @@ logging.level:
     com.drinkit.mail: DEBUG
 
 starters:
+  search-engine:
+    meilisearch:
+      api-key: masterKey
   feature-flags:
     flipt:
       url: http://localhost:8082

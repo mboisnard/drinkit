@@ -4,10 +4,10 @@ plugins {
 }
 
 dependencies {
-    // Typed configuration properties
-    implementation("org.springframework.boot:spring-boot")
-
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
     api(libs.meilisearch.java.client)
+    compileOnly("org.springframework.boot:spring-boot-health")
 
+    testImplementation("org.springframework.boot:spring-boot-health")
     testFixturesApi(libs.testcontainers.meilisearch)
 }
