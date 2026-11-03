@@ -77,7 +77,7 @@ Every file starts the same way:
 
 ```sql
 --liquibase formatted sql
---changeset <author>:0001-add-cellar-description logicalFilePath:fixed
+--changeset <author>:0001-insert-grape-varieties logicalFilePath:fixed
 
 SET lock_timeout = '5s';
 SET statement_timeout = '1min';
@@ -173,8 +173,8 @@ raised timeout ends with its file. A file that changes any other setting resets 
 
 Every statement must be idempotent: run again, it changes nothing. Three situations run a statement again: a file
 that failed halfway runs again from its first statement, `base/` runs again when it changes, and the local apply
-command of the [`database-change` skill][database-skill] replays every file. These forms check before
-they act:
+command of the [`database-change` skill][database-skill] replays every file but the demo data. These forms check
+before they act:
 
 - `CREATE TABLE IF NOT EXISTS ...`
 - `ALTER TABLE ... ADD COLUMN IF NOT EXISTS ...`
@@ -240,7 +240,7 @@ index. A `UNIQUE` constraint follows the same idea as a foreign key: build its i
 
 ### NOT NULL constraints
 
-`SET NOT NULL` on a large table locks it while it scans every row. Proceed in three steps, each in a file of its own
+`SET NOT NULL` on a large table locks it while it scans every row. Proceed in steps, each in a file of its own
 for the reason given in [Foreign keys](#foreign-keys). When the second step needs a `dml/` file, the third waits for
 the next deployment.
 
@@ -420,7 +420,7 @@ with examples and the safe way to write the statement.
   `ban-revoke`, `ban-replica-identity`, `ban-alter-row-level-security`, `ban-create-policy`, `ban-drop-policy`,
   `ban-alter-policy-condition`, `ban-alter-policy-roles`.
 
-Four rules are off, each for a reason written in `.squawk.toml`:
+These rules are off, each for a reason written in `.squawk.toml`:
 
 - **`prefer-text-field`.** A `VARCHAR(n)` length is a deliberate guard, often the only one, and widening it changes
   the catalog only.
@@ -431,7 +431,7 @@ Four rules are off, each for a reason written in `.squawk.toml`:
 - **`ban-new-write-restriction`.** Adding a constraint is the purpose of most `ddl/` files. The rules above check how
   it locks, and the expand and contract steps how the running version keeps working.
 
-On a Squawk upgrade, read its changelog and add each new rule to one of the two lists of `.squawk.toml`, so that the
+On a Squawk upgrade, read its changelog and add each new rule to one of the lists of `.squawk.toml`, so that the
 file still shows every rule and nobody relies on a default. Squawk fails on a misspelled or unknown name, which
 catches a typo there.
 
