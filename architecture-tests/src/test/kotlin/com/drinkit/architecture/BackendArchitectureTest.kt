@@ -1,5 +1,6 @@
 package com.drinkit.architecture
 
+import io.github.baole.konture.ClassDeclaration
 import io.github.baole.konture.Visibility
 import io.github.baole.konture.rule
 import org.junit.jupiter.api.Test
@@ -27,16 +28,11 @@ internal class BackendArchitectureTest {
             description = "A port whose adapter is a @JooqRepository needs a running transaction: annotate the class " +
                 "that uses it, or each of its non-private methods, @Transactional or @RetryableTransactional"
             val portNames = transactionalPorts.map { it.fqName }.toSet()
-            val transactional = setOf("Transactional", "RetryableTransactional")
             classes {
                 that().inModule(BACKENDS)
                 that().satisfy { cls -> cls.referencedTypeNames().any { it in portNames } }
                 should().satisfy { cls, violations ->
-                    val methods = cls.functions.filter { it.visibility != Visibility.PRIVATE }
-                    val classInTransaction = cls.annotations.any { it.name in transactional }
-                    val methodsInTransaction = methods.isNotEmpty() &&
-                        methods.all { method -> method.annotations.any { it.name in transactional } }
-                    if (!classInTransaction && !methodsInTransaction) {
+                    if (!cls.runsInTransaction()) {
                         violations += "${cls.fqName} uses a port outside a transaction"
                     }
                 }
@@ -110,4 +106,13 @@ internal class BackendArchitectureTest {
             }
         }.check()
     }
+}
+
+private val TRANSACTIONAL = setOf("Transactional", "RetryableTransactional")
+
+private fun ClassDeclaration.runsInTransaction(): Boolean {
+    val methods = functions.filter { it.visibility != Visibility.PRIVATE }
+    val eachMethodInTransaction = methods.isNotEmpty() &&
+        methods.all { method -> method.annotations.any { it.name in TRANSACTIONAL } }
+    return annotations.any { it.name in TRANSACTIONAL } || eachMethodInTransaction
 }
