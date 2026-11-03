@@ -1,0 +1,4 @@
+{
+  "searchableAttributes": ["name", "grapes"],
+  "filterableAttributes": ["grapes"]
+}

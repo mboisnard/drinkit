@@ -62,3 +62,5 @@ class MeilisearchExtension :
         return Client(config)
     }
 }
+
+data class MeilisearchServer(val url: String, val apiKey: String)

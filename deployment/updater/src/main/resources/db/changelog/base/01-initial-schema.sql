@@ -93,3 +93,14 @@ CREATE TABLE IF NOT EXISTS drinkit_application.exchange_rate
     modified          TIMESTAMP WITH TIME ZONE NOT NULL,
     PRIMARY KEY (source_currency, target_currency)
 );
+
+-- Search index rebuilds, one row per running rebuild, which any instance marks its batches done in
+
+CREATE TABLE IF NOT EXISTS drinkit_application.search_index_rebuild
+(
+    index_name     TEXT                     NOT NULL PRIMARY KEY,
+    rebuild_id     UUID                     NOT NULL,
+    total_batches  BIGINT                   NOT NULL,
+    done_batches   BIGINT[]                 NOT NULL,
+    started        TIMESTAMP WITH TIME ZONE NOT NULL
+);
