@@ -380,7 +380,8 @@ apply, as the examples of [Foreign keys](#foreign-keys) show.
 | `unique-file-number` | No two files of a folder share a number | Two files with one number run in an order nobody chose |
 | `drop-index-before-build` | In `ddl/`, `DROP INDEX CONCURRENTLY IF EXISTS` right before each `CREATE INDEX CONCURRENTLY` of the same index | A failed build is rebuilt instead of kept as an invalid index |
 | `ddl-changes-no-data` | No `INSERT`, `UPDATE`, `DELETE`, `MERGE`, `TRUNCATE` or `COPY` in `ddl/` | Data changes run after the schema, and are reviewed on their own |
-| `dml-changes-no-schema` | Only `SET`, `RESET`, `INSERT`, `UPDATE`, `DELETE`, `MERGE`, `WITH` and `SELECT` in `dml/` | A schema change in `dml/` would run after the `ddl/` files and escape their rules |
+| `dml-changes-no-schema` | Only `SET`, `RESET`, `INSERT`, `UPDATE`, `DELETE`, `MERGE`, `WITH` and `SELECT` in `dml/` and the demo data | A schema change there would run after the `ddl/` files and escape their rules, and a `BEGIN` or `COMMIT` would cut the transaction that Liquibase opens around the file |
+| `demo-stays-local` | No demo file among those `db.changelog-master.yml` runs | Every deployment runs that changelog, and the password of the demo admin is public |
 
 ### Rules of Squawk
 
@@ -440,10 +441,6 @@ Neither check starts a database, so a few rules wait for a test against PostgreS
 ([#502](https://github.com/mboisnard/drinkit/issues/502)): a primary key on each table, an index behind each foreign
 key, no invalid index left behind, names without hyphens, the same schema for a new and an existing database after a
 rebaseline, and no read or write blocked when `base/` runs again.
-
-Squawk reads every file as if it ran outside a transaction, the data files too. It accepts a `BEGIN` and `COMMIT`
-pair in a data file, which would cut the transaction that Liquibase opens around that file: `dml-changes-no-schema`
-refuses one in `dml/`, but nothing refuses one in the demo data.
 
 ## ⚙️ jOOQ code generation
 

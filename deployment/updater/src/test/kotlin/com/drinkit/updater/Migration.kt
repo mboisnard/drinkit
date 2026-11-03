@@ -3,10 +3,13 @@ package com.drinkit.updater
 import liquibase.change.core.RawSQLChange
 import liquibase.changelog.ChangeLogParameters
 import liquibase.changelog.ChangeSet
+import liquibase.integration.spring.SpringResourceAccessor
+import liquibase.parser.ChangeLogParserFactory
 import liquibase.parser.core.formattedsql.FormattedSqlChangeLogParser
 import liquibase.resource.ClassLoaderResourceAccessor
 import liquibase.resource.Resource
 import liquibase.util.StringUtil
+import org.springframework.core.io.DefaultResourceLoader
 
 private const val CHANGELOG = "db/changelog"
 private val resourceAccessor = ClassLoaderResourceAccessor()
@@ -51,6 +54,17 @@ internal class Migration(private val resource: Resource) {
             .map(::Migration)
             .sortedBy { it.path }
             .toList()
+
+        // The files a changelog of db/changelog runs, its includes followed. Spring's accessor, as the updater's,
+        // reads the `classpath:` paths of includeAll
+        fun runBy(changelog: String): Set<String> {
+            val path = "$CHANGELOG/$changelog"
+            val accessor = SpringResourceAccessor(DefaultResourceLoader())
+            return ChangeLogParserFactory.getInstance().getParser(path, accessor)
+                .parse(path, ChangeLogParameters(), accessor).changeSets
+                .map { it.changeLog.physicalFilePath.substringAfter("$CHANGELOG/") }
+                .toSet()
+        }
     }
 }
 
