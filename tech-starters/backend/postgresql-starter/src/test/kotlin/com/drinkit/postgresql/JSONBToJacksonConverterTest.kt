@@ -47,6 +47,22 @@ internal class JSONBToJacksonConverterTest {
         dsl.roundTrip(amounts) shouldBe amounts
     }
 
+    @Test
+    fun `reads back each element of a list with its own type`(dsl: DSLContext) {
+        // Given
+        val converter = JSONBToJacksonConverter<List<Note>>(
+            mapper.typeFactory.constructCollectionType(List::class.java, Note::class.java),
+            mapper,
+        )
+        dsl.insertInto(document).set(details, converter.to(listOf(Note("first"), Note("second")))).execute()
+
+        // When
+        val notes = converter.from(dsl.select(details).from(document).fetchSingle().value1() as JSONB)
+
+        // Then
+        notes shouldBe listOf(Note("first"), Note("second"))
+    }
+
     private inline fun <reified T : Any> DSLContext.roundTrip(value: T): T {
         val converter = JSONBToJacksonConverter(T::class.java, mapper)
         insertInto(document).set(details, converter.to(value)).execute()
