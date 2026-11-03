@@ -1,7 +1,7 @@
 # Subagents
 
 A subagent is an agent that a Claude Code session starts for one task. It gets its own context window, its own
-instructions, the tools it is allowed and the model it runs on, and it hands back only its report. DrinkIt uses two,
+instructions, the tools it is allowed and the model it runs on, and it hands back only its report. DrinkIt defines two,
 both reviewers that the [`/implement-issue`][skill-issue] skill starts before a pull request opens: a judge of the
 branch against its issue, and a security reviewer. A `NEEDS_WORK` verdict sends the session back to fix its work
 first. Once the pull request opens, the skill also starts a fresh general-purpose agent, with no file of its own,
@@ -21,8 +21,10 @@ names the agent to start it.
   proves it. Its prompt carries no account of the work, which would anchor it on what the session that wrote the code
   believes. A summary or a hint that slips in is ignored, and named in its report.
 - **Read-only.** Both agents can read, search and run commands, but have no edit tool, and their instructions forbid
-  any write. A reviewer that fixed what it found would end up reviewing its own work.
-- **A model for judgment.** Both run on Opus, since their whole task is judgment.
+  any write. A reviewer that fixed what it found would end up reviewing its own work. The review agent of the pull
+  request is a general-purpose one, with edit tools: only its prompt keeps it from posting or changing anything.
+- **A model for judgment.** Both run on Opus, since their whole task is judgment. The review agent runs on the
+  model of the session.
 
 ## 🧑‍⚖️ The subagents of DrinkIt
 
