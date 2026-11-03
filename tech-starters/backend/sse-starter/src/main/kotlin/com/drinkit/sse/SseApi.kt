@@ -40,7 +40,6 @@ internal class SseApi(private val emitters: InMemoryEmitters) {
             ?: return logger.debug { "No emitters found on this instance for session: ${platformEvent.sessionId}" }
 
         val sseEvent = SseEmitter.event()
-            .id(platformEvent.sessionId)
             .name(platformEvent.eventName)
             .data(platformEvent.payload)
 
@@ -70,7 +69,7 @@ internal class SseApi(private val emitters: InMemoryEmitters) {
         }
 
         emitter.onTimeout {
-            logger.info { "Emitter timeout for session: $sessionId" }
+            logger.info { "Emitter timeout" }
             emitters.unregister(sessionId, emitter)
         }
 
