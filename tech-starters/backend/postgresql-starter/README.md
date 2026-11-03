@@ -1,19 +1,56 @@
 # PostgreSQL Starter
 
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
-that gives the application a jOOQ `DSLContext` and a connection pool on PostgreSQL. It refuses a `@JooqRepository`
-call outside a transaction, a statement that updates or deletes without a `WHERE`, and a database other than
-PostgreSQL. It also bounds each statement in time, logs the slow queries and turns a lost update into
-Spring's `OptimisticLockingFailureException`.
+that gives the application a jOOQ `DSLContext` and a connection pool on PostgreSQL, guarded against the mistakes that
+lose or leak data.
 
-## What is it for?
+## What is jOOQ?
 
-The adapters of the
+jOOQ writes SQL in Kotlin, from classes generated out of the schema, so that the compiler checks each table, column
+and type. The adapters of the
 [hexagonal architecture](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/hexagonal-architecture.md)
-read and write their tables with jOOQ, inside the transaction of the use case that calls them. The tables and their
-changes belong to the
+read and write their tables with it, inside the transaction of the use case that calls them: a cellar saved with its
+bottles, the events of a user appended to its stream. The tables and their changes belong to the
 [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md), which applies the Liquibase
 changelogs before the application starts.
+
+## Architecture Overview
+
+```mermaid
+sequenceDiagram
+    participant UseCase as Use case (@Transactional)
+    participant Repository as @JooqRepository
+    participant Starter as postgresql-starter
+    participant Database as PostgreSQL
+    UseCase->>Repository: findById(cellarId)
+    Note over Repository: refused outside a transaction, before the method runs
+    Repository->>Starter: dslContext.selectFrom(CELLAR)
+    Starter->>Starter: refuses an UPDATE or DELETE without WHERE
+    Starter->>Database: SQL, bounded by statement_timeout
+    Database-->>Starter: rows
+    Starter-->>Repository: records, a slow query logged without its bind values
+    Repository-->>UseCase: Cellar
+```
+
+```mermaid
+graph LR
+    Adapter[Adapter of the application] --> Api[DSLContext, @JooqRepository, JSONBToJacksonConverter]
+    Api --> Internal[Guards, slow query log, optimistic locking, defaults]
+    Internal --> Database[(PostgreSQL)]
+    style Adapter fill:#e1f5e1
+    style Api fill:#e1e5ff
+    style Internal fill:#fff3e1
+    style Database fill:#ffe1e1
+```
+
+## Key Features
+
+- A `@JooqRepository` call outside a transaction fails: with auto-commit off, it would write nothing.
+- A statement that updates or deletes without a `WHERE` fails, so that a forgotten condition never empties a table.
+- The application refuses to start on a database other than PostgreSQL, since the SQL of the adapters is
+  PostgreSQL's.
+- Each statement is bounded in time, and a slow one is logged at `WARN` with its bind values left as `?`.
+- A lost update on a versioned table becomes Spring's `OptimisticLockingFailureException`.
 
 ## Configuration
 
@@ -33,14 +70,16 @@ The starter sets these defaults, which a property of the application or an envir
   `spring.application.name`, so `pg_stat_activity` tells the applications sharing a database apart. Without it,
   the driver and Hikari keep their own names.
 - `spring.jooq.sql-dialect=postgres`: jOOQ never guesses the dialect, a guess that falls back to a generic one on failure.
+  The starter's jOOQ customizer sets the same dialect after this property, so the property counts only once the
+  application replaces that customizer.
 - `logging.level.org.jooq.Constants=off`, which hides the jOOQ logo and its tips.
 
-The application refuses to start on another database, since the SQL of the adapters is PostgreSQL's. A statement that
-updates or deletes every row on purpose says so with `.where(trueCondition())`. A slow query is logged at `WARN` with
-its bind values left as `?`, so that no personal data reaches the logs.
+A statement that updates or deletes every row on purpose says so with `.where(trueCondition())`. A slow query keeps
+its bind values as `?`, so that no personal data reaches the logs.
 
-A `DefaultConfigurationCustomizer` bean named `postgresqlJooqCustomizer` replaces the starter's: the dialect, the
-optimistic locking and the `WHERE` guards. A customizer with another name adds to them.
+A `DefaultConfigurationCustomizer` bean named `postgresqlJooqCustomizer` replaces the starter's dialect, optimistic
+locking and `WHERE` guards: the dialect then comes from `spring.jooq.sql-dialect`, `postgres` unless the application
+sets another. A customizer with another name adds to them.
 
 ## Usage
 

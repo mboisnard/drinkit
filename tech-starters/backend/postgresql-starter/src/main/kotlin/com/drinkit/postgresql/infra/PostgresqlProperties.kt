@@ -7,5 +7,6 @@ private const val DEFAULT_SLOW_QUERY_THRESHOLD_MILLIS = 500L
 
 @ConfigurationProperties("starters.postgresql")
 internal data class PostgresqlProperties(
+    val enabled: Boolean = true,
     val slowQueryThreshold: Duration = Duration.ofMillis(DEFAULT_SLOW_QUERY_THRESHOLD_MILLIS),
 )
