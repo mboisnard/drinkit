@@ -18,7 +18,7 @@ model reads is advisory, while a hook, a permission rule or a test runs every ti
 | | Advisory, the model decides | Deterministic, it always runs |
 |---|---|---|
 | Guides, before the agent acts | `AGENTS.md`, the skills, this documentation | The `deny` and `ask` permission rules and the [hooks](hooks.md) that refuse a merge, a ruleset write or a hand edit of a generated file |
-| Sensors, after the agent acts | The [judge and the security reviewer](sub-agents.md) | detekt after each edit, the compilation and architecture tests at the end of each turn, the tests, CI, the master ruleset |
+| Sensors, after the agent acts | The [judge, the security reviewer and the review of the pull request](sub-agents.md) | detekt after each edit, the compilation and architecture tests at the end of each turn, the tests, CI, the master ruleset |
 
 ## 🗺️ AGENTS.md, the map
 
@@ -56,7 +56,8 @@ flowchart LR
 - **While the agent works**, the [hooks](hooks.md) run detekt after each Kotlin edit, then compile the code with its
   tests and run the [architecture tests](../writing-code/testing/architecture-tests.md) at the end of each turn.
 - **Before the pull request**, the [`/implement-issue`](skills.md) skill, which takes an issue to a pull request,
-  runs the checks CI would run and a fresh [judge](sub-agents.md).
+  runs the checks CI would run and a fresh [judge](sub-agents.md). Once the pull request opens, it starts a fresh
+  agent that reviews it as `/review-pr` does and hands its findings to the maintainer.
 - **On the pull request**, [CI](../delivery/ci-cd.md) runs the build, the tests, the
   [changelog rules](../build-and-data/database.md#checked-rules) and the security analyses, in the lanes, groups of
   checks, that the change touches.

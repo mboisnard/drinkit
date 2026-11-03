@@ -69,6 +69,15 @@ Previous gaps, from the second round on:
 
 The `security-reviewer` prompt holds the worktree, the base and the head, nothing else.
 
+## Review prompt
+
+```
+Review pull request #<pr> by following .claude/skills/review-pr/SKILL.md and its examples.md, from <absolute path
+of the main checkout>. Post nothing on GitHub. Remove your pr-<pr> worktree and branch, then return the findings,
+each with its severity, its path:line and one or two sentences. Do not start the security-reviewer: the judge
+rounds start it whenever the diff calls for it.
+```
+
 ## Judge time limit
 
 Sent to the judge still running past the time budget of its definition, or to resume one that stopped without a

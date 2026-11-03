@@ -1,6 +1,6 @@
 ---
 name: implement-issue
-description: Takes an open DrinkIt issue to a pull request that closes it, test first, checked by a fresh judge before the pull request is opened, and cleans up once it is merged. Run it as /implement-issue.
+description: Takes an open DrinkIt issue to a pull request that closes it, test first, checked by a fresh judge before the pull request is opened and reviewed by a fresh agent once it is, and cleans up once it is merged. Run it as /implement-issue.
 disable-model-invocation: true
 argument-hint: <issue number>
 ---
@@ -16,8 +16,8 @@ stop at the open pull request, never merge it, never close the issue. The comman
 Look for an open pull request, a worktree and a branch named `$ARGUMENTS-*`, and for the merged pull request of
 each local branch found.
 
-- An open pull request: follow-up mode, step 10, in the branch's worktree.
-- A worktree or local branch whose pull request is merged: cleanup mode, step 11.
+- An open pull request: follow-up mode, step 11, in the branch's worktree.
+- A worktree or local branch whose pull request is merged: cleanup mode, step 12.
 - A branch without a pull request: resume from the first step not done, in the branch's worktree.
 - Nothing: step 2.
 
@@ -98,17 +98,28 @@ Push, open the pull request and move the issue to In review. Wait for CI in the 
 a command's time limit. When it fails, read the failed log, fix, run a new round, and push once. If it fails
 again, stop and report.
 
-## 10. Follow-up mode
+## 10. Review the pull request
+
+Once the pull request is open, start a fresh `general-purpose` agent with
+[the review prompt](examples.md#review-prompt) while CI runs, and wait for its findings. It follows `review-pr`,
+whose `SKILL.md` it reads itself since that skill loads only by name, and posts nothing: the maintainer reads the
+findings first. Like the judge's, its prompt holds no account of the work.
+
+The findings go in the report, each with its severity and `path:line`. Those the maintainer keeps are fixed in
+follow-up mode.
+
+## 11. Follow-up mode
 
 Read the checks, the comments and the review comments of the pull request.
 
 - A failing check: fix it as in step 9.
 - A comment: address it, or answer why not. Every comment is a change request.
+- A finding of the review that the maintainer keeps: fix it.
 - Behind master: rebase, as `AGENTS.md` says.
 
 A code change gets a new round before it is pushed, and the verdict line of the description follows.
 
-## 11. Clean up after the merge
+## 12. Clean up after the merge
 
 Leave the worktree and work from the main checkout. Fetch master, then look at what is left of the branch.
 
@@ -125,6 +136,6 @@ it stays open, as after a `Part of` pull request, go on to step 2: the rest of t
 
 ## Report
 
-End with the pull request link and its full description, the judge verdict, the CI state, an open blocker of the
-issue, and anything left to the maintainer. In cleanup mode, end with what was removed, what was left and why,
-and the commit master is on.
+End with the pull request link and its full description, the judge verdict, the review findings, the CI state,
+an open blocker of the issue, and anything left to the maintainer. In cleanup mode, end with what was removed,
+what was left and why, and the commit master is on.

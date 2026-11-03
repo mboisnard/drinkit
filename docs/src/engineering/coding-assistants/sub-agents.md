@@ -4,7 +4,9 @@ A subagent is an agent that a Claude Code session starts for one task. It gets i
 instructions, the tools it is allowed and the model it runs on, and it hands back only its report. DrinkIt uses two,
 both reviewers that the [`/implement-issue`][skill-issue] skill starts before a pull request opens: a judge of the
 branch against its issue, and a security reviewer. A `NEEDS_WORK` verdict sends the session back to fix its work
-first. To add or change an agent, read this page, then follow the [`harness-change` skill][skill-harness].
+first. Once the pull request opens, the skill also starts a fresh general-purpose agent, with no file of its own,
+that follows [`/review-pr`][skill-review-pr] and hands its findings to the maintainer without posting them. To add
+or change an agent, read this page, then follow the [`harness-change` skill][skill-harness].
 
 ## ⚙️ How one is made
 
