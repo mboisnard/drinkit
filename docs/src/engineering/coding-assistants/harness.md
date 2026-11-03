@@ -50,17 +50,18 @@ flowchart LR
   judge -.- issuejudge[issue-judge<br/>acceptance criteria and design]
   push -.- prepush[pre-push<br/>no push to master]
   pr -.- ci[CI<br/>the lanes a change touches]
+  pr -.- review[review-pr agent<br/>findings to the maintainer]
   merge -.- ruleset[master ruleset<br/>PR and green CI gate]
 ```
 
 - **While the agent works**, the [hooks](hooks.md) run detekt after each Kotlin edit, then compile the code with its
   tests and run the [architecture tests](../writing-code/testing/architecture-tests.md) at the end of each turn.
 - **Before the pull request**, the [`/implement-issue`](skills.md) skill, which takes an issue to a pull request,
-  runs the checks CI would run and a fresh [judge](sub-agents.md). Once the pull request opens, it starts a fresh
-  agent that reviews it as `/review-pr` does and hands its findings to the maintainer.
+  runs the checks CI would run and a fresh [judge](sub-agents.md).
 - **On the pull request**, [CI](../delivery/ci-cd.md) runs the build, the tests, the
   [changelog rules](../build-and-data/database.md#checked-rules) and the security analyses, in the lanes, groups of
-  checks, that the change touches.
+  checks, that the change touches. Meanwhile `/implement-issue` starts a fresh agent that reviews the pull request as
+  `/review-pr` does and hands its findings to the maintainer.
 - **At the merge**, the master ruleset requires a green `CI gate`, the one check that sums up the lanes.
 
 An architecture rule or a changelog rule that fails names itself, says why it exists and how to fix it, so the agent
@@ -100,8 +101,8 @@ The settings of the workflows themselves, a read-only token, pinned actions and 
 - The owner's token in an agent session could still change the ruleset: only the guard hook refuses it. The guard
   reads commands as text, and the command shapes it still misses are listed in the
   [agent harness epic](https://github.com/mboisnard/drinkit/issues/363).
-- The judge is required by `/implement-issue`, not by a hook: the pull request shows its verdict line, which the
-  maintainer checks before merging.
+- The judge and the review are required by `/implement-issue`, not by a hook: the pull request shows the judge's
+  verdict line, which the maintainer checks before merging.
 - No linting or tests run on the frontend yet ([#400](https://github.com/mboisnard/drinkit/issues/400)), and no
   detekt or coverage report shows on a pull request ([#404](https://github.com/mboisnard/drinkit/issues/404)).
 

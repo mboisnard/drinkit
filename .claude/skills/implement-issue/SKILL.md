@@ -105,12 +105,15 @@ Once the pull request is open, start a fresh `general-purpose` agent with
 whose `SKILL.md` it reads itself since that skill loads only by name, and posts nothing: the maintainer reads the
 findings first. Like the judge's, its prompt holds no account of the work.
 
-The findings go in the report, each with its severity and `path:line`. Those the maintainer keeps are fixed in
-follow-up mode.
+Write its findings, with the head commit it reviewed, to
+`$(git rev-parse --path-format=absolute --git-path claude/review.md)`, and put them in the report, each with its
+severity and `path:line`. When a CI fix changes the head before the review returns, say so beside them. Those the
+maintainer keeps are fixed in follow-up mode.
 
 ## 11. Follow-up mode
 
-Read the checks, the comments and the review comments of the pull request.
+Read the checks, the comments and the review comments of the pull request, and `claude/review.md`. When that file
+is missing, run step 10 first.
 
 - A failing check: fix it as in step 9.
 - A comment: address it, or answer why not. Every comment is a change request.
@@ -126,7 +129,7 @@ Leave the worktree and work from the main checkout. Fetch master, then look at w
 - Uncommitted changes in the worktree, or a commit that `git cherry` marks `+`, not on master: remove nothing,
   report what is left, and stop there.
 - Otherwise remove the worktree, then delete the branch with `-D`: a rebase merge rewrites the commits, so `-d`
-  refuses a branch that is merged.
+  refuses a branch that is merged. Remove too the `pr-<pr>` worktree and branch that a review agent left.
 
 When no tracked file of the main checkout has changed, switch it to master and pull it, fast-forward only.
 Otherwise leave it as it is and say so: a switch would carry those changes onto master.
