@@ -25,6 +25,11 @@ says why.
 
 `starters.cache.enabled=false` turns caching off: every `@Cacheable` method runs on each call.
 
+`STARTERS_CACHE_TTL_<CACHE>` works for a cache whose name has no hyphen or dot, such as `configurations`:
+`STARTERS_CACHE_TTL_EXCHANGE_RATES` sets no cache at all. The time to live of `exchange-rates` goes through
+`SPRING_APPLICATION_JSON`, as in `{"starters.cache.ttl.exchange-rates": "1h"}`, and that of a cache with a dot in its
+name through brackets, `starters.cache.ttl[exchange.rates]`.
+
 ## Usage
 
 A module that caches declares the starter, which then wires itself:
