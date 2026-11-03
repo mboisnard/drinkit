@@ -50,7 +50,6 @@ internal class TechStartersArchitectureTest {
                 "internal: mark the class, or make it internal. A data or value class is a value that a tool " +
                 "takes, and needs no mark"
             suppress {
-                classFqName("com.drinkit.configuration.ConfigurationKey", DATA_STARTERS)
                 classFqName("com.drinkit.security.configuration.SecurityConfiguration", WEB_STARTERS)
                 classFqName("com.drinkit.security.AuthenticationFailedException", WEB_STARTERS)
                 classFqName("com.drinkit.security.filter.MaintenanceModeFilter", WEB_STARTERS)
@@ -91,9 +90,6 @@ internal class TechStartersArchitectureTest {
             description = "Only a scan of the starter's packages finds a @Component or @Service: declare the bean in " +
                 "the starter's @AutoConfiguration"
             suppress {
-                classFqName("com.drinkit.configuration.infra.JooqConfigurationsRepository", DATA_STARTERS)
-                classFqName("com.drinkit.configuration.infra.ConfigurationSpringConfig", DATA_STARTERS)
-                classFqName("com.drinkit.configuration.infra.CachedConfigurationsRepository", DATA_STARTERS)
                 classFqName("com.drinkit.search.engine.MeilisearchConfig", DATA_STARTERS)
                 classFqName("com.drinkit.security.password.encoder.InternalUserPasswordEncoder", WEB_STARTERS)
                 classFqName("com.drinkit.security.InternalAuthenticationService", WEB_STARTERS)

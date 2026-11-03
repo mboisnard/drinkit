@@ -1,146 +1,97 @@
 package com.drinkit.configuration.infra
 
-import com.drinkit.configuration.ConfigurationKey
 import com.drinkit.configuration.Configurations
-import com.drinkit.configuration.get
-import com.drinkit.configuration.getOrSetDefault
-import com.drinkit.configuration.getOrThrow
-import com.drinkit.configuration.set
-import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.nulls.shouldBeNull
+import com.drinkit.configuration.configurationKey
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 internal abstract class ConfigurationsTestContract {
 
-    protected val repository: Configurations by lazy { fetchRepository() }
+    protected val configurations: Configurations by lazy { fetchConfigurations() }
 
-    abstract fun fetchRepository(): Configurations
+    abstract fun fetchConfigurations(): Configurations
 
     @Test
-    fun `returns null when configuration does not exist`() {
+    fun `reads the default of a key never set`() {
         // When
-        val result = repository.get(TestKey.Feature1)
+        val limits = configurations[TestKeys.limits]
 
         // Then
-        result.shouldBeNull()
+        limits shouldBe Limits()
     }
 
     @Test
-    fun `stores and retrieves boolean configuration`() {
+    fun `reads back a flag that was set`() {
         // Given
-        repository.set(TestKey.Feature1, true)
+        configurations[TestKeys.enabled] = true
 
         // When
-        val result = repository.get(TestKey.Feature1)
+        val enabled = configurations[TestKeys.enabled]
 
         // Then
-        result shouldBe true
+        enabled shouldBe true
     }
 
     @Test
-    fun `stores and retrieves string configuration`() {
+    fun `reads back a group of settings that was set`() {
         // Given
-        repository.set(TestKey.Name, "test-name")
+        configurations[TestKeys.limits] = Limits(maxItems = 42, label = "custom")
 
         // When
-        val result = repository.get(TestKey.Name)
+        val limits = configurations[TestKeys.limits]
 
         // Then
-        result shouldBe "test-name"
+        limits shouldBe Limits(maxItems = 42, label = "custom")
     }
 
     @Test
-    fun `stores and retrieves integer configuration`() {
+    fun `reads back a list of groups that was set`() {
         // Given
-        repository.set(TestKey.MaxItems, 42)
+        configurations[TestKeys.tags] = listOf(Tag("red"), Tag("blue"))
 
         // When
-        val result = repository.get(TestKey.MaxItems)
-
-        result shouldBe 42
-    }
-
-    @Test
-    fun `stores and retrieves complex object`() {
-        // Given
-        val complexConfig = TestComplexConfig(
-            host = "localhost",
-            port = 5432,
-            enabled = true,
-        )
-        repository.set(TestKey.ComplexConfig, complexConfig)
-
-        // When
-        val result = repository.get(TestKey.ComplexConfig)
+        val tags = configurations[TestKeys.tags]
 
         // Then
-        result shouldBe complexConfig
+        tags shouldBe listOf(Tag("red"), Tag("blue"))
     }
 
     @Test
-    fun `getOrSetDefault persists the default value when configuration does not exist`() {
+    fun `replaces a value that is set again`() {
         // Given
-        repository.getOrSetDefault(TestKey.MaxItems, 100)
+        configurations[TestKeys.limits] = Limits(maxItems = 42)
 
         // When
-        val result = repository.get(TestKey.MaxItems)
+        configurations[TestKeys.limits] = Limits(maxItems = 7)
 
         // Then
-        result shouldBe 100
+        configurations[TestKeys.limits] shouldBe Limits(maxItems = 7)
     }
 
     @Test
-    fun `getOrSetDefault returns existing value when configuration exists`() {
+    fun `brings a key back to its default on reset`() {
         // Given
-        repository.set(TestKey.MaxItems, 42)
+        configurations[TestKeys.limits] = Limits(maxItems = 42)
 
         // When
-        val result = repository.getOrSetDefault(TestKey.MaxItems, 100)
+        configurations.reset(TestKeys.limits)
 
         // Then
-        result shouldBe 42
+        configurations[TestKeys.limits] shouldBe Limits()
     }
 
-    @Test
-    fun `throws exception when configuration does not exist and getOrThrow is used`() {
-        shouldThrow<NoSuchElementException> {
-            repository.getOrThrow(TestKey.Feature1)
+    data class Limits(val maxItems: Int = 10, val label: String = "none") {
+        init {
+            require(maxItems in 1..100) { "maxItems must be between 1 and 100" }
         }
     }
 
-    @Test
-    fun `deletes configuration`() {
-        // Given
-        repository.set(TestKey.Feature1, true)
+    data class Tag(val name: String)
 
-        // When
-        repository.delete(TestKey.Feature1)
-
-        // Then
-        val result = repository.get(TestKey.Feature1)
-        result.shouldBeNull()
+    object TestKeys {
+        val enabled = configurationKey("test.enabled", default = false)
+        val limits = configurationKey("test.limits", default = Limits())
+        val tags = configurationKey("test.tags", default = emptyList<Tag>())
+        val label = configurationKey("test.label", default = "none")
     }
-
-    @Test
-    fun `updates existing configuration`() {
-        // Given
-        repository.set(TestKey.MaxItems, 42)
-
-        // When
-        repository.set(TestKey.MaxItems, 100)
-        val result = repository.get(TestKey.MaxItems)
-
-        // Then
-        result shouldBe 100
-    }
-
-    object TestKey {
-        object Feature1 : ConfigurationKey<Boolean>
-        object MaxItems : ConfigurationKey<Int>
-        object Name : ConfigurationKey<String>
-        object ComplexConfig : ConfigurationKey<TestComplexConfig>
-    }
-
-    data class TestComplexConfig(val host: String, val port: Int, val enabled: Boolean)
 }

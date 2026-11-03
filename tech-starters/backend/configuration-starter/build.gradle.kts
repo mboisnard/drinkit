@@ -5,7 +5,10 @@ plugins {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
+    implementation(project(":cache-starter"))
+
+    testImplementation(testFixtures(project(":cache-starter")))
 }
 
 jooq {

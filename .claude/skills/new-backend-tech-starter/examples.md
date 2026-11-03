@@ -215,7 +215,7 @@ internal class JooqSmsOutbox(private val dsl: DSLContext) : SmsOutbox { … }
   `MeilisearchExtension` and `@MeilisearchIntegrationTest` in `search-engine-starter`.
 
 The behaviour contract: `ConfigurationsTestContract`, run by `InMemoryConfigurationsTest` and
-`JooqConfigurationsRepositoryTest`.
+`JooqConfigurationsTest`.
 
 ## Wiring test
 

@@ -1,7 +1,6 @@
 package com.drinkit.security.filter
 
 import com.drinkit.configuration.Configurations
-import com.drinkit.configuration.getOrSetDefault
 import com.drinkit.security.configuration.SecurityConfiguration
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -12,7 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 /**
  * Filter that blocks all traffic when maintenance mode is enabled.
  *
- * This filter checks the SecurityConfiguration.MaintenanceMode configuration.
+ * This filter checks the SecurityConfiguration.maintenanceMode configuration.
  * If enabled, it returns a 503 Service Unavailable response for all requests.
  */
 // @Component
@@ -23,7 +22,7 @@ class MaintenanceModeFilter(private val configurations: Configurations) : OncePe
         response: HttpServletResponse,
         filterChain: FilterChain,
     ) {
-        val maintenanceMode = configurations.getOrSetDefault(SecurityConfiguration.MaintenanceMode, false)
+        val maintenanceMode = configurations[SecurityConfiguration.maintenanceMode]
 
         if (maintenanceMode) {
             response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
