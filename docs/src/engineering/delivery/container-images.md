@@ -10,7 +10,9 @@ it before you add an image or change a Dockerfile.
 
 `ghcr.io/mboisnard/drinkit-updater` holds the [updater](../build-and-data/database.md#liquibase) but none of its
 changelogs, so a new changelog needs no new image. The updater reads them from the classpath under `/workspace`,
-where they are mounted, or copied by an image built from this one.
+where they are mounted, or copied by an image built from this one. Such an image copies the folders that
+`db.changelog-master.yml` runs, never the [demo data](../build-and-data/database.md#folders) beside them, whose admin
+password is public.
 [ADR 0004](../adr/0004-one-updater-image-for-every-environment.md) records why one image serves every environment.
 
 `deployment/local/compose.yml` pins `latest` by digest and runs it on each start of the backend, with the `db/`
