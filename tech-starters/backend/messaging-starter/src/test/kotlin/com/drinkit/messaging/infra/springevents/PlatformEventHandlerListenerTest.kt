@@ -9,6 +9,8 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.logging.LogLevel
+import org.springframework.boot.logging.LoggingSystem
 import org.springframework.boot.test.system.CapturedOutput
 import org.springframework.boot.test.system.OutputCaptureExtension
 import org.springframework.context.PayloadApplicationEvent
@@ -100,6 +102,25 @@ internal class PlatformEventHandlerListenerTest {
         // Then
         output.out shouldContain "Handler something.handler.queue gave up after 2 attempts, the last one failed with " +
             "IllegalStateException"
+    }
+
+    @Test
+    fun `logs the stack trace of each failed attempt at debug`(output: CapturedOutput) {
+        val listener = listenerOf(maxAttempts = 1) { error("Cannot handle $it") }
+        val logging = LoggingSystem.get(javaClass.classLoader)
+        logging.setLogLevel(PlatformEventHandlerListener::class.java.name, LogLevel.DEBUG)
+
+        // When
+        try {
+            listener.onApplicationEvent(springEventOf(SomethingHappened(1)))
+            scheduler.runAll()
+        } finally {
+            logging.setLogLevel(PlatformEventHandlerListener::class.java.name, null)
+        }
+
+        // Then
+        output.out shouldContain "Attempt 1 of handler something.handler.queue failed\njava.lang.IllegalStateException"
+        output.out shouldContain "\tat com.drinkit.messaging"
     }
 
     private fun listenerOf(maxAttempts: Int = 3, delay: Duration = Duration.ZERO, handle: (PlatformEvent<*>) -> Unit) =
