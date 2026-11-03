@@ -119,7 +119,6 @@ internal class SpringArchitectureTest {
             description = "The wiring of a module is found by its name: rename the @Configuration class " +
                 "*Configuration"
             suppress {
-                classFqName("com.drinkit.search.engine.MeilisearchConfig", DATA_STARTERS)
                 classFqName("com.drinkit.security.SecurityConfig", WEB_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.FeatureFlagsConfig", OPS_STARTERS)
             }

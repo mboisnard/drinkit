@@ -1,0 +1,2 @@
+com.drinkit.search.engine.infra.SearchEngineAutoConfiguration
+com.drinkit.search.engine.infra.SearchEngineHealthAutoConfiguration

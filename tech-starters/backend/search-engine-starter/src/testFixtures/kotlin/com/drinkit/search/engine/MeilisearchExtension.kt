@@ -44,12 +44,12 @@ class MeilisearchExtension :
     }
 
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean =
-        setOf(Client::class.java).contains(parameterContext.parameter.type)
+        parameterContext.parameter.type in setOf(Client::class.java, MeilisearchServer::class.java)
 
     override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any =
         when (parameterContext.parameter.type) {
             Client::class.java -> client
-            else -> Unit
+            else -> MeilisearchServer(container.endpoint, MASTER_KEY)
         }
 
     private fun setReuseGlobalConfiguration() {

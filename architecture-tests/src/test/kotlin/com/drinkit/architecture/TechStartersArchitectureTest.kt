@@ -90,7 +90,6 @@ internal class TechStartersArchitectureTest {
             description = "Only a scan of the starter's packages finds a @Component or @Service: declare the bean in " +
                 "the starter's @AutoConfiguration"
             suppress {
-                classFqName("com.drinkit.search.engine.MeilisearchConfig", DATA_STARTERS)
                 classFqName("com.drinkit.security.password.encoder.InternalUserPasswordEncoder", WEB_STARTERS)
                 classFqName("com.drinkit.security.InternalAuthenticationService", WEB_STARTERS)
                 classFqName("com.drinkit.security.userdetails.JooqUserDetailsRepository", WEB_STARTERS)
@@ -133,7 +132,6 @@ internal class TechStartersArchitectureTest {
             description = "The application's own bean wins over a starter's: annotate the @Bean " +
                 "@ConditionalOnMissingBean"
             suppress {
-                function("com.drinkit.search.engine.MeilisearchConfig.meilisearchClient", DATA_STARTERS)
                 function("com.drinkit.security.SecurityConfig.authenticationManager", WEB_STARTERS)
                 function("com.drinkit.security.SecurityConfig.sessionContextRepository", WEB_STARTERS)
                 function("com.drinkit.security.SecurityConfig.securityContextHolderStrategy", WEB_STARTERS)
@@ -159,7 +157,6 @@ internal class TechStartersArchitectureTest {
         rule("starters.settings-under-starters-prefix") {
             description = "Settings of a tech starter never clash with Spring's or the application's: put them under " +
                 "starters.<name>"
-            suppress { classFqName("com.drinkit.search.engine.MeilisearchProperties", DATA_STARTERS) }
             classes {
                 that().inModule(STARTERS)
                 that().annotatedWith("ConfigurationProperties")
