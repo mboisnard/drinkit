@@ -176,7 +176,7 @@ internal class TechStartersArchitectureTest {
                 "module, com.drinkit.event.sourcing for event-sourcing-starter: rename the package or the module"
             suppress {
                 files(LIBRARY_STARTERS) { it.packageName == "com.drinkit.utils" }
-                files(DATA_STARTERS) { it.packageName == "com.drinkit.jooq" }
+                files(POSTGRESQL_FIXTURES) { it.packageName == "com.drinkit.jooq" }
             }
             files(SourceSets.production() or SourceSets.tests()) {
                 that().inModules(STARTERS)
