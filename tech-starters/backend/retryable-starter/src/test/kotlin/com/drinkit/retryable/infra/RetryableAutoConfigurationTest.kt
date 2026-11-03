@@ -4,6 +4,7 @@ import com.drinkit.retryable.SpyRetryListener
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -64,19 +65,34 @@ internal class RetryableAutoConfigurationTest {
                 shouldThrow<IllegalStateException> { context.getBean<FlakyCall>().call() }
 
                 // Then
-                EXHAUSTED_RETRIES_LOG.findAll(output.out).toList() shouldHaveSize 1
+                STOPPED_RETRIES_LOG.findAll(output.out).toList() shouldHaveSize 1
+                output.out shouldContain
+                    "stopped after 3 attempts, the last one failed with java.lang.IllegalStateException"
             }
     }
 
     @Test
-    fun `a failure the retry policy does not cover is not logged as exhausted retries`(output: CapturedOutput) {
+    fun `retries stopped by a failure the policy does not cover are logged with its class`(output: CapturedOutput) {
+        runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 0) })
+            .run { context ->
+                // When
+                shouldThrow<IllegalArgumentException> { context.getBean<FlakyCall>().failThenRefuse() }
+
+                // Then
+                output.out shouldContain
+                    "stopped after 2 attempts, the last one failed with java.lang.IllegalArgumentException"
+            }
+    }
+
+    @Test
+    fun `a first failure the retry policy does not cover is not logged as stopped retries`(output: CapturedOutput) {
         runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 0) })
             .run { context ->
                 // When
                 shouldThrow<IllegalArgumentException> { context.getBean<FlakyCall>().refuse() }
 
                 // Then
-                output.out shouldNotContain EXHAUSTED_RETRIES_LOG
+                output.out shouldNotContain STOPPED_RETRIES_LOG
             }
     }
 
@@ -124,11 +140,18 @@ internal class RetryableAutoConfigurationTest {
 
         @Retryable(includes = [IllegalStateException::class], maxRetries = 2, delay = 0)
         open fun refuse(): Nothing = throw IllegalArgumentException(FAILURE_MESSAGE)
+
+        @Retryable(includes = [IllegalStateException::class], maxRetries = 2, delay = 0)
+        open fun failThenRefuse(): Nothing {
+            attempts++
+            check(attempts > 1) { FAILURE_MESSAGE }
+            throw IllegalArgumentException(FAILURE_MESSAGE)
+        }
     }
 
     companion object {
         private val FAILED_ATTEMPT_LOG = Regex("Attempt of \\S+FlakyCall\\.call failed")
-        private val EXHAUSTED_RETRIES_LOG = Regex("Retries of \\S+FlakyCall\\.\\w+ exhausted")
+        private val STOPPED_RETRIES_LOG = Regex("Retries of \\S+FlakyCall\\.\\w+ stopped")
         private const val FAILURE_MESSAGE = "Personal data of attempt"
     }
 }

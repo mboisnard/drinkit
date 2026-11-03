@@ -5,11 +5,13 @@ that turns on the `@Retryable` of Spring Framework and logs each failed attempt.
 writes on an event-sourced aggregate: the use case that loses the race runs again on the new history.
 `event-sourcing-starter` brings it, so an application gets it with that starter.
 
-## What it is for
+## What is a retry?
 
 Two use cases can read the same history of a user and compute the same next sequence id. The primary key refuses
 the second insert, which throws `DuplicateSequenceException`. The `@RetryableTransactional` of
 `event-sourcing-starter` retries on that exception, and this starter makes the retry run.
+
+## Architecture Overview
 
 The retry wraps the transaction, so that each attempt reads the history again:
 
@@ -30,14 +32,26 @@ sequenceDiagram
     Retry-->>Caller: user promoted
 ```
 
-When the last attempt fails too, the listener logs that the retries are exhausted and the caller gets the exception.
-A failure the retry policy does not cover reaches the caller at once, after a single line for its failed attempt.
+When the last attempt fails too, the listener logs that the retries stopped, with the number of attempts and the class
+of the last failure, and the caller gets the exception. A failure the retry policy does not cover reaches the caller
+at once: after a single line when it is the first, after the same stop line when an earlier attempt failed.
+
+```mermaid
+graph LR
+    UseCase[Use case, @RetryableTransactional or @Retryable] --> Spring[Spring Framework retry]
+    Spring --> Listener[Retry listener of the starter]
+    Listener --> Logs[(Logs)]
+    style UseCase fill:#e1f5e1
+    style Spring fill:#e1e5ff
+    style Listener fill:#fff3e1
+    style Logs fill:#ffe1e1
+```
 
 ## Key Features
 
 - The `@Retryable` of `org.springframework.resilience.annotation` runs on any bean, with no AspectJ to ship.
 - Each failed attempt is logged at `INFO` with the class of its exception, which the caller never sees, and the
-  exhausted retries at `WARN`. The message of the exception stays out of the logs, since it can hold personal data.
+  end of the retries at `WARN`. The message of the exception stays out of the logs, since it can hold personal data.
 - An application that declares its own `ApplicationListener<MethodRetryEvent>` bean replaces the starter's logging,
   to send the failures elsewhere.
 

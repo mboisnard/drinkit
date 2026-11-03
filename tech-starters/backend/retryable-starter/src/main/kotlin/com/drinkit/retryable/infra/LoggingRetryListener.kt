@@ -17,7 +17,11 @@ internal class LoggingRetryListener : ApplicationListener<MethodRetryEvent> {
 
         when {
             !event.isRetryAborted -> logger.info { "Attempt of $method failed: ${failure.javaClass.name}" }
-            failure is RetryException && failure.retryCount > 0 -> logger.warn { "Retries of $method exhausted" }
+
+            failure is RetryException && failure.retryCount > 0 -> logger.warn {
+                "Retries of $method stopped after ${failure.retryCount + 1} attempts, " +
+                    "the last one failed with ${failure.cause.javaClass.name}"
+            }
         }
     }
 }
