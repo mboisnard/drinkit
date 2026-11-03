@@ -4,9 +4,13 @@ import tools.jackson.module.kotlin.jacksonMapperBuilder
 import kotlin.reflect.KType
 import kotlin.reflect.javaType
 
-class InMemorySearchIndexes : SearchIndexes {
+class InMemorySearchIndexes :
+    SearchIndexes,
+    SearchEngine {
 
     private val jsonMapper = jacksonMapperBuilder().build()
+
+    private val declared = mutableListOf<InMemorySearchIndex<*>>()
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun <T : Any> declare(
@@ -21,5 +25,21 @@ class InMemorySearchIndexes : SearchIndexes {
         source,
         jsonMapper.constructType(type.javaType),
         jsonMapper,
+    ).also { declared += it }
+
+    override fun all(): List<SearchIndex<*>> = declared.toList()
+
+    override fun information() = SearchEngineInformation(
+        version = "none",
+        size = 0,
+        indexes = declared.map {
+            IndexInformation(
+                it.name,
+                it.size(),
+                indexing = false,
+                declared = true,
+                rebuild = null,
+            )
+        },
     )
 }

@@ -14,6 +14,8 @@ interface SearchIndexes {
         primaryKey: String,
         settings: String,
     ): SearchIndex<T>
+
+    fun all(): List<SearchIndex<*>>
 }
 
 // Only a reified type gives the full type of a document, generics included, for its JSON to be read back

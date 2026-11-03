@@ -38,6 +38,8 @@ the other. The status says where a decision stands:
 | [0006](0006-mailpit-as-the-smtp-server-of-the-tests.md) | Mailpit as the SMTP server of the tests | Accepted | 2026-11-02 |
 | [0007](0007-jooq-kotlin-maps-nested-multiset-reads.md) | jooq-kotlin maps nested MULTISET reads | Accepted | 2026-11-02 |
 | [0008](0008-caching-through-spring-on-caffeine-with-a-ttl-per-cache.md) | Caching through Spring's abstraction, on Caffeine, with a time to live per cache | Accepted | 2026-11-03 |
+| [0009](0009-search-index-writes-through-the-starter-searches-through-the-engine-sdk.md) | Search index writes through the starter, searches through the engine's SDK | Accepted | 2026-11-03 |
+| [0010](0010-search-index-rebuilds-in-batches-tracked-in-postgresql.md) | Search index rebuilds in batches tracked in PostgreSQL | Accepted | 2026-11-04 |
 
 ## How to write one
 

@@ -156,6 +156,8 @@ export default withMermaid(
                   { text: '0006. Mailpit as the SMTP server of the tests', link: '0006-mailpit-as-the-smtp-server-of-the-tests' },
                   { text: '0007. jooq-kotlin maps nested MULTISET reads', link: '0007-jooq-kotlin-maps-nested-multiset-reads' },
                   { text: '0008. Caching on Caffeine, a TTL per cache', link: '0008-caching-through-spring-on-caffeine-with-a-ttl-per-cache' },
+                  { text: '0009. Search writes through the starter', link: '0009-search-index-writes-through-the-starter-searches-through-the-engine-sdk' },
+                  { text: '0010. Search rebuilds in batches', link: '0010-search-index-rebuilds-in-batches-tracked-in-postgresql' },
                 ],
               },
 
