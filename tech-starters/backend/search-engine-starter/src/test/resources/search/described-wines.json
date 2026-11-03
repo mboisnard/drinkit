@@ -1,0 +1,8 @@
+{
+  "embedders": {
+    "description": {
+      "source": "userProvided",
+      "dimensions": 3
+    }
+  }
+}
