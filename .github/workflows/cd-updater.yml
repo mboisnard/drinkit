@@ -147,6 +147,10 @@ jobs:
           name: updater-image
           path: ${{ runner.temp }}
 
+      # Before the login, so that no package script runs while the token is on disk
+      - name: Install skopeo if the runner lacks it
+        run: command -v skopeo > /dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq skopeo; }
+
       - name: Log in to GHCR
         uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:
@@ -161,7 +165,6 @@ jobs:
           CHECKSUM: ${{ needs.build.outputs.checksum }}
         run: |
           sha256sum --check <<< "$CHECKSUM  $RUNNER_TEMP/updater.tar"
-          command -v skopeo > /dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq skopeo; }
           skopeo copy --all --preserve-digests "oci-archive:$RUNNER_TEMP/updater.tar" "docker://$IMAGE:$GITHUB_SHA"
 
       # `gh attestation verify oci://<image>@<digest> --owner mboisnard` checks it
