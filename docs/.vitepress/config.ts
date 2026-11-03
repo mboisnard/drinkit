@@ -155,6 +155,7 @@ export default withMermaid(
                   { text: '0005. Demo data from a local-only changelog', link: '0005-demo-data-from-a-local-only-changelog' },
                   { text: '0006. Mailpit as the SMTP server of the tests', link: '0006-mailpit-as-the-smtp-server-of-the-tests' },
                   { text: '0007. jooq-kotlin maps nested MULTISET reads', link: '0007-jooq-kotlin-maps-nested-multiset-reads' },
+                  { text: '0008. Caching on Caffeine, a TTL per cache', link: '0008-caching-through-spring-on-caffeine-with-a-ttl-per-cache' },
                 ],
               },
 

@@ -37,6 +37,7 @@ the other. The status says where a decision stands:
 | [0005](0005-demo-data-from-a-local-only-changelog.md) | Demo data from a local-only changelog | Accepted | 2026-10-29 |
 | [0006](0006-mailpit-as-the-smtp-server-of-the-tests.md) | Mailpit as the SMTP server of the tests | Accepted | 2026-11-02 |
 | [0007](0007-jooq-kotlin-maps-nested-multiset-reads.md) | jooq-kotlin maps nested MULTISET reads | Accepted | 2026-11-02 |
+| [0008](0008-caching-through-spring-on-caffeine-with-a-ttl-per-cache.md) | Caching through Spring's abstraction, on Caffeine, with a time to live per cache | Accepted | 2026-11-03 |
 
 ## How to write one
 
