@@ -1,4 +1,4 @@
-package com.drinkit.retryable
+package com.drinkit.retryable.infra
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationListener

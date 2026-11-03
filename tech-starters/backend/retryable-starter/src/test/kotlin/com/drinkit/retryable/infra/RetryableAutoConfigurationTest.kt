@@ -1,5 +1,6 @@
-package com.drinkit.retryable
+package com.drinkit.retryable.infra
 
+import com.drinkit.retryable.SpyRetryListener
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe

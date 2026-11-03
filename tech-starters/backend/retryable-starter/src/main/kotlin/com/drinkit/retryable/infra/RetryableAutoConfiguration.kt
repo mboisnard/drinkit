@@ -1,4 +1,4 @@
-package com.drinkit.retryable
+package com.drinkit.retryable.infra
 
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
