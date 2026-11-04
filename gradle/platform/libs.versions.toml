@@ -6,6 +6,7 @@ jdk = "25"
 squawk = "2.70.0"
 
 # BOM Versions
+cucumber-dependencies = "8.0.4"
 spring-ai-dependencies = "2.0.2"
 spring-boot-dependencies = "4.1.2"
 spring-cloud-gcp-dependencies = "8.2.4"
@@ -23,7 +24,6 @@ tess4j = "5.20.0"
 
 # Test Versions
 approvaltests = "31.0.0"
-cucumber = "8.0.4"
 rest-assured = "6.3.0"
 konture = "1.0.2"
 kotest = "6.2.6"
@@ -33,6 +33,7 @@ testcontainers-meilisearch = "2.0.0"
 
 [libraries]
 # BOM Dependencies
+cucumber-dependencies-bom = { module = "io.cucumber:cucumber-bom", version.ref = "cucumber-dependencies" }
 spring-ai-dependencies-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai-dependencies" }
 spring-boot-dependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-dependencies" }
 spring-cloud-gcp-dependencies-bom = { module = "com.google.cloud:spring-cloud-gcp-dependencies", version.ref = "spring-cloud-gcp-dependencies" }
@@ -54,10 +55,6 @@ tess4j = { module = "net.sourceforge.tess4j:tess4j", version.ref = "tess4j" }
 
 # Test Dependencies
 approvaltests = { module = "com.approvaltests:approvaltests", version.ref = "approvaltests" }
-cucumber-bom = { module = "io.cucumber:cucumber-bom", version.ref = "cucumber" }
-cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
-cucumber-junit = { module = "io.cucumber:cucumber-junit", version.ref = "cucumber" }
-cucumber-spring = { module = "io.cucumber:cucumber-spring", version.ref = "cucumber"}
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
 konture = { module = "io.github.baole:konture", version.ref = "konture" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }

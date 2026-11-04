@@ -8,9 +8,9 @@ dependencies {
 
     api(libs.approvaltests)
 
-    api(libs.cucumber.java)
-    api(libs.cucumber.junit)
-    api(libs.cucumber.spring)
+    api("io.cucumber:cucumber-java")
+    api("io.cucumber:cucumber-junit")
+    api("io.cucumber:cucumber-spring")
 
     api(libs.kotest.assertions.core)
     api(libs.kotlin.faker)

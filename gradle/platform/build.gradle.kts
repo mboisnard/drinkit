@@ -13,7 +13,7 @@ javaPlatform {
 dependencies {
     // Import third-party BOMs, our constraints below will override their versions
     // Cucumber's modules ask each other for version ranges: its BOM pins them to the ones it was released with
-    api(platform(libs.cucumber.bom))
+    api(platform(libs.cucumber.dependencies.bom))
     api(platform(libs.spring.ai.dependencies.bom))
     api(platform(libs.spring.boot.dependencies.bom))
     api(platform(libs.spring.cloud.gcp.dependencies.bom))
