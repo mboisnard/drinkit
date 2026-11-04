@@ -6,6 +6,7 @@ import com.drinkit.documentation.tech.starter.TechStarterTool
  * Interface representing a domain event in an event-sourced system.
  * All domain events must have a sequenceId to maintain order.
  */
+@TechStarterTool
 interface DomainEvent {
     val sequenceId: SequenceId
 }
@@ -37,8 +38,8 @@ data class History<Event : DomainEvent, InitEvent : Event>(
                 "First event must be of type ${InitEvent::class.simpleName}, but was ${initEvent::class.simpleName}"
             }
 
-            require(events.sortedBy { it.sequenceId } == events) {
-                "Events should be sequentially sorted: $events"
+            require(events.zipWithNext().all { (previous, next) -> previous.sequenceId < next.sequenceId }) {
+                "Events should have strictly increasing sequence ids: $events"
             }
 
             return History(initEvent, events.drop(1))

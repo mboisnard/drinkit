@@ -52,7 +52,7 @@ data class User(
                 .register<PromotedAsAdmin>(User::apply)
                 .register<Deleted>(User::apply)
 
-            return reducer.reduce(history.initEvent, history.remainingEvents)
+            return reducer.reduce(history)
         }
 
         private fun applyInitialization(event: Initialized) = User(

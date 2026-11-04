@@ -144,4 +144,32 @@ internal class HistoryTest {
             CarHistory.from<CarEvent, CarCreated>(events)
         }
     }
+
+    @Test
+    fun `should throw exception when two events share a sequence id`() {
+        // Given
+        val initEvent = CarCreated(
+            id = UUID.randomUUID(),
+            sequenceId = SequenceId(),
+            date = OffsetDateTime.now(),
+            name = "Mercedes-Benz 300 SL",
+        )
+        val event1 = CarPurchased(
+            id = initEvent.id,
+            sequenceId = SequenceId(10),
+            date = OffsetDateTime.now(),
+            owner = "James Bond",
+        )
+        val event2 = MaintenanceCarriedOut(
+            id = initEvent.id,
+            sequenceId = SequenceId(10),
+            date = OffsetDateTime.now(),
+        )
+        val events = listOf(initEvent, event1, event2)
+
+        // When & Then
+        shouldThrow<IllegalArgumentException> {
+            CarHistory.from<CarEvent, CarCreated>(events)
+        }
+    }
 }

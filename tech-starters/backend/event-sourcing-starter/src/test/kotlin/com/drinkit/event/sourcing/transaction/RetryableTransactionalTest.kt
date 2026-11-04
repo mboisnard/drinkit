@@ -7,10 +7,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.transaction.SavepointManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.transaction.support.AbstractPlatformTransactionManager
 import org.springframework.transaction.support.DefaultTransactionStatus
+import org.springframework.transaction.support.TransactionTemplate
 
 internal class RetryableTransactionalTest {
 
@@ -56,7 +58,7 @@ internal class RetryableTransactionalTest {
     }
 
     @Test
-    fun `each attempt runs in a transaction of its own`() {
+    fun `with no open transaction, each attempt runs in a new transaction`() {
         runner.withBean(SaveEvent::class.java, { SaveEvent(refusals = 2) })
             .run { context ->
                 // When
@@ -64,6 +66,21 @@ internal class RetryableTransactionalTest {
 
                 // Then
                 context.getBean(SpyTransactionManager::class.java).begunTransactions shouldBe 3
+            }
+    }
+
+    @Test
+    fun `inside an open transaction, each attempt runs in a savepoint of it`() {
+        runner.withBean(SaveEvent::class.java, { SaveEvent(refusals = 2) })
+            .run { context ->
+                val transactionManager = context.getBean(SpyTransactionManager::class.java)
+
+                // When
+                TransactionTemplate(transactionManager).execute { context.getBean(SaveEvent::class.java).invoke() }
+
+                // Then
+                transactionManager.begunTransactions shouldBe 1
+                transactionManager.savepoints shouldBe 3
             }
     }
 
@@ -84,16 +101,39 @@ internal class RetryableTransactionalTest {
     internal class SpyTransactionManager : AbstractPlatformTransactionManager() {
         var begunTransactions = 0
             private set
+        var savepoints = 0
+            private set
+        private var open = false
 
-        override fun doGetTransaction(): Any = Any()
+        init {
+            // As the JDBC transaction manager of the application allows them
+            isNestedTransactionAllowed = true
+        }
+
+        override fun doGetTransaction(): Any = SpyTransaction()
+
+        override fun isExistingTransaction(transaction: Any) = open
 
         override fun doBegin(transaction: Any, definition: TransactionDefinition) {
             begunTransactions++
+            open = true
         }
 
         override fun doCommit(status: DefaultTransactionStatus) = Unit
 
         override fun doRollback(status: DefaultTransactionStatus) = Unit
+
+        override fun doCleanupAfterCompletion(transaction: Any) {
+            open = false
+        }
+
+        inner class SpyTransaction : SavepointManager {
+            override fun createSavepoint(): Any = Any().also { savepoints++ }
+
+            override fun rollbackToSavepoint(savepoint: Any) = Unit
+
+            override fun releaseSavepoint(savepoint: Any) = Unit
+        }
     }
 
     // The retry comes from retryable-starter, found on the classpath as an application finds it

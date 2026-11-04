@@ -1,26 +1,31 @@
 package com.drinkit.event.sourcing.transaction
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.transaction.annotation.Propagation.NESTED
 import org.springframework.transaction.annotation.Transactional
 import kotlin.annotation.AnnotationTarget.CLASS
 
+/**
+ * Thrown by an event store when another write already took the sequence id of the event it appends.
+ */
+@TechStarterTool
 class DuplicateSequenceException(override val message: String, override val cause: Throwable?) :
     RuntimeException(message, cause)
 
 /**
- * Composite annotation that ensures reliable event saving in a concurrent context.
+ * Runs a use case again when the event it appends loses a race for its sequence id.
  *
- * It combines a nested transaction with a [Retryable] mechanism
- * to handle [DuplicateSequenceException] failures: three attempts at most,
- * each one in a transaction of its own, so that it reads the new history.
+ * On a [DuplicateSequenceException], [Retryable] makes three attempts at most, and each one reads the new history.
  *
- * The NESTED propagation is crucial: it creates a savepoint that isolates the failure,
- * allowing the retry to execute without rolling back the main transaction.
+ * The propagation is NESTED. Inside an open transaction, each attempt runs in a savepoint of it: a refused attempt
+ * rolls back to its savepoint, and the outer transaction stays usable. With no open transaction, each attempt runs
+ * in a new transaction.
  *
  * @see org.springframework.transaction.annotation.Transactional
  * @see org.springframework.resilience.annotation.Retryable
  */
+@TechStarterTool
 @Retention(AnnotationRetention.RUNTIME)
 @Target(CLASS)
 @Transactional(propagation = NESTED, readOnly = false)
