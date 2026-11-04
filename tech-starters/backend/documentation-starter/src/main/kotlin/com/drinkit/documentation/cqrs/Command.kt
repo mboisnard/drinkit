@@ -1,5 +1,7 @@
 package com.drinkit.documentation.cqrs
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
+
 /**
  * Marks a class as a **Command** in a CQRS (Command Query Responsibility Segregation) architecture.
  *
@@ -24,6 +26,7 @@ package com.drinkit.documentation.cqrs
  *
  * Using this annotation clearly separates the operations that modify data from those that only read it.
  */
+@TechStarterTool
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 annotation class Command

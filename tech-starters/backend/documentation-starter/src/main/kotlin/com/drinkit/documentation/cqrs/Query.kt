@@ -1,5 +1,7 @@
 package com.drinkit.documentation.cqrs
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
+
 /**
  * Marks a class as a **Query** in a CQRS (Command Query Responsibility Segregation) architecture.
  *
@@ -26,6 +28,7 @@ package com.drinkit.documentation.cqrs
  * This annotation helps enforce the strict separation between state-modifying and data-retrieving
  * operations, which is the core benefit of CQRS.
  */
+@TechStarterTool
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 annotation class Query

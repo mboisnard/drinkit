@@ -7,31 +7,28 @@ internal class CreateTechStartersOverviewDocumentation(
     private val outputFolderPath: String,
     private val logger: KSPLogger,
 ) {
-    private val outputFile: File by lazy {
-        File(outputFolderPath, "tech-starters.md").apply { parentFile?.mkdirs() }
-    }
+    private val outputFile: File by lazy { File(outputFolderPath, "tech-starters.md") }
 
     fun invoke(moduleName: String, toolsCount: Int) {
         logger.warn("  Updating tech starters overview...")
 
-        val updatedEntries = fetchExistingEntries()
-            .filterNot { it.moduleName == moduleName }
-            .plus(ModuleEntry(moduleName, toolsCount))
-            .sortedBy { it.moduleName }
-
-        outputFile.writeText(
-            generateMarkdown(updatedEntries),
-        )
+        outputFile.rewriteLocked { content ->
+            val updatedEntries = parseEntries(content)
+                .filterNot { it.moduleName == moduleName }
+                .plus(ModuleEntry(moduleName, toolsCount))
+                .sortedBy { it.moduleName }
+            generateMarkdown(updatedEntries)
+        }
 
         logger.warn("    Updated overview with module: $moduleName")
     }
 
-    private fun fetchExistingEntries(): List<ModuleEntry> {
-        if (!outputFile.exists()) {
+    private fun parseEntries(content: String?): List<ModuleEntry> {
+        if (content == null) {
             return emptyList()
         }
 
-        return outputFile.readLines()
+        return content.lines()
             .filter { it.startsWith("- [") }
             .mapNotNull { line ->
                 // Format: - [module-name](./module-name.md) (X tools)
@@ -53,7 +50,7 @@ internal class CreateTechStartersOverviewDocumentation(
             appendLine("*No modules documented yet.*")
         } else {
             entries.forEach { entry ->
-                val toolWord = if (entry.toolsCount > 1) "tools" else "tool"
+                val toolWord = if (entry.toolsCount == 1) "tool" else "tools"
                 appendLine("- [${entry.moduleName}](./${entry.moduleName}.md) (${entry.toolsCount} $toolWord)")
             }
         }

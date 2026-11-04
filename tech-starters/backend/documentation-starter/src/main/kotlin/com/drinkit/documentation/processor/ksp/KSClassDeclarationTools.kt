@@ -3,12 +3,14 @@ package com.drinkit.documentation.processor.ksp
 import com.drinkit.documentation.clean.architecture.CoreDomain
 import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.tech.starter.TechStarterTool
+import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.isInternal
 import com.google.devtools.ksp.isPrivate
+import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 
-internal inline fun <reified T : Annotation> KSClassDeclaration.findAnnotation(): KSAnnotation {
+internal inline fun <reified T : Annotation> KSAnnotated.findAnnotation(): KSAnnotation {
     val qualifiedName = T::class.qualifiedName!!
     return annotations.first {
         it.annotationType.resolve().declaration.qualifiedName?.asString() == qualifiedName
@@ -52,11 +54,11 @@ internal fun KSClassDeclaration.toTechStarterTool(annotation: KSAnnotation): Tec
     )
 }
 
-private fun KSAnnotation.getStringArgument(argName: String): String? =
+internal fun KSAnnotation.getStringArgument(argName: String): String? =
     (arguments.find { it.name?.asString() == argName }?.value as? String)
         ?.takeIf { it.isNotBlank() }
 
-private fun KSClassDeclaration.extractMethods(): List<MethodInfo> = getAllFunctions()
+private fun KSClassDeclaration.extractMethods(): List<MethodInfo> = getDeclaredFunctions()
     .filter { !it.isPrivate() && !it.isInternal() }
     .filter { !it.simpleName.asString().startsWith("component") }
     .filter { !it.simpleName.asString().startsWith("copy") }
@@ -72,6 +74,6 @@ private fun KSClassDeclaration.extractMethods(): List<MethodInfo> = getAllFuncti
 /**
  * Escapes special Markdown characters to prevent them from being interpreted as markup.
  */
-private fun String.sanitizeMarkdown(): String = this.trim().replace("\\", "\\\\")
+internal fun String.sanitizeMarkdown(): String = this.trim().replace("\\", "\\\\")
     .replace("<", "\\<")
     .replace(">", "\\>")
