@@ -3,8 +3,8 @@ package com.drinkit.bottle.core
 import com.drinkit.common.AbstractId
 import com.drinkit.common.Percentage
 import com.drinkit.documentation.clean.architecture.CoreDomain
-import com.drinkit.utils.addIfNotMatch
-import com.drinkit.utils.doesntContainsInvisibleCharacters
+import com.drinkit.kotlin.addUnless
+import com.drinkit.kotlin.containsNoInvisibleCharacter
 import java.math.BigDecimal
 import java.time.Year
 
@@ -23,15 +23,15 @@ data class AlcoholContent(val value: Percentage) {
 
 data class Price(val value: BigDecimal) {
     fun validate() = buildList {
-        addIfNotMatch(value >= BigDecimal.ZERO, "Price must be positive")
+        addUnless(value >= BigDecimal.ZERO, "Price must be positive")
     }
 }
 
 data class Description(val value: String) {
     fun validate() = buildList {
-        addIfNotMatch(value.isNotBlank(), "Description must not be blank")
-        addIfNotMatch(
-            value.doesntContainsInvisibleCharacters(),
+        addUnless(value.isNotBlank(), "Description must not be blank")
+        addUnless(
+            value.containsNoInvisibleCharacter(),
             "Description should not contains invisible characters, $value",
         )
     }

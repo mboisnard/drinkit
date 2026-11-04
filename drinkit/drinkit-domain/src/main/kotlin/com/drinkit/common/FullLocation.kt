@@ -5,7 +5,7 @@ import com.drinkit.common.Constants.MAX_LATITUDE
 import com.drinkit.common.Constants.MAX_LONGITUDE
 import com.drinkit.common.Constants.MIN_LATITUDE
 import com.drinkit.common.Constants.MIN_LONGITUDE
-import com.drinkit.utils.isBetween
+import com.drinkit.kotlin.isBetween
 import java.math.BigDecimal
 
 data class Point(val latitude: BigDecimal, val longitude: BigDecimal) {

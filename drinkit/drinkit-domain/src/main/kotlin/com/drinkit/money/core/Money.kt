@@ -1,8 +1,8 @@
 package com.drinkit.money.core
 
 import com.drinkit.documentation.clean.architecture.CoreDomain
-import com.drinkit.utils.SAFE_ROUNDING_MODE
-import com.drinkit.utils.addIfNotMatch
+import com.drinkit.kotlin.SAFE_ROUNDING_MODE
+import com.drinkit.kotlin.addUnless
 import java.math.BigDecimal
 
 @CoreDomain
@@ -18,7 +18,7 @@ data class Money private constructor(val amount: BigDecimal, val currency: Curre
     }
 
     fun validate() = buildList {
-        addIfNotMatch(amount >= BigDecimal.ZERO, "Amount must be positive or zero")
+        addUnless(amount >= BigDecimal.ZERO, "Amount must be positive or zero")
     }
 
     fun convertWith(exchangeRate: ExchangeRate): Money {

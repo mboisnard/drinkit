@@ -1,6 +1,6 @@
 package com.drinkit.mail
 
-import com.drinkit.utils.isEmail
+import com.drinkit.kotlin.isEmail
 
 data class Email(
     val sender: Sender,

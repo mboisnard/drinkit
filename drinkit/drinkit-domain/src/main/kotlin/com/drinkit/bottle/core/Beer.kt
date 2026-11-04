@@ -1,6 +1,6 @@
 package com.drinkit.bottle.core
 
-import com.drinkit.utils.addIfNotMatch
+import com.drinkit.kotlin.addUnless
 
 data class InternationalBitternessUnit(val value: Int) {
     companion object {
@@ -9,7 +9,7 @@ data class InternationalBitternessUnit(val value: Int) {
     }
 
     fun validate() = buildList {
-        addIfNotMatch(
+        addUnless(
             value in IBU_MIN_VALUE..IBU_MAX_VALUE,
             "Bitterness must be between $IBU_MIN_VALUE & $IBU_MAX_VALUE, value: $value",
         )
