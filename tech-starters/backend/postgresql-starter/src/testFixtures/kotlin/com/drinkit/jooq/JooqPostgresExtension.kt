@@ -10,12 +10,14 @@ import org.jooq.Schema
 import org.jooq.conf.DiagnosticsConnection
 import org.jooq.impl.DefaultConfiguration
 import org.jooq.impl.DefaultDSLContext
+import org.jooq.impl.DefaultExecuteListenerProvider
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext
 import org.junit.jupiter.api.extension.ParameterResolver
+import org.springframework.boot.jooq.autoconfigure.ExceptionTranslatorExecuteListener
 import org.testcontainers.lifecycle.Startables
 import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
@@ -135,6 +137,8 @@ class JooqPostgresExtension :
             .set(SQLDialect.POSTGRES)
             // Logs an N+1 or a duplicate query of the adapter under test
             .set(postgresqlSettings().withDiagnosticsConnection(DiagnosticsConnection.ON).withDiagnosticsLogging(true))
+            // As Spring Boot does, so that an adapter catches the same Spring DataAccessException as in the application
+            .set(DefaultExecuteListenerProvider(ExceptionTranslatorExecuteListener.DEFAULT))
         return DefaultDSLContext(jooqConfiguration)
     }
 
