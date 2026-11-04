@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":event-sourcing-starter"))
     implementation(project(":messaging-starter"))
 
     testImplementation(testFixtures(project(":messaging-starter")))

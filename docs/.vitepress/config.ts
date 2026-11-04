@@ -158,6 +158,7 @@ export default withMermaid(
                   { text: '0008. Caching on Caffeine, a TTL per cache', link: '0008-caching-through-spring-on-caffeine-with-a-ttl-per-cache' },
                   { text: '0009. Search writes through the starter', link: '0009-search-index-writes-through-the-starter-searches-through-the-engine-sdk' },
                   { text: '0010. Search rebuilds in batches', link: '0010-search-index-rebuilds-in-batches-tracked-in-postgresql' },
+                  { text: '0011. Event sourcing starter declared by its users', link: '0011-a-module-declares-the-event-sourcing-starter-itself' },
                 ],
               },
 

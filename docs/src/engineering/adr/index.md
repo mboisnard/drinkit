@@ -40,6 +40,7 @@ the other. The status says where a decision stands:
 | [0008](0008-caching-through-spring-on-caffeine-with-a-ttl-per-cache.md) | Caching through Spring's abstraction, on Caffeine, with a time to live per cache | Accepted | 2026-11-03 |
 | [0009](0009-search-index-writes-through-the-starter-searches-through-the-engine-sdk.md) | Search index writes through the starter, searches through the engine's SDK | Accepted | 2026-11-03 |
 | [0010](0010-search-index-rebuilds-in-batches-tracked-in-postgresql.md) | Search index rebuilds in batches tracked in PostgreSQL | Accepted | 2026-11-04 |
+| [0011](0011-a-module-declares-the-event-sourcing-starter-itself.md) | A module declares the event sourcing starter itself | Accepted | 2026-11-04 |
 
 ## How to write one
 

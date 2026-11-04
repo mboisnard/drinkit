@@ -9,6 +9,7 @@ dependencies {
     implementation(libs.bson)
 
     implementation(project(":configuration-starter"))
+    implementation(project(":event-sourcing-starter"))
     implementation(project(":mail-starter"))
     implementation(project(":webclient-starter"))
 

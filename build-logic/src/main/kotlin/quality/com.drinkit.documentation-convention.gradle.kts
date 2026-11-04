@@ -8,9 +8,18 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+val documentationStarter = ":documentation-starter"
+val isDocumentationStarter = project.path == documentationStarter
+
 dependencies {
-    implementation(project(":documentation-starter"))
-    ksp(project(":documentation-starter"))
+    if (isDocumentationStarter) {
+        // The starter cannot depend on itself for its main code: its processor reads its test sources instead, so
+        // that kspKotlin writes its page from its README
+        "kspTest"(project(documentationStarter))
+    } else {
+        compileOnly(project(documentationStarter))
+        ksp(project(documentationStarter))
+    }
 }
 
 ksp {
@@ -26,4 +35,17 @@ val kspExplicitlyRequested = gradle.startParameter.taskNames.any { it.substringA
 
 tasks.withType<KspAATask>().configureEach {
     enabled = kspExplicitlyRequested
+}
+
+if (isDocumentationStarter) {
+    // kspTestKotlin needs the main classes, which need kspKotlin: it can only run after it, never before
+    tasks.withType<KspAATask>().named { it == "kspKotlin" }.configureEach {
+        finalizedBy("kspTestKotlin")
+    }
+
+    // --rerun only reaches kspKotlin, and the processor writes the page outside the outputs of kspTestKotlin
+    tasks.withType<KspAATask>().named { it == "kspTestKotlin" }.configureEach {
+        outputs.upToDateWhen { false }
+        outputs.cacheIf { false }
+    }
 }
