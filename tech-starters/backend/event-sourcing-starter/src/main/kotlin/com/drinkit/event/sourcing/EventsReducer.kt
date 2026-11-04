@@ -14,9 +14,9 @@ import kotlin.reflect.KClass
  * state of the projection, the current event, and return an updated state to
  * be used for the next event.
  *
- * You can [register] an event-specific folding function, if no specific
- * function has been registered, the event will be handled by the mandatory
- * [defaultHandler].
+ * You can [register] an event-specific folding function. An event with no
+ * registered function goes to the [defaultHandler], which leaves the
+ * projection as it is unless you pass your own.
  *
  * If you register multiple specific handlers for the same class only the last
  * registered handler will be used.
@@ -60,4 +60,6 @@ class EventsReducer<Projection, Event : DomainEvent, InitialEvent : Event>(
         val seed = factory(initialEvent)
         return events.fold(seed, ::apply)
     }
+
+    fun reduce(history: History<Event, InitialEvent>): Projection = reduce(history.initEvent, history.remainingEvents)
 }

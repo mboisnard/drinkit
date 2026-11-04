@@ -77,7 +77,8 @@ documentation](../writing-code/best-practices/living-documentation.md) explains.
 
 Two writes on the same aggregate can read the same history and compute the same next sequence id. The primary key
 refuses the second one. The use case carries the starter's `@RetryableTransactional`, which runs it again on the new
-history, three attempts at most, each in a transaction of its own.
+history, three attempts at most. Each attempt runs in a savepoint of the open transaction, or in a new transaction
+when none is open.
 
 ## ⚖️ The projection in the same transaction
 

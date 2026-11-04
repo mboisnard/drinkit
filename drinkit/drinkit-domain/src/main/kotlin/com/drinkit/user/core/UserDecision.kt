@@ -64,7 +64,7 @@ data class UserDecision(
                 .register<PromotedAsAdmin>(UserDecision::apply)
                 .register<Deleted>(UserDecision::apply)
 
-            return reducer.reduce(history.initEvent, history.remainingEvents)
+            return reducer.reduce(history)
         }
 
         private fun applyInitialization(event: Initialized) = UserDecision(
