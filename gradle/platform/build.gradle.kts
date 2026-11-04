@@ -12,6 +12,8 @@ javaPlatform {
 
 dependencies {
     // Import third-party BOMs, our constraints below will override their versions
+    // Cucumber's modules ask each other for version ranges: its BOM pins them to the ones it was released with
+    api(platform(libs.cucumber.bom))
     api(platform(libs.spring.ai.dependencies.bom))
     api(platform(libs.spring.boot.dependencies.bom))
     api(platform(libs.spring.cloud.gcp.dependencies.bom))
@@ -28,9 +30,6 @@ dependencies {
 
         // Test Dependencies
         api(libs.approvaltests)
-        api(libs.cucumber.java)
-        api(libs.cucumber.junit)
-        api(libs.cucumber.spring)
         api(libs.rest.assured)
         api(libs.konture)
         api(libs.kotest.assertions.core)

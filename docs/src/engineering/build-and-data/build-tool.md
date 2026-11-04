@@ -7,8 +7,8 @@ module's build file says only what makes that module different. What modules sha
 pieces of build configuration under `build-logic/` that each module applies. Every library and plugin version lives in
 `gradle/platform/`.
 
-Read this page before you add a module, change a convention or bump a dependency. Three things fail the build
-there: a detekt finding, a dependency change without its new checksums and lock, and a convention that breaks the
+Read this page before you add a module, change a convention or bump a dependency. The build fails there on a detekt
+finding, on a dependency change without its new checksums and lock, and on a convention that breaks the
 configuration cache. The commands, such as `./gradlew build`, are in the [Commands section of `AGENTS.md`](https://github.com/mboisnard/drinkit/blob/master/AGENTS.md#commands).
 The Nuxt frontend and this documentation site build with npm, outside Gradle.
 
@@ -112,8 +112,9 @@ Three files of `gradle/platform/` hold every version:
 - **`pluginLibs.versions.toml`** is the catalog of the Gradle plugins the conventions apply. Only `build-logic`
   reads it.
 - **`build.gradle.kts`** is the internal BOM. A BOM, bill of materials, is a list of versions meant to be used
-  together. Ours is a Gradle platform. It imports the BOMs of Spring Boot, Spring AI and Spring Cloud GCP, then sets
-  the catalog version of each library listed in its `constraints` block. Squawk has no constraint there, since no
+  together. Ours is a Gradle platform. It imports the BOMs of Spring Boot, Spring AI, Spring Cloud GCP and Cucumber,
+  whose modules ask each other for version ranges, then sets the catalog version of each library listed in its
+  `constraints` block. Squawk has no constraint there, since no
   library depends on a binary.
 
 The catalog and the platform each do one job. The catalog names each version once, so a bump is one line. The

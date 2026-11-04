@@ -54,6 +54,7 @@ dev.drewhamilton.poko:poko-annotations-jvm:0.23.1=detekt
 dev.drewhamilton.poko:poko-annotations:0.23.1=detekt
 dk.brics.automaton:automaton:1.11-8=testRuntimeClasspath
 io.cucumber:ci-environment:15.0.0=testCompileClasspath,testRuntimeClasspath
+io.cucumber:cucumber-bom:8.0.4=compileClasspath,developmentOnly,productionRuntimeClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 io.cucumber:cucumber-core:8.0.4=testCompileClasspath,testRuntimeClasspath
 io.cucumber:cucumber-expressions:20.1.0=testCompileClasspath,testRuntimeClasspath
 io.cucumber:cucumber-gherkin-messages:8.0.4=testCompileClasspath,testRuntimeClasspath
