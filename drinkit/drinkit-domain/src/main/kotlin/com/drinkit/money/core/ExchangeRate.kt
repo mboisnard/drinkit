@@ -1,7 +1,7 @@
 package com.drinkit.money.core
 
 import com.drinkit.documentation.clean.architecture.CoreDomain
-import com.drinkit.utils.SAFE_ROUNDING_MODE
+import com.drinkit.kotlin.SAFE_ROUNDING_MODE
 import java.math.BigDecimal
 
 @CoreDomain

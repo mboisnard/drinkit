@@ -1,7 +1,7 @@
 package com.drinkit.jooq
 
+import com.drinkit.kotlin.orNull
 import com.drinkit.postgresql.infra.postgresqlSettings
-import com.drinkit.utils.orNull
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jooq.DDLExportConfiguration
 import org.jooq.DSLContext

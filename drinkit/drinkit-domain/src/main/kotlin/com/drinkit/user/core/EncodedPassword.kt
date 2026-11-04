@@ -1,15 +1,15 @@
 package com.drinkit.user.core
 
 import com.drinkit.common.Constants.MIN_PASSWORD_LENGTH
-import com.drinkit.utils.containsACapitalLetter
-import com.drinkit.utils.containsANumber
-import com.drinkit.utils.containsASpecialCharacter
-import com.drinkit.utils.doesntContainsInvisibleCharacters
-import com.drinkit.utils.hasMinLength
+import com.drinkit.kotlin.containsACapitalLetter
+import com.drinkit.kotlin.containsANumber
+import com.drinkit.kotlin.containsASpecialCharacter
+import com.drinkit.kotlin.containsNoInvisibleCharacter
+import com.drinkit.kotlin.hasMinLength
 
 data class EncodedPassword(val value: String) {
     init {
-        require(value.isNotBlank() && value.doesntContainsInvisibleCharacters()) {
+        require(value.isNotBlank() && value.containsNoInvisibleCharacter()) {
             "Encoded password should not be blank or contains invisible characters. Given value: $value"
         }
     }
@@ -25,7 +25,7 @@ data class Password(val value: String) {
         require(
             value.isNotBlank() &&
                 value.hasMinLength(MIN_PASSWORD_LENGTH) &&
-                value.doesntContainsInvisibleCharacters() &&
+                value.containsNoInvisibleCharacter() &&
                 value.containsACapitalLetter() &&
                 value.containsANumber() &&
                 value.containsASpecialCharacter(),
