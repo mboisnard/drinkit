@@ -81,7 +81,7 @@ The archetypes:
 | Archetype | For | What it adds |
 |---|---|---|
 | `common-convention` | Every Kotlin module, directly or through the others | The Java toolchain, Kotlin with its Spring support, the [internal BOM](#versions-in-one-place), `code-analysis-convention` and `test-convention` |
-| `library-convention` | The domain, its adapters and most tech starters | `common-convention`, `documentation-convention`, Spring context and transactions, the Kotlin and [event sourcing](../architecture/event-sourcing.md) starters |
+| `library-convention` | The domain, its adapters and most tech starters | `common-convention`, `documentation-convention`, Spring context and transactions, the Kotlin starter. A module that event-sources an aggregate adds the [event sourcing](../architecture/event-sourcing.md) starter itself, as [ADR 0011](../adr/0011-a-module-declares-the-event-sourcing-starter-itself.md) records |
 | `api-convention` | `drinkit-backend`, the Spring Boot application | `common-convention`, `documentation-convention`, Spring MVC, build and git details for Actuator's info endpoint, GraalVM native images, a lock on every resolved version |
 | `job-convention` | `deployment/updater`, a Spring Boot application that runs once, then stops | `common-convention`, Spring Boot's executable jar, a lock on every resolved version |
 
@@ -94,7 +94,7 @@ The add-ons a module chooses, and the conventions the archetypes apply for it:
 | `contract-first-convention` | Generates the Spring interfaces and models of the API from that contract | `drinkit-backend` |
 | `jooq-codegen-convention` | Generates the jOOQ classes from the schema of a running PostgreSQL, only on `./gradlew jooqCodegen`. They are committed, as the [database page](database.md) explains | The modules that own tables |
 | `squawk-convention` | Downloads the Squawk binary of your platform and runs it on the module's SQL changelogs, as part of `check`, with no Node | `deployment/updater` |
-| `documentation-convention` | Writes the [generated pages](../writing-code/best-practices/living-documentation.md) of this site with KSP, only on `./gradlew kspKotlin` | `library-convention`, `api-convention` |
+| `documentation-convention` | Writes the [generated pages](../writing-code/best-practices/living-documentation.md) of this site with KSP, only on `./gradlew kspKotlin` | `library-convention`, `api-convention`, and the tech starters without Spring beans |
 | `test-convention` | JUnit Platform and the test libraries of `test-starter` | `common-convention` |
 | `code-analysis-convention` | detekt, which fails the build on any finding outside `code-analysis/detekt/baseline.xml`, the findings older than that rule, a file that never grows. It also runs after each Kotlin edit of an agent, as the [hooks](../coding-assistants/hooks.md) page explains | `common-convention`, the root project |
 | `architecture-tests-convention` | Konture, chosen in [ADR 0001](../adr/0001-architecture-tests-with-konture.md), which builds the module graph and checks the architecture rules | The root project, `architecture-tests` |

@@ -55,18 +55,6 @@ internal class TechStartersArchitectureTest {
                 classFqName("com.drinkit.security.filter.MaintenanceModeFilter", WEB_STARTERS)
                 classFqName("com.drinkit.sse.SseApi", WEB_STARTERS)
                 classFqName("com.drinkit.ocr.OCRResponse", OPS_STARTERS)
-                classFqName("com.drinkit.documentation.cqrs.Command", LIBRARY_STARTERS)
-                classFqName("com.drinkit.documentation.cqrs.Query", LIBRARY_STARTERS)
-                classFqName("com.drinkit.documentation.fcis.FunctionalCore", LIBRARY_STARTERS)
-                classFqName("com.drinkit.documentation.fcis.ImperativeShell", LIBRARY_STARTERS)
-                classFqName("com.drinkit.documentation.clean.architecture.CoreDomain", LIBRARY_STARTERS)
-                classFqName("com.drinkit.documentation.clean.architecture.Usecase", LIBRARY_STARTERS)
-                classFqName("com.drinkit.documentation.tech.starter.TechStarterTool", LIBRARY_STARTERS)
-                classFqName("com.drinkit.documentation.event.sourcing.Projection", LIBRARY_STARTERS)
-                classFqName("com.drinkit.documentation.event.sourcing.Aggregate", LIBRARY_STARTERS)
-                classFqName("com.drinkit.event.sourcing.transaction.DuplicateSequenceException", LIBRARY_STARTERS)
-                classFqName("com.drinkit.event.sourcing.transaction.RetryableTransactional", LIBRARY_STARTERS)
-                classFqName("com.drinkit.event.sourcing.DomainEvent", LIBRARY_STARTERS)
             }
             classes {
                 that().inModule(STARTERS)
@@ -175,7 +163,6 @@ internal class TechStartersArchitectureTest {
             description = "A tech starter's code, test fixtures included, lives in the package named after its " +
                 "module, com.drinkit.event.sourcing for event-sourcing-starter: rename the package or the module"
             suppress {
-                files(LIBRARY_STARTERS) { it.packageName == "com.drinkit.utils" }
                 files(POSTGRESQL_FIXTURES) { it.packageName == "com.drinkit.jooq" }
             }
             files(SourceSets.production() or SourceSets.tests()) {

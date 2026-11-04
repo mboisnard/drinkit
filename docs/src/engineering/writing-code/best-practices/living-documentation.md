@@ -67,6 +67,8 @@ Some annotations of `documentation-starter` feed the generated pages, the others
 | `@FunctionalCore` | Pure code with no I/O, such as a decider | Nothing | [Clean architecture](../../architecture/clean-architecture.md) |
 | `@ImperativeShell` | The code that does the I/O around the core, such as a use case | Nothing | [Clean architecture](../../architecture/clean-architecture.md) |
 
+The page of `documentation-starter` holds its README only, since its processor runs on the starter's test sources.
+
 The promotion of a user to admin carries annotations of both kinds, on its command, its use case and its decider:
 
 ```kotlin
@@ -86,16 +88,16 @@ A generated title is the class name split into words, so the site keeps the word
 language of Domain-Driven Design. `@CoreDomain`, `@Usecase` and `@TechStarterTool` take an optional `name` that
 replaces it, and an optional `description` that gives the text of the page or the line. Without a description, or
 with a blank one, the processor takes the KDoc of the class, as `EventsReducer` of `event-sourcing-starter` does.
-A function marked `@TechStarterTool` keeps its name as its title, and its line shows its signature.
+A function's title is its name, not split into words, and its line shows its signature.
 
 The [architecture tests](../testing/architecture-tests.md) keep the generated lists complete. A `@Service` of the
 domain without `@Usecase` fails the build, and so does a public class of a tech starter without `@TechStarterTool`,
 unless it is a data or value class that a tool takes.
 
 Every annotation of the starter has `AnnotationRetention.SOURCE`, since KSP reads them from the source. The compiler
-drops them, so the compiled classes hold none. Unlike the annotations, the jar of the starter ships:
-`documentation-convention` adds it as an `implementation` dependency, so the starter and the KSP API it uses are
-on the runtime classpath of `drinkit-backend`, the Spring Boot application.
+drops them, so the compiled classes hold none. `documentation-convention` adds the starter as a `compileOnly`
+dependency, so neither the starter nor the KSP API it uses reaches the runtime classpath of `drinkit-backend`, the
+Spring Boot application.
 
 ## 📚 Sources
 

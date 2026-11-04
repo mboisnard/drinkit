@@ -14,7 +14,6 @@ com.github.docker-java:docker-java-transport-zerodep:3.7.1=testCompileClasspath,
 com.github.docker-java:docker-java-transport:3.7.1=testCompileClasspath,testRuntimeClasspath
 com.github.mifmif:generex:1.0.2=testRuntimeClasspath
 com.google.cloud:spring-cloud-gcp-dependencies:8.2.4=compileClasspath,developmentOnly,productionRuntimeClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
-com.google.devtools.ksp:symbol-processing-api:2.3.12=testRuntimeClasspath
 com.google.errorprone:error_prone_annotations:2.10.0=detekt
 com.google.errorprone:error_prone_annotations:2.38.0=compileClasspath,testCompileClasspath
 com.ibm.icu:icu4j:73.2=testRuntimeClasspath
