@@ -76,3 +76,14 @@ internal data class TechStarterToolInfo(
 ) : AnnotatedInfo
 
 internal data class MethodInfo(val name: String, val description: String?)
+
+internal data class TechStarterFunctionInfo(
+    val packageName: String,
+    val name: String,
+    val customName: String?,
+    val description: String?,
+    val signature: String,
+) {
+    val displayName: String
+        get() = customName ?: name
+}

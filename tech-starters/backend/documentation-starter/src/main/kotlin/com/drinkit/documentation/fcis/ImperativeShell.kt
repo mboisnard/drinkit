@@ -1,5 +1,7 @@
 package com.drinkit.documentation.fcis
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
+
 /**
  * Marks a class as part of the **Imperative Shell** of the application.
  *
@@ -28,6 +30,7 @@ package com.drinkit.documentation.fcis
  * A class annotated with [ImperativeShell] is explicitly acknowledged as being stateful and
  * impure, forming the robust outer layer of the application.
  */
+@TechStarterTool
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 annotation class ImperativeShell

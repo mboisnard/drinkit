@@ -1,5 +1,7 @@
 package com.drinkit.documentation.clean.architecture
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
+
 /**
  * Marks a class as a **Use Case**, often called an **Interactor**, which is a core component
  * in a Clean Architecture design.
@@ -25,6 +27,7 @@ package com.drinkit.documentation.clean.architecture
  * piece of your application's business logic, adhering to the principles of separation of concerns
  * and dependency inversion.
  */
+@TechStarterTool
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 annotation class Usecase(val name: String = "", val description: String = "")

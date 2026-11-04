@@ -9,9 +9,7 @@ internal class CreateCoreDomainsOverviewDocumentation(
     private val outputFolderPath: String,
     private val logger: KSPLogger,
 ) {
-    private val outputFile: File by lazy {
-        File(outputFolderPath, "domains.md").apply { parentFile?.mkdirs() }
-    }
+    private val outputFile: File by lazy { File(outputFolderPath, "domains.md") }
 
     fun invoke(domains: List<CoreDomainInfo>, useCasesByPackage: Map<String, List<UseCaseInfo>>) {
         logger.warn("  Updating core domains overview...")
@@ -21,24 +19,23 @@ internal class CreateCoreDomainsOverviewDocumentation(
             DomainEntry(domain.displayName, domain.fileName, useCasesCount)
         }
 
-        val updatedEntries = fetchExistingEntries()
-            .filterNot { existingEntry -> newEntries.any { it.fileName == existingEntry.fileName } }
-            .plus(newEntries)
-            .sortedBy { it.displayName }
-
-        outputFile.writeText(
-            generateMarkdown(updatedEntries),
-        )
+        outputFile.rewriteLocked { content ->
+            val updatedEntries = parseEntries(content)
+                .filterNot { existingEntry -> newEntries.any { it.fileName == existingEntry.fileName } }
+                .plus(newEntries)
+                .sortedBy { it.displayName }
+            generateMarkdown(updatedEntries)
+        }
 
         logger.warn("    Updated overview with ${domains.size} domain(s)")
     }
 
-    private fun fetchExistingEntries(): List<DomainEntry> {
-        if (!outputFile.exists()) {
+    private fun parseEntries(content: String?): List<DomainEntry> {
+        if (content == null) {
             return emptyList()
         }
 
-        return outputFile.readLines()
+        return content.lines()
             .filter { it.startsWith("- [") }
             .mapNotNull { line ->
                 // Format: - [Domain Name](./domain-file.md) (X use cases)
@@ -65,7 +62,7 @@ internal class CreateCoreDomainsOverviewDocumentation(
             appendLine("*No domains documented yet.*")
         } else {
             entries.forEach { entry ->
-                val useCaseWord = if (entry.useCasesCount > 1) "use cases" else "use case"
+                val useCaseWord = if (entry.useCasesCount == 1) "use case" else "use cases"
                 appendLine("- [${entry.displayName}](./${entry.fileName}.md) (${entry.useCasesCount} $useCaseWord)")
             }
         }

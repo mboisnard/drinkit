@@ -1,5 +1,7 @@
 package com.drinkit.documentation.fcis
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
+
 /**
  * Marks a class or function as part of the **Functional Core** of the application.
  *
@@ -30,6 +32,7 @@ package com.drinkit.documentation.fcis
  * By using this annotation, you are committing to keeping this piece of code clean, predictable,
  * and free from the complexities of the outside world.
  */
+@TechStarterTool
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 annotation class FunctionalCore

@@ -1,5 +1,7 @@
 package com.drinkit.documentation.event.sourcing
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
+
 /**
  * Marks a class or function as a component of an **Aggregate**, the core element of the write model
  * in Domain-Driven Design (DDD) and Event Sourcing.
@@ -25,6 +27,7 @@ package com.drinkit.documentation.event.sourcing
  *
  * This annotation identifies the primary consistency boundary for all write operations.
  */
+@TechStarterTool
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 annotation class Aggregate

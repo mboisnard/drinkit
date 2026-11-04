@@ -13,6 +13,7 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.validate
 
 /**
@@ -27,63 +28,61 @@ internal class DocumentationSymbolProcessor(
     private val logger: KSPLogger,
 ) : SymbolProcessor {
 
-    private lateinit var coreDomainsByPackage: Map<String, List<CoreDomainInfo>>
+    private lateinit var coreDomains: List<CoreDomainInfo>
     private lateinit var useCasesByPackage: Map<String, List<UseCaseInfo>>
-    private lateinit var techStarterToolsByPackage: Map<String, List<TechStarterToolInfo>>
+    private lateinit var techStarterTools: List<TechStarterToolInfo>
+    private lateinit var techStarterFunctions: List<TechStarterFunctionInfo>
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        coreDomainsByPackage = collectInfo<CoreDomain, CoreDomainInfo>(
-            resolver,
-            KSClassDeclaration::toCoreDomain,
-        )
-        useCasesByPackage = collectInfo<Usecase, UseCaseInfo>(
-            resolver,
-            KSClassDeclaration::toUseCase,
-        )
-        techStarterToolsByPackage = collectInfo<TechStarterTool, TechStarterToolInfo>(
+        coreDomains = collectInfo<CoreDomain, KSClassDeclaration, _>(resolver, KSClassDeclaration::toCoreDomain)
+        useCasesByPackage = collectInfo<Usecase, KSClassDeclaration, _>(resolver, KSClassDeclaration::toUseCase)
+            .groupBy { it.packageName }
+        techStarterTools = collectInfo<TechStarterTool, KSClassDeclaration, _>(
             resolver,
             KSClassDeclaration::toTechStarterTool,
+        )
+        techStarterFunctions = collectInfo<TechStarterTool, KSFunctionDeclaration, _>(
+            resolver,
+            KSFunctionDeclaration::toTechStarterFunction,
         )
 
         return emptyList()
     }
 
     override fun finish() {
-        val allDomains = coreDomainsByPackage.values.flatten()
+        if (coreDomains.isNotEmpty()) {
+            logger.warn("Generating documentation for ${coreDomains.size} core domain(s)...")
 
-        if (allDomains.isNotEmpty()) {
-            logger.warn("Generating documentation for ${allDomains.size} core domain(s)...")
-
-            allDomains.forEach { domain ->
+            coreDomains.forEach { domain ->
                 val associatedUseCases = domain.findAssociatedUseCases(useCasesByPackage)
                 createCoreDomainDocumentation.invoke(domain, associatedUseCases)
             }
-            createCoreDomainsOverviewDocumentation.invoke(allDomains, useCasesByPackage)
+            createCoreDomainsOverviewDocumentation.invoke(coreDomains, useCasesByPackage)
 
             logger.warn("Core domain documentation generation completed")
         }
 
-        val allTools = techStarterToolsByPackage.values.flatten()
-
-        if (allTools.isNotEmpty() || moduleName.endsWith("-starter")) {
+        if (techStarterTools.isNotEmpty() || techStarterFunctions.isNotEmpty() || moduleName.endsWith("-starter")) {
             logger.warn("Generating documentation for tech starter tools")
 
-            createTechStarterDocumentation.invoke(moduleName, allTools)
-            createTechStartersOverviewDocumentation.invoke(moduleName, allTools.size)
+            createTechStarterDocumentation.invoke(moduleName, techStarterTools, techStarterFunctions)
+            createTechStartersOverviewDocumentation.invoke(
+                moduleName,
+                techStarterTools.size + techStarterFunctions.size,
+            )
 
             logger.warn("Tech starter tools documentation generation completed")
         }
     }
 
-    private inline fun <reified A : Annotation, T : AnnotatedInfo> collectInfo(
+    private inline fun <reified A : Annotation, reified D : KSAnnotated, T> collectInfo(
         resolver: Resolver,
-        noinline mapper: (KSClassDeclaration, KSAnnotation) -> T,
-    ): Map<String, List<T>> = resolver.getSymbolsWithAnnotation(A::class.qualifiedName!!)
-        .filterIsInstance<KSClassDeclaration>()
+        noinline mapper: (D, KSAnnotation) -> T,
+    ): List<T> = resolver.getSymbolsWithAnnotation(A::class.qualifiedName!!)
+        .filterIsInstance<D>()
         .filter { it.validate() }
-        .map { classDeclaration ->
-            val annotation = classDeclaration.findAnnotation<A>()
-            mapper(classDeclaration, annotation)
-        }
-        .groupBy { it.packageName }
+        // A member function is documented with its class: only a top-level function is a tool of its own
+        .filter { it !is KSFunctionDeclaration || it.parentDeclaration == null }
+        .map { declaration -> mapper(declaration, declaration.findAnnotation<A>()) }
+        .toList()
 }

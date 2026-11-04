@@ -1,5 +1,7 @@
 package com.drinkit.documentation.event.sourcing
 
+import com.drinkit.documentation.tech.starter.TechStarterTool
+
 /**
  * Marks a class as a **Projection**, also known as a **Read Model**, in an Event Sourcing architecture.
  *
@@ -11,19 +13,20 @@ package com.drinkit.documentation.event.sourcing
  *
  * While the [Aggregate] is the authority for writes, [Projection]s are the workhorses for reads.
  *
- * - **Event Consumption:** A Projection subscribes to an event stream. It listens for specific
+ * - **Event Consumption:** A Projection folds the history of events of an aggregate. It reads the
  * events it cares about and ignores the rest.
  * - **Building Read Models:** When a relevant event occurs, the Projection updates its own
  * data store. This store is a denormalized representation of the data, tailored for a specific
  * use case.
  * - **Decoupling:** Projections are completely decoupled from the write model. You can add,
  * remove, or rebuild projections without impacting the [Aggregate]s in any way.
- * - **Eventual Consistency:** Read models are updated asynchronously as events are processed.
- * This means they are eventually consistent with the write model. <-- TODO Review for sync
+ * - **Same Transaction:** DrinkIt folds the projection in the transaction that appends the event,
+ * so a read always sees the last write, never an eventually consistent view.
  *
  * By annotating a class with [Projection], you identify it as a consumer of events responsible
  * for creating a queryable view of the application's state.
  */
+@TechStarterTool
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 annotation class Projection
