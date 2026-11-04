@@ -1,7 +1,11 @@
 package com.drinkit.user.spi
 
+import com.drinkit.event.sourcing.transaction.DuplicateSequenceException
 import com.drinkit.user.UserFixtures
+import com.drinkit.user.core.Author
 import com.drinkit.user.core.UserHistory
+import com.drinkit.user.core.Verified
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -33,5 +37,22 @@ abstract class UserEventsTestContract {
             it.password shouldBe userInitialized.password
             it.roles shouldBe userInitialized.roles
         }
+    }
+
+    @Test
+    fun `an event at a sequence id already stored is refused`() {
+        // Given
+        val userInitialized = userFixtures.givenAUserHistory().initEvent
+        userEvents.save(userInitialized)
+
+        val verifiedAtTheSameSequenceId = Verified(
+            userId = userInitialized.userId,
+            date = userFixtures.givenANewDate,
+            author = Author.Connected(userInitialized.userId),
+            sequenceId = userInitialized.sequenceId,
+        )
+
+        // When / Then
+        shouldThrow<DuplicateSequenceException> { userEvents.save(verifiedAtTheSameSequenceId) }
     }
 }

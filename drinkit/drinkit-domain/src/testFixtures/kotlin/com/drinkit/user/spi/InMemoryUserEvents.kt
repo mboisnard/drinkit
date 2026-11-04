@@ -1,5 +1,6 @@
 package com.drinkit.user.spi
 
+import com.drinkit.event.sourcing.transaction.DuplicateSequenceException
 import com.drinkit.user.core.Initialized
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserEvent
@@ -16,6 +17,13 @@ class InMemoryUserEvents(private val users: Users) : UserEvents {
 
     override fun save(event: UserEvent): User {
         val userId = event.userId
+        val storedSequenceIds = eventsStore[userId]?.let { listOf(it.initEvent) + it.remainingEvents }
+            ?.map { it.sequenceId }
+            .orEmpty()
+
+        if (event.sequenceId in storedSequenceIds) {
+            throw DuplicateSequenceException("${event.sequenceId} already exists for $userId", cause = null)
+        }
 
         if (eventsStore[userId] == null && event is Initialized) {
             eventsStore[userId] = UserHistory(event)
