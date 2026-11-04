@@ -106,9 +106,10 @@ VALUES ('partner-api.retry-policy', '{"maxAttempts": 5}', now())
 ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, modified = EXCLUDED.modified;
 ```
 
-Once the transaction commits, a write from the code evicts the key from the cache of its instance, which reads
-the new value at once, and a rollback leaves that cache as it was. The other instances, and every instance after an
-SQL update, read it once their entry expires.
+Once the transaction commits, a write from the code evicts the key from the cache of its instance, and a rollback
+leaves that cache as it was. That instance then reads the new value, unless a read that started before the commit
+puts the old one back in its cache. It then reads the new value once that entry expires, as the other instances do,
+and every instance after an SQL update.
 
 ### Read it from the domain
 
