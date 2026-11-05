@@ -1,6 +1,6 @@
 # 0003. The API contract changes by expand and contract, frontend included
 
-- Status: accepted
+- Status: superseded by [ADR 0015](0015-the-api-contract-may-break-in-one-pull-request-until-the-first-deployment.md)
 - Date: 2026-10-28
 - Issue: [#513](https://github.com/mboisnard/drinkit/issues/513)
 

@@ -96,8 +96,9 @@ flowchart LR
   clients -- "any of them calls any of them" --> backends
 ```
 
-So a breaking change never lands in one pull request, even one that adapts both sides, as [ADR 0003][adr] records.
-It takes an expand and a contract, each in its own pull request:
+So, once DrinkIt is deployed, a breaking change never lands in one pull request, even one that adapts both sides.
+Until the first deployment, it lands in one pull request that adapts both sides, as [ADR 0015][adr] records. After
+it, a breaking change takes an expand and a contract, each in its own pull request:
 
 1. **Expand.** Add the new element next to the old one, which becomes `deprecated: true` so that no new code uses it,
    and move the frontend to the new one. A new required request field starts optional.
@@ -143,5 +144,5 @@ your change as a diff of its own.
 - [Customization](https://openapi-generator.tech/docs/customization), OpenAPI Generator
 
 [skill]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/api-contract-change/SKILL.md
-[adr]: ../adr/0003-api-contract-changes-by-expand-and-contract.md
+[adr]: ../adr/0015-the-api-contract-may-break-in-one-pull-request-until-the-first-deployment.md
 [expand-and-contract]: ../writing-code/best-practices/coding-rules.md#evolve-a-contract-in-steps
