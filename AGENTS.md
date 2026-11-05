@@ -29,8 +29,8 @@ whatever the agent, even when no tool loaded it for you.
 
 - Backend production code, such as a use case, a port, an adapter or a controller: `backend-feature`
 - A test: `test-driven-development` for new behavior, `test-existing-code` for code that has none
-- The OpenAPI contract, never the code generated from it: `api-contract-change`. A breaking change goes through
-  expand and contract, even for the frontend.
+- The OpenAPI contract, never the code generated from it: `api-contract-change`. Once DrinkIt is deployed, a breaking
+  change goes through expand and contract, even for the frontend.
 - The schema or the jOOQ classes: `database-change`
 - A dependency, a version or the lock: `dependency-change`
 - A convention plugin of `build-logic`: `build-convention-change`

@@ -1,6 +1,6 @@
 ---
 name: api-contract-change
-description: Changes DrinkIt's OpenAPI contract first, then the backend controllers and the frontend client generated from it, and takes a breaking change through the expand and contract steps of the contract-first page. Use it before adding or changing an operation, a parameter, a schema or a response of the API contract, or the generator configuration of either side.
+description: Changes DrinkIt's OpenAPI contract first, then the backend controllers and the frontend client generated from it, and, once DrinkIt is deployed, takes a breaking change through the expand and contract steps of the contract-first page. Use it before adding or changing an operation, a parameter, a schema or a response of the API contract, or the generator configuration of either side.
 paths:
   - "**/*-api-contract/**"
   - "**/*-frontend/openapi-config.yml"
@@ -40,8 +40,8 @@ to it is a structuring choice: ask first, as `AGENTS.md` says.
 
 ## Backward compatibility
 
-The frontend and the backend deploy separately, so a change that fails a consumer built before it never lands in
-one pull request. "Evolving the contract" on the
+The frontend and the backend deploy separately, so once DrinkIt is deployed, a change that fails a consumer built
+before it never lands in one pull request. Until then, ADR 0015 lets it land in one that adapts both sides. "Evolving the contract" on the
 [contract-first page](../../../docs/src/engineering/architecture/contract-first.md) gives the breaking changes,
 the expand and contract steps, the pull request in which the frontend moves, and the opposite order for a new enum
 value in a response. Renaming an `operationId` or a tag changes no HTTP exchange: it renames the generated methods
@@ -69,6 +69,7 @@ npm run generate:client-api && npm run build    # from the frontend app
 - [ ] Each new operation has a tag and every status its controller can answer.
 - [ ] Each new string has a `maxLength`, each array a `maxItems`, each identifier a `pattern` or a `format`.
 - [ ] A new `format` has both its mappings in the build file of the `-backend` module.
-- [ ] Each operation is implemented by its controller, a breaking change follows expand and contract, and the
+- [ ] Each operation is implemented by its controller, a breaking change follows expand and contract once DrinkIt is
+      deployed, and the
       frontend moves in the pull request the contract-first page gives it.
 - [ ] Both check commands pass.
