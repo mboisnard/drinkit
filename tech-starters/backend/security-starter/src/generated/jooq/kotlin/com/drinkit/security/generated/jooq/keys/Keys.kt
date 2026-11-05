@@ -5,12 +5,18 @@
 package com.drinkit.security.generated.jooq.keys
 
 
-import com.drinkit.security.generated.jooq.tables.User
-import com.drinkit.security.generated.jooq.tables.records.UserRecord
+import com.drinkit.security.generated.jooq.tables.RememberMeToken
+import com.drinkit.security.generated.jooq.tables.SpringSession
+import com.drinkit.security.generated.jooq.tables.SpringSessionAttributes
+import com.drinkit.security.generated.jooq.tables.records.RememberMeTokenRecord
+import com.drinkit.security.generated.jooq.tables.records.SpringSessionAttributesRecord
+import com.drinkit.security.generated.jooq.tables.records.SpringSessionRecord
 
+import org.jooq.ForeignKey
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
 import org.jooq.impl.Internal
+import org.jooq.impl.QOM.ForeignKeyRule
 
 
 
@@ -18,4 +24,12 @@ import org.jooq.impl.Internal
 // UNIQUE and PRIMARY KEY definitions
 // -------------------------------------------------------------------------
 
-val USER_PKEY: UniqueKey<UserRecord> = Internal.createUniqueKey(User.USER, DSL.name("user_pkey"), arrayOf(User.USER.ID), true)
+val REMEMBER_ME_TOKEN_PKEY: UniqueKey<RememberMeTokenRecord> = Internal.createUniqueKey(RememberMeToken.REMEMBER_ME_TOKEN, DSL.name("remember_me_token_pkey"), arrayOf(RememberMeToken.REMEMBER_ME_TOKEN.SERIES), true)
+val SPRING_SESSION_PKEY: UniqueKey<SpringSessionRecord> = Internal.createUniqueKey(SpringSession.SPRING_SESSION, DSL.name("spring_session_pkey"), arrayOf(SpringSession.SPRING_SESSION.PRIMARY_ID), true)
+val SPRING_SESSION_ATTRIBUTES_PK: UniqueKey<SpringSessionAttributesRecord> = Internal.createUniqueKey(SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES, DSL.name("spring_session_attributes_pk"), arrayOf(SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES.SESSION_PRIMARY_ID, SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES.ATTRIBUTE_NAME), true)
+
+// -------------------------------------------------------------------------
+// FOREIGN KEY definitions
+// -------------------------------------------------------------------------
+
+val SPRING_SESSION_ATTRIBUTES__SPRING_SESSION_ATTRIBUTES_FK: ForeignKey<SpringSessionAttributesRecord, SpringSessionRecord> = Internal.createForeignKey(SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES, DSL.name("spring_session_attributes_fk"), arrayOf(SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES.SESSION_PRIMARY_ID), com.drinkit.security.generated.jooq.keys.SPRING_SESSION_PKEY, arrayOf(SpringSession.SPRING_SESSION.PRIMARY_ID), true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION)

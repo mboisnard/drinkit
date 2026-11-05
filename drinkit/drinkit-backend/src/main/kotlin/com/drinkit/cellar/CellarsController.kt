@@ -10,9 +10,9 @@ import com.drinkit.api.generated.model.Point
 import com.drinkit.cellar.core.Cellar
 import com.drinkit.cellar.core.CellarId
 import com.drinkit.cellar.core.CellarName
-import com.drinkit.config.AbstractApi
-import com.drinkit.config.ConnectedUser
-import com.drinkit.user.core.Author
+import com.drinkit.security.CurrentUser
+import com.drinkit.user.author
+import com.drinkit.user.userId
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -25,9 +25,8 @@ internal class CellarsController(
     private val createCellar: CreateCellar,
     private val deleteCellar: DeleteCellar,
     private val findCellars: FindCellars,
-    private val connectedUser: ConnectedUser,
-) : AbstractApi(),
-    CellarsApi {
+    private val currentUser: CurrentUser,
+) : CellarsApi {
 
     override fun createCellar(createCellarRequest: CreateCellarRequest): ResponseEntity<CellarId> {
         val command = createCellarRequest.toCommand()
@@ -38,26 +37,25 @@ internal class CellarsController(
             .body(createdCellarId)
     }
 
-    override fun deleteCellar(cellarId: CellarId): ResponseEntity<Unit> {
-        deleteCellar.invoke(cellarId, Author.Connected(connectedUser().id))
-        return ResponseEntity.noContent().build()
-    }
+    override fun deleteCellar(cellarId: CellarId): ResponseEntity<Unit> =
+        when (deleteCellar.invoke(cellarId, currentUser.get().author)) {
+            DeleteCellar.Result.CellarDeleted -> ResponseEntity.noContent().build()
+            DeleteCellar.Result.CellarNotFound -> ResponseEntity.notFound().build()
+        }
 
     @Transactional(readOnly = true)
     override fun findCellars(): ResponseEntity<CellarsResponse> {
-        val cellars = findCellars.byOwnerId(connectedUserIdOrFail())
+        val cellars = findCellars.byOwnerId(currentUser.get().userId)
             .map { it.toResponse() }
             .toList()
 
         return ResponseEntity.ok(CellarsResponse(cellars))
     }
 
-    private fun connectedUser() = connectedUser.getOrFail()
-
     private fun CreateCellarRequest.toCommand() = CreateCellarCommand(
         name = CellarName(name),
         location = location.toDomain(),
-        ownerId = connectedUser().id,
+        ownerId = currentUser.get().userId,
     )
 
     private fun CityLocation.toDomain() = com.drinkit.common.CityLocation(

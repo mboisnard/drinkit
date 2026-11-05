@@ -67,6 +67,11 @@ internal class JooqUsers(private val dsl: DSLContext, private val clock: Clock) 
         return query.fetchOne { it.toDomain() }
     }
 
+    override fun findEnabledBy(email: Email): User? = dsl.selectFrom(USER)
+        .where(USER.EMAIL.eq(email.value))
+        .and(USER.ENABLED.eq(true))
+        .fetchOne { it.toDomain() }
+
     override fun exists(email: Email): Boolean {
         val count = dsl.fetchCount(USER, USER.EMAIL.eq(email.value))
         return count != 0

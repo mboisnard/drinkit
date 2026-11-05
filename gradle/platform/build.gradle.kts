@@ -20,6 +20,10 @@ dependencies {
 
     constraints {
         // Runtime Dependencies
+        // The three BouncyCastle modules check each other's version: they move together
+        api(libs.bouncycastle.bcpkix)
+        api(libs.bouncycastle.bcprov)
+        api(libs.bouncycastle.bcutil)
         api(libs.bson)
         api(libs.jooq)
         api(libs.jooq.kotlin)

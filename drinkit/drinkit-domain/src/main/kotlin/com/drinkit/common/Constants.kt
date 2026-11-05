@@ -15,6 +15,9 @@ object Constants {
 
     const val MIN_PASSWORD_LENGTH = 10
 
+    // The login of the security starter refuses a longer one
+    const val MAX_PASSWORD_LENGTH = 128
+
     val MIN_BIRTH_DATE: LocalDate = LocalDate.parse("1900-01-01")
 
     const val MIN_LATITUDE = -90.0

@@ -5,8 +5,7 @@ import com.drinkit.api.generated.model.CompleteUserInformationRequest
 import com.drinkit.api.generated.model.ConfirmEmailRequest
 import com.drinkit.api.generated.model.CreateUserRequest
 import com.drinkit.common.CorrelationId
-import com.drinkit.config.AbstractApi
-import com.drinkit.security.AuthenticationService
+import com.drinkit.security.CurrentUser
 import com.drinkit.user.CompleteProfileInformation
 import com.drinkit.user.CompleteProfileInformationCommand
 import com.drinkit.user.ConfirmVerificationToken
@@ -17,6 +16,7 @@ import com.drinkit.user.CreateNewUser.Result.UserCreated
 import com.drinkit.user.CreateNewUserCommand
 import com.drinkit.user.SendVerificationToken
 import com.drinkit.user.SendVerificationTokenCommand
+import com.drinkit.user.author
 import com.drinkit.user.core.Author
 import com.drinkit.user.core.BirthDate
 import com.drinkit.user.core.Email
@@ -26,6 +26,7 @@ import com.drinkit.user.core.LastName
 import com.drinkit.user.core.Password
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.UserId
+import com.drinkit.user.userId
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -40,9 +41,8 @@ internal class RegistrationController(
     private val completeProfileInformation: CompleteProfileInformation,
 
     private val passwordEncoder: PasswordEncoder,
-    private val authenticationService: AuthenticationService,
-) : AbstractApi(),
-    RegistrationApi {
+    private val currentUser: CurrentUser,
+) : RegistrationApi {
 
     override fun createNewUser(createUserRequest: CreateUserRequest): ResponseEntity<UserId> {
         require(createUserRequest.password == createUserRequest.confirmedPassword) {
@@ -64,7 +64,7 @@ internal class RegistrationController(
 
         return when (result) {
             is UserCreated -> {
-                authenticationService.authenticate(createUserRequest.email, createUserRequest.password)
+                currentUser.signIn(result.user.id.value)
                 ResponseEntity.status(HttpStatus.CREATED).body(result.user.id)
             }
 
@@ -73,11 +73,11 @@ internal class RegistrationController(
     }
 
     override fun confirmUserEmail(confirmEmailRequest: ConfirmEmailRequest): ResponseEntity<Unit> {
-        val userId = connectedUserIdOrFail()
+        val connectedUser = currentUser.get()
         val result = confirmVerificationToken.invoke(
-            userId = userId,
+            userId = connectedUser.userId,
             command = ConfirmVerificationTokenCommand(
-                author = Author.Connected(userId),
+                author = connectedUser.author,
                 token = confirmEmailRequest.validationToken,
             ),
         )
@@ -91,12 +91,12 @@ internal class RegistrationController(
     }
 
     override fun resendValidationToken(): ResponseEntity<Unit> {
-        val userId = connectedUserIdOrFail()
+        val connectedUser = currentUser.get()
 
         val result = sendVerificationToken.invoke(
-            userId = userId,
+            userId = connectedUser.userId,
             command = SendVerificationTokenCommand(
-                author = Author.Connected(userId),
+                author = connectedUser.author,
                 locale = LocaleContextHolder.getLocale(),
             ),
         )
@@ -112,10 +112,10 @@ internal class RegistrationController(
     override fun completeUserInformation(
         completeUserInformationRequest: CompleteUserInformationRequest,
     ): ResponseEntity<Unit> {
-        val userId = connectedUserIdOrFail()
+        val connectedUser = currentUser.get()
         val command = with(completeUserInformationRequest) {
             CompleteProfileInformationCommand(
-                author = Author.Connected(userId),
+                author = connectedUser.author,
                 profileInformation = ProfileInformation(
                     firstName = FirstName(firstname),
                     lastName = LastName(lastname),
@@ -124,11 +124,11 @@ internal class RegistrationController(
             )
         }
 
-        val result = completeProfileInformation.invoke(userId, command)
+        val result = completeProfileInformation.invoke(connectedUser.userId, command)
 
         return when (result) {
             is CompleteProfileInformation.Result.Success -> {
-                authenticationService.refreshContext()
+                currentUser.refresh()
                 ResponseEntity.ok().build()
             }
 

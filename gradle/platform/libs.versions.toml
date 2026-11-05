@@ -12,6 +12,7 @@ spring-boot-dependencies = "4.1.2"
 spring-cloud-gcp-dependencies = "8.2.4"
 
 # Runtime Versions
+bouncycastle = "1.86"
 bson = "5.13.0"
 jooq = "3.21.9"
 kotlin-logging = "8.0.4"
@@ -42,6 +43,9 @@ spring-cloud-gcp-dependencies-bom = { module = "com.google.cloud:spring-cloud-gc
 squawk = { module = "sbdchd:squawk", version.ref = "squawk" }
 
 # Runtime Dependencies
+bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
+bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
+bouncycastle-bcutil = { module = "org.bouncycastle:bcutil-jdk18on", version.ref = "bouncycastle" }
 bson = { module = "org.mongodb:bson", version.ref = "bson" }
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 jooq-kotlin = { module = "org.jooq:jooq-kotlin", version.ref = "jooq" }
