@@ -14,7 +14,7 @@ internal class CustomResponseEntityExceptionHandler : ResponseEntityExceptionHan
     private val logger = KotlinLogging.logger { }
 
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleAccessDeniedException(ex: Exception): ResponseEntity<Any> {
+    fun handleIllegalArgumentException(ex: Exception): ResponseEntity<Any> {
         logger.warn { ex.message }
 
         return ResponseEntity.badRequest().build()
