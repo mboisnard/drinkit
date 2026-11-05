@@ -43,7 +43,7 @@ Two traps break a contract without looking like a change of it:
   sent and the moment it is handled. The flag never stands in for the steps above.
 
 [Contract first](../../architecture/contract-first.md) applies these steps to the API contract, and
-[ADR 0003](../../adr/0003-api-contract-changes-by-expand-and-contract.md) records why the frontend gets no exception.
+[ADR 0015](../../adr/0015-the-api-contract-may-break-in-one-pull-request-until-the-first-deployment.md) records why the frontend gets no exception once DrinkIt is deployed.
 The [database page](../../build-and-data/database.md) applies them to the schema. Danilo Sato describes the pattern
 in [Parallel Change](https://martinfowler.com/bliki/ParallelChange.html).
 

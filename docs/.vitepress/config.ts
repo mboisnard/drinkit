@@ -159,6 +159,10 @@ export default withMermaid(
                   { text: '0009. Search writes through the starter', link: '0009-search-index-writes-through-the-starter-searches-through-the-engine-sdk' },
                   { text: '0010. Search rebuilds in batches', link: '0010-search-index-rebuilds-in-batches-tracked-in-postgresql' },
                   { text: '0011. Event sourcing starter declared by its users', link: '0011-a-module-declares-the-event-sourcing-starter-itself' },
+                  { text: '0012. Stateful sessions in PostgreSQL', link: '0012-stateful-sessions-in-postgresql-serialized-as-jsonb' },
+                  { text: '0013. Remember-me by a rotating token', link: '0013-remember-me-by-a-rotating-hashed-token' },
+                  { text: '0014. Argon2id for passwords', link: '0014-argon2id-for-passwords-bouncycastle-as-a-dependency' },
+                  { text: '0015. Contract breaks before deployment', link: '0015-the-api-contract-may-break-in-one-pull-request-until-the-first-deployment' },
                 ],
               },
 
@@ -179,13 +183,8 @@ export default withMermaid(
                 base: '/engineering/security/',
                 collapsed: true,
                 items: [
-                  { text: 'Stateful vs Stateless', link: 'stateful-stateless' },
-                  { text: 'CSRF', link: 'csrf' },
-                  { text: 'Headers', link: 'headers' },
-                  { text: 'CORS', link: 'cors' },
-                  { text: 'Login Bruteforce Protection', link: 'bruteforce-protection' },
-                  { text: 'Remember Me', link: 'remember-me' },
-                  { text: 'TOTP', link: 'totp' },
+                  { text: 'Principles', link: 'principles' },
+                  { text: 'Calling the API', link: 'calling-the-api' },
                 ],
               },
 
