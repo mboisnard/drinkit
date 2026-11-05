@@ -9,7 +9,6 @@ import com.drinkit.documentation.clean.architecture.CoreDomain
 import com.drinkit.kotlin.addUnless
 import com.drinkit.kotlin.containsNoInvisibleCharacter
 import com.drinkit.kotlin.hasLengthBetween
-import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
 
 data class CellarId(override val value: String) : AbstractId(value) {
@@ -62,5 +61,5 @@ data class Cellar(
     val owner: UserId,
 ) {
 
-    fun canBeSeenBy(user: User): Boolean = user.id == owner
+    fun canBeSeenBy(userId: UserId): Boolean = userId == owner
 }

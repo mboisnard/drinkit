@@ -12,6 +12,7 @@ import com.drinkit.cellar.core.CellarId
 import com.drinkit.cellar.core.CellarName
 import com.drinkit.config.AbstractApi
 import com.drinkit.config.ConnectedUser
+import com.drinkit.user.core.Author
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -38,7 +39,7 @@ internal class CellarsController(
     }
 
     override fun deleteCellar(cellarId: CellarId): ResponseEntity<Unit> {
-        deleteCellar.invoke(cellarId, connectedUser())
+        deleteCellar.invoke(cellarId, Author.Connected(connectedUser().id))
         return ResponseEntity.noContent().build()
     }
 
