@@ -9,7 +9,7 @@ INSERT INTO drinkit_application.user_event (user_id, sequence_id, event_name, da
 VALUES
     ('64656d6f0000000000000001', 0, 'INITIALIZED', '2026-01-01T00:00:00Z',
      '{"type": "UNLOGGED", "correlationId": {"value": "64656d6f-0000-4000-8000-000000000001"}}',
-     '{"email": {"value": "demo@drinkit.test"}, "roles": {"values": ["ROLE_REGISTRATION_IN_PROGRESS"]}, "password": {"value": "$2a$10$szm3KQoaxzefTnJm5IlhHumS79wo/SnDJ3mYygmGrXXnrRf8cHpVC"}, "preferredLocale": "fr-FR"}'),
+     '{"email": {"value": "demo@drinkit.test"}, "roles": {"values": ["ROLE_REGISTRATION_IN_PROGRESS"]}, "password": {"value": "{argon2}$argon2id$v=19$m=19456,t=2,p=1$TVm5rI0goQnJk4KDMsCIqA$pdnblBSP2XqO/oDQrnPsY7SfYt2tTdYl8cgHmQgP7Rk"}, "preferredLocale": "fr-FR"}'),
     ('64656d6f0000000000000001', 10, 'VERIFIED', '2026-01-01T00:01:00Z',
      '{"type": "CONNECTED", "userId": "64656d6f0000000000000001"}',
      '{}'),
@@ -25,7 +25,7 @@ INSERT INTO drinkit_application.user
     (id, firstname, lastname, birthdate, email, password, status, verified, enabled, roles, modified)
 VALUES
     ('64656d6f0000000000000001', 'Demo', 'Drinkit', '1990-01-01', 'demo@drinkit.test',
-     '$2a$10$szm3KQoaxzefTnJm5IlhHumS79wo/SnDJ3mYygmGrXXnrRf8cHpVC', 'ACTIVE', TRUE, TRUE,
+     '{argon2}$argon2id$v=19$m=19456,t=2,p=1$TVm5rI0goQnJk4KDMsCIqA$pdnblBSP2XqO/oDQrnPsY7SfYt2tTdYl8cgHmQgP7Rk', 'ACTIVE', TRUE, TRUE,
      '{ROLE_USER,ROLE_ADMIN}', '2026-01-01T00:03:00Z')
 ON CONFLICT DO NOTHING;
 

@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS drinkit_application.user
     lastname       VARCHAR(100),
     birthdate      DATE,
     email          VARCHAR(255)             NOT NULL,
-    password       VARCHAR(100)             NOT NULL,
+    password       VARCHAR(255)             NOT NULL,
     lastConnection TIMESTAMP WITH TIME ZONE,
     status         VARCHAR(50)              NOT NULL,
     verified       BOOLEAN                  NOT NULL,
