@@ -44,6 +44,7 @@ A query: `FindExchangeRate`.
 
 ## Controller and event handler
 
-- A controller: `RegistrationController`, an `internal` `@RestController` that extends `AbstractApi` and
-  implements the generated `<Tag>Api`. The connected user comes from `connectedUserIdOrFail()` of `AbstractApi`.
+- A controller: `RegistrationController`, an `internal` `@RestController` that implements the generated
+  `<Tag>Api`. The connected user comes from the injected `CurrentUser` of `security-starter`, whose `userId` and
+  `author` extensions give the domain types.
 - A platform event handler: `RegistrationHandler`, which calls a use case.

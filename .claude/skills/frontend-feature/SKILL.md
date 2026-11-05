@@ -28,7 +28,7 @@ template holds no more than a condition or a loop.
   page can tell the user what happened.
 - No workaround in a page, such as a hard-coded URL. A client configuration that several pages share is a
   frontend tech starter: the `new-frontend-tech-starter` skill.
-- The session is the backend's http-only `SESSIONID` cookie: the frontend never reads, stores or sends a session
+- The session is the backend's http-only session cookie: the frontend never reads, stores or sends a session
   token itself, and keeps nothing secret in `localStorage`.
 
 ## Business rules stay in the backend
