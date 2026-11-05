@@ -108,7 +108,7 @@ open class User(
     /**
      * The column <code>drinkit_application.user.password</code>.
      */
-    val PASSWORD: TableField<UserRecord, String?> = createField(DSL.name("password"), SQLDataType.VARCHAR(100).nullable(false), this, "")
+    val PASSWORD: TableField<UserRecord, String?> = createField(DSL.name("password"), SQLDataType.VARCHAR(255).nullable(false), this, "")
 
     /**
      * The column <code>drinkit_application.user.lastconnection</code>.
