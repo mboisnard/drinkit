@@ -1,7 +1,7 @@
 package com.drinkit.user
 
 import com.drinkit.generated.jooq.DrinkitApplication
-import com.drinkit.jooq.JooqIntegrationTest
+import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.test.ControlledClock
 import com.drinkit.user.spi.UserEvents
 import com.drinkit.user.spi.UserEventsTestContract

@@ -162,9 +162,6 @@ internal class TechStartersArchitectureTest {
         rule("starters.package-named-after-module") {
             description = "A tech starter's code, test fixtures included, lives in the package named after its " +
                 "module, com.drinkit.event.sourcing for event-sourcing-starter: rename the package or the module"
-            suppress {
-                files(POSTGRESQL_FIXTURES) { it.packageName == "com.drinkit.jooq" }
-            }
             files(SourceSets.production() or SourceSets.tests()) {
                 that().inModules(STARTERS)
                 should().satisfy { file, violations ->

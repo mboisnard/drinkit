@@ -1,6 +1,6 @@
 package com.drinkit.postgresql.infra
 
-import com.drinkit.jooq.JooqIntegrationTest
+import com.drinkit.postgresql.JooqIntegrationTest
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import org.jooq.DSLContext

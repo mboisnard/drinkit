@@ -1,9 +1,9 @@
 package com.drinkit.money.forex
 
 import com.drinkit.generated.jooq.DrinkitApplication
-import com.drinkit.jooq.JooqIntegrationTest
 import com.drinkit.money.forex.spi.ExchangeRates
 import com.drinkit.money.forex.spi.ExchangeRatesTestContract
+import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.test.ControlledClock
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach

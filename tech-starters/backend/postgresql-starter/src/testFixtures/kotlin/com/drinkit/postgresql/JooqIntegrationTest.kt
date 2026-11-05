@@ -1,4 +1,4 @@
-package com.drinkit.jooq
+package com.drinkit.postgresql
 
 import org.jooq.Schema
 import org.junit.jupiter.api.extension.ExtendWith

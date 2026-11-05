@@ -1,6 +1,6 @@
 package com.drinkit.postgresql.infra
 
-import com.drinkit.jooq.JooqIntegrationTest
+import com.drinkit.postgresql.JooqIntegrationTest
 import io.kotest.assertions.throwables.shouldThrow
 import org.jooq.DSLContext
 import org.jooq.exception.DataAccessException
