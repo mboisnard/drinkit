@@ -1,6 +1,6 @@
 package com.drinkit.search.engine.infra
 
-import com.drinkit.jooq.JooqIntegrationTest
+import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.search.engine.Cellar
 import com.drinkit.search.engine.MeilisearchIntegrationTest
 import com.drinkit.search.engine.MeilisearchServer

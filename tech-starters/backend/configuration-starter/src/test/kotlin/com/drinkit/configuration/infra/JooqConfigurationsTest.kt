@@ -3,7 +3,7 @@ package com.drinkit.configuration.infra
 import com.drinkit.configuration.Configurations
 import com.drinkit.configuration.generated.jooq.DrinkitApplication
 import com.drinkit.configuration.generated.jooq.tables.references.CONFIGURATION
-import com.drinkit.jooq.JooqIntegrationTest
+import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.test.ControlledClock
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain

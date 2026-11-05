@@ -1,6 +1,6 @@
 package com.drinkit.postgresql.infra
 
-import com.drinkit.jooq.JooqIntegrationTest
+import com.drinkit.postgresql.JooqIntegrationTest
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly

@@ -3,7 +3,7 @@ package com.drinkit.cellar
 import com.drinkit.cellar.spi.Cellars
 import com.drinkit.cellar.spi.CellarsTestContract
 import com.drinkit.generated.jooq.DrinkitApplication
-import com.drinkit.jooq.JooqIntegrationTest
+import com.drinkit.postgresql.JooqIntegrationTest
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 import tools.jackson.databind.json.JsonMapper

@@ -6,7 +6,7 @@ import com.drinkit.configuration.Configurations
 import com.drinkit.configuration.configurationKey
 import com.drinkit.configuration.generated.jooq.DrinkitApplication
 import com.drinkit.configuration.generated.jooq.tables.references.CONFIGURATION
-import com.drinkit.jooq.JooqIntegrationTest
+import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.test.ControlledClock
 import com.github.benmanes.caffeine.cache.Ticker
 import io.kotest.assertions.throwables.shouldThrow

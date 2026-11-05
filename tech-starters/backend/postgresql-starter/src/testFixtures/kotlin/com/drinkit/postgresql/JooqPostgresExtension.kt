@@ -1,4 +1,4 @@
-package com.drinkit.jooq
+package com.drinkit.postgresql
 
 import com.drinkit.kotlin.orNull
 import com.drinkit.postgresql.infra.postgresqlSettings
