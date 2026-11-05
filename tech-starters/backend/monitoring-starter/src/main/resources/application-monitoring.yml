@@ -5,7 +5,9 @@ management:
         include: health, info
   endpoint:
     health:
-      show-details: always
+      # Health is open to anonymous probes: its details, disk path and database included, are for admins only
+      show-details: when-authorized
+      roles: ADMIN
   info:
     git:
       enabled: true

@@ -1,34 +1,20 @@
 package com.drinkit.config
 
-import com.drinkit.security.configureFromStarter
+import com.drinkit.security.endpointRules
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.context.SecurityContextRepository
 
 @Configuration
-@EnableWebSecurity
 internal class SecurityConfiguration {
 
     @Bean
-    @Throws(Exception::class)
-    fun filterChain(http: HttpSecurity, securityContextRepository: SecurityContextRepository): SecurityFilterChain {
-        http.configureFromStarter(securityContextRepository)
-            .authorizeHttpRequests {
-                it
-                    .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/registration/new").permitAll()
-                    .requestMatchers("/api/registration/**").authenticated()
-                    .requestMatchers("/api/user/me").authenticated()
-                    .requestMatchers("/api/**").hasRole("USER")
-                    .requestMatchers("/actuator/**").hasRole("ADMIN")
-                    .requestMatchers("/openapi/**").hasRole("ADMIN")
-                    .anyRequest().denyAll()
-            }
-
-        return http.build()
+    fun drinkitEndpoints() = endpointRules {
+        authorize(HttpMethod.POST, "/api/registration/new", permitAll)
+        authorize("/api/registration/**", authenticated)
+        authorize("/api/user/me", authenticated)
+        authorize("/api/**", hasRole("USER"))
+        authorize("/actuator/**", hasRole("ADMIN"))
+        authorize("/openapi/**", hasRole("ADMIN"))
     }
 }

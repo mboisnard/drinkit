@@ -5,11 +5,23 @@
 package com.drinkit.security.generated.jooq.tables.references
 
 
-import com.drinkit.security.generated.jooq.tables.User
+import com.drinkit.security.generated.jooq.tables.RememberMeToken
+import com.drinkit.security.generated.jooq.tables.SpringSession
+import com.drinkit.security.generated.jooq.tables.SpringSessionAttributes
 
 
 
 /**
- * The table <code>drinkit_application.user</code>.
+ * The table <code>drinkit_session.remember_me_token</code>.
  */
-val USER: User = User.USER
+val REMEMBER_ME_TOKEN: RememberMeToken = RememberMeToken.REMEMBER_ME_TOKEN
+
+/**
+ * The table <code>drinkit_session.spring_session</code>.
+ */
+val SPRING_SESSION: SpringSession = SpringSession.SPRING_SESSION
+
+/**
+ * The table <code>drinkit_session.spring_session_attributes</code>.
+ */
+val SPRING_SESSION_ATTRIBUTES: SpringSessionAttributes = SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES

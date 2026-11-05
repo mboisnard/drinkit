@@ -63,5 +63,6 @@ components:
     Password:
       type: string
       minLength: 10
+      maxLength: 128
       pattern: '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{10,}$' # https://ihateregex.io/expr/password
       example: thisIsAV@l1dP@ssword

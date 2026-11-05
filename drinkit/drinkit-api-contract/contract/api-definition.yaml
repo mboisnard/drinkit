@@ -4,8 +4,10 @@ info:
   description: Drink It Apis for frontend/backend communication
   version: 1.0.0
 servers:
-  - url: http://127.0.0.1:8080/
+  - url: http://127.0.0.1:8080/drinkit
     description: Dev server
+security:
+  - session: []
 tags:
   - name: cellars
     description: Cellars operation
@@ -28,8 +30,10 @@ paths:
       description: |
         Returns all cellars you allow to see (owner or allowed from other users)
       responses:
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: 'common.yaml#/components/responses/Forbidden'
         '200':
           description: Success
           content:
@@ -49,9 +53,14 @@ paths:
           application/json:
             schema:
               $ref: 'cellarsParameters.yaml#/components/schemas/CreateCellarRequest'
+      security:
+        - session: []
+          xsrfToken: []
       responses:
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: 'common.yaml#/components/responses/Forbidden'
         '400':
           description: Bad Request (maybe wrong object validation)
         '201':
@@ -71,9 +80,16 @@ paths:
         Delete a cellar that you are the owner
       parameters:
         - $ref: 'cellarsParameters.yaml#/components/parameters/cellarId'
+      security:
+        - session: []
+          xsrfToken: []
       responses:
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: 'common.yaml#/components/responses/Forbidden'
+        '404':
+          description: No cellar of the connected user has this id
         '204':
           description: Cellar Deleted
 
@@ -82,22 +98,59 @@ paths:
       operationId: authenticateUser
       tags:
         - auth
-      summary: Authenticate a user
+      summary: Sign a user in
       description: |
-        Authenticate user
+        Served by the security starter, not by a controller. Sets the session cookie, and the remember-me cookie when
+        asked. Replaces the XSRF-TOKEN cookie in the same response, for the next unsafe request to send.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: 'authParameters.yaml#/components/schemas/SignInRequest'
+      security:
+        - xsrfToken: []
       responses:
         '401':
-          description: Unauthorized
-        '400':
-          description: Bad request
-        '200':
+          description: |
+            Wrong login or password, or a disabled account, with the same body for each: a problem detail of RFC 9457,
+            as application/problem+json.
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
+        '204':
           description: User signed in
+
+  /api/auth/logout:
+    post:
+      operationId: signOut
+      tags:
+        - auth
+      summary: Sign the user out
+      description: |
+        Served by the security starter, not by a controller. Ends the session and its remember-me token, and expires
+        their cookies and the XSRF-TOKEN cookie.
+      security:
+        - xsrfToken: []
+      responses:
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
+        '204':
+          description: User signed out
+
+  /api/auth/csrf:
+    get:
+      operationId: fetchCsrfToken
+      tags:
+        - auth
+      summary: Get a CSRF token
+      description: |
+        Served by the security starter, not by a controller. Sets the XSRF-TOKEN cookie, whose value the client copies
+        into the X-XSRF-TOKEN header of each unsafe request. Call it at start and after a sign out: a sign in sets a
+        new one in its own response.
+      security: []
+      responses:
+        '204':
+          description: XSRF-TOKEN cookie set
 
   /api/registration/new:
     post:
@@ -113,7 +166,11 @@ paths:
           application/json:
             schema:
               $ref: 'registrationParameters.yaml#/components/schemas/CreateUserRequest'
+      security:
+        - xsrfToken: []
       responses:
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
         '400':
           description: Bad request
         '201':
@@ -137,9 +194,14 @@ paths:
           application/json:
             schema:
               $ref: 'registrationParameters.yaml#/components/schemas/ConfirmEmailRequest'
+      security:
+        - session: []
+          xsrfToken: []
       responses:
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: 'common.yaml#/components/responses/Forbidden'
         '400':
           description: Bad request
         '200':
@@ -153,9 +215,14 @@ paths:
       summary: Resend validation token
       description: |
         Resend validation token for connected user
+      security:
+        - session: []
+          xsrfToken: []
       responses:
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: 'common.yaml#/components/responses/Forbidden'
         '400':
           description: Bad request
         '200':
@@ -175,9 +242,14 @@ paths:
           application/json:
             schema:
               $ref: 'registrationParameters.yaml#/components/schemas/CompleteUserInformationRequest'
+      security:
+        - session: []
+          xsrfToken: []
       responses:
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: 'common.yaml#/components/responses/Forbidden'
         '400':
           description: Bad request
         '200':
@@ -192,8 +264,10 @@ paths:
       description: |
         Get user information (roles, webpreferences, ...)
       responses:
-        '403':
-          description: Forbidden
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
+        '404':
+          description: The connected user was deleted since signing in
         '200':
           description: Success
           content:
@@ -219,8 +293,29 @@ paths:
                 file:
                   type: string
                   format: binary
+      security:
+        - session: []
+          xsrfToken: []
       responses:
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: 'common.yaml#/components/responses/Forbidden'
         '200':
           description: Success
+
+components:
+  securitySchemes:
+    session:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: |
+        The session cookie, set at sign in. Named `__Host-SESSION` outside the dev profile.
+    xsrfToken:
+      type: apiKey
+      in: header
+      name: X-XSRF-TOKEN
+      description: |
+        The raw value of the XSRF-TOKEN cookie, which `GET /api/auth/csrf` sets, required by each unsafe request
+        along with that cookie. The cookie is named `__Host-XSRF-TOKEN` outside the dev profile.

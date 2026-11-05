@@ -1,8 +1,10 @@
 package com.drinkit.user.spi
 
 import com.drinkit.user.UserFixtures
+import com.drinkit.user.core.Email
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
+import com.drinkit.user.core.UserStatus
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -53,5 +55,46 @@ abstract class UsersTestContract {
 
         // Then
         user shouldBe null
+    }
+
+    @Test
+    fun `finds an enabled user by his email`() {
+        // Given
+        val user = userFixtures.givenAUserHistory()
+            .let { User.from(it) }
+        repository.saveOrUpdate(user)
+
+        // When
+        val foundUser = repository.findEnabledBy(user.email)
+
+        // Then
+        foundUser shouldBe user
+    }
+
+    @Test
+    fun `finds no deleted user by his email`() {
+        // Given
+        val user = userFixtures.givenAUserHistory()
+            .let { User.from(it) }
+            .copy(status = UserStatus.DELETED)
+        repository.saveOrUpdate(user)
+
+        // When
+        val foundUser = repository.findEnabledBy(user.email)
+
+        // Then
+        foundUser shouldBe null
+    }
+
+    @Test
+    fun `finds no user by an unknown email`() {
+        // Given
+        val email = Email("nobody@drinkit.test")
+
+        // When
+        val foundUser = repository.findEnabledBy(email)
+
+        // Then
+        foundUser shouldBe null
     }
 }

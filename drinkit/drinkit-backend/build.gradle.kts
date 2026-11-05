@@ -16,6 +16,9 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
     openApiInput(project(":drinkit-api-contract"))
+
+    testImplementation(testFixtures(project(":drinkit-domain")))
+    testImplementation(testFixtures(project(":security-starter")))
 }
 
 openApiGenerate {

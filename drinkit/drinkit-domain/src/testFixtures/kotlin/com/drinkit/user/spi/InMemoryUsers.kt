@@ -15,6 +15,8 @@ class InMemoryUsers : Users {
 
     override fun findEnabledBy(userId: UserId): User? = users[userId]?.takeIf { it.enabled }
 
+    override fun findEnabledBy(email: Email): User? = users.values.firstOrNull { it.email == email && it.enabled }
+
     override fun exists(email: Email): Boolean = users.values.any { it.email == email }
 
     fun count(): Int = users.size

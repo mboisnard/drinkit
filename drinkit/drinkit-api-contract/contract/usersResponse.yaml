@@ -29,3 +29,4 @@ components:
       enum:
         - ROLE_ADMIN
         - ROLE_USER
+        - ROLE_REGISTRATION_IN_PROGRESS

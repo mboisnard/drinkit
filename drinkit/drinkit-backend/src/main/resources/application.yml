@@ -1,7 +1,7 @@
 spring:
   application.name: drinkit
   profiles:
-    include: security,monitoring,ocr,webclient
+    include: monitoring,ocr,webclient
   threads.virtual.enabled: true
 
   http:
@@ -13,6 +13,7 @@ spring:
 
 server:
   port: ${PORT:8080}
+  forward-headers-strategy: native
   servlet:
     context-path: /drinkit
 

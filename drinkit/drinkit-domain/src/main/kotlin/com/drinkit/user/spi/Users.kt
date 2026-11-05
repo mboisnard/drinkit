@@ -10,5 +10,7 @@ interface Users {
 
     fun findEnabledBy(userId: UserId): User?
 
+    fun findEnabledBy(email: Email): User?
+
     fun exists(email: Email): Boolean
 }

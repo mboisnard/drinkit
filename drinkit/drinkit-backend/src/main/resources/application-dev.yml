@@ -24,6 +24,10 @@ logging.level:
     com.drinkit.mail: DEBUG
 
 starters:
+  security:
+    cookie:
+      prefix: ""
+      secure: false
   search-engine:
     meilisearch:
       api-key: masterKey

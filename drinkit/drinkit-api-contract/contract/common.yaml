@@ -62,3 +62,15 @@ components:
       type: string
       format: user-id
       example: 659ee3164b1d53340c4f7608
+
+  # No content: the security filters write these bodies, and a content type here would join the produces of each
+  # generated mapping, refusing a request that accepts application/json only
+  responses:
+    Unauthorized:
+      description: |
+        No user is signed in. The body is a problem detail of RFC 9457, as application/problem+json.
+
+    Forbidden:
+      description: |
+        Refused: the X-XSRF-TOKEN header is missing or wrong, the request comes from another site, or the user lacks
+        the role. The body is a problem detail of RFC 9457, as application/problem+json.
