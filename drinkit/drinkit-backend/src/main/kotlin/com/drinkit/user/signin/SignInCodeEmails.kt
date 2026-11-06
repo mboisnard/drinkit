@@ -31,7 +31,7 @@ internal class SignInCodeEmails(
 
     @PlatformEventHandler("send.sign.in.code.queue")
     fun sendTheCode(event: SignInCodeRequested) {
-        notificationSender.send(
+        notificationSender.queue(
             Notification(
                 content = NotificationContent(
                     title = "Your DrinkIt sign-in code",

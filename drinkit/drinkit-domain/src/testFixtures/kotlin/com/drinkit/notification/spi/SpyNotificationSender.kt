@@ -6,9 +6,8 @@ class SpyNotificationSender : NotificationSender {
 
     private var sentNotifications: List<Notification> = mutableListOf()
 
-    override fun send(notification: Notification): Boolean {
+    override fun queue(notification: Notification) {
         sentNotifications += notification
-        return true
     }
 
     fun count(): Int = sentNotifications.size
