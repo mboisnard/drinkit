@@ -261,13 +261,54 @@ internal class SmsAutoConfigurationTest {
 Written for a developer who consumes the starter, never for its maintainer: no internal class names, no wiring
 details.
 
-1. `# <Name> Starter`, then one to three sentences on what it is for, in plain words.
-2. One small Mermaid diagram of where it fits: the application, the starter's API, the technology behind it, in a
-   few nodes.
-3. `## Usage`: the Gradle dependency, the minimal code or configuration, and the settings with their default and
-   environment variable.
-4. `## Tests`, when a consumer needs one: the fixture or the integration test annotation, in a few lines.
-5. `## Limits`, when a reader would trip on one: one to three bullets.
+Every README follows this skeleton, its sections in this order. The optional ones are left out when they would be
+empty, the others are always there.
 
-A detail of the internals, an edge case or an explanation that a documentation page holds stays out: the README
-links the page instead, and names no issue.
+````markdown
+# <Name> Starter
+
+<One to three sentences: what the starter is for, in plain words, and the technology behind it.>
+
+```mermaid
+flowchart LR
+  app["Application code"] --> api["<The starter's API>"] --> tech["<The technology>"]
+```
+
+## How it works
+
+<Optional, for a starter with a flow worth drawing. One or two sequence or state diagrams, each with the one
+sentence that says what it shows.>
+
+## Usage
+
+```kotlin
+dependencies {
+    implementation(project(":<name>-starter"))
+}
+```
+
+<The minimal code that uses it, then a short list of what the consumer gets.>
+
+## Configuration
+
+| Property | Default | Environment variable |
+|---|---|---|
+| `starters.<name>.enabled` | `true` | `STARTERS_<NAME>_ENABLED` |
+
+## Tests
+
+<The fixture, spy or annotation a consumer's test uses, with a few lines of code.>
+
+## Limits
+
+<Optional, one to three bullets a reader would trip on.>
+````
+
+- **The diagram under the title** shows where the starter fits, in a few nodes, as a `flowchart LR`. Every README
+  has one. A flow, such as a retry, a rebuild or a request, goes under "How it works" only, never in Usage.
+- **Configuration** is always a table of these three columns. A property required in production says so in its
+  default, such as "None, required in production". A starter with no setting has the heading and one line: "No
+  setting."
+- **Tests** names what a consumer's test uses. A starter that needs nothing in a test says so in one line.
+- No colour styles in a diagram, no internal class names, no wiring details, and no issue numbers. An explanation
+  that a documentation page holds stays there: the README links the page.
