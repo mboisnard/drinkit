@@ -3,62 +3,50 @@
 A subagent is an agent that a Claude Code session starts for one task. It gets its own context window, its own
 instructions, the tools it is allowed and the model it runs on, and it hands back only its report. DrinkIt defines two,
 both reviewers that the [`/implement-issue`][skill-issue] skill starts before a pull request opens: a judge of the
-branch against its issue, and a security reviewer. A `NEEDS_WORK` verdict sends the session back to fix its work
-first. Once the pull request opens, the skill also starts a fresh general-purpose agent, with no file of its own,
-that follows [`/review-pr`][skill-review-pr] and hands its findings to the maintainer without posting them. To add
-or change an agent, read this page, then follow the [`harness-change` skill][skill-harness].
-
-## ⚙️ How one is made
-
-Each agent of DrinkIt is a Markdown file in [`.claude/agents`][agents-folder]: a frontmatter with its `name`, a
-`description` of when to use it, its `tools` and its `model`, then its instructions. A [skill](skills.md) or a person
-names the agent to start it.
+branch against its issue, and a security reviewer. Each is a Markdown file in [`.claude/agents`][agents-folder], a
+frontmatter with its name, description, tools and model, then its instructions. Before you add or change an agent,
+read this page, then follow the [`harness-change` skill][skill-harness].
 
 ## 🎯 Why a subagent per review
 
-- **Fresh eyes.** The judge gets the issue, the worktree, the base and head commits of the branch, the draft of the
-  pull request description, and the test list, which pairs each acceptance criterion with the test or command that
-  proves it. Its prompt carries no account of the work, which would anchor it on what the session that wrote the code
-  believes. A summary or a hint that slips in is ignored, and named in its report.
-- **Read-only.** Both agents can read, search and run commands, but have no edit tool, and their instructions forbid
-  any write. A reviewer that fixed what it found would end up reviewing its own work. The review agent of the pull
-  request is a general-purpose one, with edit tools: only its prompt keeps it from posting or changing anything.
-- **A model for judgment.** Both run on Opus, since their whole task is judgment. The review agent runs on the
-  model of the session.
+- **Fresh eyes.** The judge gets the issue, the commits of the branch, the draft of the pull request and the test
+  list, which pairs each acceptance criterion with its proof. Its prompt carries no account of the work, which would
+  anchor it on what the author believes, and it names in its report any hint that slips in.
+- **Read-only.** Both agents can read, search and run commands, but have no edit tool. A reviewer that fixed what it
+  found would end up reviewing its own work.
+- **A model for judgment.** Both run on Opus, since their whole task is judgment.
 
 ## 🧑‍⚖️ The subagents of DrinkIt
 
 | Agent | What it checks | Started by |
 |---|---|---|
-| [`issue-judge`][judge] | Each acceptance criterion, rerunning the proof of the test list itself, then the design against `AGENTS.md`, the skill of each kind of change the diff makes and, for a backend change, the result of the architecture tests, then what they cannot check: the [coding rules](../writing-code/best-practices/coding-rules.md) and [Clean Architecture](../architecture/clean-architecture.md). Returns `OK` or `NEEDS_WORK` for the head commit, with the gaps it found | `/implement-issue`, before the pull request opens |
-| [`security-reviewer`][security] | Authorization of each endpoint, CSRF, CORS, headers, input validation, secrets, new dependencies, Dockerfiles and the workflows that publish images, the frontend's handling of user input. Ranks its findings Blocking, Important or Minor, each with its `path:line`. It runs nothing from the branch, which on a contributor's branch would execute their code | `/implement-issue` or [`/review-pr`][skill-review-pr], when the diff touches those areas |
+| [`issue-judge`][judge] | Each acceptance criterion, rerunning its proof, then the design against `AGENTS.md`, the skills and the [coding rules](../writing-code/best-practices/coding-rules.md). Returns a Spec and a Design verdict, and `OK` only when both are | `/implement-issue`, before the pull request opens |
+| [`security-reviewer`][security] | The security-sensitive parts of the diff, from endpoints to workflows. Ranks findings Blocking, Important or Minor, and runs nothing from the branch | `/implement-issue` or [`/review-pr`][skill-review-pr], when the diff touches those areas |
 
 ## 🔁 The judge in /implement-issue
 
-- **A verdict counts for one commit.** Any commit made after it, a fix for CI included, needs a new round, since the
-  judge never saw it.
-- **A new judge for each round.** On `NEEDS_WORK`, the session fixes every gap and starts a new judge. Its prompt
-  lists the previous gaps, each with the commit and the command output that close it: facts the judge checks first,
-  not an account of the work.
-- **Fifteen minutes a round.** The judge checks the acceptance criteria first and leaves the shell matrix to CI. What
-  it has not checked when time runs out reads "cannot verify". Past the limit, the session asks it for its verdict,
-  and `maxTurns` stops a judge that loops.
-- **Two rounds, then the maintainer.** After a second `NEEDS_WORK`, the maintainer decides whether the pull request
-  opens with the gaps listed.
-- **The verdict in plain sight.** The pull request reads `Judge: OK, round <n>, at <commit>`, with the judge's tables
-  in a folded block, so that the maintainer sees before merging which commit the judge approved.
+```mermaid
+flowchart LR
+  commit[Head commit] --> judge[New judge<br/>15 minutes]
+  judge -->|NEEDS_WORK, round 1| fix[Fix every gap<br/>and commit]
+  fix --> judge
+  judge -->|NEEDS_WORK, round 2| maintainer[The maintainer decides]
+  judge -->|OK| pr[Pull request<br/>with the verdict line]
+  pr --> review[Fresh review agent<br/>findings to the maintainer]
+```
 
-## 🧪 To try
+A verdict counts for one commit, so any later commit, a fix for CI included, needs a new round. Each round starts a
+new judge, whose prompt lists the previous gaps with the facts that close them. A round lasts 15 minutes, and what
+the judge has not checked by then reads "cannot verify". The pull request reads `Judge: OK, round <n>, at <commit>`,
+so the maintainer sees before merging which commit the judge approved.
 
-- `isolation: worktree` for an agent that writes code, so that it works on its own copy of the repository.
-- A cheaper model, such as Haiku, for an agent that only explores.
-- Skills preloaded through the `skills:` field, so that a reviewer reads the conventions it checks without the
-  session passing them on.
+Once the pull request opens, the skill starts a fresh general-purpose agent that follows `/review-pr` and hands its
+findings to the maintainer without posting them. It has edit tools and runs on the model of the session: only its
+prompt keeps it from changing anything.
 
 ## 📚 Sources
 
 - [Create custom subagents](https://code.claude.com/docs/en/sub-agents), Anthropic
-- [Best practices for Claude Code](https://code.claude.com/docs/en/best-practices), the cost of subagents, Anthropic
 
 [skill-issue]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/implement-issue/SKILL.md
 [skill-review-pr]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/review-pr/SKILL.md
