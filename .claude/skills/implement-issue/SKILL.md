@@ -59,7 +59,13 @@ command follows the same rhythm: run it, see it fail, change, see it pass.
 Run the build commands of `AGENTS.md`, and the checks of the skill of each kind of change the branch makes, and
 keep the last lines of each output. [The lanes](examples.md#lanes) the diff maps to name the checks CI runs on it.
 
-## 7. Draft the pull request
+## 7. Squash the commits, then draft the pull request
+
+[Squash the branch](examples.md#squash) into the fewest commits that a reviewer reads as the steps of the change:
+one per functional or technical unit, such as a starter's behavior with its tests, or a decision with its pages.
+A TDD cycle, a review finding or a CI fix is never a commit of its own: it goes into the commit it belongs to.
+Each commit compiles and passes its tests, and its subject follows `AGENTS.md`. The first one names the pull
+request, so it carries the main outcome of the issue.
 
 Write the body to `$(git rev-parse --path-format=absolute --git-path claude/pr-body.md)`.
 
@@ -120,7 +126,8 @@ is missing, run step 10 first.
 - A finding of the review that the maintainer keeps: fix it.
 - Behind master: rebase, as `AGENTS.md` says.
 
-A code change gets a new round before it is pushed, and the verdict line of the description follows.
+A change is squashed into the commit it belongs to, as in step 7, and pushed with `git push --force-with-lease`. It
+gets a new round before it is pushed, and the verdict line of the description follows.
 
 ## 12. Clean up after the merge
 
