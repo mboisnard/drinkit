@@ -6,11 +6,13 @@ import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.test.ControlledClock
 import com.drinkit.user.spi.Users
 import com.drinkit.user.spi.UsersTestContract
-import io.kotest.assertions.throwables.shouldThrowAny
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.dao.DataIntegrityViolationException
 import java.time.OffsetDateTime
 
 @JooqIntegrationTest(schemas = [DrinkitApplication::class])
@@ -28,7 +30,7 @@ internal class JooqUsersTest : UsersTestContract() {
     @Test
     fun `refuses a role the application does not define, even next to a known one`() {
         // When
-        val refusal = shouldThrowAny { insertAUserWithRoles("ROLE_USER", "ROLE_ROOT") }
+        val refusal = shouldThrow<DataIntegrityViolationException> { insertAUserWithRoles("ROLE_USER", "ROLE_ROOT") }
 
         // Then
         refusal.message shouldContain "roles_check"
@@ -37,10 +39,19 @@ internal class JooqUsersTest : UsersTestContract() {
     @Test
     fun `refuses a user without any role`() {
         // When
-        val refusal = shouldThrowAny { insertAUserWithRoles() }
+        val refusal = shouldThrow<DataIntegrityViolationException> { insertAUserWithRoles() }
 
         // Then
         refusal.message shouldContain "roles_check"
+    }
+
+    @Test
+    fun `stores a user whose every role is known`() {
+        // When
+        val inserted = insertAUserWithRoles("ROLE_USER", "ROLE_ADMIN")
+
+        // Then
+        inserted shouldBe 1
     }
 
     private fun insertAUserWithRoles(vararg roles: String) = dsl.insertInto(USER)
