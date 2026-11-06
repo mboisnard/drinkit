@@ -181,7 +181,7 @@
       "ring": "TRIAL",
       "label": "Ponytail",
       "description": "A skill that pushes the agent to write less code and reuse what exists",
-      "link": "/drinkit/engineering/coding-assistants/tooling.html#ponytail"
+      "link": "/drinkit/engineering/coding-assistants/tooling.html"
     },
     {
       "quadrant": "Coding Assistants",

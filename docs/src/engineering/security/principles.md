@@ -80,7 +80,7 @@ flowchart LR
     lifetime["256-bit ids, 30 min idle, 8 h at most,<br/>Sessions.revokeAll"]
     rotation["Token rotated at each use,<br/>replay detected, hashes only"]
     argon["Argon2id, one 401 for every failure"]
-    rateLimit["Rate limiting, not built yet: #587"]
+    rateLimit["Rate limiting, not built yet"]
     deny["Refused by default,<br/>coverage test in the build"]
     preAuthorize["@PreAuthorize on the method"]
     vocabulary["OWASP event names, user ids only"]
@@ -100,67 +100,30 @@ flowchart LR
 ```
 
 Most threats meet more than one defense, so that one gap leaves another standing. A dashed line is a defense that
-does not exist yet. The sections below give the reason for each.
+does not exist yet.
 
 ## 🛣️ The path of a request
 
 ```mermaid
 ---
-title: The filters a request goes through, in their order
+title: What a request meets, in order
 ---
-flowchart TB
-  request([Request]) --> repository["SessionRepositoryFilter, Spring Session<br/>getSession() reads spring_session"]
-  subgraph chain["Spring Security filter chain"]
-    subgraph prepare["Prepare"]
-      encode["DisableEncodeUrlFilter<br/>never puts the session id in a URL"]
-      async["WebAsyncManagerIntegrationFilter<br/>keeps the user on async requests"]
-      context["SecurityContextHolderFilter<br/>loads the SecurityContext<br/>from the session on first use"]
-      headers["HeaderWriterFilter<br/>CSP, HSTS, nosniff and the others"]
-    end
-    subgraph forgery["Refuse forged requests: POST, PUT, PATCH, DELETE"]
-      fetch["FetchMetadataFilter, the starter's<br/>Sec-Fetch-Site of another site: 403"]
-      csrf["CsrfFilter<br/>X-XSRF-TOKEN missing<br/>or not the cookie's: 403"]
-    end
-    subgraph endpoints["Endpoints of the starter, which answer at once"]
-      logout["LogoutFilter<br/>POST /api/auth/logout: 204"]
-      login["JsonLoginFilter, the starter's<br/>POST /api/auth/login: 204 or 401"]
-    end
-    subgraph identify["Find who is calling"]
-      cache["RequestCacheAwareFilter<br/>NullRequestCache: keeps no request"]
-      aware["SecurityContextHolderAwareRequestFilter<br/>request.isUserInRole() reads the user"]
-      remember["RememberMeAuthenticationFilter<br/>nobody yet and __Host-remember-me:<br/>rotates the token, signs in"]
-      anonymous["AnonymousAuthenticationFilter<br/>still nobody: anonymous"]
-      management["SessionManagementFilter<br/>a sign-in no filter saved:<br/>new session id"]
-    end
-    subgraph decide["Decide"]
-      translation["ExceptionTranslationFilter<br/>a refusal from below:<br/>401 when anonymous, else 403"]
-      authorization["AuthorizationFilter<br/>URL rules, the first match decides"]
-    end
-    encode --> async --> context --> headers --> fetch --> csrf --> logout --> login
-    login --> cache --> aware --> remember --> anonymous --> management --> translation --> authorization
-  end
-  repository --> encode
-  authorization -.- rules["URL rules, top to bottom<br/>error dispatches<br/>the starter's login, logout, csrf<br/>/actuator/health<br/>EndpointRules beans, by @Order<br/>anything else: refused"]
-  authorization -- allowed --> dispatcher[DispatcherServlet] --> method{"@PreAuthorize"}
+flowchart LR
+  request([Request]) --> forgery["Fetch Metadata,<br/>then the CSRF token"]
+  forgery --> starterEndpoints["login, logout:<br/>answer at once"]
+  forgery --> identify["session, or remember-me,<br/>or anonymous"]
+  identify --> url{"URL rules,<br/>first match decides"}
+  url -- "no rule matches" --> refused["Refused: 401 or 403"]
+  url -- allowed --> method{"@PreAuthorize"}
+  method -- refused --> refused
   method -- allowed --> controller([Controller])
-  authorization -. refused .-> translation
-  method -. refused .-> translation
 ```
 
-Spring Security fixes the order of its filters. The starter adds its own at fixed places: Fetch Metadata just
-before CSRF, the JSON login in the slot of the form login, whose filter it extends. A forged request is refused
-before it reaches the login or the logout. Every refusal answers a JSON problem detail.
-
-The starter's endpoints come before the application's rules, so that no rule of the application can lock users out of
-the login, and health comes before them so that no rule hides it from the probes of the platform. The application
-declares its rules in `EndpointRules` beans, which `endpointRules {}` builds with the Kotlin DSL of Spring Security.
-The first rule that matches a request decides, so a broad pattern such as `/api/**` goes in the last bean.
-
-A refusal thrown in a controller, by `@PreAuthorize` or `CurrentUser`, goes back up to `ExceptionTranslationFilter`.
-The starter rethrows it ahead of the application's exception handlers, so that a catch-all handler cannot turn it
-into a 500.
-
-## 🧱 Two layers of authorization
+Forged requests are refused first, before they reach the login or the logout. The URL rules then run from top to
+bottom: the starter's login, logout and CSRF endpoints, `/actuator/health`, the application's `EndpointRules` beans
+by `@Order`, and a last rule that refuses anything else. The starter's endpoints come first so that no rule of the
+application can lock users out, and health so that no rule hides it from the platform's probes. A broad pattern such
+as `/api/**` goes in the last `EndpointRules` bean, since the first match decides.
 
 ```mermaid
 ---
@@ -174,10 +137,13 @@ flowchart LR
   annotation -- yes --> both["Both apply,<br/>the stricter wins"]
 ```
 
-The application declares a URL rule for every endpoint, and adds `@PreAuthorize` to a controller method that needs
-more, such as a role. A forgotten rule refuses the endpoint at runtime. A test of the backend also checks each
-operation of the API contract against the rules, without starting the application, and fails the build when one
-has no rule. A forgotten annotation leaves the URL rule in force.
+The application adds `@PreAuthorize` to a controller method that needs more than its URL rule, such as a role, and
+the stricter of the two wins. A forgotten URL rule refuses the endpoint, and a test of the backend fails the build
+when an operation of the API contract has none. A forgotten annotation leaves the URL rule in force.
+
+Every refusal answers a JSON problem detail: 403 for a forged request, and for a rule 401 to an anonymous caller,
+403 to a signed-in one. The starter rethrows a refusal from a controller ahead of the application's exception
+handlers, so that a catch-all handler cannot turn it into a 500.
 
 ## 🔑 Signing in
 
@@ -198,16 +164,18 @@ sequenceDiagram
   Security->>Security: check the password, new session id, new CSRF token
   Security->>DB: insert into spring_session, and remember_me_token if asked
   Security-->>Nuxt: 204, Set-Cookie __Host-SESSION, __Host-remember-me, __Host-XSRF-TOKEN
-  Nuxt->>Security: GET /api/user/me
-  Security-->>Nuxt: 200, the connected user
 ```
 
 `UserAccounts` is the port the application implements to hand its accounts to the starter, which reads no table of the
-application. The login changes the session id, so that an id planted in the browser before the login is worth nothing
-after it. It also replaces the CSRF token, in the response of the login itself, which the next request sends. An
-unknown login, a wrong password and a disabled account give the same 401 with the same body, so that the answer does
-not tell which logins exist. The application changes the session id the same way when it signs a user in right after a
-registration, and when it reloads a user's roles, through `CurrentUser`, and replaces the CSRF token there too.
+application. The login changes the session id, so that an id planted before the login is worth nothing after it, and
+replaces the CSRF token in its own response. An unknown login, a wrong password and a disabled account give the same
+401, so that the answer does not tell which logins exist. The application changes the session id the same way through
+`CurrentUser`, when it signs a user in after a registration or reloads their roles.
+
+Passwords are hashed with Argon2id, and each hash keeps its `{argon2}` prefix so that a later change of algorithm can
+still read it. A password alone still signs a user in, and nothing slows down repeated attempts yet.
+[ADR 0010](../adr/0010-sign-in-without-a-password.md) records why DrinkIt replaces the password with a passkey,
+Google or Apple, or a code sent by email.
 
 ## 🍪 Sessions and cookies
 
@@ -219,7 +187,7 @@ flowchart LR
   subgraph browser["Browser cookies"]
     direction TB
     sessionCookie["__Host-SESSION, HttpOnly<br/>the session id, 256 random bits<br/>until the browser closes"]
-    rememberCookie["__Host-remember-me, HttpOnly<br/>a series per device, and a token<br/>30 days from the password login"]
+    rememberCookie["__Host-remember-me, HttpOnly<br/>a series per device, and a token<br/>30 days from the sign-in"]
     xsrfCookie["__Host-XSRF-TOKEN, read by the app<br/>the CSRF token, no copy on the server<br/>replaced at each login, expired at logout"]
   end
   subgraph postgres["PostgreSQL"]
@@ -236,74 +204,28 @@ flowchart LR
   remember -. "user id, through UserAccounts" .-> user
 ```
 
-The cookies hold random values only, and what they grant lives in rows that a revocation deletes. An anonymous
-caller gets no row: the CSRF token lives in its cookie, and the starter keeps no refused request.
-[ADR 0013](../adr/0013-stateful-sessions-in-postgresql-serialized-as-jsonb.md) records why the session lives in
-PostgreSQL, how long it lasts, and draws its life.
+The cookies hold random values only, and what they grant lives in rows that a revocation deletes. A session ends
+after 30 idle minutes or 8 hours, and `Sessions.revokeAll` signs a user out everywhere at once.
+[ADR 0011](../adr/0011-keep-sessions-in-postgresql.md) records why the session lives in PostgreSQL and how long it
+lasts. An anonymous caller gets no row: the CSRF token lives in its cookie, and the starter keeps no refused request.
 
-Every cookie is `Secure`, `SameSite=Lax` and `Path=/`:
+Every cookie is `Secure`, `SameSite=Lax` and `Path=/`, and the session and remember-me cookies are `HttpOnly`:
 
 - **`Secure`** keeps the cookie off plain HTTP, where anyone on the network reads it.
 - **`HttpOnly`** keeps the session out of reach of a script injected into the page.
-- **`SameSite=Lax`** leaves the cookies out of a request another site starts, except a top-level navigation. A link
-  from an email still opens DrinkIt signed in, which `Strict` would prevent.
-- **The `__Host-` prefix** makes the browser refuse the cookie unless it is `Secure`, has no `Domain` and has
-  `Path=/`. Neither a subdomain nor a plain HTTP page can set it in DrinkIt's place.
-- **`Path=/`** is set by hand. The backend runs under the context path `/drinkit`, which Spring would give as the
-  path, and the browser silently drops a `__Host-` cookie with any path but `/`.
+- **`SameSite=Lax`** leaves the cookies out of a request another site starts, except a top-level navigation, so a
+  link from an email still opens DrinkIt signed in.
+- **The `__Host-` prefix** makes the browser refuse a cookie set by a subdomain or a plain HTTP page.
+- **`Path=/`** is set by hand: the backend runs under the context path `/drinkit`, and the browser drops a
+  `__Host-` cookie with any other path.
 
-The `dev` profile runs over plain HTTP on `localhost`, and drops both the prefix and `Secure` through
-`starters.security.cookie.prefix` and `starters.security.cookie.secure`. The starter refuses to start with a prefix
-and no `Secure`.
+The `dev` profile runs over plain HTTP on `localhost`, and drops both the prefix and `Secure`. The starter refuses to
+start with a prefix and no `Secure`.
 
-## 🛡️ Forged requests
-
-A forged request comes from another site, with the victim's cookies. `SameSite=Lax` already keeps them off a
-cross-site `POST`, and two more checks stand behind it.
-
-- **CSRF token.** On each request that changes state, the client reads the `__Host-XSRF-TOKEN` cookie and sends its
-  value in the `X-XSRF-TOKEN` header, which another site cannot read to fill. The value travels raw, without Spring's
-  masking against BREACH, since the token never appears in a response body.
-- **Fetch Metadata.** Browsers send `Sec-Fetch-Site` with each request. The starter refuses a `POST`, `PUT`, `PATCH` or
-  `DELETE` sent from another origin: the header must be `same-origin`, or `none` for a URL typed by the user. A client that sends no such header, such
-  as curl, still needs the token.
-
-The login needs the token too. Without it, another site could sign the victim in to the attacker's account, and what
-the victim then saves would land there. [ADR 0015](../adr/0015-csrf-token-in-a-cookie-with-fetch-metadata.md) records
-why the token lives in a cookie rather than in the session.
-
-## 🌐 CORS
-
-DrinkIt sends no CORS header. In production, the app and the API share one origin. In development, the Nuxt dev
-server forwards the API calls to the backend. Without CORS headers, the browser keeps any other origin from reading a
-response.
-
-## 📋 Security headers
-
-Each response carries these headers. They cost nothing to a JSON API and close what a browser would otherwise allow.
-
-| Header | Value | Protects against |
-|---|---|---|
-| `Content-Security-Policy` | `default-src 'none'; frame-ancestors 'none'` | A response rendered as a page that loads scripts, or framed by another site |
-| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` | A first request in plain HTTP, sent even when TLS ends at a proxy |
-| `X-Content-Type-Options` | `nosniff` | A JSON response that the browser guesses to be a script |
-| `X-Frame-Options` | `DENY` | Framing, for browsers that ignore `frame-ancestors` |
-| `Referrer-Policy` | `strict-origin-when-cross-origin` | A URL and its parameters sent to another site |
-| `Permissions-Policy` | Browser features turned off | A page of DrinkIt that uses the camera or the location |
-| `Cross-Origin-Opener-Policy` | `same-origin` | A window of another site that keeps a handle on DrinkIt's |
-| `Cross-Origin-Resource-Policy` | `same-origin` | Another site that embeds a response of the API |
-| `Cache-Control` | `no-cache, no-store, max-age=0, must-revalidate` | Personal data left in a shared or browser cache |
-| `Clear-Site-Data` | `"cache", "storage"`, at logout, over HTTPS only where browsers read it | What the app stored in the browser, kept after logout |
-
-`Clear-Site-Data` leaves out `"cookies"`, which in Chrome clears the cookies of the whole registrable domain. The
-logout expires DrinkIt's cookies one by one instead.
-
-## 🔁 Remember-me
-
-When the session has ended, the remember-me cookie opens a new one, and its token changes at each use. The previous
-token stays valid for 10 seconds, the grace, for the parallel requests of the app.
-[ADR 0014](../adr/0014-remember-me-by-a-rotating-hashed-token.md) explains why and draws the life of a token, its
-theft detection and its 30 days.
+A remember-me cookie opens a new session once the current one has ended. Its token changes at each use and is stored
+hashed, so that a stolen copy shows itself the first time both copies are used, and it lasts 30 days from the
+sign-in. [ADR 0012](../adr/0012-remember-me-with-a-rotating-hashed-token.md) explains the rotation, its grace for
+parallel requests and the theft detection.
 
 ```mermaid
 ---
@@ -322,42 +244,51 @@ sequenceDiagram
   Security-->>Nuxt: 200, Set-Cookie __Host-SESSION, __Host-remember-me, __Host-XSRF-TOKEN
 ```
 
-A remembered session is not fully authenticated, so a sensitive action can ask the user to confirm with a passkey or
-an email code, which
-[#592](https://github.com/mboisnard/drinkit/issues/592) plans.
+## 🛡️ Forged requests
 
-## 🔒 Passwords
+A forged request comes from another site, with the victim's cookies. `SameSite=Lax` already keeps them off a
+cross-site `POST`, and two checks of the backend stand behind it, on every method but `GET`, `HEAD`, `OPTIONS` and
+`TRACE`:
 
-Passwords are hashed with Argon2id only, and each hash keeps the `{argon2}` prefix so that a later change of algorithm
-can still read it. [ADR 0012](../adr/0012-sign-in-without-a-password.md) records why DrinkIt stops taking passwords,
-which [#603](https://github.com/mboisnard/drinkit/issues/603) removes.
+- **CSRF token.** The client copies the `__Host-XSRF-TOKEN` cookie into the `X-XSRF-TOKEN` header, which another
+  site cannot read to fill.
+- **Fetch Metadata.** The starter refuses a request whose `Sec-Fetch-Site` is neither `same-origin` nor `none`, a URL
+  the user typed. A client that sends no such header, such as curl, still needs the token.
 
-## 🚧 What does not exist yet
+The login needs the token too: without it, another site could sign the victim in to the attacker's account.
+[ADR 0013](../adr/0013-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md) records why the token lives in
+a cookie rather than in the session.
 
-A password alone signs a user in, and nothing slows down repeated attempts.
-[ADR 0012](../adr/0012-sign-in-without-a-password.md) replaces the password with a passkey, Google or Apple, or a code
-sent by email:
+## 📋 Security headers
 
-- Signing up and signing in with a code sent by email: [#586](https://github.com/mboisnard/drinkit/issues/586)
-- Signing in with a passkey: [#591](https://github.com/mboisnard/drinkit/issues/591)
-- Signing in with Google and Apple: [#602](https://github.com/mboisnard/drinkit/issues/602)
-- Limiting how often sign-in codes are asked for and tried: [#587](https://github.com/mboisnard/drinkit/issues/587)
-- Removing the password: [#603](https://github.com/mboisnard/drinkit/issues/603)
+DrinkIt sends no CORS header: the app and the API share one origin in production, and the Nuxt dev server forwards
+the API calls in development. The browser then keeps any other origin from reading a response. Each response also
+carries these headers, which cost nothing to a JSON API:
+
+| Header | Value | Protects against |
+|---|---|---|
+| `Content-Security-Policy` | `default-src 'none'; frame-ancestors 'none'` | A response rendered as a page that loads scripts, or framed by another site |
+| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` | A first request in plain HTTP, sent even when TLS ends at a proxy |
+| `X-Content-Type-Options` | `nosniff` | A JSON response that the browser guesses to be a script |
+| `X-Frame-Options` | `DENY` | Framing, for browsers that ignore `frame-ancestors` |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | A URL and its parameters sent to another site |
+| `Permissions-Policy` | Camera, microphone and location turned off | A page of DrinkIt that uses them |
+| `Cross-Origin-Opener-Policy` | `same-origin` | A window of another site that keeps a handle on DrinkIt's |
+| `Cross-Origin-Resource-Policy` | `same-origin` | Another site that embeds a response of the API |
+| `Cache-Control` | `no-cache, no-store, max-age=0, must-revalidate` | Personal data left in a shared or browser cache |
+| `Clear-Site-Data` | `"cache", "storage"`, at logout, over HTTPS | What the app stored in the browser, kept after logout |
+
+`Clear-Site-Data` leaves out `"cookies"`, which Chrome applies to every subdomain. The logout expires DrinkIt's
+cookies one by one instead.
 
 ## 📝 Security events in the logs
 
-The starter logs each security event with the names of OWASP's
-[logging vocabulary](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Vocabulary_Cheat_Sheet.html), so that an
-alert can match on them. A user appears by their id only, and no email, password, token, cookie or session id ever
-reaches the [logs](../build-and-data/logging.md): a log is read by more people than the database.
-
-- **`authn_login_success:<id>`**, with `method=password`, `remember_me`, or `sign_in` when the application signs a
-  user in itself, as after a registration.
-- **`authn_login_fail`**, a login refused.
-- **`authn_token_reuse`**, a remember-me token replayed after its grace, and `authn_token_grace_used` within it.
-- **`authz_fail`**, a signed-in user refused. An anonymous caller refused is the normal start of every visit, and is
-  not logged.
-- **`session_revoked`** and **`session_deserialization_fail`**, a session revoked, or one that could not be read.
+The starter logs each security event under a name of OWASP's
+[logging vocabulary](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Vocabulary_Cheat_Sheet.html), such as
+`authn_login_success`, `authn_login_fail`, `authn_token_reuse`, `authz_fail` or `session_revoked`, so that an alert
+can match on them. A user appears by their id only, and no email, password, token, cookie or session id reaches the
+[logs](../build-and-data/logging.md): a log is read by more people than the database. An anonymous caller refused is
+the normal start of every visit, and is not logged.
 
 ## 🧩 What the business code uses
 
@@ -375,9 +306,8 @@ flowchart LR
 ```
 
 A controller reads the connected user from `CurrentUser`, and turns it into the `Author` that the use cases of the
-domain take, so that the domain never depends on the starter. `SessionData` keeps values in the connected user's
-session, one per `SessionKey`, and `Sessions.revokeAll` signs a user out everywhere, after a role change or a
-deletion. The
+domain take, so that the domain never depends on the starter. `SessionData` keeps values in the user's session, and
+`Sessions.revokeAll` signs a user out everywhere, after a role change or a deletion. The
 [README of `security-starter`](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/security-starter/README.md)
 shows how an application plugs it in.
 
@@ -385,12 +315,5 @@ shows how an application plugs it in.
 
 - [Application Security Verification Standard 5.0](https://github.com/OWASP/ASVS/tree/v5.0.0), OWASP
 - [Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), OWASP
-- [Cross-Site Request Forgery Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html), OWASP
-- [Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html), OWASP
-- [Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), OWASP
 - [HTTP Security Response Headers Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html), OWASP
-- [Logging Vocabulary Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Vocabulary_Cheat_Sheet.html), OWASP
-- [Digital Identity Guidelines: Authentication and Authenticator Management, SP 800-63B-4](https://pages.nist.gov/800-63-4/sp800-63b.html), NIST
 - [Spring Security reference](https://docs.spring.io/spring-security/reference/), Spring
-- [Cookie prefixes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies#cookie_prefixes), MDN
-- [Fetch metadata request header](https://developer.mozilla.org/en-US/docs/Glossary/Fetch_metadata_request_header), MDN

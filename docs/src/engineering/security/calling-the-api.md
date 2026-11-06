@@ -38,9 +38,10 @@ sends. A logout expires it, so the client calls `GET /api/auth/csrf` again befor
 
 ## From the Nuxt app
 
-The generated client gets `credentials: 'include'`, so that the browser sends and stores the cookies, and a
-middleware that copies the CSRF cookie into the header. The app calls `GET /api/auth/csrf` when it starts and after
-a logout, and `GET /api/user/me` once when it starts: a 401 means nobody is signed in.
+The app does not call the API through the generated client yet. Once it does, the client needs
+`credentials: 'include'`, so that the browser sends and stores the cookies, and a middleware that copies the CSRF
+cookie into the header. The app then calls `GET /api/auth/csrf` when it starts and after a logout, and
+`GET /api/user/me` once when it starts: a 401 means nobody is signed in.
 
 ```ts
 import { Configuration, type Middleware } from '~/openapi'
