@@ -3,8 +3,10 @@ package com.drinkit.security.infra.rememberme
 import com.drinkit.security.Sessions
 import com.drinkit.security.infra.SecurityStarterProperties
 import com.drinkit.security.infra.events.SecurityEventLogger
+import com.drinkit.security.infra.hashOf
 import com.drinkit.security.infra.login.JsonLoginFilter
 import com.drinkit.security.infra.login.UserAccountsUserDetailsService
+import com.drinkit.security.infra.matchesHash
 import com.drinkit.security.infra.randomToken
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -14,11 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices
 import org.springframework.security.web.authentication.rememberme.InvalidCookieException
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException
-import java.security.MessageDigest
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
-import java.util.HexFormat
 
 // How long the previous token stays valid after a rotation: long enough for the requests a page sends in parallel
 // with the same cookie, too short for an attacker to replay a stolen one.
@@ -69,7 +69,7 @@ internal class RotatingRememberMeServices(
         val series = randomToken()
         val token = randomToken()
         rememberMeTokens.create(
-            RememberMeSeries(series, successfulAuthentication.name, hash(token), null, now, now),
+            RememberMeSeries(series, successfulAuthentication.name, hashOf(token), null, now, now),
             request.getHeader(HttpHeaders.USER_AGENT)?.take(USER_AGENT_LENGTH),
         )
 
@@ -87,8 +87,8 @@ internal class RotatingRememberMeServices(
         val now = microsecondClock.instant()
         val series = liveSeries(seriesId, now)
 
-        val presented = hash(token)
-        if (presented.matches(series.tokenHash)) {
+        val presented = hashOf(token)
+        if (presented.matchesHash(series.tokenHash)) {
             rotate(series, presented, now, request, response)
         } else {
             replay(series, presented, now)
@@ -139,7 +139,7 @@ internal class RotatingRememberMeServices(
     ) {
         val token = randomToken()
 
-        if (rememberMeTokens.rotate(series.series, presented, hash(token), now)) {
+        if (rememberMeTokens.rotate(series.series, presented, hashOf(token), now)) {
             val timeLeft = Duration.between(now, series.endsAt())
             setCookie(arrayOf(series.series, token), timeLeft.toSeconds().toInt(), request, response)
         } else {
@@ -152,7 +152,7 @@ internal class RotatingRememberMeServices(
     private fun replay(series: RememberMeSeries, presented: String, now: Instant) {
         val previous = series.previousTokenHash
 
-        if (previous != null && presented.matches(previous) && now.isBefore(series.rotatedAt + GRACE)) {
+        if (previous != null && presented.matchesHash(previous) && now.isBefore(series.rotatedAt + GRACE)) {
             events.rememberMeGraceUsed(series.userId)
         } else {
             sessions.revokeAll(series.userId)
@@ -163,8 +163,3 @@ internal class RotatingRememberMeServices(
 
     private fun RememberMeSeries.endsAt() = createdAt + validity
 }
-
-private fun String.matches(hash: String) = MessageDigest.isEqual(toByteArray(), hash.toByteArray())
-
-private fun hash(token: String): String =
-    HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(token.toByteArray()))

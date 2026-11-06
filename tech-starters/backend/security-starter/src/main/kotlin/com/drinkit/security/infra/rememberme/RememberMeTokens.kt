@@ -2,12 +2,10 @@ package com.drinkit.security.infra.rememberme
 
 import com.drinkit.security.generated.jooq.tables.records.RememberMeTokenRecord
 import com.drinkit.security.generated.jooq.tables.references.REMEMBER_ME_TOKEN
+import com.drinkit.security.infra.toStoredTime
 import org.jooq.DSLContext
 import org.springframework.transaction.support.TransactionOperations
 import java.time.Instant
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
-import java.time.temporal.ChronoUnit
 
 /**
  * A remembered browser. Its [series] identifies it for its whole life, while its token changes at each visit: only
@@ -41,8 +39,8 @@ internal class RememberMeTokens(private val dsl: DSLContext, private val transac
                     userId = series.userId,
                     tokenHash = series.tokenHash,
                     previousTokenHash = series.previousTokenHash,
-                    rotatedAt = series.rotatedAt.atUtc(),
-                    createdAt = series.createdAt.atUtc(),
+                    rotatedAt = series.rotatedAt.toStoredTime(),
+                    createdAt = series.createdAt.toStoredTime(),
                     userAgent = userAgent,
                 ),
             )
@@ -68,7 +66,7 @@ internal class RememberMeTokens(private val dsl: DSLContext, private val transac
         dsl.update(REMEMBER_ME_TOKEN)
             .set(REMEMBER_ME_TOKEN.TOKEN_HASH, newHash)
             .set(REMEMBER_ME_TOKEN.PREVIOUS_TOKEN_HASH, REMEMBER_ME_TOKEN.TOKEN_HASH)
-            .set(REMEMBER_ME_TOKEN.ROTATED_AT, at.atUtc())
+            .set(REMEMBER_ME_TOKEN.ROTATED_AT, at.toStoredTime())
             .where(REMEMBER_ME_TOKEN.SERIES.eq(series))
             .and(REMEMBER_ME_TOKEN.TOKEN_HASH.eq(currentHash))
             .execute()
@@ -83,14 +81,12 @@ internal class RememberMeTokens(private val dsl: DSLContext, private val transac
     }
 
     fun deleteCreatedBefore(instant: Instant) {
-        write { dsl.deleteFrom(REMEMBER_ME_TOKEN).where(REMEMBER_ME_TOKEN.CREATED_AT.lt(instant.atUtc())).execute() }
+        write {
+            dsl.deleteFrom(REMEMBER_ME_TOKEN).where(REMEMBER_ME_TOKEN.CREATED_AT.lt(instant.toStoredTime())).execute()
+        }
     }
 
     // The remember-me filter runs before any controller, outside the transaction of a use case, and the connections
     // of the application do not commit on their own: each write needs a transaction of its own.
     private fun write(statement: () -> Int): Int = transactions.execute { statement() }
-
-    // PostgreSQL keeps microseconds and rounds the nanoseconds of an Instant to the nearest one, which could store a
-    // later instant than the real one and push an expiry past it. Truncating never stores a later instant.
-    private fun Instant.atUtc(): OffsetDateTime = truncatedTo(ChronoUnit.MICROS).atOffset(ZoneOffset.UTC)
 }
