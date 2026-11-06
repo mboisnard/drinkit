@@ -40,7 +40,7 @@ objects built field by field in the test.
 | A rejection | the case, then the absence of any effect: `result.shouldBeInstanceOf<UserAlreadyExists>()` and `users.count() shouldBe 1` |
 | A collection | `shouldHaveSize`, `shouldContainExactly` when the order is part of the behavior, `shouldContainExactlyInAnyOrder` otherwise |
 | An exception | `shouldThrow<IllegalArgumentException> { money.convertWith(rate) }`. Check its message only when a caller reads it |
-| An event | through the spy the fixtures hold: `spyEventPublisher.countEventsOfType(UserCreated::class) shouldBe 1` |
+| An event | through the spy publisher: `publisher.findLastSentEvent().shouldBeInstanceOf<SignInCodeRequested>()` |
 | Persisted state | read back through the port, `users.findEnabledBy(id) shouldBe user`, never through a double's internals |
 
 Several properties of one value go in one `should { }` block, so a failure shows all of them at once.

@@ -47,4 +47,4 @@ A query: `FindExchangeRate`.
 - A controller: `RegistrationController`, an `internal` `@RestController` that implements the generated
   `<Tag>Api`. The connected user comes from the injected `CurrentUser` of `security-starter`, whose `userId` and
   `author` extensions give the domain types.
-- A platform event handler: `RegistrationHandler`, which calls a use case.
+- A platform event handler: `SignInCodeEmails`, whose handler sends the email of a sign-in code through a port.

@@ -106,6 +106,10 @@ the module root is the source of the generated page: follow the outline in
 `src/test/kotlin`, linked from the README, like `CarExample.kt` of `event-sourcing-starter`: a file with no class
 of that name, which `git ls-files '*/CarExample.kt'` finds.
 
+A KDoc says only what the name and the types cannot: a trap, an outside constraint, a reason. A class built to meet
+an OWASP rule ends its KDoc with that rule, `OWASP: ASVS 5.0 V7.2.4, Session Management Cheat Sheet (id renewal)`,
+so a reader sees why it exists. Wiring, or a class that only applies a rule another class holds, names none.
+
 ## 7. Bringing an existing starter up to convention
 
 One starter at a time, never mixing the two mechanisms in one module:

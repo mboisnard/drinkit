@@ -1,6 +1,6 @@
 ---
 name: threat-model
-description: Builds a short STRIDE threat model of one DrinkIt feature or flow, such as login, registration or a cellar operation. Maps the data flows and trust boundaries from the code and the API contract, rates the threats, lists the mitigations that exist with their path:line and the gaps, then writes the result where the maintainer chooses. Started by the maintainer as /threat-model.
+description: Builds a short STRIDE threat model of one DrinkIt feature or flow, such as the sign-in by code or a cellar operation. Maps the data flows and trust boundaries from the code and the API contract, rates the threats, lists the mitigations that exist with their path:line and the gaps, then writes the result where the maintainer chooses. Started by the maintainer as /threat-model.
 disable-model-invocation: true
 argument-hint: <feature or flow>
 ---

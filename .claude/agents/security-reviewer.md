@@ -74,9 +74,11 @@ CSRF cookie copied into a header and refuses an unsafe request sent cross-site.
   webhook that checks a signature.
 - The cookie flags (`HttpOnly`, `Secure`, `SameSite`, the `__Host-` prefix), the session timeouts and the
   remember-me validity do not get weaker outside the `dev` profile.
-- A login, a logout or a privilege change goes through the starter: its login endpoint, `CurrentUser.signIn` or
+- A sign-in, a logout or a privilege change goes through the starter: its sign-in by code, `CurrentUser.signIn` or
   `refresh`, `Sessions.revokeAll`. A new authentication path does not bypass them, and ends with a new session id.
   The session id is never logged, returned or put in a URL.
+- A sign-in code is stored as a hash only, accepted once, expires, has a limited number of tries, and is never
+  logged. Asking for one answers the same, as fast, whether the email has an account or not.
 - A remember-me or token mechanism stores only a hash of its token, expires, and is revoked at logout.
 
 **CORS.** See what exists with `git -C <worktree> grep -n -e CorsConfiguration -e CrossOrigin -e 'cors {' -- '*.kt'`.
@@ -94,7 +96,7 @@ upload checks its size and type before use.
 **Error responses.** Read how `CustomResponseEntityExceptionHandler`, and any handler the diff adds, answers each
 exception. A response does not carry an exception message, a stack trace, a SQL error or an internal identifier,
 and `server.error.include-*` stays unset. A new response does not tell apart "this account exists" from "it does
-not", beyond what an existing operation already tells, such as a 409 on registration.
+not", beyond what an existing operation already tells.
 
 **Secrets.** No key, token, password or certificate in code, configuration, tests, fixtures or logs, in any
 commit of the branch. The values of `application-dev.yml` and `deployment/local/compose.yml` are local container

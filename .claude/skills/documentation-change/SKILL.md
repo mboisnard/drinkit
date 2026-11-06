@@ -70,7 +70,7 @@ and steps go in a numbered list under a heading that names the task.
    its commits nor its issue gives the reason, ask the maintainer, or keep the rule and name the missing reason
    in the pull request. Never make one up.
 4. Examples come from DrinkIt and stay at the level of the page: a module, a package, a behavior, such as "the
-   creation of a user triggers the verification email". Name a class only when the page is about what that class
+   request for a sign-in code triggers its email". Name a class only when the page is about what that class
    is, such as a use case on a page about use cases: a class is renamed, moved or split long before the idea it
    illustrates changes, and each name is one more line to fix. Never a line number. Pick the parts that last: an
    example that a later change removes takes the sentence with it.
