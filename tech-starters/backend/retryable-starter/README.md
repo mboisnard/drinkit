@@ -1,97 +1,64 @@
 # Retryable Starter
 
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
-that turns on the `@Retryable` of Spring Framework and logs each failed attempt. DrinkIt needs it for concurrent
-writes on an event-sourced aggregate: the use case that loses the race runs again on the new history.
-`event-sourcing-starter` brings it, so an application gets it with that starter.
-
-## What is a retry?
-
-Two use cases can read the same history of a user and compute the same next sequence id. The primary key refuses
-the second insert, which throws `DuplicateSequenceException`. The `@RetryableTransactional` of
-`event-sourcing-starter` retries on that exception, and this starter makes the retry run.
-
-## Architecture Overview
-
-The retry wraps the transaction, so that each attempt reads the history again:
-
-```mermaid
-sequenceDiagram
-    participant Caller
-    participant Retry as Retry (Spring)
-    participant UseCase as Use case, in a transaction
-    participant Listener as Retry listener (starter)
-
-    Caller->>Retry: promote the user
-    Retry->>UseCase: attempt 1: read the history, insert at sequence 20
-    UseCase-->>Retry: DuplicateSequenceException, transaction rolled back
-    Retry->>Listener: MethodRetryEvent
-    Listener->>Listener: log "Attempt of ... failed"
-    Retry->>UseCase: attempt 2: read the new history, insert at sequence 30
-    UseCase-->>Retry: user promoted
-    Retry-->>Caller: user promoted
-```
-
-When the last attempt fails too, the listener logs that the retries stopped, with the number of attempts and the class
-of the last failure, and the caller gets the exception. A failure the retry policy does not cover reaches the caller
-at once: after a single line when it is the first, after the same stop line when an earlier attempt failed.
+that turns on the `@Retryable` of Spring Framework, so that a method runs again when it fails with an exception its
+policy names, and logs each failed attempt. DrinkIt needs it for concurrent writes on an event-sourced aggregate:
+`event-sourcing-starter` brings it to run the retries of `@RetryableTransactional`.
 
 ```mermaid
 graph LR
-    UseCase[Use case, @RetryableTransactional or @Retryable] --> Spring[Spring Framework retry]
-    Spring --> Listener[Retry listener of the starter]
+    Bean["Bean of the application<br/>@Retryable, @RetryableTransactional"] --> Retry[Spring Framework retry]
+    Retry -->|each failed attempt| Listener[Retry listener of the starter]
     Listener --> Logs[(Logs)]
-    style UseCase fill:#e1f5e1
-    style Spring fill:#e1e5ff
-    style Listener fill:#fff3e1
-    style Logs fill:#ffe1e1
 ```
-
-## Key Features
-
-- The `@Retryable` of `org.springframework.resilience.annotation` runs on any bean, with no AspectJ to ship.
-- Each failed attempt is logged at `INFO` with the class of its exception, which the caller never sees, and the
-  end of the retries at `WARN`. The message of the exception stays out of the logs, since it can hold personal data.
-- An application that declares its own `ApplicationListener<MethodRetryEvent>` bean replaces the starter's logging,
-  to send the failures elsewhere.
-
-## Configuration
-
-| Property | Default | Environment variable | Must production set it? |
-|---|---|---|---|
-| `starters.retryable.enabled` | `true` | `STARTERS_RETRYABLE_ENABLED` | No. Switched off, no `@Retryable` method runs again |
 
 ## Usage
 
-An application that needs the retry declares the starter in its `build.gradle.kts`:
-
 ```kotlin
-dependencies {
-    implementation(project(":retryable-starter"))
-}
+implementation(project(":retryable-starter"))
 ```
-
-A retry policy names the exceptions worth a new attempt, as `@RetryableTransactional` does:
 
 ```kotlin
 @Retryable(includes = [DuplicateSequenceException::class], maxRetries = 2, delay = 0)
+fun promote(userId: UserId) { … }
 ```
 
 `maxRetries` counts the retries after the first attempt: `maxRetries = 2` makes three attempts.
 
-A unit test calls the method without Spring and sees one attempt. A test of the retry builds the Spring context,
-with an `ApplicationContextRunner` or an integration test. `SpyRetryListener`, in the starter's test fixtures, counts
-the failed attempts there. Declared as a bean, it replaces the starter's logging in that context:
+With `@RetryableTransactional`, the retry wraps the transaction, so the attempt that loses a race runs again on the
+new history:
 
-```kotlin
-testImplementation(testFixtures(project(":retryable-starter")))
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant Retry as Spring retry
+    participant UseCase as Use case, in a transaction
+    participant Listener as Retry listener of the starter
+    Caller->>Retry: promote(userId)
+    Retry->>UseCase: attempt 1 reads the history
+    UseCase-->>Retry: DuplicateSequenceException, rolled back
+    Retry->>Listener: failed attempt, logged at INFO
+    Retry->>UseCase: attempt 2 reads the new history
+    UseCase-->>Retry: user promoted
+    Retry-->>Caller: user promoted
 ```
 
-```kotlin
-runner.withBean(SpyRetryListener::class.java, { spyRetryListener })
-    .run { context ->
-        context.getBean<SaveEvent>().invoke()
+- **Logs**: each failed attempt at `INFO`, the end of the retries at `WARN`, with the class of the exception and never
+  its message, which can hold personal data.
+- **Your own listener**: an `ApplicationListener<MethodRetryEvent>` bean of the application replaces the logging.
+- **`starters.retryable.enabled`**, `STARTERS_RETRYABLE_ENABLED`: `true` by default, and `false` makes every method
+  run once.
 
-        spyRetryListener.countFailedAttempts() shouldBe 1
-    }
+## Tests
+
+`SpyRetryListener`, from `testFixtures(project(":retryable-starter"))`, declared as a bean, counts the failed
+attempts:
+
+```kotlin
+spyRetryListener.countFailedAttempts() shouldBe 1
 ```
+
+## Limits
+
+- The retry goes through the Spring proxy: a unit test without Spring, or a call from the same object, makes one
+  attempt.
