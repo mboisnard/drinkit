@@ -13,13 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
-const val USER_PASSWORD = "a long enough password"
-
 @SpringBootApplication
 internal class SecurityTestApplication {
 
     @Bean
     fun userAccounts() = InMemoryUserAccounts()
+
+    @Bean
+    fun signInCodeSender() = SpySignInCodeSender()
 
     @Bean
     @Order(1)
@@ -66,8 +67,8 @@ internal class TestController(private val currentUser: CurrentUser) {
     fun adminStats() = currentUser.get().id
 
     @PreAuthorize("isFullyAuthenticated()")
-    @GetMapping("/api/cellars/password-checked")
-    fun passwordChecked() = ResponseEntity.noContent().build<Unit>()
+    @GetMapping("/api/cellars/fully-signed-in")
+    fun fullySignedIn() = ResponseEntity.noContent().build<Unit>()
 
     @PostMapping("/api/public/ping")
     fun ping() = ResponseEntity.noContent().build<Unit>()

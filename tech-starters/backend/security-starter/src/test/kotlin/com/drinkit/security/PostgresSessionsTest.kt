@@ -56,15 +56,23 @@ internal class CookieBrowser(private val mockMvc: MockMvc, private val contextPa
         cookies[cookie.name] = cookie
     }
 
-    fun login(
+    /** Asks for a code for [login], then signs in with the code [codes] got, as a user does with their email. */
+    fun signIn(
         login: String,
-        password: String,
+        codes: SpySignInCodeSender,
         rememberMe: Boolean = false,
         dsl: MockHttpServletRequestDsl.() -> Unit = {},
-    ) = post("/api/auth/login") {
-        contentType = MediaType.APPLICATION_JSON
-        content = """{"username": "$login", "password": "$password", "rememberMe": $rememberMe}"""
-        dsl()
+    ): ResultActionsDsl {
+        post("/api/auth/code") {
+            contentType = MediaType.APPLICATION_JSON
+            content = """{"email": "$login"}"""
+            dsl()
+        }
+        return post("/api/auth/code/sign-in") {
+            contentType = MediaType.APPLICATION_JSON
+            content = """{"email": "$login", "code": "${codes.lastCodeOf(login)}", "rememberMe": $rememberMe}"""
+            dsl()
+        }
     }
 
     fun get(path: String, dsl: MockHttpServletRequestDsl.() -> Unit = {}) = send(HttpMethod.GET, path, dsl)

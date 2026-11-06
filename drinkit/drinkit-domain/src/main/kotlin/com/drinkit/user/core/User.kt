@@ -15,12 +15,10 @@ import java.time.OffsetDateTime
 data class User(
     val id: UserId,
     val email: Email,
-    val password: EncodedPassword,
     val profile: ProfileInformation?,
     val lastConnection: OffsetDateTime?,
     val roles: Roles,
     val status: UserStatus,
-    val verified: Boolean,
 ) {
     val enabled: Boolean = status != UserStatus.DELETED
 
@@ -28,10 +26,6 @@ data class User(
         profile = event.profile,
         status = UserStatus.ACTIVE,
         roles = Roles(setOf(ROLE_USER)),
-    )
-
-    private fun apply(_event: Verified) = this.copy(
-        verified = true,
     )
 
     private fun apply(_event: PromotedAsAdmin) = this.copy(
@@ -42,15 +36,19 @@ data class User(
         status = UserStatus.DELETED,
     )
 
+    private fun apply(_event: Reactivated) = this.copy(
+        status = if (profile == null) PROFILE_COMPLETION_REQUIRED else UserStatus.ACTIVE,
+    )
+
     companion object {
         fun from(history: UserHistory): User {
             val reducer = EventsReducer<User, UserEvent, Initialized>(
                 factory = User::applyInitialization,
             )
                 .register<ProfileCompleted>(User::apply)
-                .register<Verified>(User::apply)
                 .register<PromotedAsAdmin>(User::apply)
                 .register<Deleted>(User::apply)
+                .register<Reactivated>(User::apply)
 
             return reducer.reduce(history)
         }
@@ -58,12 +56,10 @@ data class User(
         private fun applyInitialization(event: Initialized) = User(
             id = event.userId,
             email = event.email,
-            password = event.password,
             profile = null,
             lastConnection = null,
             roles = event.roles,
             status = PROFILE_COMPLETION_REQUIRED,
-            verified = false,
         )
     }
 }

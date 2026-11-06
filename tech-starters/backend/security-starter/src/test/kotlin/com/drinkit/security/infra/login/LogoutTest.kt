@@ -3,26 +3,25 @@ package com.drinkit.security.infra.login
 import com.drinkit.security.Browser
 import com.drinkit.security.InMemoryUserAccounts
 import com.drinkit.security.SecuredApplicationTest
+import com.drinkit.security.SpySignInCodeSender
 import com.drinkit.security.TestAccounts
-import com.drinkit.security.USER_PASSWORD
 import com.drinkit.security.XSRF_COOKIE
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpHeaders
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.servlet.MockMvc
 
 @SecuredApplicationTest
-internal class LogoutTest(mockMvc: MockMvc, accounts: InMemoryUserAccounts, encoder: PasswordEncoder) {
+internal class LogoutTest(mockMvc: MockMvc, accounts: InMemoryUserAccounts, codes: SpySignInCodeSender) {
 
-    private val browser = Browser(mockMvc)
-    private val account = TestAccounts(accounts, encoder).user()
+    private val browser = Browser(mockMvc, codes)
+    private val account = TestAccounts(accounts).user()
 
     @Test
     fun `ends the session, expires its cookies for the whole site, and clears the cache and storage of the browser`() {
         // Given
-        browser.login(account.login, USER_PASSWORD)
+        browser.signIn(account.login)
 
         // When
         val logout = browser.post("/api/auth/logout") { secure = true }.andExpect { status { isNoContent() } }

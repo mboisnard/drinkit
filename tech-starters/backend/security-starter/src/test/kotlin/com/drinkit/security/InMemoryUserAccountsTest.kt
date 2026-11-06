@@ -7,5 +7,5 @@ internal class InMemoryUserAccountsTest : UserAccountsTestContract() {
     override fun fetchUserAccounts(): UserAccounts = inMemory
 
     override fun givenAnAccount(login: String): UserAccount =
-        UserAccount("user-1", "{argon2}hash", setOf("ROLE_USER")).also { inMemory.save(login, it) }
+        UserAccount("user-1", setOf("ROLE_USER")).also { inMemory.save(login, it) }
 }

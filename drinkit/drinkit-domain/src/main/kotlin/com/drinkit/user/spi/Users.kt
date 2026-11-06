@@ -13,4 +13,6 @@ interface Users {
     fun findEnabledBy(email: Email): User?
 
     fun exists(email: Email): Boolean
+
+    fun findDeletedBy(email: Email): User?
 }

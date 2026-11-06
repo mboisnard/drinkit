@@ -6,8 +6,8 @@ import com.drinkit.security.InMemoryUserAccounts
 import com.drinkit.security.PostgresSessionsTest
 import com.drinkit.security.REMEMBER_ME_COOKIE
 import com.drinkit.security.SESSION_COOKIE
+import com.drinkit.security.SpySignInCodeSender
 import com.drinkit.security.TestAccounts
-import com.drinkit.security.USER_PASSWORD
 import com.drinkit.security.XSRF_COOKIE
 import com.drinkit.security.generated.jooq.DrinkitSession
 import com.drinkit.test.ControlledClock
@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.system.CapturedOutput
 import org.springframework.http.HttpHeaders
 import org.springframework.jdbc.core.simple.JdbcClient
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.servlet.MockMvc
 import java.security.MessageDigest
 import java.time.Duration
@@ -45,11 +44,11 @@ internal class RememberMeTest(
     private val mockMvc: MockMvc,
     private val database: JdbcClient,
     accounts: InMemoryUserAccounts,
-    encoder: PasswordEncoder,
+    private val codes: SpySignInCodeSender,
     private val clock: ControlledClock,
 ) {
 
-    private val account = TestAccounts(accounts, encoder).user()
+    private val account = TestAccounts(accounts).user()
     private val browser = CookieBrowser(mockMvc)
 
     @AfterEach
@@ -63,7 +62,7 @@ internal class RememberMeTest(
         val underContextPath = CookieBrowser(mockMvc, contextPath = "/drinkit")
 
         // When
-        val login = underContextPath.login(account.login, USER_PASSWORD, rememberMe = true).andReturn().response
+        val login = underContextPath.signIn(account.login, codes, rememberMe = true).andReturn().response
 
         // Then
         val setCookie = login.getHeaders(HttpHeaders.SET_COOKIE).single { it.startsWith("$REMEMBER_ME_COOKIE=") }
@@ -76,7 +75,7 @@ internal class RememberMeTest(
     @Test
     fun `does not remember a login that does not ask for it`() {
         // When
-        val login = browser.login(account.login, USER_PASSWORD).andReturn().response
+        val login = browser.signIn(account.login, codes).andReturn().response
 
         // Then
         login.getCookie(REMEMBER_ME_COOKIE).shouldBeNull()
@@ -86,7 +85,7 @@ internal class RememberMeTest(
     @Test
     fun `keeps only a hash of the token, and the browser it was given to`() {
         // When
-        browser.login(account.login, USER_PASSWORD, rememberMe = true) { header(HttpHeaders.USER_AGENT, "Firefox") }
+        browser.signIn(account.login, codes, rememberMe = true) { header(HttpHeaders.USER_AGENT, "Firefox") }
 
         // Then
         val (series, token) = decode(rememberMeCookie())
@@ -98,7 +97,7 @@ internal class RememberMeTest(
     @Test
     fun `signs a remembered user in, in a new session with a rotated token and a new XSRF token`() {
         // Given
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
+        browser.signIn(account.login, codes, rememberMe = true)
         val first = rememberMeCookie()
         val returning = returningBrowser().apply { keep(Cookie(XSRF_COOKIE, "token-of-the-ended-session")) }
 
@@ -118,7 +117,7 @@ internal class RememberMeTest(
     @Test
     fun `logs a remembered login as such`(output: CapturedOutput) {
         // Given
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
+        browser.signIn(account.login, codes, rememberMe = true)
 
         // When
         returningBrowser().get("/api/cellars/me")
@@ -128,26 +127,26 @@ internal class RememberMeTest(
     }
 
     @Test
-    fun `asks a remembered user for the password again before an action that needs it`() {
+    fun `asks a remembered user to sign in again before an action that needs a full sign-in`() {
         // Given
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
+        browser.signIn(account.login, codes, rememberMe = true)
         val returning = returningBrowser()
         returning.get("/api/cellars/me").andExpect { status { isOk() } }
 
         // When
-        val sensitive = returning.get("/api/cellars/password-checked")
+        val sensitive = returning.get("/api/cellars/fully-signed-in")
 
         // Then
         sensitive.andExpect { status { isUnauthorized() } }
     }
 
     @Test
-    fun `lets a user who gave the password through an action that needs it`() {
+    fun `lets a user who signed in with a code through an action that needs a full sign-in`() {
         // Given
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
+        browser.signIn(account.login, codes, rememberMe = true)
 
         // When
-        val sensitive = browser.get("/api/cellars/password-checked")
+        val sensitive = browser.get("/api/cellars/fully-signed-in")
 
         // Then
         sensitive.andExpect { status { isNoContent() } }
@@ -156,7 +155,7 @@ internal class RememberMeTest(
     @Test
     fun `accepts the previous token for a few seconds, for the requests sent at once`(output: CapturedOutput) {
         // Given
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
+        browser.signIn(account.login, codes, rememberMe = true)
         val first = rememberMeCookie()
         clock.fix(NOW_WITH_NANOSECONDS)
         returningBrowser(first).get("/api/cellars/me")
@@ -177,7 +176,7 @@ internal class RememberMeTest(
         output: CapturedOutput,
     ) {
         // Given
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
+        browser.signIn(account.login, codes, rememberMe = true)
         val stolen = rememberMeCookie()
         clock.fix(NOW_WITH_NANOSECONDS)
         returningBrowser(stolen).get("/api/cellars/me")
@@ -194,10 +193,10 @@ internal class RememberMeTest(
     }
 
     @Test
-    fun `forgets a login 30 days after the password was given, however often the user came back`() {
+    fun `forgets a login 30 days after the sign-in, however often the user came back`() {
         // Given
         clock.fix(NOW_WITH_NANOSECONDS)
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
+        browser.signIn(account.login, codes, rememberMe = true)
         val returning = returningBrowser()
         clock.add(Duration.ofDays(29))
         returning.get("/api/cellars/me").andExpect { status { isOk() } }
@@ -217,7 +216,7 @@ internal class RememberMeTest(
     fun `gives a rotated token only the days left to its login`() {
         // Given
         clock.fix(NOW_WITH_NANOSECONDS)
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
+        browser.signIn(account.login, codes, rememberMe = true)
         clock.add(Duration.ofDays(10))
 
         // When
@@ -232,11 +231,11 @@ internal class RememberMeTest(
     fun `purges the forgotten logins when it remembers a new one`() {
         // Given
         clock.fix(NOW_WITH_NANOSECONDS)
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
+        browser.signIn(account.login, codes, rememberMe = true)
         clock.add(Duration.ofDays(30).plusSeconds(1))
 
         // When
-        val laptop = CookieBrowser(mockMvc).apply { login(account.login, USER_PASSWORD, rememberMe = true) }
+        val laptop = CookieBrowser(mockMvc).apply { signIn(account.login, codes, rememberMe = true) }
 
         // Then
         val laptopSeries = decode(laptop.cookie(REMEMBER_ME_COOKIE).shouldNotBeNull()).first
@@ -244,14 +243,14 @@ internal class RememberMeTest(
     }
 
     @Test
-    fun `ends the series a browser presents when it logs in again with its password`() {
+    fun `ends the series a browser presents when it signs in again`() {
         // Given
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
+        browser.signIn(account.login, codes, rememberMe = true)
         val previous = rememberMeCookie()
-        val phone = CookieBrowser(mockMvc).apply { login(account.login, USER_PASSWORD, rememberMe = true) }
+        val phone = CookieBrowser(mockMvc).apply { signIn(account.login, codes, rememberMe = true) }
 
         // When
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
+        browser.signIn(account.login, codes, rememberMe = true)
 
         // Then
         seriesOf(account.id) shouldContainExactlyInAnyOrder
@@ -277,8 +276,8 @@ internal class RememberMeTest(
     @Test
     fun `forgets only the login of the browser that logs out`() {
         // Given
-        browser.login(account.login, USER_PASSWORD, rememberMe = true)
-        val phone = CookieBrowser(mockMvc).apply { login(account.login, USER_PASSWORD, rememberMe = true) }
+        browser.signIn(account.login, codes, rememberMe = true)
+        val phone = CookieBrowser(mockMvc).apply { signIn(account.login, codes, rememberMe = true) }
         val phoneSeries = decode(phone.cookie(REMEMBER_ME_COOKIE).shouldNotBeNull()).first
 
         // When

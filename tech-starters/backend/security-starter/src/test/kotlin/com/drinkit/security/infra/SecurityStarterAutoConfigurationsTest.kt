@@ -5,13 +5,19 @@ import com.drinkit.security.InMemoryUserAccounts
 import com.drinkit.security.SessionData
 import com.drinkit.security.SessionKey
 import com.drinkit.security.Sessions
+import com.drinkit.security.SignInCodeSender
+import com.drinkit.security.SpySignInCodeSender
 import com.drinkit.security.UserAccounts
 import com.drinkit.security.infra.chain.FetchMetadataFilter
 import com.drinkit.security.infra.chain.SecurityAutoConfiguration
-import com.drinkit.security.infra.login.JsonLoginFilter
+import com.drinkit.security.infra.code.EmailCodeAuthenticationProvider
+import com.drinkit.security.infra.code.EmailCodeSignInFilter
+import com.drinkit.security.infra.code.InMemorySignInCodes
+import com.drinkit.security.infra.code.JooqSignInCodes
+import com.drinkit.security.infra.code.SignInCodeAutoConfiguration
+import com.drinkit.security.infra.code.SignInCodes
 import com.drinkit.security.infra.login.SpringCurrentUser
 import com.drinkit.security.infra.login.UserAccountsAutoConfiguration
-import com.drinkit.security.infra.login.UserAccountsUserDetailsService
 import com.drinkit.security.infra.rememberme.RememberMeAutoConfiguration
 import com.drinkit.security.infra.rememberme.RememberMeTokens
 import com.drinkit.security.infra.rememberme.RotatingRememberMeServices
@@ -45,8 +51,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.DefaultSecurityFilterChain
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.NullRememberMeServices
@@ -61,7 +65,7 @@ import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration
 
 internal class SecurityStarterAutoConfigurationsTest {
 
-    private val runner = WebApplicationContextRunner()
+    private val baseRunner = WebApplicationContextRunner()
         .withConfiguration(
             AutoConfigurations.of(
                 JacksonAutoConfiguration::class.java,
@@ -74,19 +78,25 @@ internal class SecurityStarterAutoConfigurationsTest {
                 SessionsAutoConfiguration::class.java,
                 RememberMeAutoConfiguration::class.java,
                 UserAccountsAutoConfiguration::class.java,
+                SignInCodeAutoConfiguration::class.java,
             ),
         )
         .withBean(UserAccounts::class.java, { InMemoryUserAccounts() })
+        .withBean(SignInCodeSender::class.java, { SpySignInCodeSender() })
+
+    // Without PostgreSQL, the application gives the codes itself, as the tests do
+    private val runner = baseRunner.withBean(SignInCodes::class.java, { InMemorySignInCodes() })
 
     @Test
-    fun `secures the application with its own filter chain, accounts, current user and sessions`() {
+    fun `secures the application with its own filter chain, sign-in by code, current user and sessions`() {
         runner.run { context ->
             context.getBean<SecurityFilterChain>().filters.map { it::class }.shouldContainAll(
-                JsonLoginFilter::class,
+                EmailCodeSignInFilter::class,
                 FetchMetadataFilter::class,
             )
-            context.getBean<UserDetailsService>().shouldBeInstanceOf<UserAccountsUserDetailsService>()
-            context.getBean<PasswordEncoder>().encode("a password") shouldContain "{argon2}"
+            context.getBeanNamesForType(EmailCodeAuthenticationProvider::class.java).toList().shouldContainAll(
+                listOf("emailCodeAuthenticationProvider"),
+            )
             context.getBean<CurrentUser>().shouldBeInstanceOf<SpringCurrentUser>()
             context.getBean("springSessionConversionService").shouldBeInstanceOf<JsonSessionConverter>()
             context.getBean("securityStarterSessionRepository").shouldBeInstanceOf<JdbcSessionCustomizer>()
@@ -103,6 +113,7 @@ internal class SecurityStarterAutoConfigurationsTest {
             context.getBean<SecurityFilterChain>().filters.map { it::class } shouldContain
                 RememberMeAuthenticationFilter::class
             context.getBean<Sessions>().shouldBeInstanceOf<SpringSessions>()
+            context.getBean<SignInCodes>().shouldBeInstanceOf<JooqSignInCodes>()
         }
     }
 
@@ -146,8 +157,8 @@ internal class SecurityStarterAutoConfigurationsTest {
         withSessionsInDatabase.withPropertyValues("starters.security.enabled=false")
             .run { context ->
                 context.getBeanNamesForType(CurrentUser::class.java).toList().shouldBeEmpty()
-                context.getBeanNamesForType(JsonLoginFilter::class.java).toList().shouldBeEmpty()
-                context.getBeanNamesForType(UserAccountsUserDetailsService::class.java).toList().shouldBeEmpty()
+                context.getBeanNamesForType(SignInCodes::class.java).toList().shouldBeEmpty()
+                context.containsBean("signInCodeEndpoint") shouldBe false
                 context.getBeanNamesForType(SessionData::class.java).toList().shouldBeEmpty()
                 context.containsBean("springSessionConversionService") shouldBe false
                 context.containsBean("securityStarterSessionRepository") shouldBe false
@@ -180,7 +191,7 @@ internal class SecurityStarterAutoConfigurationsTest {
 
     // Never connected to: the beans only keep the data source
     private val dataSource = DriverManagerDataSource("jdbc:postgresql://localhost:1/none")
-    private val withSessionsInDatabase = runner
+    private val withSessionsInDatabase = baseRunner
         .withBean(FindByIndexNameSessionRepository::class.java, { InMemoryIndexedSessions() })
         .withBean(DataSource::class.java, { dataSource })
         .withBean(PlatformTransactionManager::class.java, { DataSourceTransactionManager(dataSource) })

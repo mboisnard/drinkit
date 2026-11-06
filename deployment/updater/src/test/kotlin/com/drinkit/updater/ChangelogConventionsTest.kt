@@ -315,7 +315,7 @@ internal class ChangelogConventionsTest {
         deployedPaths shouldContainAll baseMigrations.map { it.path }
         deployed shouldBreak rule(
             "demo-stays-local",
-            why = "every deployment runs $MASTER_CHANGELOG, and the password of the demo admin is public",
+            why = "every deployment runs $MASTER_CHANGELOG, and its demo admin must stay on a local start",
             fix = "include demo/ from db.changelog-demo.yml only",
         )
     }

@@ -6,7 +6,7 @@ import com.drinkit.documentation.cqrs.Command
 import com.drinkit.documentation.fcis.FunctionalCore
 import com.drinkit.documentation.fcis.ImperativeShell
 import com.drinkit.event.sourcing.SequenceId
-import com.drinkit.messaging.PlatformEventPublisher
+import com.drinkit.user.CreateNewUser.Result.InvalidEmail
 import com.drinkit.user.CreateNewUser.Result.UserAlreadyExists
 import com.drinkit.user.CreateNewUser.Result.UserCreated
 import com.drinkit.user.UserCreationDecider.Decision.EmailAlreadyExists
@@ -14,7 +14,6 @@ import com.drinkit.user.UserCreationDecider.Decision.EventToPersist
 import com.drinkit.user.UserCreationDecider.Decision.ValidationFailed
 import com.drinkit.user.core.Author
 import com.drinkit.user.core.Email
-import com.drinkit.user.core.EncodedPassword
 import com.drinkit.user.core.Initialized
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.Roles.Role.ROLE_REGISTRATION_IN_PROGRESS
@@ -30,12 +29,7 @@ import java.time.OffsetDateTime
 import java.util.Locale
 
 @Command
-data class CreateNewUserCommand(
-    val author: Author,
-    val email: Email,
-    val password: EncodedPassword,
-    val locale: Locale,
-)
+data class CreateNewUserCommand(val author: Author, val email: Email, val locale: Locale)
 
 @Service
 @Transactional
@@ -46,18 +40,16 @@ class CreateNewUser(
     private val users: Users,
     private val generateId: GenerateId,
     private val clock: Clock,
-    private val platformEventPublisher: PlatformEventPublisher,
 ) {
     sealed interface Result {
         data class UserCreated(val user: User) : Result
         object UserAlreadyExists : Result
+        object InvalidEmail : Result
     }
 
     private val logger = KotlinLogging.logger {}
 
     fun invoke(command: CreateNewUserCommand): Result {
-        logger.debug { "Creating a new user with command $command" }
-
         val decision = UserCreationDecider.invoke(
             command = command,
             emailFoundInDatabase = users.exists(command.email),
@@ -66,21 +58,12 @@ class CreateNewUser(
         )
 
         return when (decision) {
-            is EventToPersist -> {
-                val user = userEvents.save(decision.event)
-                platformEventPublisher.publish(
-                    com.drinkit.user.spi.UserCreated(
-                        userId = user.id,
-                        locale = command.locale,
-                    ),
-                )
+            is EventToPersist -> UserCreated(userEvents.save(decision.event))
+                .also { logger.info { "User ${it.user.id} has been created" } }
 
-                UserCreated(user)
-            }
+            EmailAlreadyExists -> UserAlreadyExists
 
-            is EmailAlreadyExists -> UserAlreadyExists
-
-            is ValidationFailed -> error("Validation failed: ${decision.errors}")
+            is ValidationFailed -> InvalidEmail
         }
     }
 }
@@ -100,26 +83,24 @@ internal object UserCreationDecider {
         newUserId: UserId,
         date: OffsetDateTime,
     ): Decision {
-        if (emailFoundInDatabase) {
-            return EmailAlreadyExists
-        }
-
         val validationErrors = command.email.validate()
-        if (command.email.validate().isNotEmpty()) {
-            return ValidationFailed(validationErrors)
-        }
 
-        return EventToPersist(
-            Initialized(
-                userId = newUserId,
-                sequenceId = SequenceId(),
-                date = date,
-                author = command.author,
-                email = command.email,
-                password = command.password,
-                roles = Roles(setOf(ROLE_REGISTRATION_IN_PROGRESS)),
-                preferredLocale = command.locale,
-            ),
-        )
+        return when {
+            validationErrors.isNotEmpty() -> ValidationFailed(validationErrors)
+
+            emailFoundInDatabase -> EmailAlreadyExists
+
+            else -> EventToPersist(
+                Initialized(
+                    userId = newUserId,
+                    sequenceId = SequenceId(),
+                    date = date,
+                    author = command.author,
+                    email = command.email,
+                    roles = Roles(setOf(ROLE_REGISTRATION_IN_PROGRESS)),
+                    preferredLocale = command.locale,
+                ),
+            )
+        }
     }
 }

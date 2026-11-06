@@ -55,7 +55,7 @@ internal class RotatingRememberMeServicesTest {
 
     private fun servicesOn(dsl: DSLContext) = RotatingRememberMeServices(
         users = UserAccountsUserDetailsService(
-            InMemoryUserAccounts("ada@drinkit.test" to UserAccount(USER_ID, "{noop}unused", setOf("ROLE_USER"))),
+            InMemoryUserAccounts("ada@drinkit.test" to UserAccount(USER_ID, setOf("ROLE_USER"))),
         ),
         rememberMeTokens = RememberMeTokens(dsl, TransactionOperations.withoutTransaction()),
         sessions = sessions,

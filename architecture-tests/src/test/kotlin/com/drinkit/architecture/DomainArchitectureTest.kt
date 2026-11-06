@@ -151,7 +151,6 @@ internal class DomainArchitectureTest {
             suppress {
                 file("*/com/drinkit/user/core/ProfileInformation.kt", FOLLOW_UP)
                 file("*/com/drinkit/common/CorrelationId.kt", FOLLOW_UP)
-                file("*/com/drinkit/user/GenerateVerificationToken.kt", FOLLOW_UP)
             }
             files {
                 that().inModules(DOMAINS)
@@ -178,7 +177,6 @@ internal class DomainArchitectureTest {
             description = "A port is an interface in the spi package of its context, or of common: move it there, or " +
                 "out of spi when it is not a port"
             suppress {
-                classFqName("com.drinkit.user.spi.UserCreated", FOLLOW_UP)
                 classFqName("com.drinkit.common.GenerateId", FOLLOW_UP)
             }
             classes {

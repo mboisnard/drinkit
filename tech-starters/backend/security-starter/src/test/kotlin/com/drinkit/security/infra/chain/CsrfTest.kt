@@ -24,6 +24,25 @@ internal class CsrfTest(private val mockMvc: MockMvc) {
     }
 
     @Test
+    fun `refuses a code request and a sign-in by code without CSRF token`() {
+        listOf("/api/auth/code", "/api/auth/code/sign-in").forEach { path ->
+            mockMvc.post(path) {
+                contentType = MediaType.APPLICATION_JSON
+                content = """{"email": "ada@drinkit.test", "code": "123456"}"""
+            }.andExpect { status { isForbidden() } }
+        }
+    }
+
+    @Test
+    fun `refuses a code request a browser says comes from another site`() {
+        browser.post("/api/auth/code") {
+            contentType = MediaType.APPLICATION_JSON
+            content = """{"email": "ada@drinkit.test"}"""
+            header("Sec-Fetch-Site", "cross-site")
+        }.andExpect { status { isForbidden() } }
+    }
+
+    @Test
     fun `accepts the raw value of the XSRF cookie in the X-XSRF-TOKEN header`() {
         browser.post("/api/public/ping").andExpect { status { isNoContent() } }
     }

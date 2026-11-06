@@ -9,9 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 /**
- * Reads the accounts of the application, through [UserAccounts], for Spring Security to check a password. It finds
- * an account by its login, but names the user by its id, so that neither the session nor the logs ever hold the
- * login, often an email.
+ * Reads the accounts of the application, through [UserAccounts], for the remember-me login and the sign-in by code.
+ * It names the user by its id, so that neither the session nor the logs ever hold the login, often an email.
  */
 internal class UserAccountsUserDetailsService(private val accounts: UserAccounts) : UserDetailsService {
 
@@ -23,4 +22,4 @@ internal class UserAccountsUserDetailsService(private val accounts: UserAccounts
 }
 
 internal fun UserAccount.toUserDetails(): UserDetails =
-    User.withUsername(id).password(passwordHash).authorities(roles.map(::SimpleGrantedAuthority)).build()
+    User.withUsername(id).password("").authorities(roles.map(::SimpleGrantedAuthority)).build()

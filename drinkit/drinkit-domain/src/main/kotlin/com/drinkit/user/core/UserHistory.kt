@@ -20,7 +20,6 @@ data class Initialized(
     override val date: OffsetDateTime,
     override val author: Author,
     val email: Email,
-    val password: EncodedPassword,
     val roles: Roles,
     val preferredLocale: Locale,
 ) : UserEvent
@@ -33,13 +32,6 @@ data class ProfileCompleted(
     val profile: ProfileInformation,
 ) : UserEvent
 
-data class Verified(
-    override val userId: UserId,
-    override val date: OffsetDateTime,
-    override val author: Author.Connected,
-    override val sequenceId: SequenceId,
-) : UserEvent
-
 data class PromotedAsAdmin(
     override val userId: UserId,
     override val date: OffsetDateTime,
@@ -48,6 +40,13 @@ data class PromotedAsAdmin(
 ) : UserEvent
 
 data class Deleted(
+    override val userId: UserId,
+    override val date: OffsetDateTime,
+    override val author: Author.Connected,
+    override val sequenceId: SequenceId,
+) : UserEvent
+
+data class Reactivated(
     override val userId: UserId,
     override val date: OffsetDateTime,
     override val author: Author.Connected,

@@ -22,7 +22,7 @@ jooq {
         configuration.apply {
             generator.apply {
                 database.apply {
-                    includes = "cellar | user_event | user | verification_token | exchange_rate"
+                    includes = "cellar | user_event | user | exchange_rate"
                     inputSchema = "drinkit_application"
                 }
                 target.apply {

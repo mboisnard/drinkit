@@ -2,6 +2,9 @@ package com.drinkit.security
 
 import com.drinkit.security.infra.chain.SecurityAutoConfiguration
 import com.drinkit.security.infra.chain.UnruledEndpoint
+import com.drinkit.security.infra.code.EmailCodeAuthenticationProvider
+import com.drinkit.security.infra.code.SignInCode
+import com.drinkit.security.infra.code.SignInCodes
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition
 import org.springframework.boot.autoconfigure.AutoConfigurations
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner
@@ -16,6 +19,8 @@ import org.springframework.util.ClassUtils
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.context.WebApplicationContext
 import tools.jackson.databind.json.JsonMapper
+import java.time.Clock
+import java.time.Instant
 
 private val PATH_VARIABLE = Regex("""\{[^}]*}""")
 
@@ -50,6 +55,9 @@ class EndpointRulesCoverage(private val rules: List<EndpointRules>, private val 
     private fun securityChain() = WebApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration::class.java))
         .withBean(JsonMapper::class.java, { JsonMapper() })
+        .withBean(EmailCodeAuthenticationProvider::class.java, {
+            EmailCodeAuthenticationProvider(NoSignInCodes, InMemoryUserAccounts(), Clock.systemUTC())
+        })
 
     private fun isUnruled(context: WebApplicationContext, method: String, path: String): Boolean {
         val request = MockHttpServletRequest(context.servletContext, method, path.replace(PATH_VARIABLE, "sample"))
@@ -82,4 +90,13 @@ class EndpointRulesCoverage(private val rules: List<EndpointRules>, private val 
 
     private fun join(prefix: String, path: String) =
         listOf(prefix, path).filter { it.isNotEmpty() }.joinToString("") { "/" + it.trim('/') }.ifEmpty { "/" }
+}
+
+// The chain needs a sign-in by code to be built, which no request of the coverage ever uses
+private object NoSignInCodes : SignInCodes {
+    override fun replace(code: SignInCode, now: Instant) = Unit
+
+    override fun tryCode(login: String, codeHash: String, now: Instant) = false
+
+    override fun deleteExpiredAt(now: Instant) = Unit
 }

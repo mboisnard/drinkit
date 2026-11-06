@@ -5,6 +5,7 @@ import com.drinkit.event.sourcing.EventsReducer
 import com.drinkit.event.sourcing.SequenceId
 import com.drinkit.user.core.Roles.Role.ROLE_ADMIN
 import com.drinkit.user.core.Roles.Role.ROLE_USER
+import java.time.OffsetDateTime
 
 @Aggregate
 data class UserDecision(
@@ -13,14 +14,13 @@ data class UserDecision(
     private var _sequenceId: SequenceId,
     private var _roles: Roles,
     private var _profileCompleted: Boolean = false,
-    private var _verified: Boolean = false,
-    private var _deleted: Boolean = false,
+    private var _deletedAt: OffsetDateTime? = null,
 ) {
     val nextSequenceId get() = _sequenceId.next()
     val isProfileCompleted get() = _profileCompleted
     val isAdmin get() = _roles.contains(ROLE_ADMIN)
-    val isVerified get() = _verified
-    val isDeleted get() = _deleted
+    val isDeleted get() = _deletedAt != null
+    val deletedAt get() = _deletedAt
 
     fun canEdit(author: Author) = when (author) {
         is Author.Connected -> author.userId == id
@@ -33,18 +33,18 @@ data class UserDecision(
         return applyDefault(event)
     }
 
-    private fun apply(event: Verified): UserDecision {
-        _verified = true
-        return applyDefault(event)
-    }
-
     private fun apply(event: PromotedAsAdmin): UserDecision {
         _roles = _roles + ROLE_ADMIN
         return applyDefault(event)
     }
 
     private fun apply(event: Deleted): UserDecision {
-        _deleted = true
+        _deletedAt = event.date
+        return applyDefault(event)
+    }
+
+    private fun apply(event: Reactivated): UserDecision {
+        _deletedAt = null
         return applyDefault(event)
     }
 
@@ -60,9 +60,9 @@ data class UserDecision(
                 defaultHandler = UserDecision::applyDefault,
             )
                 .register<ProfileCompleted>(UserDecision::apply)
-                .register<Verified>(UserDecision::apply)
                 .register<PromotedAsAdmin>(UserDecision::apply)
                 .register<Deleted>(UserDecision::apply)
+                .register<Reactivated>(UserDecision::apply)
 
             return reducer.reduce(history)
         }

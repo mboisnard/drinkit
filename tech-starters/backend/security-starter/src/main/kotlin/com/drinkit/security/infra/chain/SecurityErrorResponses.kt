@@ -14,8 +14,8 @@ import tools.jackson.databind.json.JsonMapper
 /**
  * Writes the JSON body of every security refusal in the RFC 9457 ProblemDetail format, as the rest of the API does.
  * Spring Security calls it as the authentication entry point (an anonymous caller gets a 401), as the access-denied
- * handler (a 403), and as the login failure handler: every failed login gets the same 401, so that a caller cannot
- * tell an unknown login from a wrong password. The body never says why the request was refused.
+ * handler (a 403), and as the sign-in failure handler: every refused sign-in gets the same 401, so that a caller
+ * cannot tell an unknown login from a wrong code. The body never says why the request was refused.
  *
  * OWASP: ASVS 5.0 V6.3.8, V16.5.1, Authentication Cheat Sheet (generic error messages).
  */

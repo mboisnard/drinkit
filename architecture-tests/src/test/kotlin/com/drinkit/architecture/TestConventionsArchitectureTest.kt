@@ -57,7 +57,6 @@ internal class TestConventionsArchitectureTest {
             description = "A port's behavior is written once, in an abstract <Port>TestContract of the domain test " +
                 "fixtures: write it, and extend it from the in-memory double's test and the adapter's test"
             suppress {
-                classFqName("com.drinkit.user.spi.VerificationTokens", FOLLOW_UP)
                 classFqName("com.drinkit.notification.spi.NotificationSender", FOLLOW_UP)
                 classFqName("com.drinkit.common.GenerateId", FOLLOW_UP)
                 classFqName("com.drinkit.money.forex.spi.ExchangeRateProvider", FOLLOW_UP)

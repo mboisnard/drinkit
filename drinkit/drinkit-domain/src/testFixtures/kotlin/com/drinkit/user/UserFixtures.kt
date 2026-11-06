@@ -3,22 +3,17 @@ package com.drinkit.user
 import com.drinkit.common.CorrelationId
 import com.drinkit.common.FakeGenerateId
 import com.drinkit.faker
-import com.drinkit.messaging.SpyPlatformEventPublisher
-import com.drinkit.notification.spi.SpyNotificationSender
 import com.drinkit.test.ControlledClock
 import com.drinkit.user.core.Author
 import com.drinkit.user.core.Author.Unlogged
 import com.drinkit.user.core.Email
-import com.drinkit.user.core.EncodedPassword
 import com.drinkit.user.core.Initialized
-import com.drinkit.user.core.Password
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserHistory
 import com.drinkit.user.core.UserId
 import com.drinkit.user.spi.InMemoryUserEvents
 import com.drinkit.user.spi.InMemoryUsers
-import com.drinkit.user.spi.InMemoryVerificationTokens
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
@@ -27,35 +22,14 @@ import java.util.Locale
 class UserFixtures(
     val generateId: FakeGenerateId = FakeGenerateId(),
     val controlledClock: ControlledClock = ControlledClock(),
-    val spyEventPublisher: SpyPlatformEventPublisher = SpyPlatformEventPublisher(),
-    val spyNotificationSender: SpyNotificationSender = SpyNotificationSender(),
 ) {
     val users = InMemoryUsers()
     val userEvents = InMemoryUserEvents(users)
-    val verificationTokens = InMemoryVerificationTokens()
 
     val createNewUser = CreateNewUser(
         userEvents = userEvents,
         users = users,
         generateId = generateId,
-        clock = controlledClock,
-        platformEventPublisher = spyEventPublisher,
-    )
-
-    val generateVerificationToken = GenerateVerificationToken(
-        clock = controlledClock,
-    )
-    val sendVerificationToken = SendVerificationToken(
-        userEvents = userEvents,
-        generateVerificationToken = generateVerificationToken,
-        verificationTokens = verificationTokens,
-        notificationSender = spyNotificationSender,
-    )
-
-    val confirmVerificationToken = ConfirmVerificationToken(
-        userEvents = userEvents,
-        users = users,
-        verificationTokens = verificationTokens,
         clock = controlledClock,
     )
 
@@ -72,6 +46,11 @@ class UserFixtures(
     )
 
     val deleteUser = DeleteUser(
+        userEvents = userEvents,
+        clock = controlledClock,
+    )
+
+    val reactivateUser = ReactivateUser(
         userEvents = userEvents,
         clock = controlledClock,
     )
@@ -104,7 +83,6 @@ class UserFixtures(
             command = CreateNewUserCommand(
                 author = author,
                 email = email,
-                password = VALID_PASSWORD,
                 locale = Locale.FRANCE,
             ),
             emailFoundInDatabase = false,
@@ -122,7 +100,6 @@ class UserFixtures(
         val VALID_EMAIL = faker.randomProvider.randomClassInstance<Email> {
             typeGenerator<String> { faker.internet.safeEmail() }
         }
-        val VALID_PASSWORD = EncodedPassword.from(Password("F@kePa\$\$w0rD")) { it }
         val VALID_PROFILE_INFORMATION = ProfileInformation(
             firstName = faker.randomProvider.randomClassInstance {
                 typeGenerator<String> { faker.name.firstName() }

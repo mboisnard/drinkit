@@ -7,19 +7,18 @@ import com.drinkit.user.UserEventPayloadType.DELETED
 import com.drinkit.user.UserEventPayloadType.INITIALIZED
 import com.drinkit.user.UserEventPayloadType.PROFILE_COMPLETED
 import com.drinkit.user.UserEventPayloadType.PROMOTED_AS_ADMIN
-import com.drinkit.user.UserEventPayloadType.VERIFIED
+import com.drinkit.user.UserEventPayloadType.REACTIVATED
 import com.drinkit.user.core.Author
 import com.drinkit.user.core.Deleted
 import com.drinkit.user.core.Email
-import com.drinkit.user.core.EncodedPassword
 import com.drinkit.user.core.Initialized
 import com.drinkit.user.core.ProfileCompleted
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.PromotedAsAdmin
+import com.drinkit.user.core.Reactivated
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.UserEvent
 import com.drinkit.user.core.UserId
-import com.drinkit.user.core.Verified
 import org.jooq.JSONB
 import tools.jackson.databind.json.JsonMapper
 import java.time.OffsetDateTime
@@ -29,9 +28,9 @@ internal fun UserEvent.toEventNameWithPayload(jsonMapper: JsonMapper): Pair<User
     val payload = when (this) {
         is Initialized -> INITIALIZED to InitializedPayload.from(this)
         is ProfileCompleted -> PROFILE_COMPLETED to ProfileCompletedPayload.from(this)
-        is Verified -> VERIFIED to NoPayload
         is PromotedAsAdmin -> PROMOTED_AS_ADMIN to NoPayload
         is Deleted -> DELETED to NoPayload
+        is Reactivated -> REACTIVATED to NoPayload
     }
 
     return payload.first to JSONBToJacksonConverter(payload.second.javaClass, jsonMapper).to(payload.second)
@@ -49,7 +48,6 @@ internal fun UserEventRecord.toEvent(jsonMapper: JsonMapper): UserEvent {
                 date = commonFields.date,
                 author = commonFields.author,
                 email = payload.email,
-                password = payload.password,
                 roles = payload.roles,
                 preferredLocale = payload.preferredLocale,
             )
@@ -63,15 +61,6 @@ internal fun UserEventRecord.toEvent(jsonMapper: JsonMapper): UserEvent {
                 date = commonFields.date,
                 author = commonFields.connectedAuthor,
                 profile = payload.profile,
-            )
-        }
-
-        VERIFIED -> {
-            Verified(
-                userId = commonFields.userId,
-                sequenceId = commonFields.sequenceId,
-                date = commonFields.date,
-                author = commonFields.connectedAuthor,
             )
         }
 
@@ -92,32 +81,36 @@ internal fun UserEventRecord.toEvent(jsonMapper: JsonMapper): UserEvent {
                 author = commonFields.connectedAuthor,
             )
         }
+
+        REACTIVATED -> {
+            Reactivated(
+                userId = commonFields.userId,
+                sequenceId = commonFields.sequenceId,
+                date = commonFields.date,
+                author = commonFields.connectedAuthor,
+            )
+        }
     }
 }
 
 internal enum class UserEventPayloadType {
     INITIALIZED,
     PROFILE_COMPLETED,
-    VERIFIED,
     PROMOTED_AS_ADMIN,
     DELETED,
+    REACTIVATED,
 }
 
 internal sealed interface UserEventPayload
 
 internal object NoPayload : UserEventPayload
 
-internal data class InitializedPayload(
-    val email: Email,
-    val password: EncodedPassword,
-    val roles: Roles,
-    val preferredLocale: Locale,
-) : UserEventPayload {
+internal data class InitializedPayload(val email: Email, val roles: Roles, val preferredLocale: Locale) :
+    UserEventPayload {
 
     companion object {
         fun from(event: Initialized) = InitializedPayload(
             email = event.email,
-            password = event.password,
             roles = event.roles,
             preferredLocale = event.preferredLocale,
         )
