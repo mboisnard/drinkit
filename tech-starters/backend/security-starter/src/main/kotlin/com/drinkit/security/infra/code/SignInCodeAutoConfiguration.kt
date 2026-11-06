@@ -4,7 +4,6 @@ import com.drinkit.security.SignInCodeSender
 import com.drinkit.security.UserAccounts
 import com.drinkit.security.infra.SecurityStarterProperties
 import org.jooq.DSLContext
-import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -14,8 +13,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
 import org.springframework.boot.session.jdbc.autoconfigure.JdbcSessionAutoConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.servlet.function.RouterFunction
 import org.springframework.web.servlet.function.RouterFunctions
 import org.springframework.web.servlet.function.ServerResponse
@@ -23,14 +20,7 @@ import tools.jackson.databind.json.JsonMapper
 import java.time.Clock
 import javax.sql.DataSource
 
-/**
- * Wires the sign-in by a code sent by email: the request for a code, its check, and the codes in PostgreSQL, which
- * the application needs. The application gives the [SignInCodeSender] that sends a code, and the [UserAccounts] that
- * find or create the account of a proven login. It registers before Spring Boot's in-memory user, which then backs
- * off.
- *
- * OWASP: ASVS 5.0 V6.6, Authentication Cheat Sheet (out-of-band codes).
- */
+/** Registers before Spring Boot's in-memory user, which then backs off. */
 @AutoConfiguration(after = [JdbcSessionAutoConfiguration::class], before = [UserDetailsServiceAutoConfiguration::class])
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = "starters.security", name = ["enabled"], matchIfMissing = true)
@@ -40,22 +30,21 @@ internal class SignInCodeAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnSingleCandidate(DataSource::class)
-    fun signInCodes(dsl: DSLContext, transactionManager: PlatformTransactionManager): SignInCodes =
-        JooqSignInCodes(dsl, TransactionTemplate(transactionManager))
+    fun signInCodes(dsl: DSLContext): SignInCodes = JooqSignInCodes(dsl)
 
     @Bean
     @ConditionalOnMissingBean
     fun signInCodeIssuer(
         codes: SignInCodes,
         sender: SignInCodeSender,
-        clock: ObjectProvider<Clock>,
+        clock: Clock,
         properties: SecurityStarterProperties,
-    ) = SignInCodeIssuer(codes, sender, clock.getIfUnique { Clock.systemUTC() }, properties.code)
+    ) = SignInCodeIssuer(codes, sender, clock, properties.code)
 
     @Bean
     @ConditionalOnMissingBean
-    fun emailCodeAuthenticationProvider(codes: SignInCodes, accounts: UserAccounts, clock: ObjectProvider<Clock>) =
-        EmailCodeAuthenticationProvider(codes, accounts, clock.getIfUnique { Clock.systemUTC() })
+    fun emailCodeAuthenticationProvider(codes: SignInCodes, accounts: UserAccounts, clock: Clock) =
+        EmailCodeAuthenticationProvider(codes, accounts, clock)
 
     @Bean
     @ConditionalOnMissingBean(name = ["signInCodeEndpoint"])

@@ -25,14 +25,6 @@ import org.springframework.session.jdbc.JdbcIndexedSessionRepository
 import tools.jackson.databind.json.JsonMapper
 import javax.sql.DataSource
 
-/**
- * Wires the sessions that Spring Session keeps in PostgreSQL, so that a user stays signed in whichever instance of
- * the application serves the request: their tables, their JSON format, their cookie, the [SessionData] of the
- * application, and [Sessions] to revoke every session of a user. The session cookie gets the same protections as
- * the other cookies of the starter: `HttpOnly`, `Secure`, `SameSite=Lax` and the whole site as its path.
- *
- * OWASP: ASVS 5.0 V3.3, Session Management Cheat Sheet (session cookie attributes).
- */
 @AutoConfiguration(after = [JdbcSessionAutoConfiguration::class])
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = "starters.security", name = ["enabled"], matchIfMissing = true)

@@ -27,10 +27,8 @@ private const val USER_AGENT_LENGTH = 256
 private const val NANOS_PER_MICRO = 1_000L
 
 /**
- * Signs a returning user in from their remember-me cookie, which holds a series and a token. The token changes at
- * each visit and is stored hashed, so that a token that comes back after its rotation reveals a theft, of the cookie
- * or of the browser: the user is then signed out everywhere. A series ends at a fixed time after the sign-in, however
- * often the user comes back, so that a stolen cookie does not open the account forever.
+ * A token that comes back after its rotation reveals a theft: the user is then signed out everywhere. A series ends at
+ * a fixed time after the sign-in, however often the user comes back.
  *
  * OWASP: ASVS 5.0 V7.2.3, V7.3.2, V7.4.1 (rotated hashed token, reuse detection, absolute lifetime).
  */

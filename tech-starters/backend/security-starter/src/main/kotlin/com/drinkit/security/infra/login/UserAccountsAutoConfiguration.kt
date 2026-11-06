@@ -13,10 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy
 import org.springframework.security.web.context.SecurityContextRepository
 
-/**
- * Wires the [CurrentUser] the application reads, which signs a user in or reloads their roles through the accounts
- * the application gives as [UserAccounts].
- */
 @AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = "starters.security", name = ["enabled"], matchIfMissing = true)

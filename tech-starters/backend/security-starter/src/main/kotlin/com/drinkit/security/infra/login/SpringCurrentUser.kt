@@ -21,10 +21,7 @@ import org.springframework.web.context.request.ServletRequestAttributes
 private const val FACTOR_PREFIX = "FACTOR_"
 
 /**
- * Gives the application its connected user through [CurrentUser], so that no business code touches the security
- * context of Spring Security. It also signs a user in, or reloads their roles, the way a login would: under a new
- * session id, so that an id an attacker planted before the change is worthless, and with the login saved in the
- * session.
+ * Signs in and reloads roles under a new session id, so that an id planted before the change is worthless.
  *
  * OWASP: ASVS 5.0 V7.2.4, V8.3.2, Session Management Cheat Sheet (id renewal on privilege change).
  */
@@ -59,8 +56,8 @@ internal class SpringCurrentUser(
         }
     }
 
-    // Rebuilt from the current authentication rather than a new one, so that it stays remembered or not and keeps the
-    // FACTOR_ authorities its sign-in proved, such as the email code: only the roles are replaced.
+    // Rebuilt from the current authentication, so that it stays remembered or not and keeps the FACTOR_ authorities
+    // its sign-in proved: only the roles change
     private fun Authentication.reloadedWith(user: UserDetails) = toBuilder()
         .principal(user)
         .authorities { authorities ->

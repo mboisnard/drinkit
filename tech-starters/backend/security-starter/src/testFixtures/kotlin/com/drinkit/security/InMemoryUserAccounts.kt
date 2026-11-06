@@ -4,10 +4,6 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Each account with the login it is found by. [register] creates an account with [newAccountRoles], unless its login
- * was refused with [refuseRegistrationOf].
- */
 class InMemoryUserAccounts(
     vararg accounts: Pair<String, UserAccount>,
     private val newAccountRoles: Set<String> = setOf("ROLE_REGISTRATION_IN_PROGRESS"),

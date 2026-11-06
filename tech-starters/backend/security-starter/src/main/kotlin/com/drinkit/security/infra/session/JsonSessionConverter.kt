@@ -11,10 +11,8 @@ import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator
 
 /**
- * Converts the session attributes to and from JSON for Spring Session, in place of Java serialization. It reads back
- * only the types Spring Security allows in its Jackson modules, and texts, so that a forged session row cannot make
- * the application build an arbitrary class. An attribute that can no longer be read, after an upgrade changed a
- * class, is absent: the user is signed out rather than refused with an error, and the failure is logged.
+ * Reads back only texts and the types Spring Security allows in its Jackson modules, so that a forged session row
+ * cannot build an arbitrary class. An unreadable attribute is absent: the user is signed out, not refused.
  *
  * OWASP: ASVS 5.0 V1.5.2, Deserialization Cheat Sheet (allowlist of types).
  */

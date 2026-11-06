@@ -13,12 +13,8 @@ import kotlin.reflect.jvm.javaType
 private const val ATTRIBUTE_PREFIX = "starters.security.session."
 
 /**
- * Keeps the [SessionData] of the connected user in the HTTP session, so that the application computes them once per
- * session. Each value is stored as a JSON text: the session store reads a text back whatever the type of the value,
- * and this class reads the value back with the type of its key. A value that can no longer be read, after its type
- * changed, is absent rather than an error, and an anonymous caller gets no session to store values in.
- *
- * OWASP: ASVS 5.0 V1.5.2, Deserialization Cheat Sheet (typed JSON, no Java serialization).
+ * Each value is stored as a JSON text, read back with the type of its key. A value that can no longer be read, after
+ * its type changed, is absent rather than an error.
  */
 internal class HttpSessionData(private val currentUser: CurrentUser, private val jsonMapper: JsonMapper) : SessionData {
 

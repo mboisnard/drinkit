@@ -12,11 +12,7 @@ private const val CODE_DIGITS = 6
 private const val CODE_BOUND = 1_000_000
 
 /**
- * Gives a login a new sign-in code: six random digits, kept as their hash for the validity of [settings], and handed
- * to the application's [SignInCodeSender]. The code gets the tries the login has left in the current window, never
- * new ones. It never looks the login up, so that the answer is the same, and as fast,
- * whether an account exists or not. A sending that fails is logged without the login nor the code, and the caller
- * still gets the same answer.
+ * Never looks the login up, so that the answer is the same, and as fast, whether an account exists or not.
  *
  * OWASP: ASVS 5.0 V6.3.8, V11.5.1, Authentication Cheat Sheet (same answer for any account, random codes).
  */

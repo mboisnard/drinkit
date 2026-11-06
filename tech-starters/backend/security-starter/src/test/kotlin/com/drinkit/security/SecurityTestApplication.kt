@@ -1,5 +1,6 @@
 package com.drinkit.security
 
+import com.drinkit.test.ControlledClock
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @SpringBootApplication
 internal class SecurityTestApplication {
+
+    @Bean
+    fun clock() = ControlledClock()
 
     @Bean
     fun userAccounts() = InMemoryUserAccounts()

@@ -14,8 +14,7 @@ private const val MAX_BODY_BYTES = 4096
 private val CODE_FORMAT = Regex("\\d{6}")
 
 /**
- * The JSON body of a request for a code or of a sign-in, read only up to 4 KiB, so that an oversized body costs no
- * parsing. Null when it is larger or unreadable.
+ * Read only up to 4 KiB, so that an oversized body costs no parsing.
  *
  * OWASP: ASVS 5.0 V2.2.1, Input Validation Cheat Sheet (size limits before parsing).
  */
@@ -30,11 +29,10 @@ internal fun HttpServletRequest.readSignInBody(jsonMapper: JsonMapper): JsonNode
     }
 }
 
-/** The email of the body as the starter keys its codes: trimmed and in lower case, or null when it is no email. */
+/** Trimmed and in lower case, as the starter keys its codes. */
 internal fun JsonNode.login(maxLength: Int): String? = path("email").stringValue("")
     .trim()
     .lowercase(Locale.ROOT)
     .takeIf { it.length <= maxLength && it.isEmail() }
 
-/** The code of the body when it is six digits, null otherwise. */
 internal fun JsonNode.code(): String? = path("code").stringValue("").takeIf(CODE_FORMAT::matches)

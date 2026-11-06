@@ -7,7 +7,6 @@ import io.kotest.matchers.shouldBe
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.transaction.support.TransactionOperations
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -21,7 +20,7 @@ internal class RememberMeTokensTest {
 
     @BeforeEach
     fun setup(dsl: DSLContext) {
-        tokens = RememberMeTokens(dsl, TransactionOperations.withoutTransaction())
+        tokens = RememberMeTokens(dsl)
     }
 
     @Test

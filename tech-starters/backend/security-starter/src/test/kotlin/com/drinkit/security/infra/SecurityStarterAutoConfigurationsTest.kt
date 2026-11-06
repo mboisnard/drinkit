@@ -10,7 +10,6 @@ import com.drinkit.security.SpySignInCodeSender
 import com.drinkit.security.UserAccounts
 import com.drinkit.security.infra.chain.FetchMetadataFilter
 import com.drinkit.security.infra.chain.SecurityAutoConfiguration
-import com.drinkit.security.infra.code.EmailCodeAuthenticationProvider
 import com.drinkit.security.infra.code.EmailCodeSignInFilter
 import com.drinkit.security.infra.code.InMemorySignInCodes
 import com.drinkit.security.infra.code.JooqSignInCodes
@@ -51,6 +50,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.DefaultSecurityFilterChain
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.NullRememberMeServices
@@ -60,6 +60,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository
 import org.springframework.security.web.util.matcher.AnyRequestMatcher
 import org.springframework.session.FindByIndexNameSessionRepository
 import org.springframework.transaction.PlatformTransactionManager
+import java.time.Clock
 import javax.sql.DataSource
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration as BootSecurityAutoConfiguration
 
@@ -83,6 +84,7 @@ internal class SecurityStarterAutoConfigurationsTest {
         )
         .withBean(UserAccounts::class.java, { InMemoryUserAccounts() })
         .withBean(SignInCodeSender::class.java, { SpySignInCodeSender() })
+        .withBean(Clock::class.java, { Clock.systemUTC() })
 
     // Without PostgreSQL, the application gives the codes itself, as the tests do
     private val runner = baseRunner.withBean(SignInCodes::class.java, { InMemorySignInCodes() })
@@ -94,15 +96,19 @@ internal class SecurityStarterAutoConfigurationsTest {
                 EmailCodeSignInFilter::class,
                 FetchMetadataFilter::class,
             )
-            context.getBeanNamesForType(EmailCodeAuthenticationProvider::class.java).toList().shouldContainAll(
-                listOf("emailCodeAuthenticationProvider"),
-            )
             context.getBean<CurrentUser>().shouldBeInstanceOf<SpringCurrentUser>()
             context.getBean("springSessionConversionService").shouldBeInstanceOf<JsonSessionConverter>()
             context.getBean("securityStarterSessionRepository").shouldBeInstanceOf<JdbcSessionCustomizer>()
             context.getBean<SessionData>().shouldBeInstanceOf<HttpSessionData>()
             context.getBeansOfType(DefaultCookieSerializerCustomizer::class.java).keys shouldContainAll
                 listOf("securityStarterSessionCookie", "rememberMeServicesCookieSerializerCustomizer")
+        }
+    }
+
+    @Test
+    fun `leaves no user of Spring Boot with a generated password`() {
+        runner.run { context ->
+            context.getBeanNamesForType(UserDetailsService::class.java).toList().shouldBeEmpty()
         }
     }
 
