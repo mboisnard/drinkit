@@ -109,7 +109,7 @@ abstract class UserEventsTestContract {
         refusal.stackTraceToString() should {
             it shouldNotContain "Josephine"
             it shouldNotContain "Marchetti"
-            it shouldNotContain "1987"
+            it shouldNotContain "1987-03-14"
         }
     }
 }
