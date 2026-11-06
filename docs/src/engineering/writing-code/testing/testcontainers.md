@@ -118,7 +118,7 @@ platform events, so a test waits for its end before it reads.
 
 Mailpit is an SMTP server that keeps the emails it receives and serves them over an HTTP API. A test sends through
 `mailpit.javaMailSender()`, then reads what the server received with `mailpit.lastEmail()`. The extension deletes
-every email after the class. [ADR 0006](../../adr/0006-mailpit-as-the-smtp-server-of-the-tests.md) says why Mailpit.
+every email after the class.
 
 ## ♻️ One container for every run
 

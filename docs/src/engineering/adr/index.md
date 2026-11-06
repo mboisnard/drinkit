@@ -8,14 +8,14 @@ it works that way, so that you can tell whether the reasons still hold before yo
 
 We write an ADR when the maintainer chooses between real options and the choice costs a lot to reverse: a new
 module or dependency, a tool, the API contract, the layout of the schema, a security rule, a convention every
-contributor follows. A detail inside a pattern already decided, a version bump or a bug fix gets none. The pull
-request that carries a decision carries its ADR.
+contributor follows. A detail inside a pattern already decided, a choice of test tool, a dependency line, a version
+bump or a bug fix gets none: the page or the README of what it concerns says it. The pull request that carries a
+decision carries its ADR.
 
 ## How to read one
 
-An ADR gives its status, the context, the decision, its consequences and the alternatives that lost. One written
-with the `new-adr` skill also opens with a summary of one or two sentences and says how the build checks the
-decision.
+An ADR opens with a summary of one or two sentences, then gives the context, the decision, its consequences and the
+alternatives that lost. It explains why, and links the page that explains how.
 
 An accepted ADR is never rewritten. When a decision changes, a new ADR supersedes the old one, and each links to
 the other. The status says where a decision stands:
@@ -30,21 +30,20 @@ the other. The status says where a decision stands:
 
 | ADR | Decision | Status | Date |
 |---|---|---|---|
-| [0001](0001-architecture-tests-with-konture.md) | Architecture tests with Konture | Accepted | 2026-10-11 |
-| [0002](0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) | Base, DDL and DML changelogs, checked by Squawk | Accepted | 2026-10-24 |
-| [0003](0003-api-contract-changes-by-expand-and-contract.md) | The API contract changes by expand and contract, frontend included | Accepted | 2026-10-28 |
-| [0004](0004-one-updater-image-for-every-environment.md) | One updater image for every environment | Accepted | 2026-10-29 |
-| [0005](0005-demo-data-from-a-local-only-changelog.md) | Demo data from a local-only changelog | Accepted | 2026-10-29 |
-| [0006](0006-mailpit-as-the-smtp-server-of-the-tests.md) | Mailpit as the SMTP server of the tests | Accepted | 2026-11-02 |
-| [0007](0007-jooq-kotlin-maps-nested-multiset-reads.md) | jooq-kotlin maps nested MULTISET reads | Accepted | 2026-11-02 |
-| [0008](0008-caching-through-spring-on-caffeine-with-a-ttl-per-cache.md) | Caching through Spring's abstraction, on Caffeine, with a time to live per cache | Accepted | 2026-11-03 |
-| [0009](0009-search-index-writes-through-the-starter-searches-through-the-engine-sdk.md) | Search index writes through the starter, searches through the engine's SDK | Accepted | 2026-11-03 |
-| [0010](0010-search-index-rebuilds-in-batches-tracked-in-postgresql.md) | Search index rebuilds in batches tracked in PostgreSQL | Accepted | 2026-11-04 |
-| [0011](0011-a-module-declares-the-event-sourcing-starter-itself.md) | A module declares the event sourcing starter itself | Accepted | 2026-11-04 |
-| [0012](0012-sign-in-without-a-password.md) | Sign-in without a password, by passkey, Google, Apple or a code sent by email | Accepted | 2026-11-06 |
-| [0013](0013-stateful-sessions-in-postgresql-serialized-as-jsonb.md) | Stateful sessions in PostgreSQL, serialized as JSONB | Accepted | 2026-11-05 |
-| [0014](0014-remember-me-by-a-rotating-hashed-token.md) | Remember-me by a rotating, hashed token | Accepted | 2026-11-05 |
-| [0015](0015-csrf-token-in-a-cookie-with-fetch-metadata.md) | CSRF token in a cookie, with Fetch Metadata | Accepted | 2026-11-05 |
+| [0000](0000-keep-every-project-in-one-repository.md) | Keep every project in one repository | Accepted | 2026-10-24 |
+| [0001](0001-build-with-gradle-and-shared-conventions.md) | Build with Gradle and shared conventions | Accepted | 2026-10-24 |
+| [0002](0002-store-data-in-postgresql-and-query-it-with-jooq.md) | Store data in PostgreSQL, and query it with jOOQ | Accepted | 2026-10-24 |
+| [0003](0003-apply-the-schema-through-the-updater.md) | Apply the schema with Liquibase, through the updater | Accepted | 2026-10-24 |
+| [0004](0004-check-the-architecture-with-tests.md) | Check the architecture with tests | Accepted | 2026-10-25 |
+| [0005](0005-change-the-api-contract-by-expand-and-contract.md) | Change the API contract by expand and contract, frontend included | Accepted | 2026-10-28 |
+| [0006](0006-carry-platform-events-through-an-abstraction.md) | Carry platform events through an abstraction | Accepted | 2026-10-30 |
+| [0007](0007-cache-through-spring-on-caffeine.md) | Cache through Spring's abstraction, on Caffeine | Accepted | 2026-11-03 |
+| [0008](0008-index-through-an-abstraction-search-with-meilisearch.md) | Index through an abstraction, search with Meilisearch | Accepted | 2026-11-03 |
+| [0009](0009-rebuild-search-indexes-in-batches-tracked-in-postgresql.md) | Rebuild search indexes in batches tracked in PostgreSQL | Accepted | 2026-11-04 |
+| [0010](0010-sign-in-without-a-password.md) | Sign in without a password | Accepted | 2026-11-06 |
+| [0011](0011-keep-sessions-in-postgresql.md) | Keep sessions in PostgreSQL | Accepted | 2026-11-06 |
+| [0012](0012-remember-me-with-a-rotating-hashed-token.md) | Remember me with a rotating, hashed token | Accepted | 2026-11-06 |
+| [0013](0013-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md) | Protect against CSRF with a token in a cookie and Fetch Metadata | Accepted | 2026-11-06 |
 
 ## How to write one
 

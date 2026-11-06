@@ -6,6 +6,7 @@ through `PlatformEventPublisher` and handles it in a method annotated `@Platform
 event. Both come from [`messaging-starter`][starter], a [tech starter](tech-starters.md), and neither shows the
 transport, what carries the event from one to the other. It is Spring application events inside the process today,
 and RabbitMQ is the target. Read this page before you publish or handle a platform event.
+[ADR 0006](../adr/0006-carry-platform-events-through-an-abstraction.md) records why the transport stays hidden.
 
 The name "platform event" keeps it apart from the events of [event sourcing](event-sourcing.md), which are the
 stored history of one aggregate. A platform event tells other parts of the application that something happened, and
@@ -80,7 +81,7 @@ its own. This keeps the starter simple as long as one instance runs, with these 
 
 [#549](https://github.com/mboisnard/drinkit/issues/549) plans to keep these events in the database until a handler
 succeeds. The rebuild of a search index does not wait for it: it counts its batches done in the database and starts
-over a rebuild left without its end, as [ADR 0010](../adr/0010-search-index-rebuilds-in-batches-tracked-in-postgresql.md)
+over a rebuild left without its end, as [ADR 0009](../adr/0009-rebuild-search-indexes-in-batches-tracked-in-postgresql.md)
 records.
 
 ## 🐇 Toward RabbitMQ

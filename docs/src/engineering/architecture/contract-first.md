@@ -6,8 +6,9 @@ Spring Boot backend talk through an HTTP API described in one OpenAPI contract: 
 it references, in the `drinkit-api-contract` module. OpenAPI Generator generates both sides from it, so a change to
 the API starts there. The two
 sides deploy separately, so a change that would break the frontend goes in steps, each in its own pull request,
-following the [expand and contract][expand-and-contract] pattern. Read this page before you change the contract,
-and follow the [`api-contract-change` skill][skill] for the steps.
+following the [expand and contract][expand-and-contract] pattern, as
+[ADR 0005](../adr/0005-change-the-api-contract-by-expand-and-contract.md) records. Read this page before you change the
+contract, and follow the [`api-contract-change` skill][skill] for the steps.
 
 ## 🧭 Why contract first
 

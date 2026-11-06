@@ -24,4 +24,4 @@ The `Dockerfile` of this folder builds it into an image, which master publishes 
 
 ## Read Next
 
-[`database.md`](../../docs/src/engineering/build-and-data/database.md) explains what goes in each folder, how to write a change that never blocks the users, how to rebaseline `base/`, and why each checked rule exists. [ADR 0002](../../docs/src/engineering/adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) records why the changelogs are organized this way. [ADR 0004](../../docs/src/engineering/adr/0004-one-updater-image-for-every-environment.md) records why one image runs them in every environment.
+[`database.md`](../../docs/src/engineering/build-and-data/database.md) explains what goes in each folder, how to write a change that never blocks the users, how to rebaseline `base/`, and why each checked rule exists. [ADR 0003](../../docs/src/engineering/adr/0003-apply-the-schema-through-the-updater.md) records why the changelogs are organized this way, and why one image runs them in every environment.
