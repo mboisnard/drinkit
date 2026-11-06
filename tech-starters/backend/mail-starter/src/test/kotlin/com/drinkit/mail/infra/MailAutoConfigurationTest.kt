@@ -37,9 +37,9 @@ internal class MailAutoConfigurationTest {
     }
 
     @Test
-    fun `writes the emails to the logs without a mail server`() {
+    fun `drops the emails without a mail server`() {
         runner.run { context ->
-            context.getBean<EmailSender>().shouldBeInstanceOf<LogEmailSender>()
+            context.getBean<EmailSender>().shouldBeInstanceOf<NoopEmailSender>()
         }
     }
 

@@ -32,8 +32,9 @@ then HTML compiled from MJML. A provider's own templates are not used.
 - Production sends 300 emails a day at most. Past that, a paid plan or another provider is needed.
 - Without a provider's API, DrinkIt gets no open tracking and no bounce webhook.
 - Rendering the HTML of an email is DrinkIt's work, not the provider's.
-- Mailpit adds a container to the local start, and its web interface shows every sign-in code to whoever reaches it,
-  so it listens on localhost only.
+- Mailpit adds a container to the local start.
+- Without a mail server, the starter drops each email with a warning rather than failing: the application starts,
+  and the logs name each email it did not send, never its content.
 
 ## Alternatives
 
