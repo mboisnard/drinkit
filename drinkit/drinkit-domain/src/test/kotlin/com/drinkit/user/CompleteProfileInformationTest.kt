@@ -1,5 +1,6 @@
 package com.drinkit.user
 
+import com.drinkit.user.CompleteProfileInformation.Result.InvalidProfile
 import com.drinkit.user.CompleteProfileInformation.Result.Success
 import com.drinkit.user.CompleteProfileInformation.Result.UserNotFound
 import com.drinkit.user.ProfileCompletionDecider.Decision.AlreadyCompleted
@@ -13,7 +14,6 @@ import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.Roles.Role.ROLE_USER
 import com.drinkit.user.core.UserDecision
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
@@ -68,7 +68,7 @@ internal class CompleteProfileInformationTest {
     }
 
     @Test
-    fun `throw exception when there is some validation issues`() {
+    fun `refuse a profile that breaks a rule`() {
         // Given
         val user = userFixtures.givenAnInitializedUser()
         val command = CompleteProfileInformationCommand(
@@ -80,10 +80,11 @@ internal class CompleteProfileInformationTest {
             ),
         )
 
-        // When / Then
-        shouldThrow<IllegalStateException> {
-            completeProfileInformation.invoke(user.id, command)
-        }
+        // When
+        val result = completeProfileInformation.invoke(user.id, command)
+
+        // Then
+        result shouldBe InvalidProfile
     }
 
     @Nested

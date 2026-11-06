@@ -7,6 +7,7 @@ import com.drinkit.documentation.fcis.FunctionalCore
 import com.drinkit.documentation.fcis.ImperativeShell
 import com.drinkit.event.sourcing.transaction.RetryableTransactional
 import com.drinkit.user.CompleteProfileInformation.Result.Forbidden
+import com.drinkit.user.CompleteProfileInformation.Result.InvalidProfile
 import com.drinkit.user.CompleteProfileInformation.Result.Success
 import com.drinkit.user.CompleteProfileInformation.Result.UserNotFound
 import com.drinkit.user.ProfileCompletionDecider.Decision.AlreadyCompleted
@@ -42,12 +43,13 @@ class CompleteProfileInformation(
         data class Success(val user: User) : Result
         object UserNotFound : Result
         object Forbidden : Result
+        object InvalidProfile : Result
     }
 
     private val logger = KotlinLogging.logger {}
 
     fun invoke(userId: UserId, command: CompleteProfileInformationCommand): Result {
-        logger.debug { "Completing profile information for user $userId with command $command" }
+        logger.debug { "Completing profile information for user $userId" }
 
         val decision = userEvents.findAllBy(userId)
             ?.let {
@@ -62,7 +64,7 @@ class CompleteProfileInformation(
         return when (decision) {
             is EventToPersist -> Success(userEvents.save(decision.event))
             AlreadyCompleted -> Success(users.findEnabledBy(userId)!!)
-            is ValidationFailed -> error("Validation failed: ${decision.errors}")
+            is ValidationFailed -> InvalidProfile
             Unauthorized -> Forbidden
         }
     }
