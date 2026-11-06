@@ -54,6 +54,25 @@ git diff --name-only origin/master...HEAD
 
 Match the files against `.github/workflows/config/ci-lanes.yml`.
 
+## Squash
+
+A fix commits as a fixup of the commit it belongs to, and the rebase folds it in:
+
+```
+git commit --fixup=<commit>
+GIT_SEQUENCE_EDITOR=true git rebase --interactive --autosquash origin/master
+git log --oneline origin/master..HEAD
+```
+
+To merge commits that are already there, mark them `fixup` behind the one they join, then reword that one:
+
+```
+GIT_SEQUENCE_EDITOR="sed -i.bak -e '<line>s/^pick/fixup/'" git rebase --interactive origin/master
+git commit --amend
+```
+
+`git diff <head before> HEAD` prints nothing when the squash changed no file.
+
 ## Judge prompt
 
 ```

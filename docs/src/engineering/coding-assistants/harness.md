@@ -47,7 +47,8 @@ flowchart LR
 ```
 
 The judge and the review are steps of the [`/implement-issue`](skills.md) skill, which takes an issue to a pull
-request. On the pull request, CI runs only the lanes, groups of checks, that the change touches, and the required
+request. Before the judge, it squashes the branch into one commit per functional or technical unit, so that a
+reviewer reads the change commit by commit. On the pull request, CI runs only the lanes, groups of checks, that the change touches, and the required
 `CI gate` check sums them up. A failing [architecture rule](../writing-code/testing/architecture-tests.md) or
 [changelog rule](../build-and-data/database.md#checked-rules) names itself and says how to fix it, so the agent fixes
 it without guessing. A person can skip the git hooks with `--no-verify`. A Claude Code session cannot skip pre-push,
