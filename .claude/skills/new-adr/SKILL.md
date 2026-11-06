@@ -37,22 +37,22 @@ when the maintainer wants it written before deciding. An agent never records its
 
 - Take them from the issue, the pull request and the session: the problem, the constraints, the options compared
   and what each one offered. Leave out the story of the session.
-- Check each fact against the code or the tool's documentation. A fact that ages carries its version or date, as
-  ADR 0002 does with "measured on PostgreSQL 18.6".
+- Check each fact against the code or the tool's documentation. A fact that ages carries its version or date,
+  such as "measured on PostgreSQL 18.6".
 - Keep the links of outside material for "Sources".
 
-A decision already in force but never recorded is backfilled the same way. Its date is the day it was made: the
-issue that settled it, or else the first commit that applied it.
+A decision already in force but never recorded is backfilled the same way. Its date is the day it is written, so
+that the dates of the index follow its numbers.
 
 ## 4. Create the file
 
-Take the next free number in `docs/src/engineering/adr/`, on four digits, never reused. Numbers follow the order
-of writing, so a backfilled ADR can be older than the one before it. The file name is the number and the title in
+Take the next free number in `docs/src/engineering/adr/`, on four digits, never reused. Numbers and dates follow the
+order of writing. The file name is the number and the title in
 kebab case. The title states the decision, such as "Architecture tests with Konture", not the question it
 answered.
 
-The `Issue` line links the issue where the maintainer decided. Other issues, such as the ones that carry out the
-decision, are linked from the context.
+An ADR names no issue: an issue number ages and sends the reader elsewhere. It links the ADRs and the pages that
+give its context.
 
 ## 5. Write each section
 
@@ -64,15 +64,15 @@ decision, are linked from the context.
   the choice, the facts measured. No option is argued here.
 - **Decision.** What the project does from now on, in the present tense and in full sentences, and what it does
   not do.
-- **How it is checked.** The architecture rule, Squawk rule, test or CI lane that fails when someone breaks the
-  decision, by name. When nothing checks it yet, "Not checked", with the issue that would check it. When no
-  such issue exists, create it with the `new-issue` skill.
 - **Consequences.** What becomes easier, and what becomes harder, slower or more expensive, one bullet each, each
   one something a contributor will notice. A consequence may name what would reopen the decision.
-- **Alternatives.** Each real option, with what it offered and why it lost, in one or two sentences.
-- **Sources.** When outside material shaped the decision: the title as link text, then the publisher.
+- **Alternatives.** Each real option, opening with why it was rejected, so that a reader sees the intent at once,
+  then what it offered: "**Maven.** Rejected because a module inherits from one parent POM only. It offered a
+  well-known, declarative build." One or two sentences each.
+- **Sources.** Two or three references a reader would open, the title as link text, then the publisher. One of
+  them argues another way when such a source exists, with a few words that say so, such as "the case against".
 
-One or two screens are enough. The how-to and the detailed rules go to the guideline page, which links the ADR.
+One screen is enough, two at most. The how-to and the detailed rules go to the guideline page, which links the ADR.
 
 ## 6. Avoid the known traps
 
@@ -106,7 +106,7 @@ scratch.
 - Add its row to the table of the index, in the order of the numbers, and the page to the "Decision Records"
   group of the sidebar in `docs/.vitepress/config.ts`, as `<number>. <title>`, the title shortened when it runs
   long.
-- Link it from the guideline page closest to the decision, with a sentence such as "ADR 0002 records why the
+- Link it from the guideline page closest to the decision, with a sentence such as "ADR 0003 records why the
   changelogs are organized as below", as `database.md` does. That sentence follows the `documentation-change`
   skill, but it does not commit you to rewriting the rest of the page.
 - The pull request that carries the decision carries its ADR.
@@ -115,14 +115,13 @@ scratch.
 
 - [ ] The summary gives the decision and its main reason.
 - [ ] Each alternative is real, and the consequences include at least one cost.
-- [ ] "How it is checked" names a check, or says "Not checked" with an issue.
 - [ ] The "Before you finish" list of the `documentation-change` skill passes for the ADR.
 - [ ] The index, the sidebar and the guideline page link the ADR.
 
 ## Sources
 
 - [Documenting Architecture Decisions](https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions), Michael Nygard
-- [MADR](https://adr.github.io/madr/), whose Confirmation section is "How it is checked" here
+- [MADR](https://adr.github.io/madr/)
 - [How to create ADRs, and how not to](https://ozimmer.ch/practices/2023/04/03/ADRCreation.html), Olaf Zimmermann
 - [ADR process](https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html), AWS Prescriptive Guidance
 - [When should I write an Architecture Decision Record](https://engineering.atspotify.com/2020/04/when-should-i-write-an-architecture-decision-record), Spotify

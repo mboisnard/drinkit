@@ -31,7 +31,7 @@ those files rather than copying their commands.
   or the skill of its kind of change for a command, an ADR for why a choice was made, the file that implements a
   rule, another page for a subject it already covers.
 - Read [the ADR index](../../../docs/src/engineering/adr/index.md) for the decisions behind the subject.
-  Where the page states a choice an ADR records, it links that ADR in one sentence, such as "ADR 0002 records why
+  Where the page states a choice an ADR records, it links that ADR in one sentence, such as "ADR 0003 records why
   the changelogs are organized as below" in `database.md`: the page keeps how DrinkIt works, the ADR why. An ADR
   that does not help understand the page stays out of it.
 - Before renaming a page or a heading, find what links to it: `git grep -n '<page name>' -- docs/src '*.md'`.
