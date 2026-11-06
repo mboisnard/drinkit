@@ -9,33 +9,13 @@ application events today, and a broker can replace them without changing a handl
 records.
 
 ```mermaid
-graph LR
+flowchart LR
     UseCase[Use case] --> Publisher[PlatformEventPublisher]
     Publisher -->|after the commit| SpringEvents[Spring application events]
     SpringEvents --> Handler["@PlatformEventHandler method"]
 ```
 
-## Usage
-
-```kotlin
-implementation(project(":messaging-starter"))
-```
-
-```kotlin
-platformEventPublisher.publish(UserCreated(userId = user.id, locale = command.locale))
-
-@Component
-internal class RegistrationHandler(private val sendVerificationToken: SendVerificationToken) {
-
-    @PlatformEventHandler("send.verification.token.to.created.user.queue", maxAttempts = 5, delay = 2_000)
-    fun sendVerificationTokenToTheCreatedUser(event: UserCreated) { … }
-}
-```
-
-An event carries ids and facts, never an entity, which would be stale by the time the handler runs. The `name` of a
-handler is the queue a broker would create for it. `maxAttempts` counts every attempt, 3 by default, and `delay`
-waits that many milliseconds after the commit. The application refuses to start on a handler that takes anything but
-one platform event, or reuses a `name`, or sets `maxAttempts` below 1 or a negative `delay`.
+## How it works
 
 A handler gets the event once the transaction commits, never when it rolls back, and again after a growing wait each
 time it fails:
@@ -56,6 +36,36 @@ sequenceDiagram
         Note over Publisher,Handler: no handler runs
     end
 ```
+
+## Usage
+
+A module declares the starter in its build file:
+
+```kotlin
+dependencies {
+    implementation(project(":messaging-starter"))
+}
+```
+
+```kotlin
+platformEventPublisher.publish(UserCreated(userId = user.id, locale = command.locale))
+
+@Component
+internal class RegistrationHandler(private val sendVerificationToken: SendVerificationToken) {
+
+    @PlatformEventHandler("send.verification.token.to.created.user.queue", maxAttempts = 5, delay = 2_000)
+    fun sendVerificationTokenToTheCreatedUser(event: UserCreated) { … }
+}
+```
+
+- **An event** carries ids and facts, never an entity, which would be stale by the time the handler runs.
+- **The `name` of a handler** is the queue a broker would create for it.
+- **`maxAttempts`** counts every attempt, 3 by default, and **`delay`** waits that many milliseconds after the
+  commit.
+- **The application refuses to start** on a handler that takes anything but one platform event, or reuses a `name`,
+  or sets `maxAttempts` below 1 or a negative `delay`.
+
+## Configuration
 
 | Property | Default | Environment variable |
 |---|---|---|

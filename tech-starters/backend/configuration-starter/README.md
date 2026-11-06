@@ -6,7 +6,7 @@ fixed at startup stays a `@ConfigurationProperties` class, and a release to some
 [feature flags starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/feature-flags-starter/README.md).
 
 ```mermaid
-graph LR
+flowchart LR
     Adapter[Adapter of the application] --> Configurations
     Configurations --> Cache["configurations cache, 10 minutes"]
     Cache --> Table[("PostgreSQL<br/>drinkit_application.configuration")]
@@ -14,8 +14,12 @@ graph LR
 
 ## Usage
 
+A module declares the starter in its build file:
+
 ```kotlin
-implementation(project(":configuration-starter"))
+dependencies {
+    implementation(project(":configuration-starter"))
+}
 ```
 
 The application declares a `Clock` bean, which dates each write. A key holds the name of its row and its default,
@@ -35,8 +39,9 @@ configurations[retryPolicy] = RetryPolicy(5)      // inside a transaction only
 configurations.reset(retryPolicy)                 // back to the default
 ```
 
-A stored value that cannot be read, or breaks the `init` rule, is logged at `ERROR` and the default applies. A field
-missing from the stored JSON takes its default. While no admin page exists, an operator changes a value by SQL:
+- **A stored value that cannot be read**, or breaks the `init` rule, is logged at `ERROR` and the default applies.
+- **A field missing from the stored JSON** takes its default.
+- **An operator changes a value by SQL** while no admin page exists:
 
 ```sql
 INSERT INTO drinkit_application.configuration (key, value, modified)
@@ -44,12 +49,12 @@ VALUES ('partner-api.retry-policy', '{"maxAttempts": 5}', now())
 ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, modified = EXCLUDED.modified;
 ```
 
-Settings:
+## Configuration
 
-- **`starters.cache.ttl.configurations`** (`STARTERS_CACHE_TTL_CONFIGURATIONS`, default `10m`): how long an instance
-  serves a value before it reads the table again.
-- **`starters.configuration.enabled`** (`STARTERS_CONFIGURATION_ENABLED`, default `true`): `false` registers no
-  `Configurations`.
+| Property | Default | Environment variable |
+|---|---|---|
+| `starters.cache.ttl.configurations` | `10m`, how long an instance serves a value before it reads the table again | `STARTERS_CACHE_TTL_CONFIGURATIONS` |
+| `starters.configuration.enabled` | `true`, `false` registers no `Configurations` | `STARTERS_CONFIGURATION_ENABLED` |
 
 ## Tests
 

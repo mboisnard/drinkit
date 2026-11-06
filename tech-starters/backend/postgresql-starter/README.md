@@ -8,26 +8,13 @@ says why PostgreSQL and jOOQ. The schema belongs to the
 [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md), never to the application.
 
 ```mermaid
-graph LR
+flowchart LR
     Adapter["@JooqRepository of the application"] --> Dsl[DSLContext]
     Dsl --> Guards["Guards, timeouts, slow query log"]
     Guards --> Database[(PostgreSQL)]
 ```
 
-## Usage
-
-The [`jooq-codegen-convention`](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/build-tool.md)
-plugin adds the starter and its test fixtures to a module that generates jOOQ classes.
-
-```kotlin
-@JooqRepository
-internal class JooqCellars(private val dslContext: DSLContext) : Cellars {
-
-    override fun findById(cellarId: CellarId): Cellar? = dslContext.selectFrom(CELLAR)
-        .where(CELLAR.ID.eq(cellarId.value))
-        .fetchOne { it.toCellar() }
-}
-```
+## How it works
 
 The transaction belongs to the use case, and the starter checks each statement on its way to the database:
 
@@ -48,7 +35,27 @@ sequenceDiagram
     Repository-->>UseCase: Cellar
 ```
 
-What the starter adds:
+## Usage
+
+The [`jooq-codegen-convention`](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/build-tool.md)
+plugin adds the starter and its test fixtures to a module that generates jOOQ classes. Any other module declares it
+in its build file:
+
+```kotlin
+dependencies {
+    implementation(project(":postgresql-starter"))
+}
+```
+
+```kotlin
+@JooqRepository
+internal class JooqCellars(private val dslContext: DSLContext) : Cellars {
+
+    override fun findById(cellarId: CellarId): Cellar? = dslContext.selectFrom(CELLAR)
+        .where(CELLAR.ID.eq(cellarId.value))
+        .fetchOne { it.toCellar() }
+}
+```
 
 - **Auto-commit off**, so a `@JooqRepository` call outside a transaction fails instead of writing nothing.
 - **No `UPDATE` or `DELETE` without `WHERE`.** A statement that changes every row on purpose says so with
@@ -61,9 +68,13 @@ What the starter adds:
   a nested collection in one query, and `fetchSequence` streams a large read inside the transaction.
 - **PostgreSQL only**: the application refuses to start on another database.
 
+## Configuration
+
 | Property | Default | Environment variable |
 |---|---|---|
-| `spring.datasource.url`, `username`, `password` | none, required | `SPRING_DATASOURCE_URL`, `_USERNAME`, `_PASSWORD` |
+| `spring.datasource.url` | None, required | `SPRING_DATASOURCE_URL` |
+| `spring.datasource.username` | None, required | `SPRING_DATASOURCE_USERNAME` |
+| `spring.datasource.password` | None, required | `SPRING_DATASOURCE_PASSWORD` |
 | `starters.postgresql.slow-query-threshold` | `500ms` | `STARTERS_POSTGRESQL_SLOWQUERYTHRESHOLD` |
 | `starters.postgresql.enabled` | `true` | `STARTERS_POSTGRESQL_ENABLED` |
 

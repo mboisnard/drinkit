@@ -5,7 +5,7 @@ that sends the application's emails, such as the verification code at registrati
 `EmailSender`, and the starter delivers each email to an SMTP server or, when none is set, writes it to the logs.
 
 ```mermaid
-graph LR
+flowchart LR
     Adapter[Adapter of the application] --> EmailSender
     EmailSender -->|spring.mail.host set| Smtp[(SMTP server)]
     EmailSender -->|no host| Logs["Logs, at DEBUG"]
@@ -13,8 +13,12 @@ graph LR
 
 ## Usage
 
+A module declares the starter in its build file:
+
 ```kotlin
-implementation(project(":mail-starter"))
+dependencies {
+    implementation(project(":mail-starter"))
+}
 ```
 
 ```kotlin
@@ -28,14 +32,18 @@ emailSender.send(
 )
 ```
 
-| Property | Default | Production |
-|---|---|---|
-| `spring.mail.host` | none: emails go to the logs | required |
-| `spring.mail.username`, `spring.mail.password` | none | required |
-| `spring.mail.port` | `587`, with STARTTLS and 5 second timeouts | optional |
-| `starters.mail.enabled` | `true`, `false` registers no `EmailSender` | optional |
+- **With `spring.mail.host` set**, the email goes to that SMTP server.
+- **Without a host**, the starter warns at startup and logs each email at `DEBUG`.
 
-Each property reads from its environment variable, such as `SPRING_MAIL_HOST`.
+## Configuration
+
+| Property | Default | Environment variable |
+|---|---|---|
+| `spring.mail.host` | None, required in production: without it, emails go to the logs | `SPRING_MAIL_HOST` |
+| `spring.mail.username` | None, required in production | `SPRING_MAIL_USERNAME` |
+| `spring.mail.password` | None, required in production | `SPRING_MAIL_PASSWORD` |
+| `spring.mail.port` | `587`, with STARTTLS and 5 second timeouts | `SPRING_MAIL_PORT` |
+| `starters.mail.enabled` | `true`, `false` registers no `EmailSender` | `STARTERS_MAIL_ENABLED` |
 
 ## Tests
 
@@ -45,4 +53,4 @@ From `testFixtures(project(":mail-starter"))`, `SpyEmailSender` records the emai
 ## Limits
 
 - A failed send is dropped and logged at `ERROR` with the subject. Nothing retries it.
-- Without a host, the starter warns at startup and logs each email at `DEBUG`, a level production does not show.
+- Without a host, the emails are logged at `DEBUG`, a level production does not show.

@@ -7,7 +7,7 @@ into a state. The
 explains how DrinkIt applies the pattern. The starter declares no Spring bean.
 
 ```mermaid
-graph LR
+flowchart LR
     Store[Event store adapter] -->|events| History
     History --> Reducer[EventsReducer]
     Reducer --> State[State of the aggregate]
@@ -15,12 +15,15 @@ graph LR
 
 ## Usage
 
-A module that stores an aggregate as events declares the starter itself. It brings `retryable-starter`, which
-runs the retries of `@RetryableTransactional`.
+A module that stores an aggregate as events declares the starter in its build file:
 
 ```kotlin
-implementation(project(":event-sourcing-starter"))
+dependencies {
+    implementation(project(":event-sourcing-starter"))
+}
 ```
+
+It brings `retryable-starter`, which runs the retries of `@RetryableTransactional`.
 
 ```kotlin
 sealed interface CarEvent : DomainEvent
@@ -47,3 +50,11 @@ holds the whole example. What to know:
   handler.
 - **`@RetryableTransactional`**, on a use case class, runs it again on `DuplicateSequenceException`, three attempts
   at most, each in a new transaction or a savepoint.
+
+## Configuration
+
+No setting.
+
+## Tests
+
+A test needs nothing from this starter.
