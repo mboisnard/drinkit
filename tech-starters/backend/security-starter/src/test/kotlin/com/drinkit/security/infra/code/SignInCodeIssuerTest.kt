@@ -10,7 +10,6 @@ import io.kotest.matchers.shouldBe
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.transaction.support.TransactionOperations
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -30,7 +29,7 @@ internal class SignInCodeIssuerTest {
     @BeforeEach
     fun setup(dsl: DSLContext) {
         this.dsl = dsl
-        val codes = JooqSignInCodes(dsl, TransactionOperations.withoutTransaction())
+        val codes = JooqSignInCodes(dsl)
         issuer = SignInCodeIssuer(codes, sender, Clock.fixed(NOW, ZoneOffset.UTC), SecurityStarterProperties.Code())
     }
 

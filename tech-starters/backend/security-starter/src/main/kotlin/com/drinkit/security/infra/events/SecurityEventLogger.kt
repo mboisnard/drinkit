@@ -10,10 +10,8 @@ import org.springframework.security.authorization.event.AuthorizationDeniedEvent
 import org.springframework.security.core.authority.FactorGrantedAuthority
 
 /**
- * Writes the security events in the vocabulary of the OWASP Logging Vocabulary cheat sheet, such as
- * `authn_login_success`, `authn_login_fail`, `authz_fail` or `session_revoked`, so that alerts and investigations
- * can search for a stable event name. Each line names the user by id only, never by email, and holds no code,
- * token, cookie or session id: personal data and secrets stay out of the logs.
+ * Event names of the OWASP Logging Vocabulary, such as `authn_login_fail`. A line names the user by id only, and holds
+ * no code, token, cookie or session id.
  *
  * OWASP: ASVS 5.0 V16.3.1, V16.3.2, V16.2.5, Logging Vocabulary and Logging Cheat Sheets (event names, no secrets).
  */

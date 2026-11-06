@@ -21,14 +21,7 @@ private const val UPDATE_ATTRIBUTE_QUERY = """
     AND ATTRIBUTE_NAME = ?
     """
 
-/**
- * Adapts the sessions Spring Session keeps in PostgreSQL to the tables of `drinkit_session`. Their attributes are
- * stored in JSON rather than as serialized Java objects, which a change of class could make unreadable and a forged
- * row could turn into code execution. Their ids hold 256 random bits, and a session ends after its idle timeout or
- * its absolute timeout, whichever comes first, so that a stolen session id does not last forever.
- *
- * OWASP: ASVS 5.0 V7.2.3, V7.3.1, V7.3.2, Session Management Cheat Sheet (id entropy, idle and absolute timeouts).
- */
+/** OWASP: ASVS 5.0 V7.3.1, V7.3.2, Session Management Cheat Sheet (idle and absolute timeouts). */
 internal class JdbcSessionCustomizer(private val session: SecurityStarterProperties.Session) :
     SessionRepositoryCustomizer<JdbcIndexedSessionRepository> {
 

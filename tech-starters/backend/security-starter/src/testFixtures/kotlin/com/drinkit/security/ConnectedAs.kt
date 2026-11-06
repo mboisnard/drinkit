@@ -9,7 +9,6 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.security.test.web.support.WebTestUtils
 import org.springframework.test.web.servlet.request.RequestPostProcessor
 
-/** Sends a MockMvc request as [user], with the XSRF cookie and header a browser of the application would send. */
 fun connectedAs(user: ConnectedUser): RequestPostProcessor {
     val principal = User.withUsername(user.id)
         .password("")

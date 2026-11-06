@@ -7,7 +7,6 @@ import io.kotest.matchers.shouldBe
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.transaction.support.TransactionOperations
 import java.time.Duration
 
 @JooqIntegrationTest(schemas = [DrinkitSession::class])
@@ -19,7 +18,7 @@ internal class JooqSignInCodesTest : SignInCodesTestContract() {
     @BeforeEach
     fun setup(dsl: DSLContext) {
         this.dsl = dsl
-        codes = JooqSignInCodes(dsl, TransactionOperations.withoutTransaction())
+        codes = JooqSignInCodes(dsl)
     }
 
     @Test

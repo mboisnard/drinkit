@@ -18,7 +18,6 @@ import org.jooq.Query
 import org.junit.jupiter.api.Test
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.transaction.support.TransactionOperations
 import java.security.MessageDigest
 import java.time.Clock
 import java.time.Duration
@@ -41,7 +40,7 @@ internal class RotatingRememberMeServicesTest {
     @Test
     fun `signs nobody out everywhere when the series ends while its token rotates`(dsl: DSLContext) {
         // Given
-        RememberMeTokens(dsl, TransactionOperations.withoutTransaction())
+        RememberMeTokens(dsl)
             .create(RememberMeSeries(SERIES, USER_ID, sha256(TOKEN), null, now, now), null)
         val services = servicesOn(dsl.endingTheSeriesBeforeItsRotation())
 
@@ -57,7 +56,7 @@ internal class RotatingRememberMeServicesTest {
         users = UserAccountsUserDetailsService(
             InMemoryUserAccounts("ada@drinkit.test" to UserAccount(USER_ID, setOf("ROLE_USER"))),
         ),
-        rememberMeTokens = RememberMeTokens(dsl, TransactionOperations.withoutTransaction()),
+        rememberMeTokens = RememberMeTokens(dsl),
         sessions = sessions,
         events = SecurityEventLogger(),
         clock = Clock.fixed(now, Clock.systemUTC().zone),

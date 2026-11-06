@@ -11,14 +11,7 @@ private const val CODE_ATTEMPTS = 3
 private const val CODE_ATTEMPTS_HOURS = 1L
 private const val EMAIL_MAX_LENGTH = 320
 
-/**
- * The settings of the starter, under `starters.security`, with defaults safe for production: sessions that end after
- * 30 idle minutes or 8 hours, remember-me logins that end 30 days after the sign-in, sign-in codes valid for 10
- * minutes with three wrong tries per login and per hour, and `__Host-` cookies sent over HTTPS only. Development over
- * plain HTTP sets an empty prefix and `secure=false`.
- *
- * OWASP: ASVS 5.0 V3.3, V7.3.1, V7.3.2, Session Management Cheat Sheet (cookie attributes, timeouts).
- */
+/** OWASP: ASVS 5.0 V3.3, V7.3.1, V7.3.2, Session Management Cheat Sheet (cookie attributes, timeouts). */
 @ConfigurationProperties(prefix = "starters.security")
 internal data class SecurityStarterProperties(
     val enabled: Boolean = true,

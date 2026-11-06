@@ -8,14 +8,13 @@ import java.util.Locale
 private const val LOGIN = "ada@drinkit.test"
 private const val NEW_LOGIN = "grace@drinkit.test"
 
-/** The behavior every [UserAccounts] keeps: run it against the application's adapter. */
 abstract class UserAccountsTestContract {
 
     protected val accounts: UserAccounts by lazy { fetchUserAccounts() }
 
     abstract fun fetchUserAccounts(): UserAccounts
 
-    /** Stores an enabled account of [login] by the application's own means, returned as [UserAccounts] reads it. */
+    /** An enabled account of [login], stored by the application's own means. */
     abstract fun givenAnAccount(login: String): UserAccount
 
     @Test

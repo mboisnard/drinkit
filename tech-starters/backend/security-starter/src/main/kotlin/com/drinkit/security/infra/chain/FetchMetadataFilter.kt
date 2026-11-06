@@ -11,10 +11,8 @@ private val SAFE_METHODS = setOf("GET", "HEAD", "OPTIONS", "TRACE")
 private val SAME_SITE_VALUES = setOf("same-origin", "none")
 
 /**
- * Refuses a state-changing request that the browser marks as coming from another site, in its `Sec-Fetch-Site`
- * header, even when it carries a valid CSRF token. A second line of defense against cross-site request forgery, in
- * case a token leaks. A request without the header, from an older browser or a non-browser client, goes on to the
- * CSRF check.
+ * A second line against CSRF, in case a token leaks. A request without `Sec-Fetch-Site`, from an older browser or a
+ * non-browser client, goes on to the CSRF check.
  *
  * OWASP: ASVS 5.0 V3.5.1, CSRF Prevention Cheat Sheet (Fetch Metadata headers).
  */

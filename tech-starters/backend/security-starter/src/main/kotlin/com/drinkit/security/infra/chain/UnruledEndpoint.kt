@@ -7,9 +7,7 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
 import java.util.function.Supplier
 
 /**
- * The last access rule of the chain: it refuses any request no rule of the application matched, so that an endpoint
- * nobody thought to protect is closed rather than open. It answers with its own [Refused] decision, which
- * `EndpointRulesCoverage` recognizes to list the endpoints that no rule declares.
+ * Its own [Refused] decision lets `EndpointRulesCoverage` list the endpoints no rule declares.
  *
  * OWASP: ASVS 5.0 V8.2.1, Authorization Cheat Sheet (deny by default).
  */

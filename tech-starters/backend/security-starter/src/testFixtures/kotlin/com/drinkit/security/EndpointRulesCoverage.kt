@@ -25,10 +25,8 @@ import java.time.Instant
 private val PATH_VARIABLE = Regex("""\{[^}]*}""")
 
 /**
- * Finds the operations of an API that no `EndpointRules` declares, and that the starter refuses, without starting
- * the application: it reads the Spring mappings of the interfaces and classes of [apiPackage], such as the
- * interfaces generated from an OpenAPI contract, and asks the starter's filter chain, built with [rules] alone,
- * whether it refuses each of them as an endpoint no rule declares.
+ * Reads the Spring mappings of the types of [apiPackage], such as the interfaces generated from an OpenAPI contract,
+ * and asks the starter's chain, built with [rules] alone, which ones it refuses. No application is started.
  */
 class EndpointRulesCoverage(private val rules: List<EndpointRules>, private val apiPackage: String) {
 
@@ -38,7 +36,6 @@ class EndpointRulesCoverage(private val rules: List<EndpointRules>, private val 
         AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"),
     )
 
-    /** Each operation no rule declares, as `DELETE /api/cellars/{cellarId}`. */
     fun unruledEndpoints(): List<String> {
         val endpoints = endpoints()
         val unruled = mutableListOf<Pair<String, String>>()

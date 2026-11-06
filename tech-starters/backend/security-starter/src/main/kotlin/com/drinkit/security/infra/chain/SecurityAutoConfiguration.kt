@@ -70,10 +70,7 @@ private const val ACTUATOR_ENDPOINTS =
     "org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration"
 
 /**
- * Builds the one filter chain that protects every request of the application: the sign-in by a code sent by email,
- * the logout, the CSRF protection of a single-page app, the security headers, and the access rules the application
- * declares as [EndpointRules]. It refuses any request no rule matches, so that a new endpoint is closed until someone
- * opens it, and it registers before Spring Boot's own chains, which then back off.
+ * Refuses any request no [EndpointRules] matches, so that a new endpoint is closed until someone opens it.
  *
  * OWASP: ASVS 5.0 V8.2.1, V3.4, Authorization and HTTP Headers Cheat Sheets (deny by default, security headers).
  */
@@ -105,8 +102,7 @@ internal class SecurityAutoConfiguration {
     ): SecurityFilterChain {
         val errorResponses = SecurityErrorResponses(jsonMapper)
 
-        // Outside the Kotlin DSL, which has no spa() yet (spring-security#18332). spa() accepts the token a
-        // single-page app reads from the XSRF cookie and sends back in the X-XSRF-TOKEN header.
+        // Outside the Kotlin DSL, which has no spa() yet (spring-security#18332)
         http.csrf { it.spa().csrfTokenRepository(csrfTokenRepository) }
         rememberMeServices.ifAvailable { services -> http.rememberMe { it.rememberMeServices(services) } }
         http.authenticationProvider(emailCodeAuthenticationProvider)
@@ -120,8 +116,7 @@ internal class SecurityAutoConfiguration {
                 authenticationEntryPoint = errorResponses
                 accessDeniedHandler = errorResponses
             }
-            // By default, Spring saves a refused request in the session to replay it after the login. An API never
-            // replays one, and saving it would open a session for every anonymous caller it refuses.
+            // An API never replays a refused request, and saving one would open a session for each anonymous caller
             requestCache { requestCache = NullRequestCache() }
             with(
                 EmailCodeSignInConfigurer(
@@ -146,8 +141,7 @@ internal class SecurityAutoConfiguration {
             }
             headers {
                 contentSecurityPolicy { policyDirectives = "default-src 'none'; frame-ancestors 'none'" }
-                // On every request, not only the HTTPS ones: TLS may end at a proxy in front of the application,
-                // which then receives plain HTTP requests.
+                // On every request: TLS may end at a proxy, and the application then receives plain HTTP
                 httpStrictTransportSecurity { requestMatcher = AnyRequestMatcher.INSTANCE }
                 referrerPolicy { policy = ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN }
                 permissionsPolicy { policy = "camera=(), microphone=(), geolocation=()" }

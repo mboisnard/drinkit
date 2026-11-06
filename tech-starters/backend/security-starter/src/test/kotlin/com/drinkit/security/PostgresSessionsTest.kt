@@ -1,13 +1,10 @@
 package com.drinkit.security
 
-import com.drinkit.test.ControlledClock
 import jakarta.servlet.http.Cookie
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.system.OutputCaptureExtension
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
-import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.test.annotation.DirtiesContext
@@ -26,20 +23,13 @@ const val REMEMBER_ME_COOKIE = "__Host-remember-me"
  * meta-annotation.
  */
 @Target(AnnotationTarget.CLASS)
-@SpringBootTest(classes = [SecurityTestApplication::class, PostgresSessions::class])
+@SpringBootTest(classes = [SecurityTestApplication::class])
 // The database of each test class is dropped after it, so no other class can reuse the context that points at it
 @DirtiesContext
 @AutoConfigureMockMvc
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @ExtendWith(OutputCaptureExtension::class)
 internal annotation class PostgresSessionsTest
-
-@TestConfiguration(proxyBeanMethods = false)
-internal class PostgresSessions {
-
-    @Bean
-    fun clock() = ControlledClock()
-}
 
 /** A browser of the test application: it keeps the cookies it is given, and sends the XSRF cookie in its header. */
 internal class CookieBrowser(private val mockMvc: MockMvc, private val contextPath: String = "") {

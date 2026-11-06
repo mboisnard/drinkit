@@ -12,12 +12,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import tools.jackson.databind.json.JsonMapper
 
-/**
- * Reads the sign-in of the single-page app from a JSON body, `{email, code, rememberMe}`, and hands it to
- * [EmailCodeAuthenticationProvider], which refuses a body too large, or without an email or a code of six digits, as
- * a wrong code. It extends the form login filter to take its place in the chain, which `HttpSecurity.addFilter`
- * finds by class.
- */
+/** Extends the form login filter to take its place in the chain, which `HttpSecurity.addFilter` finds by class. */
 internal class EmailCodeSignInFilter(private val jsonMapper: JsonMapper, private val maxEmailLength: Int) :
     UsernamePasswordAuthenticationFilter() {
 
@@ -33,10 +28,7 @@ internal class EmailCodeSignInFilter(private val jsonMapper: JsonMapper, private
 }
 
 /**
- * Plugs [EmailCodeSignInFilter] into the chain the way Spring Security plugs its form login, so that the filter gets
- * the chain's authentication manager, session strategy, remember-me services and security context repository. A
- * filter added by hand would keep its defaults, which never save the sign-in in the session. It answers a sign-in
- * with a 204, and a refusal through the failure handler it is given.
+ * A filter added by hand would keep its defaults, which never save the sign-in in the session.
  *
  * OWASP: ASVS 5.0 V7.2.4, Session Management Cheat Sheet (session id renewal at sign-in).
  */
