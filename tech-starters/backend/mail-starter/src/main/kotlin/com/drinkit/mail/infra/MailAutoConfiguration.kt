@@ -1,6 +1,8 @@
 package com.drinkit.mail.infra
 
 import com.drinkit.mail.EmailSender
+import com.drinkit.messaging.PlatformEventPublisher
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -18,7 +20,12 @@ internal class MailAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(JavaMailSender::class)
-    fun smtpEmailSender(mailSender: JavaMailSender): EmailSender = SpringEmailSender(mailSender)
+    fun smtpEmailSender(mailSender: JavaMailSender, publisher: ObjectProvider<PlatformEventPublisher>): EmailSender {
+        val available = checkNotNull(publisher.ifAvailable) {
+            "The mail starter delivers through the messaging starter: keep starters.messaging.enabled"
+        }
+        return SpringEmailSender(available, mailSender)
+    }
 
     @Bean
     @ConditionalOnMissingBean

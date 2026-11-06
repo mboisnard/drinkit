@@ -2,17 +2,28 @@ package com.drinkit.mail.infra
 
 import com.drinkit.mail.Email
 import com.drinkit.mail.EmailSender
+import com.drinkit.messaging.PlatformEventHandler
+import com.drinkit.messaging.PlatformEventPublisher
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.mail.MailException
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 
-internal class SpringEmailSender(private val emailSender: JavaMailSender) : EmailSender {
+internal class SpringEmailSender(
+    private val publisher: PlatformEventPublisher,
+    private val mailSender: JavaMailSender,
+) : EmailSender {
 
     private val logger = KotlinLogging.logger { }
 
     override fun send(email: Email) {
-        val message = emailSender.createMimeMessage()
+        publisher.publish(SendEmail(email))
+    }
+
+    @PlatformEventHandler("mail.delivery.queue")
+    fun deliver(command: SendEmail) {
+        val email = command.email
+        val message = mailSender.createMimeMessage()
         val helper = MimeMessageHelper(message, true)
 
         helper.setFrom(email.sender.value)
@@ -30,9 +41,10 @@ internal class SpringEmailSender(private val emailSender: JavaMailSender) : Emai
          */
 
         try {
-            emailSender.send(message)
+            mailSender.send(message)
         } catch (ex: MailException) {
-            logger.error(ex) { "Sending the email \"${email.subject.value}\" failed" }
+            logger.warn(ex) { "Sending the email \"${email.subject.value}\" failed" }
+            throw ex
         }
     }
 }

@@ -1,21 +1,18 @@
 package com.drinkit.mail.infra
 
 import com.drinkit.mail.EmailSender
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.getBean
-import org.springframework.boot.autoconfigure.AutoConfigurations
-import org.springframework.boot.mail.autoconfigure.MailSenderAutoConfiguration
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
+import org.springframework.core.NestedExceptionUtils.getMostSpecificCause
 import org.springframework.mail.javamail.JavaMailSenderImpl
 
 internal class MailAutoConfigurationTest {
 
-    private val runner = ApplicationContextRunner()
-        .withConfiguration(
-            AutoConfigurations.of(MailSenderAutoConfiguration::class.java, MailAutoConfiguration::class.java),
-        )
+    private val runner = ApplicationContextRunner().withUserConfiguration(MailApplication::class.java)
 
     @Test
     fun `sends through the mail server of spring mail host, on port 587 with STARTTLS`() {
@@ -33,6 +30,15 @@ internal class MailAutoConfigurationTest {
         runner.withPropertyValues("spring.mail.host=smtp.example.com", "spring.mail.port=2525")
             .run { context ->
                 context.getBean<JavaMailSenderImpl>().port shouldBe 2525
+            }
+    }
+
+    @Test
+    fun `refuses to start with a mail server but without the messaging starter`() {
+        runner.withPropertyValues("spring.mail.host=smtp.example.com", "starters.messaging.enabled=false")
+            .run { context ->
+                getMostSpecificCause(context.startupFailure.shouldNotBeNull()).message shouldBe
+                    "The mail starter delivers through the messaging starter: keep starters.messaging.enabled"
             }
     }
 
