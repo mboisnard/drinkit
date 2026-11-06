@@ -1,165 +1,63 @@
 # SSE Starter
 
-A Spring Boot starter that implements Server-Sent Events (SSE): clients subscribe to named event streams, and business code pushes to them through platform events.
-
-## What is Server-Sent Events (SSE)?
-
-Server-Sent Events (SSE) is a server push technology that enables servers to push real-time updates to clients over a single HTTP connection. Unlike WebSockets, SSE is:
-
-- **Unidirectional**: Server-to-client communication only
-- **HTTP-based**: Works over standard HTTP/HTTPS
-- **Automatic reconnection**: Built-in browser support for reconnection
-- **Text-based**: Simple protocol for sending text data
-
-**Use Cases:**
-- Real-time notifications
-- Live updates (stock prices)
-- Activity feeds
-- Progress tracking
-
-## Architecture Overview
-
-This starter separates business logic from technical concerns. It is designed for several application instances, but delivering an event across instances needs a message broker the project does not have yet, see [Multiple Instances](#multiple-instances).
-
-### Client Connection Flow
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
+that pushes events from the server to the browser with
+[Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events). A browser opens a named
+stream, and the business code sends to it by publishing a platform event, without knowing about SSE.
 
 ```mermaid
-sequenceDiagram
-    participant Client
-    participant SseApi
-    participant Repository as InMemoryEmitters
-
-    Client->>SseApi: GET /sse/event-stream?eventName=notifications
-    SseApi->>SseApi: Create SseEmitter
-    SseApi->>SseApi: Setup lifecycle callbacks<br/>(onCompletion, onError, onTimeout)
-    SseApi->>Repository: register(sessionId, eventName, emitter)
-    Repository->>Repository: Store in ConcurrentHashMap
-    SseApi->>Client: Return SseEmitter (keep connection open)
-
-    Note over Client,Repository: Connection established and maintained
+graph LR
+    Code[Code of the application] -->|SendSseEvent| Events[Platform events]
+    Events --> Starter[SSE starter]
+    Browser -->|"GET /event-stream?eventName=…"| Starter
+    Starter -->|event of that name| Browser
 ```
-
-### Sending Message Flow
-
-```mermaid
-sequenceDiagram
-    participant Business as Business Logic
-    participant Messaging as Messaging Layer
-    participant SseApi
-    participant Repository as InMemoryEmitters
-    participant Client
-
-    Business->>Messaging: Publish SendSseEvent
-    Note over Business,Messaging: Async decoupling:<br/>Business logic doesn't know about SSE
-    Messaging->>SseApi: @PlatformEventHandler<br/>sendMessageToEventStream()
-    SseApi->>Repository: findAllBy(sessionId)
-    Repository-->>SseApi: List<Emitter> or null
-
-    alt Emitters found
-        SseApi->>SseApi: Filter by eventName
-        loop For each matching emitter
-            SseApi->>Client: emitter.send(event)
-        end
-    else No emitters on this instance
-
-        Note over SseApi: Skip silently - another<br/>instance may have the emitter
-    end
-```
-
-### Multiple Instances
-
-The handler is declared with `oneQueuePerInstance = true`, so that a broker-backed `messaging-starter` can
-deliver each event to every instance, where only the one holding the session's emitter sends it. Today
-`messaging-starter` publishes Spring application events within the same process: an event only reaches the
-emitters of the instance that published it.
-
-## Key Features
-
-### ✅ Separation of Concerns
-
-Business services **don't need to know about SSE**. They simply publish a `SendSseEvent`:
-
-```kotlin
-// In your business service
-eventPublisher.publish(
-    SendSseEvent(
-        eventName = "order-update",
-        sessionId = userSessionId,
-        payload = orderStatus
-    )
-)
-```
-
-The SSE infrastructure handles the technical details of delivering the message.
-
-### ✅ Instance-Aware Delivery
-
-- **Async Messaging**: Uses the `SendSseEvent` platform event
-- **Instance-Aware**: An instance without the session's emitter skips the event silently
-- **Single Instance for Now**: Broadcasting to every instance waits for a broker-backed messaging implementation
-
-### ✅ Memory Leak Prevention
-
-Automatic cleanup of dead connections through lifecycle callbacks:
-
-- **onCompletion**: Client gracefully disconnects
-- **onError**: Network error or send failure
-- **onTimeout**: Emitter timeout (default: 3 minutes)
-
-Thread-safe collections (`ConcurrentHashMap`, `CopyOnWriteArrayList`) ensure safe concurrent access.
-
-### ✅ Multiple Event Streams per Session
-
-A single session can subscribe to multiple event types:
-
-```javascript
-// Client can have multiple streams
-const notifications = new EventSource('/sse/event-stream?eventName=notifications');
-const updates = new EventSource('/sse/event-stream?eventName=order-updates');
-```
-
-Each is managed independently and filtered by `eventName`.
 
 ## Usage
 
-### 1. Add Dependency
-
 ```kotlin
-dependencies {
-    implementation(project(":sse-starter"))
-}
+implementation(project(":sse-starter"))
 ```
 
-### 2. Client Connection (JavaScript)
+The browser opens one stream per event name at `/event-stream`, under the context path of the application. The
+starter files the stream under the HTTP session of the request:
 
 ```javascript
-const eventSource = new EventSource('/sse/event-stream?eventName=notifications');
-
-eventSource.addEventListener('notifications', (event) => {
-    const data = JSON.parse(event.data);
-    console.log('Received:', data);
-});
-
-eventSource.onerror = (error) => {
-    console.error('SSE Error:', error);
-};
+const notifications = new EventSource('/event-stream?eventName=notifications');
+notifications.addEventListener('notifications', (event) => console.log(JSON.parse(event.data)));
 ```
 
-### 3. Send Events from Business Logic
+The application sends to the streams of a session that have that event name:
 
 ```kotlin
-@Service
-class NotificationService(
-    private val eventPublisher: PlatformEventPublisher
-) {
-    fun notifyUser(sessionId: String, message: String) {
-        eventPublisher.publish(
-            SendSseEvent(
-                eventName = "notifications",
-                sessionId = sessionId,
-                payload = mapOf("message" to message, "timestamp" to Instant.now())
-            )
-        )
-    }
-}
+platformEventPublisher.publish(
+    SendSseEvent(eventName = "notifications", sessionId = sessionId, payload = mapOf("message" to message)),
+)
 ```
+
+With a broker, every instance would get the event, and only the one that holds a stream of that session sends it:
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant A as Instance A
+    participant Events as Platform events
+    participant B as Instance B
+    Browser->>A: GET /event-stream?eventName=notifications
+    Note over A: files the stream under the session and its event name
+    B->>Events: SendSseEvent(notifications, sessionId)
+    Events->>A: the event
+    A->>Browser: event notifications
+    Events->>B: the event
+    Note over B: no stream of that session, skipped
+```
+
+A stream closes after 3 minutes, and the browser's `EventSource` opens it again. The starter has no setting.
+
+## Limits
+
+- With `security-starter`, the stream is refused until the application gives `/event-stream` an access rule.
+- An event reaches only the streams of the instance that published it, since the
+  [platform events](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/platform-events.md)
+  travel inside the process. A broker would deliver it to every instance.
+- The component scan of the application wires the starter, so no property turns it off.
