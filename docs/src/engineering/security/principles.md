@@ -238,7 +238,7 @@ flowchart LR
 
 The cookies hold random values only, and what they grant lives in rows that a revocation deletes. An anonymous
 caller gets no row: the CSRF token lives in its cookie, and the starter keeps no refused request.
-[ADR 0012](../adr/0012-stateful-sessions-in-postgresql-serialized-as-jsonb.md) records why the session lives in
+[ADR 0013](../adr/0013-stateful-sessions-in-postgresql-serialized-as-jsonb.md) records why the session lives in
 PostgreSQL, how long it lasts, and draws its life.
 
 Every cookie is `Secure`, `SameSite=Lax` and `Path=/`:
@@ -269,7 +269,8 @@ cross-site `POST`, and two more checks stand behind it.
   as curl, still needs the token.
 
 The login needs the token too. Without it, another site could sign the victim in to the attacker's account, and what
-the victim then saves would land there.
+the victim then saves would land there. [ADR 0015](../adr/0015-csrf-token-in-a-cookie-with-fetch-metadata.md) records
+why the token lives in a cookie rather than in the session.
 
 ## 🌐 CORS
 
@@ -301,7 +302,7 @@ logout expires DrinkIt's cookies one by one instead.
 
 When the session has ended, the remember-me cookie opens a new one, and its token changes at each use. The previous
 token stays valid for 10 seconds, the grace, for the parallel requests of the app.
-[ADR 0013](../adr/0013-remember-me-by-a-rotating-hashed-token.md) explains why and draws the life of a token, its
+[ADR 0014](../adr/0014-remember-me-by-a-rotating-hashed-token.md) explains why and draws the life of a token, its
 theft detection and its 30 days.
 
 ```mermaid
@@ -321,22 +322,27 @@ sequenceDiagram
   Security-->>Nuxt: 200, Set-Cookie __Host-SESSION, __Host-remember-me, __Host-XSRF-TOKEN
 ```
 
-A remembered session is not fully authenticated, so a sensitive action can ask for the password again, which
+A remembered session is not fully authenticated, so a sensitive action can ask the user to confirm with a passkey or
+an email code, which
 [#592](https://github.com/mboisnard/drinkit/issues/592) plans.
 
 ## 🔒 Passwords
 
 Passwords are hashed with Argon2id only, and each hash keeps the `{argon2}` prefix so that a later change of algorithm
-can still read it, as [ADR 0014](../adr/0014-argon2id-for-passwords-bouncycastle-as-a-dependency.md) records.
+can still read it. [ADR 0012](../adr/0012-sign-in-without-a-password.md) records why DrinkIt stops taking passwords,
+which [#603](https://github.com/mboisnard/drinkit/issues/603) removes.
 
 ## 🚧 What does not exist yet
 
 A password alone signs a user in, and nothing slows down repeated attempts.
+[ADR 0012](../adr/0012-sign-in-without-a-password.md) replaces the password with a passkey, Google or Apple, or a code
+sent by email:
 
-- Refusing logins for a while after repeated failures: [#587](https://github.com/mboisnard/drinkit/issues/587)
-- Signing in with a one-time link sent by email: [#586](https://github.com/mboisnard/drinkit/issues/586)
-- A TOTP code from an authenticator app as a second factor: [#585](https://github.com/mboisnard/drinkit/issues/585)
+- Signing up and signing in with a code sent by email: [#586](https://github.com/mboisnard/drinkit/issues/586)
 - Signing in with a passkey: [#591](https://github.com/mboisnard/drinkit/issues/591)
+- Signing in with Google and Apple: [#602](https://github.com/mboisnard/drinkit/issues/602)
+- Limiting how often sign-in codes are asked for and tried: [#587](https://github.com/mboisnard/drinkit/issues/587)
+- Removing the password: [#603](https://github.com/mboisnard/drinkit/issues/603)
 
 ## 📝 Security events in the logs
 

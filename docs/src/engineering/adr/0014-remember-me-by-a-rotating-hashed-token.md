@@ -1,4 +1,4 @@
-# 0013. Remember-me by a rotating, hashed token
+# 0014. Remember-me by a rotating, hashed token
 
 - Status: accepted
 - Date: 2026-11-05
@@ -10,7 +10,7 @@ changes at each use and is stored hashed, so that a stolen copy shows itself the
 ## Context
 
 Sessions are short, 30 minutes idle and 8 hours at most, as
-[ADR 0012](0012-stateful-sessions-in-postgresql-serialized-as-jsonb.md) records. A user still expects to stay signed
+[ADR 0013](0013-stateful-sessions-in-postgresql-serialized-as-jsonb.md) records. A user still expects to stay signed
 in on their own device for weeks.
 
 The remember-me services of Spring Security and Spring Session do not fit as they are. Spring Session's
@@ -30,15 +30,15 @@ current and of the previous token, and when the series was created and last rota
 title: The life of a remember-me token
 ---
 stateDiagram-v2
-  [*] --> Current: password login with rememberMe
+  [*] --> Current: sign-in with rememberMe
   Current --> Previous: remembered visit, a new token becomes current
   Previous --> Previous: presented within 10 s, accepted, authn_token_grace_used
   Previous --> Stale: 10 s after the rotation
   Stale --> Revoked: presented again, authn_token_reuse
   Revoked --> [*]: Sessions.revokeAll, 401
   Current --> [*]: logout deletes this series
-  Current --> [*]: password login with rememberMe, a new series replaces it
-  Current --> [*]: 30 days after the password login
+  Current --> [*]: sign-in with rememberMe, a new series replaces it
+  Current --> [*]: 30 days after the sign-in
 ```
 
 - **Rotation.** A request without a session but with the cookie is a remembered visit. The token is compared in
@@ -48,12 +48,12 @@ stateDiagram-v2
 - **Theft.** A known series with a token that matches neither hash, or the previous one after its 10 seconds, means
   that two browsers hold the cookie. The starter then revokes every session and every series of the user, and
   answers 401.
-- **Lifetime.** 30 days from the password login, never extended by a remembered visit.
+- **Lifetime.** 30 days from the sign-in, never extended by a remembered visit.
 - **Logout.** It deletes this device's series only. The expired series go when a new one is created.
-- **Login again.** A password login with `rememberMe` deletes the series of the cookie the browser still presents,
+- **Login again.** A sign-in with `rememberMe` deletes the series of the cookie the browser still presents,
   so that a copy of that cookie does not stay valid next to the new series.
 - **Not fully authenticated.** A remembered session answers false to `isFullyAuthenticated()`, so a sensitive action
-  can ask for the password again.
+  can ask the user to confirm with a passkey or an email code.
 
 ## How it is checked
 

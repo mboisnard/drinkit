@@ -1,4 +1,4 @@
-# 0012. Stateful sessions in PostgreSQL, serialized as JSONB
+# 0013. Stateful sessions in PostgreSQL, serialized as JSONB
 
 - Status: accepted
 - Date: 2026-11-05
@@ -51,10 +51,10 @@ flowchart LR
 |---|---|---|
 | Idle timeout | 30 minutes | A device left unattended stops being signed in. NIST SP 800-63B-4 allows 1 hour at AAL2 |
 | Absolute lifetime | 8 hours since the login | A stolen session id stops working the same day, even when it is kept busy. NIST allows 24 hours at AAL2 |
-| Remember-me | 30 days since the password login, never extended | NIST asks a password-only session (AAL1) to authenticate again at least every 30 days |
+| Remember-me | 30 days since the sign-in, never extended | NIST asks a single-factor session (AAL1), such as one an email code opens, to authenticate again at least every 30 days |
 
 A session whose 8 hours have run out can start again from the remember-me cookie, as
-[ADR 0013](0013-remember-me-by-a-rotating-hashed-token.md) records.
+[ADR 0014](0014-remember-me-by-a-rotating-hashed-token.md) records.
 
 ```mermaid
 ---
@@ -90,9 +90,8 @@ without a session.
 - The starter owns a Jackson converter and the SQL queries that read and write JSONB, which a Spring Session upgrade
   can break.
 - Switching the serialization signed every user out once.
-- A password alone protects an account until passkeys or a second factor exist
-  ([#591](https://github.com/mboisnard/drinkit/issues/591), [#585](https://github.com/mboisnard/drinkit/issues/585)),
-  below what ASVS level 2 asks.
+- A session that an email code opens rests on one factor, below what ASVS level 2 asks. A passkey, which
+  [ADR 0012](0012-sign-in-without-a-password.md) offers first, is the user's way above it.
 
 ## Alternatives
 

@@ -32,7 +32,7 @@ the other. The status says where a decision stands:
 |---|---|---|---|
 | [0001](0001-architecture-tests-with-konture.md) | Architecture tests with Konture | Accepted | 2026-10-11 |
 | [0002](0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) | Base, DDL and DML changelogs, checked by Squawk | Accepted | 2026-10-24 |
-| [0003](0003-api-contract-changes-by-expand-and-contract.md) | The API contract changes by expand and contract, frontend included | Superseded by 0015 | 2026-10-28 |
+| [0003](0003-api-contract-changes-by-expand-and-contract.md) | The API contract changes by expand and contract, frontend included | Accepted | 2026-10-28 |
 | [0004](0004-one-updater-image-for-every-environment.md) | One updater image for every environment | Accepted | 2026-10-29 |
 | [0005](0005-demo-data-from-a-local-only-changelog.md) | Demo data from a local-only changelog | Accepted | 2026-10-29 |
 | [0006](0006-mailpit-as-the-smtp-server-of-the-tests.md) | Mailpit as the SMTP server of the tests | Accepted | 2026-11-02 |
@@ -41,10 +41,10 @@ the other. The status says where a decision stands:
 | [0009](0009-search-index-writes-through-the-starter-searches-through-the-engine-sdk.md) | Search index writes through the starter, searches through the engine's SDK | Accepted | 2026-11-03 |
 | [0010](0010-search-index-rebuilds-in-batches-tracked-in-postgresql.md) | Search index rebuilds in batches tracked in PostgreSQL | Accepted | 2026-11-04 |
 | [0011](0011-a-module-declares-the-event-sourcing-starter-itself.md) | A module declares the event sourcing starter itself | Accepted | 2026-11-04 |
-| [0012](0012-stateful-sessions-in-postgresql-serialized-as-jsonb.md) | Stateful sessions in PostgreSQL, serialized as JSONB | Accepted | 2026-11-05 |
-| [0013](0013-remember-me-by-a-rotating-hashed-token.md) | Remember-me by a rotating, hashed token | Accepted | 2026-11-05 |
-| [0014](0014-argon2id-for-passwords-bouncycastle-as-a-dependency.md) | Argon2id for passwords, BouncyCastle as a dependency | Accepted | 2026-11-05 |
-| [0015](0015-the-api-contract-may-break-in-one-pull-request-until-the-first-deployment.md) | The API contract may break in one pull request until the first deployment | Accepted | 2026-11-05 |
+| [0012](0012-sign-in-without-a-password.md) | Sign-in without a password, by passkey, Google, Apple or a code sent by email | Accepted | 2026-11-06 |
+| [0013](0013-stateful-sessions-in-postgresql-serialized-as-jsonb.md) | Stateful sessions in PostgreSQL, serialized as JSONB | Accepted | 2026-11-05 |
+| [0014](0014-remember-me-by-a-rotating-hashed-token.md) | Remember-me by a rotating, hashed token | Accepted | 2026-11-05 |
+| [0015](0015-csrf-token-in-a-cookie-with-fetch-metadata.md) | CSRF token in a cookie, with Fetch Metadata | Accepted | 2026-11-05 |
 
 ## How to write one
 
