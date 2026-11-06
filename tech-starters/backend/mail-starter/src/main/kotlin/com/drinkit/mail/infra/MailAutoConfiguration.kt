@@ -22,5 +22,5 @@ internal class MailAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun loggingEmailSender(): EmailSender = LogEmailSender()
+    fun noopEmailSender(): EmailSender = NoopEmailSender()
 }
