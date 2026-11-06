@@ -122,6 +122,8 @@ order. Write events and handlers by these rules now, so that the move costs noth
 
 - **An event is named in the past tense,** such as `SignInCodeRequested`: it states a fact, so the publisher depends
   on none of the handlers that react to it.
+- **A command is named in the imperative,** such as `SendEmail`: it is an order to the one handler that carries it
+  out. Both go through `PlatformEventPublisher`, and only the name tells them apart.
 - **An event carries ids and facts that serialize to JSON, never an entity.** An entity ties the handler to the
   publisher's model, and is out of date by the time the handler runs.
 - **A handler is idempotent,** since a message can arrive twice: handling it twice has the effect of handling it

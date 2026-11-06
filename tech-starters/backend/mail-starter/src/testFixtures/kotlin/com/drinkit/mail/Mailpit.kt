@@ -4,9 +4,11 @@ import jakarta.mail.Session
 import jakarta.mail.internet.MimeMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.JavaMailSenderImpl
+import java.net.HttpURLConnection.HTTP_OK
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
+import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
 import java.util.Properties
 
@@ -22,6 +24,22 @@ class Mailpit(private val host: String, private val smtpPort: Int, private val a
     fun lastEmail(): MimeMessage {
         val raw = client.send(request("/api/v1/message/latest/raw").GET().build(), BodyHandlers.ofInputStream())
         return MimeMessage(Session.getInstance(Properties()), raw.body())
+    }
+
+    /** Answers [code] to every recipient of the next emails, until [acceptAll]. */
+    fun refuseRecipients(code: Int) = setChaos(recipientProbability = 100, code = code)
+
+    fun acceptAll() = setChaos(recipientProbability = 0, code = 451)
+
+    private fun setChaos(recipientProbability: Int, code: Int) {
+        val trigger = """{"ErrorCode": $code, "Probability": $recipientProbability}"""
+        val triggers = """{"Recipient": $trigger}"""
+        val response = client.send(
+            request("/api/v1/chaos").header("Content-Type", "application/json")
+                .PUT(BodyPublishers.ofString(triggers)).build(),
+            BodyHandlers.ofString(),
+        )
+        check(response.statusCode() == HTTP_OK) { "Mailpit refused the chaos triggers: ${response.body()}" }
     }
 
     internal fun deleteEmails() {

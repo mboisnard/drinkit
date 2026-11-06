@@ -6,7 +6,10 @@ plugins {
 dependencies {
     implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation(project(":messaging-starter"))
 
     testFixturesApi("org.springframework.boot:spring-boot-starter-mail")
     testFixturesImplementation("org.testcontainers:testcontainers")
+
+    testImplementation(testFixtures(project(":messaging-starter")))
 }
