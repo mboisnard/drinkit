@@ -6,34 +6,14 @@ that pushes events from the server to the browser with
 stream, and the business code sends to it by publishing a platform event, without knowing about SSE.
 
 ```mermaid
-graph LR
+flowchart LR
     Code[Code of the application] -->|SendSseEvent| Events[Platform events]
     Events --> Starter[SSE starter]
     Browser -->|"GET /event-stream?eventName=…"| Starter
     Starter -->|event of that name| Browser
 ```
 
-## Usage
-
-```kotlin
-implementation(project(":sse-starter"))
-```
-
-The browser opens one stream per event name at `/event-stream`, under the context path of the application. The
-starter files the stream under the HTTP session of the request:
-
-```javascript
-const notifications = new EventSource('/event-stream?eventName=notifications');
-notifications.addEventListener('notifications', (event) => console.log(JSON.parse(event.data)));
-```
-
-The application sends to the streams of a session that have that event name:
-
-```kotlin
-platformEventPublisher.publish(
-    SendSseEvent(eventName = "notifications", sessionId = sessionId, payload = mapOf("message" to message)),
-)
-```
+## How it works
 
 With a broker, every instance would get the event, and only the one that holds a stream of that session sends it:
 
@@ -52,7 +32,42 @@ sequenceDiagram
     Note over B: no stream of that session, skipped
 ```
 
-A stream closes after 3 minutes, and the browser's `EventSource` opens it again. The starter has no setting.
+## Usage
+
+A module declares the starter in its build file:
+
+```kotlin
+dependencies {
+    implementation(project(":sse-starter"))
+}
+```
+
+The browser opens one stream per event name at `/event-stream`, under the context path of the application. The
+starter files the stream under the HTTP session of the request:
+
+```javascript
+const notifications = new EventSource('/event-stream?eventName=notifications');
+notifications.addEventListener('notifications', (event) => console.log(JSON.parse(event.data)));
+```
+
+The application sends to the streams of a session that have that event name:
+
+```kotlin
+platformEventPublisher.publish(
+    SendSseEvent(eventName = "notifications", sessionId = sessionId, payload = mapOf("message" to message)),
+)
+```
+
+A stream closes after 3 minutes, and the browser's `EventSource` opens it again.
+
+## Configuration
+
+No setting.
+
+## Tests
+
+A test needs nothing from this starter. `SpyPlatformEventPublisher`, from
+`testFixtures(project(":messaging-starter"))`, records the `SendSseEvent` that the code under test publishes.
 
 ## Limits
 

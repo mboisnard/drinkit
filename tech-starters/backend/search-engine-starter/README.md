@@ -8,7 +8,7 @@ index built for search. The database stays the source of truth. The application 
 says why writes go through the starter and searches through the SDK.
 
 ```mermaid
-graph LR
+flowchart LR
     Adapter[Adapter of the application] -->|save, delete, rebuild| Index[SearchIndex]
     Adapter -->|search| Sdk[Meilisearch SDK]
     Index -->|rebuild reads| Source[SearchDocumentSource of the application]
@@ -16,11 +16,49 @@ graph LR
     Sdk --> Engine
 ```
 
+## How it works
+
+A rebuild sends one [platform event](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/platform-events.md)
+per batch of ids. With a broker, the batches spread over the instances, and the one that finishes the last batch swaps
+the indexes:
+
+```mermaid
+sequenceDiagram
+    participant Job as Scheduled job
+    participant A as Instance A
+    participant Events as Platform events
+    participant B as Instance B
+    participant DB as PostgreSQL
+    participant Engine as Meilisearch
+    Job->>A: bottlesIndex.rebuild()
+    A->>DB: records the rebuild and its batches
+    A->>Engine: creates bottles_next
+    A->>Events: one event per batch of ids
+    Events->>A: batch 0
+    A->>Engine: its documents into bottles_next
+    A->>DB: batch 0 done
+    Events->>B: batch 1
+    B->>Engine: its documents into bottles_next
+    B->>DB: batch 1 done, the last one
+    B->>Engine: swaps bottles and bottles_next, then drops bottles_next
+```
+
+Today the platform events travel inside the process, so the instance that calls `rebuild()` loads every batch.
+[ADR 0009](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0009-rebuild-search-indexes-in-batches-tracked-in-postgresql.md)
+says why the batches are tracked in PostgreSQL.
+
 ## Usage
 
+A module declares the starter in its build file:
+
 ```kotlin
-implementation(project(":search-engine-starter"))
+dependencies {
+    implementation(project(":search-engine-starter"))
+}
 ```
+
+The starter needs `messaging-starter`, a `JsonMapper` and a `Clock` bean, and its `search_index_rebuild` table, which
+the [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md) creates.
 
 Declare an index with its source, which gives a rebuild the ids of the table page by page, then the documents of a
 page:
@@ -54,49 +92,20 @@ fun rebuildBottles() {
 }
 ```
 
-A rebuild fills `bottles_next` from the source in batches, one
-[platform event](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/platform-events.md)
-each, then swaps it with `bottles`, so that a search never sees a half-filled index. The writes made meanwhile go to
-both indexes. With a broker, the batches spread over the instances, and the one that finishes the last batch swaps
-the indexes:
+- **A rebuild** fills `bottles_next` from the source in batches, then swaps it with `bottles`, so that a search never
+  sees a half-filled index. The writes made meanwhile go to both indexes.
+- **`searchEngine.information()`** gives the state of the engine and of each index for an admin page.
 
-```mermaid
-sequenceDiagram
-    participant Job as Scheduled job
-    participant A as Instance A
-    participant Events as Platform events
-    participant B as Instance B
-    participant DB as PostgreSQL
-    participant Engine as Meilisearch
-    Job->>A: bottlesIndex.rebuild()
-    A->>DB: records the rebuild and its batches
-    A->>Engine: creates bottles_next
-    A->>Events: one event per batch of ids
-    Events->>A: batch 0
-    A->>Engine: its documents into bottles_next
-    A->>DB: batch 0 done
-    Events->>B: batch 1
-    B->>Engine: its documents into bottles_next
-    B->>DB: batch 1 done, the last one
-    B->>Engine: swaps bottles and bottles_next, then drops bottles_next
-```
-
-Today the platform events travel inside the process, so the instance that calls `rebuild()` loads every batch.
-[ADR 0009](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0009-rebuild-search-indexes-in-batches-tracked-in-postgresql.md)
-says why the batches are tracked in PostgreSQL. `searchEngine.information()` gives the state of the engine and of
-each index for an admin page.
+## Configuration
 
 | Property | Default | Environment variable |
 |---|---|---|
 | `starters.search-engine.meilisearch.url` | `http://localhost:7700`, production sets it | `STARTERS_SEARCHENGINE_MEILISEARCH_URL` |
-| `starters.search-engine.meilisearch.api-key` | none, production sets a key that can write | `STARTERS_SEARCHENGINE_MEILISEARCH_APIKEY` |
+| `starters.search-engine.meilisearch.api-key` | None, required in production: a key that can write | `STARTERS_SEARCHENGINE_MEILISEARCH_APIKEY` |
 | `starters.search-engine.task-timeout` | `30s` per write | `STARTERS_SEARCHENGINE_TASKTIMEOUT` |
 | `starters.search-engine.rebuild.batch-size` | `1000` ids | `STARTERS_SEARCHENGINE_REBUILD_BATCHSIZE` |
 | `starters.search-engine.rebuild.restart-after` | `30m`, then a stuck rebuild starts over | `STARTERS_SEARCHENGINE_REBUILD_RESTARTAFTER` |
 | `starters.search-engine.enabled` | `true` | `STARTERS_SEARCHENGINE_ENABLED` |
-
-The starter needs `messaging-starter`, a `JsonMapper` and a `Clock` bean, and its `search_index_rebuild` table, which
-the [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md) creates.
 
 ## Tests
 

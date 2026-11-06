@@ -8,15 +8,19 @@ expires an entry.
 says why.
 
 ```mermaid
-graph LR
+flowchart LR
     Module["Module of the application<br/>@Cacheable, CacheTtl"] --> Spring[Spring cache abstraction]
     Spring --> Caffeine["Caffeine, in the memory of each instance"]
 ```
 
 ## Usage
 
+A module declares the starter in its build file:
+
 ```kotlin
-implementation(project(":cache-starter"))
+dependencies {
+    implementation(project(":cache-starter"))
+}
 ```
 
 ```kotlin
@@ -30,8 +34,11 @@ fun save(rate: ExchangeRate) { … }
 fun exchangeRatesCacheTtl() = CacheTtl("exchange-rates", Duration.ofHours(1))
 ```
 
-The module that owns a cache declares its time to live as a `CacheTtl` bean. A cache takes
-`starters.cache.ttl.<cache>` first, then its `CacheTtl`, then `starters.cache.default-ttl`.
+- **`CacheTtl`**: the module that owns a cache declares its time to live as a `CacheTtl` bean.
+- **The time to live of a cache**: `starters.cache.ttl.<cache>` first, then its `CacheTtl`, then
+  `starters.cache.default-ttl`.
+
+## Configuration
 
 | Property | Default | Environment variable |
 |---|---|---|

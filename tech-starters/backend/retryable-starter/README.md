@@ -6,24 +6,13 @@ policy names, and logs each failed attempt. DrinkIt needs it for concurrent writ
 `event-sourcing-starter` brings it to run the retries of `@RetryableTransactional`.
 
 ```mermaid
-graph LR
+flowchart LR
     Bean["Bean of the application<br/>@Retryable, @RetryableTransactional"] --> Retry[Spring Framework retry]
     Retry -->|each failed attempt| Listener[Retry listener of the starter]
     Listener --> Logs[(Logs)]
 ```
 
-## Usage
-
-```kotlin
-implementation(project(":retryable-starter"))
-```
-
-```kotlin
-@Retryable(includes = [DuplicateSequenceException::class], maxRetries = 2, delay = 0)
-fun promote(userId: UserId) { … }
-```
-
-`maxRetries` counts the retries after the first attempt: `maxRetries = 2` makes three attempts.
+## How it works
 
 With `@RetryableTransactional`, the retry wraps the transaction, so the attempt that loses a race runs again on the
 new history:
@@ -43,11 +32,31 @@ sequenceDiagram
     Retry-->>Caller: user promoted
 ```
 
+## Usage
+
+A module declares the starter in its build file:
+
+```kotlin
+dependencies {
+    implementation(project(":retryable-starter"))
+}
+```
+
+```kotlin
+@Retryable(includes = [DuplicateSequenceException::class], maxRetries = 2, delay = 0)
+fun promote(userId: UserId) { … }
+```
+
+- **`maxRetries`** counts the retries after the first attempt: `maxRetries = 2` makes three attempts.
 - **Logs**: each failed attempt at `INFO`, the end of the retries at `WARN`, with the class of the exception and never
   its message, which can hold personal data.
 - **Your own listener**: an `ApplicationListener<MethodRetryEvent>` bean of the application replaces the logging.
-- **`starters.retryable.enabled`**, `STARTERS_RETRYABLE_ENABLED`: `true` by default, and `false` makes every method
-  run once.
+
+## Configuration
+
+| Property | Default | Environment variable |
+|---|---|---|
+| `starters.retryable.enabled` | `true`, `false` makes every method run once | `STARTERS_RETRYABLE_ENABLED` |
 
 ## Tests
 

@@ -6,7 +6,7 @@ that turns a feature on or off at runtime, for everyone or for some users, witho
 [Flipt](https://flipt.io/) server, whose web UI manages the flags.
 
 ```mermaid
-graph LR
+flowchart LR
     Service[Business code] --> FeatureFlags
     FeatureFlags --> OpenFeature[OpenFeature SDK]
     OpenFeature --> Flipt[(Flipt server)]
@@ -15,8 +15,12 @@ graph LR
 
 ## Usage
 
+A module declares the starter in its build file:
+
 ```kotlin
-implementation(project(":feature-flags-starter"))
+dependencies {
+    implementation(project(":feature-flags-starter"))
+}
 ```
 
 ```kotlin
@@ -26,15 +30,17 @@ featureFlags.isEnabledForUser("beta-feature", userId)
 featureFlags.isEnabled("new-checkout", FeatureFlagContext(userId = user.id, attributes = mapOf("plan" to "premium")))
 ```
 
-A flag that Flipt does not know, or cannot evaluate, is off. With Spring Boot Actuator, `/actuator/health` shows the
-state of the Flipt provider under `openFeature`.
+- **A flag that Flipt does not know**, or cannot evaluate, is off.
+- **With Spring Boot Actuator**, `/actuator/health` shows the state of the Flipt provider under `openFeature`.
 
-| Property | Environment variable | Set by |
+## Configuration
+
+| Property | Default | Environment variable |
 |---|---|---|
-| `starters.feature-flags.flipt.url` | `STARTERS_FEATUREFLAGS_FLIPT_URL` | `application-dev.yml`: `http://localhost:8082`, the Flipt of the local compose file |
-| `starters.feature-flags.flipt.namespace` | `STARTERS_FEATUREFLAGS_FLIPT_NAMESPACE` | `application-dev.yml`: `default` |
+| `starters.feature-flags.flipt.url` | None, required | `STARTERS_FEATUREFLAGS_FLIPT_URL` |
+| `starters.feature-flags.flipt.namespace` | None, required | `STARTERS_FEATUREFLAGS_FLIPT_NAMESPACE` |
 
-Neither has a default: every other environment sets both.
+`application-dev.yml` sets both for the Flipt of the local compose file: `http://localhost:8082` and `default`.
 
 ## Tests
 

@@ -2,10 +2,10 @@
 
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
 that puts DrinkIt's test libraries on a module's test classpath, with a clock and a random generator that a test
-controls. It has no Spring bean and no setting.
+controls. It has no Spring bean.
 
 ```mermaid
-graph LR
+flowchart LR
     Conventions["test-convention, test-fixtures-convention"] -->|adds| Starter[test-starter]
     Starter --> Libraries["JUnit, Kotest, Testcontainers, Spring Boot test…"]
     Starter --> Controlled["ControlledClock, ControlledRandom"]
@@ -13,13 +13,29 @@ graph LR
 
 ## Usage
 
-No build file declares it. The `com.drinkit.test-convention` plugin, which the base plugin of every Kotlin module
-applies, adds it to `testImplementation`, and `com.drinkit.test-fixtures-convention` to `testFixturesImplementation`.
+No build file declares the starter: the `test-convention` plugin, which the base plugin of every Kotlin
+module applies, adds it to `testImplementation`, and `test-fixtures-convention` to
+`testFixturesImplementation`:
 
-It brings JUnit Jupiter, Spring Boot test, Kotest assertions, kotlin-test, Testcontainers, Kotlin Faker,
-REST Assured, Cucumber and ApprovalTests. The
-[architecture tests](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/writing-code/testing/architecture-tests.md)
-refuse Mockito and the AssertJ and kotlin-test assertions: a test asserts with Kotest and uses hand-written doubles.
+```kotlin
+dependencies {
+    testImplementation(project(":test-starter"))
+    testFixturesImplementation(project(":test-starter"))
+}
+```
+
+- **Libraries**: JUnit Jupiter, Spring Boot test, Kotest assertions, kotlin-test, Testcontainers, Kotlin Faker,
+  REST Assured, Cucumber and ApprovalTests.
+- **What the build refuses**: the
+  [architecture tests](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/writing-code/testing/architecture-tests.md)
+  refuse Mockito and the AssertJ and kotlin-test assertions. A test asserts with Kotest and uses hand-written
+  doubles.
+
+## Configuration
+
+No setting.
+
+## Tests
 
 `ControlledClock` is a `java.time.Clock` that follows the system clock until a test fixes it, and the code under test
 receives it as its `Clock`:

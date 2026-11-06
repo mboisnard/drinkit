@@ -3,19 +3,22 @@
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
 of plain Kotlin extension functions for the values of the domain: the checks of a name, a password or an email
 address, and decimal arithmetic. It also gives its modules kotlin-logging, kotlin-reflect and kotlinx-coroutines. It
-has no Spring bean and no configuration.
+has no Spring bean.
 
 ```mermaid
-graph LR
+flowchart LR
     Value["Value of the domain<br/>validate()"] --> Starter["kotlin-starter<br/>String, BigDecimal, List extensions"]
 ```
 
 ## Usage
 
-The `library-convention` and `api-convention` plugins of `build-logic` add it. Any other module declares it:
+The `library-convention` and `api-convention` plugins of `build-logic` add the starter. Any other module declares it
+in its build file:
 
 ```kotlin
-implementation(project(":kotlin-starter"))
+dependencies {
+    implementation(project(":kotlin-starter"))
+}
 ```
 
 ```kotlin
@@ -36,3 +39,11 @@ data class CellarName(val value: String) {
   excludes them.
 - **`safelyDivide`** stops at the scale you give and rounds half to even, so one divided by three never throws.
 - **`addUnless(condition, value)`** adds the value when the condition is false.
+
+## Configuration
+
+No setting.
+
+## Tests
+
+A test needs nothing from this starter.

@@ -7,10 +7,42 @@ from some of them. That page lists the annotations, explains why DrinkIt generat
 and when the build requires an annotation. The starter runs at compile time only, so it has no
 auto-configuration.
 
-## What gets generated
+```mermaid
+flowchart LR
+    Code["Class of the application<br/>@CoreDomain, @TechStarterTool"] --> Processor[KSP processor of the starter]
+    Processor --> Pages["Pages under docs/src/engineering/resources"]
+```
+
+## Usage
+
+No build file declares the starter: the `documentation-convention` plugin, which `library-convention`
+and `api-convention` apply, adds it:
+
+```kotlin
+dependencies {
+    compileOnly(project(":documentation-starter"))
+    ksp(project(":documentation-starter"))
+}
+```
+
+```kotlin
+@CoreDomain
+data class Cellar(val id: CellarId, val name: CellarName, …)
+
+@TechStarterTool
+fun interface EmailSender { … }
+```
 
 The processor writes under `docs/src/engineering/resources/`, which is gitignored:
 
-- `domains/`: a page per `@CoreDomain`, and the `domains.md` index.
-- `tech-starters/`: a page per tech starter, its `README.md` followed by an API Reference of its `@TechStarterTool`
-  classes and functions, and the `tech-starters.md` index.
+- **`domains/`**: a page per `@CoreDomain`, and the `domains.md` index.
+- **`tech-starters/`**: a page per tech starter, its `README.md` followed by an API Reference of its
+  `@TechStarterTool` classes and functions, and the `tech-starters.md` index.
+
+## Configuration
+
+No setting.
+
+## Tests
+
+A test needs nothing from this starter.
