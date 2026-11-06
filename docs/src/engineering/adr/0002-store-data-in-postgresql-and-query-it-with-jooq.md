@@ -22,7 +22,7 @@ them.
 DrinkIt keeps its data in PostgreSQL, as the [database page](../build-and-data/database.md) describes. The schema
 enforces the links with constraints, and a change runs in a transaction. PostgreSQL also covers needs that could have
 called for another system: the history of event-sourced aggregates, the
-[browser sessions](0011-keep-sessions-in-postgresql.md), and JSON columns where a structure has to stay open.
+[browser sessions](0012-keep-sessions-in-postgresql.md), and JSON columns where a structure has to stay open.
 
 The adapters query it with jOOQ. Its classes are generated from the schema, so a query that names a missing column
 does not compile, and the code reads like the SQL it sends. An adapter that reads parents with their children, such

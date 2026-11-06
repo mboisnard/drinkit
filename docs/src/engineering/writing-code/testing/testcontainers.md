@@ -133,8 +133,7 @@ The container outlives the run: `docker ps` still lists it after the tests. Stop
 next run starts a new one.
 
 Each extension holds a copy of the image tag of `deployment/local/compose.yml`, so that the tests and the local
-environment run the same version of the service. Renovate updates both copies. Mailpit's extension holds the only
-copy until compose runs Mailpit too ([#552](https://github.com/mboisnard/drinkit/issues/552)).
+environment run the same version of the service. Renovate updates both copies.
 
 ## ➕ A new technology
 

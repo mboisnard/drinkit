@@ -18,10 +18,16 @@ spring:
     url: jdbc:postgresql://localhost:5432/drinkit
     username: drinkit
     password: admin
+  # The Mailpit of the compose file, which asks for no authentication and offers no STARTTLS
+  mail:
+    host: localhost
+    port: 1025
+    properties.mail.smtp:
+      auth: false
+      starttls.enable: false
 
 logging.level:
     org.springframework.security: DEBUG
-    com.drinkit.mail: DEBUG
 
 starters:
   security:

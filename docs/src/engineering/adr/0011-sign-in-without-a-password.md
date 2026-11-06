@@ -1,4 +1,4 @@
-# 0010. Sign in without a password
+# 0011. Sign in without a password
 
 - Status: accepted
 - Date: 2026-11-06
@@ -46,7 +46,7 @@ flowchart TB
 
 DrinkIt offers no SMS code, which SIM swapping and costs rule out, and no authenticator app code, which a phishing
 page relays like any code. The password sign-in built first goes away. The session that follows any method is the one
-of [ADR 0011](0011-keep-sessions-in-postgresql.md).
+of [ADR 0012](0012-keep-sessions-in-postgresql.md).
 
 ## Consequences
 

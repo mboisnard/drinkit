@@ -1,4 +1,4 @@
-# 0013. Protect against CSRF with a token in a cookie and Fetch Metadata
+# 0014. Protect against CSRF with a token in a cookie and Fetch Metadata
 
 - Status: accepted
 - Date: 2026-11-06

@@ -11,7 +11,7 @@ through jOOQ. Exact versions live in the catalogs of `gradle/platform`, `gradle/
 ./gradlew :drinkit-domain:test                 # one module, named after its folder
 ./gradlew :drinkit-infra:test --tests '*JooqUserEventsTest'
 ./gradlew detektAll -Pdetekt.autoCorrect=true  # fixes formatting and auto-correctable findings
-./gradlew :drinkit-backend:bootRun             # dev profile: starts the compose services, logs emails, sends none
+./gradlew :drinkit-backend:bootRun             # dev profile: starts the compose services, emails land in Mailpit
 git config core.hooksPath .hooks/git           # once per clone: pre-commit formats Kotlin, pre-push refuses master
 ```
 

@@ -136,6 +136,13 @@
     },
     {
       "quadrant": "Tools",
+      "ring": "ADOPT",
+      "label": "Mailpit",
+      "description": "SMTP server that catches the emails of a local start and of the tests, and shows them",
+      "link": "/drinkit/engineering/adr/0010-send-emails-over-smtp-to-a-server-chosen-per-environment.html"
+    },
+    {
+      "quadrant": "Tools",
       "ring": "ASSESS",
       "label": "GraalVM Native Image",
       "description": "Native build of the application, configured but not built in CI",

@@ -1,4 +1,4 @@
-# 0011. Keep sessions in PostgreSQL
+# 0012. Keep sessions in PostgreSQL
 
 - Status: accepted
 - Date: 2026-11-06
@@ -34,7 +34,7 @@ cookie carries only its id, 256 random bits.
 | Absolute lifetime | 8 hours since the sign-in | A stolen session id stops working the same day, even when kept busy |
 
 A session that ends can start again from the remember-me cookie of
-[ADR 0012](0012-remember-me-with-a-rotating-hashed-token.md). A user may be signed in on any number of devices, and
+[ADR 0013](0013-remember-me-with-a-rotating-hashed-token.md). A user may be signed in on any number of devices, and
 signing out everywhere deletes all their rows at once.
 
 ## Consequences
