@@ -104,7 +104,7 @@
       "ring": "TRIAL",
       "label": "Konture",
       "description": "Architecture rules written as tests against the Kotlin sources, a young library",
-      "link": "/drinkit/engineering/adr/0001-architecture-tests-with-konture.html"
+      "link": "/drinkit/engineering/adr/0004-check-the-architecture-with-tests.html"
     },
     {
       "quadrant": "Tools",

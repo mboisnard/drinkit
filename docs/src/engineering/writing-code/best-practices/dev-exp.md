@@ -16,7 +16,7 @@ frontend the app on `localhost:3000`.
   data. A new database gets its schema, and a changelog you pull reaches yours at the next start. A changelog that
   fails stops the backend.
 - **An account is ready to log in.** `demo@drinkit.test`, with the password `Drinkit-demo1`, is an admin of the
-  local database. [ADR 0005](../../adr/0005-demo-data-from-a-local-only-changelog.md) records why the demo data
+  local database. [ADR 0003](../../adr/0003-apply-the-schema-through-the-updater.md) records why the demo data
   never reaches a deployed database.
 
 Every checkout of the repository, a worktree too, starts the same compose project, `local`, named after the folder

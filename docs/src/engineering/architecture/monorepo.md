@@ -5,7 +5,7 @@ them. DrinkIt keeps everything in one: its application, a backend and a frontend
 [tech starters](tech-starters.md), the build logic, the database changelogs, this documentation and the
 [harness](../coding-assistants/harness.md) that guides its coding agents. The idea to keep: a change and everything
 it affects travel in one pull request, checked by one CI. Read this page before you add a folder at the root or a
-new project.
+new project. [ADR 0000](../adr/0000-keep-every-project-in-one-repository.md) records why.
 
 ## 🎯 Why one repository
 
@@ -43,7 +43,7 @@ side.
 - **A new project joins by convention.** A folder directly under `drinkit/` or `tech-starters/backend/` that holds
   a build file joins the Gradle build on its own. The architecture rules find an application's modules by their
   suffix, such as `-domain`, so a new application is checked from its first build, as
-  [ADR 0001](../adr/0001-architecture-tests-with-konture.md) records.
+  [ADR 0004](../adr/0004-check-the-architecture-with-tests.md) records.
 - **CI runs what a change touches.** Each lane of the [CI](../delivery/ci-cd.md) watches a set of paths: a change to the
   frontend skips the backend build. A path no lane knows runs them all, so a new folder at the root goes into the
   lane that builds it.

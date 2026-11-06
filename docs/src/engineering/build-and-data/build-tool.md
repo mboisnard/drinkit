@@ -5,7 +5,8 @@ holds every backend module: the application, its [tech starters](../architecture
 [database updater](database.md) and the [architecture tests](../writing-code/testing/architecture-tests.md). The idea to keep: a
 module's build file says only what makes that module different. What modules share lives in convention plugins,
 pieces of build configuration under `build-logic/` that each module applies. Every library and plugin version lives in
-`gradle/platform/`.
+`gradle/platform/`. [ADR 0001](../adr/0001-build-with-gradle-and-shared-conventions.md) records why Gradle and its
+conventions.
 
 Read this page before you add a module, change a convention or bump a dependency. The build fails there on a detekt
 finding, on a dependency change without its new checksums and lock, and on a convention that breaks the
@@ -81,7 +82,7 @@ The archetypes:
 | Archetype | For | What it adds |
 |---|---|---|
 | `common-convention` | Every Kotlin module, directly or through the others | The Java toolchain, Kotlin with its Spring support, the [internal BOM](#versions-in-one-place), `code-analysis-convention` and `test-convention` |
-| `library-convention` | The domain, its adapters and most tech starters | `common-convention`, `documentation-convention`, Spring context and transactions, the Kotlin starter. A module that event-sources an aggregate adds the [event sourcing](../architecture/event-sourcing.md) starter itself, as [ADR 0011](../adr/0011-a-module-declares-the-event-sourcing-starter-itself.md) records |
+| `library-convention` | The domain, its adapters and most tech starters | `common-convention`, `documentation-convention`, Spring context and transactions, the Kotlin starter. A module that event-sources an aggregate adds the [event sourcing](../architecture/event-sourcing.md) starter itself |
 | `api-convention` | `drinkit-backend`, the Spring Boot application | `common-convention`, `documentation-convention`, Spring MVC, build and git details for Actuator's info endpoint, GraalVM native images, a lock on every resolved version |
 | `job-convention` | `deployment/updater`, a Spring Boot application that runs once, then stops | `common-convention`, Spring Boot's executable jar, a lock on every resolved version |
 
@@ -97,7 +98,7 @@ The add-ons a module chooses, and the conventions the archetypes apply for it:
 | `documentation-convention` | Writes the [generated pages](../writing-code/best-practices/living-documentation.md) of this site with KSP, only on `./gradlew kspKotlin` | `library-convention`, `api-convention`, and the tech starters without Spring beans |
 | `test-convention` | JUnit Platform and the test libraries of `test-starter` | `common-convention` |
 | `code-analysis-convention` | detekt, which fails the build on any finding outside `code-analysis/detekt/baseline.xml`, the findings older than that rule, a file that never grows. It also runs after each Kotlin edit of an agent, as the [hooks](../coding-assistants/hooks.md) page explains | `common-convention`, the root project |
-| `architecture-tests-convention` | Konture, chosen in [ADR 0001](../adr/0001-architecture-tests-with-konture.md), which builds the module graph and checks the architecture rules | The root project, `architecture-tests` |
+| `architecture-tests-convention` | Konture, chosen in [ADR 0004](../adr/0004-check-the-architecture-with-tests.md), which builds the module graph and checks the architecture rules | The root project, `architecture-tests` |
 
 Each convention explains its own choices in comments, in
 [`build-logic/src/main/kotlin`](https://github.com/mboisnard/drinkit/tree/master/build-logic/src/main/kotlin). Read

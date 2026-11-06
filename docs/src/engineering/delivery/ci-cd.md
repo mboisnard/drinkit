@@ -170,7 +170,7 @@ digest. Security fixes and undated releases skip the wait, and majors and lock f
 the Dependency Dashboard, as [`renovate.json`][renovate] configures it. The minor and patch updates of GitHub Actions
 and of the Renovate image, and new digests of an image tag, merge themselves once `CI gate` is green: the run of their
 pull request already uses them, except for the tools that only `Deploy updater` uses, which first run on master, as
-[ADR 0004](../adr/0004-one-updater-image-for-every-environment.md) records. The updater image of the compose file
+[ADR 0003](../adr/0003-apply-the-schema-through-the-updater.md) records. The updater image of the compose file
 skips the wait and the schedule: master publishes it from reviewed code, and the Ops lane runs the new digest on the
 changelogs. Renovate rebases these updates when they fall behind master, as the ruleset requires, and the others
 only on conflict, which keeps the runs within the 20 jobs the repository runs at once.

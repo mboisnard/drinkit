@@ -7,7 +7,8 @@ schema into the Kotlin classes the [adapters](../architecture/hexagonal-architec
 the code. Until the first deployment, a change edits a file of `base/`. After it, a change is a new file in `ddl/`
 or `dml/`. Either way, `./gradlew :updater:check` checks it, you apply it to your local database, then regenerate
 and commit the jOOQ classes, with the commands of the [`database-change` skill][database-skill]. Read
-this page before you write a changelog.
+this page before you write a changelog. [ADR 0002](../adr/0002-store-data-in-postgresql-and-query-it-with-jooq.md)
+records why PostgreSQL and jOOQ.
 
 Most rules below come from one fact: a migration runs while users are still using the application. A migration that
 holds a table for a few seconds too long stalls their requests, and one that fails halfway and cannot run again
@@ -25,10 +26,9 @@ server settings, which belong to whoever runs the database.
 Locally, the updater runs on each start of the backend, so a changelog you write or pull reaches your database at
 the next start. [Developer experience](../writing-code/best-practices/dev-exp.md) describes the local start.
 
-[ADR 0004](../adr/0004-one-updater-image-for-every-environment.md) records why the updater runs
-from one [container image](../delivery/container-images.md) in every environment.
-[ADR 0002](../adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) records why the changelogs are organized
-as below.
+[ADR 0003](../adr/0003-apply-the-schema-through-the-updater.md) records why the updater runs from one
+[container image](../delivery/container-images.md) in every environment, and why the changelogs are organized as
+below.
 
 ### Folders
 
@@ -42,7 +42,7 @@ folders below, always in this order, and the `.sql` files of a folder in the ord
 | `dml/` | A change to the data: reference rows, a backfill, a fix | Once, after every `ddl/` file |
 
 The demo data of a local start sits with the changelogs, in a folder that no deployment runs, and the
-[checked rules](#checked-rules) apply to it too. [ADR 0005](../adr/0005-demo-data-from-a-local-only-changelog.md)
+[checked rules](#checked-rules) apply to it too. [ADR 0003](../adr/0003-apply-the-schema-through-the-updater.md)
 records why.
 
 An empty `ddl/` or `dml/` holds a `.gitkeep`, since git keeps no empty folder: the folder shows where the first
@@ -280,8 +280,7 @@ Any other type change rewrites the whole table under lock. Move the data to a ne
 
 1. Add a new column with the new type.
 2. Copy each `INSERT` and `UPDATE` from the old column to the new one with a trigger. Its function needs a `$$` body
-   that Liquibase splits wrongly, so writing the first one needs a decision that
-   [ADR 0002](../adr/0002-base-ddl-and-dml-changelogs-checked-by-squawk.md) leaves open.
+   that Liquibase splits wrongly, so writing the first one needs a decision not taken yet.
 3. Copy the existing rows in batches, from a `dml/` file.
 4. Switch the application code to the new column.
 5. Once that code is deployed and stable, drop the old column and the trigger in a later file.

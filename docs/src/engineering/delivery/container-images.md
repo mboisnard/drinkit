@@ -13,7 +13,7 @@ changelogs, so a new changelog needs no new image. The updater reads them from t
 where they are mounted, or copied by an image built from this one. Such an image copies the folders that
 `db.changelog-master.yml` runs, never the [demo data](../build-and-data/database.md#folders) beside them, whose admin
 password is public.
-[ADR 0004](../adr/0004-one-updater-image-for-every-environment.md) records why one image serves every environment.
+[ADR 0003](../adr/0003-apply-the-schema-through-the-updater.md) records why one image serves every environment.
 
 `deployment/local/compose.yml` pins `latest` by digest and runs it on each start of the backend, with the `db/`
 folder of the checkout mounted. Renovate proposes each new digest as soon as master publishes it.
