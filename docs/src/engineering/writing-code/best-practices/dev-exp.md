@@ -15,9 +15,10 @@ frontend the app on `localhost:3000`.
   [changelogs](../../build-and-data/database.md#folders) that the database has not received yet, then the demo
   data. A new database gets its schema, and a changelog you pull reaches yours at the next start. A changelog that
   fails stops the backend.
-- **An account is ready to log in.** `demo@drinkit.test`, with the password `Drinkit-demo1`, is an admin of the
-  local database. [ADR 0003](../../adr/0003-apply-the-schema-through-the-updater.md) records why the demo data
-  never reaches a deployed database.
+- **An account is ready to sign in.** `demo@drinkit.test` is an admin of the local database. It signs in with a
+  code that the backend writes to its logs, since the `dev` profile sends no email.
+  [ADR 0003](../../adr/0003-apply-the-schema-through-the-updater.md) records why the demo data never reaches a
+  deployed database.
 
 Every checkout of the repository, a worktree too, starts the same compose project, `local`, named after the folder
 of `deployment/local/compose.yml`. The checkouts share its database: by default, a worktree's start applies the
@@ -55,4 +56,3 @@ variable:
 
 - the `drinkit` role and its password `admin`, and the Meilisearch key `masterKey`, in `deployment/local/compose.yml`
   and the `application-dev.yml` files
-- the demo account's password, `Drinkit-demo1`

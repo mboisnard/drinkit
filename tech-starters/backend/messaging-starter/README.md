@@ -2,9 +2,9 @@
 
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
 that carries [platform events](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/platform-events.md),
-facts such as "a user was created", from the use case that publishes them to the handlers that react. A handler runs
-after the commit, on a thread of its own, and again after a growing wait when it fails. The events travel as Spring
-application events today, and a broker can replace them without changing a handler, as
+facts such as "a sign-in code was requested", from the code that publishes them to the handlers that react. A
+handler runs after the commit, on a thread of its own, and again after a growing wait when it fails. The events
+travel as Spring application events today, and a broker can replace them without changing a handler, as
 [ADR 0006](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0006-carry-platform-events-through-an-abstraction.md)
 records.
 
@@ -25,7 +25,7 @@ sequenceDiagram
     participant UseCase as Use case, in a transaction
     participant Publisher as PlatformEventPublisher
     participant Handler as @PlatformEventHandler
-    UseCase->>Publisher: publish(UserCreated)
+    UseCase->>Publisher: publish(event)
     Publisher-->>UseCase: returns at once
     alt the transaction commits
         Publisher->>Handler: the event, on a thread of its own, after the handler's delay
@@ -48,13 +48,13 @@ dependencies {
 ```
 
 ```kotlin
-platformEventPublisher.publish(UserCreated(userId = user.id, locale = command.locale))
+platformEventPublisher.publish(SignInCodeRequested(email, code, locale))
 
 @Component
-internal class RegistrationHandler(private val sendVerificationToken: SendVerificationToken) {
+internal class SignInCodeEmails(private val notificationSender: NotificationSender) {
 
-    @PlatformEventHandler("send.verification.token.to.created.user.queue", maxAttempts = 5, delay = 2_000)
-    fun sendVerificationTokenToTheCreatedUser(event: UserCreated) { … }
+    @PlatformEventHandler("send.sign.in.code.queue")
+    fun sendTheCode(event: SignInCodeRequested) { … }
 }
 ```
 
@@ -78,7 +78,7 @@ internal class RegistrationHandler(private val sendVerificationToken: SendVerifi
 `SpyPlatformEventPublisher`, from `testFixtures(project(":messaging-starter"))`, records what a use case publishes:
 
 ```kotlin
-spyEventPublisher.countEventsOfType(UserCreated::class) shouldBe 1
+spyEventPublisher.countEventsOfType(SignInCodeRequested::class) shouldBe 1
 ```
 
 ## Limits

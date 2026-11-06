@@ -37,7 +37,7 @@ modules. Read this page before you add a bounded context or make one context use
   class of the ids.
 - **Its contract** is its business types and its ports. When a context only needs to say that something happened,
   it publishes a [platform event](platform-events.md) that other parts of the application handle asynchronously,
-  as the creation of a user triggers the verification email. Events travel inside the process today.
+  as a request for a sign-in code triggers its email. Events travel inside the process today.
 - **No cycle between contexts**, and `common` depends on none of them. The
   [architecture tests](../writing-code/testing/architecture-tests.md) check it on every build.
 - **A type splits when its contexts stop agreeing on it.** No type has split yet: when a rule holds for one context

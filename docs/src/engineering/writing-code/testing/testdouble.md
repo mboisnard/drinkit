@@ -50,24 +50,31 @@ The doubles live in `src/testFixtures`, so that the tests of every module reuse 
 `UserFixtures`, builds the use cases of a bounded context with their doubles, and a test takes its doubles from it,
 never builds its own. Doubles share instances: `InMemoryUserEvents` saves each user into the `InMemoryUsers` that the
 fixtures class gives it, and a second `InMemoryUsers` built by the test would stay empty. The test calls the use case,
-then checks its result and the state of the doubles, here a store of tokens and a spy that records the notifications:
+then checks its result and the state of the doubles, here the stored events and the projection of the user:
 
 ```kotlin
 private val userFixtures = UserFixtures()
-private val sendVerificationToken = userFixtures.sendVerificationToken
-private val verificationTokens = userFixtures.verificationTokens
-private val spyNotificationSender = userFixtures.spyNotificationSender
+private val createNewUser = userFixtures.createNewUser
+private val users = userFixtures.users
+private val userEvents = userFixtures.userEvents
 
 @Test
-fun `save verification token for a new registered user and send a notification`() {
-    val user = userFixtures.givenAnInitializedUser()
-    val command = SendVerificationTokenCommand(author = user.id.toConnectedAuthor(), locale = Locale.FRANCE)
+fun `persists a new user of an email alone, with its event and its projection`() {
+    // Given
+    val command = CreateNewUserCommand(
+        email = VALID_EMAIL,
+        author = userFixtures.givenAnUnloggedAuthor,
+        locale = Locale.FRANCE,
+    )
 
-    val result = sendVerificationToken.invoke(user.id, command)
+    // When
+    val result = createNewUser.invoke(command)
 
-    val token = result.shouldBeInstanceOf<Success>().token
-    verificationTokens.findBy(user.id, token.value).shouldNotBeNull()
-    spyNotificationSender.count() shouldBe 1
+    // Then
+    result.shouldBeInstanceOf<UserCreated>()
+    val createdUser = result.user
+    userEvents.findAllBy(createdUser.id).shouldNotBeNull()
+    users.findEnabledBy(createdUser.id) shouldBe createdUser
 }
 ```
 

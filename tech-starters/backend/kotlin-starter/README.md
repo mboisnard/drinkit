@@ -1,8 +1,8 @@
 # Kotlin Starter
 
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
-of plain Kotlin extension functions for the values of the domain: the checks of a name, a password or an email
-address, and decimal arithmetic. It also gives its modules kotlin-logging, kotlin-reflect and kotlinx-coroutines. It
+of plain Kotlin extension functions for the values of the domain: checks of a string, such as its length, its
+characters or the format of an email address, and decimal arithmetic. It also gives its modules kotlin-logging, kotlin-reflect and kotlinx-coroutines. It
 has no Spring bean.
 
 ```mermaid
