@@ -40,10 +40,11 @@ the other. The status says where a decision stands:
 | [0007](0007-cache-through-spring-on-caffeine.md) | Cache through Spring's abstraction, on Caffeine | Accepted | 2026-11-03 |
 | [0008](0008-index-through-an-abstraction-search-with-meilisearch.md) | Index through an abstraction, search with Meilisearch | Accepted | 2026-11-03 |
 | [0009](0009-rebuild-search-indexes-in-batches-tracked-in-postgresql.md) | Rebuild search indexes in batches tracked in PostgreSQL | Accepted | 2026-11-04 |
-| [0010](0010-sign-in-without-a-password.md) | Sign in without a password | Accepted | 2026-11-06 |
-| [0011](0011-keep-sessions-in-postgresql.md) | Keep sessions in PostgreSQL | Accepted | 2026-11-06 |
-| [0012](0012-remember-me-with-a-rotating-hashed-token.md) | Remember me with a rotating, hashed token | Accepted | 2026-11-06 |
-| [0013](0013-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md) | Protect against CSRF with a token in a cookie and Fetch Metadata | Accepted | 2026-11-06 |
+| [0010](0010-send-emails-over-smtp-to-a-server-chosen-per-environment.md) | Send emails over SMTP to a server chosen per environment | Accepted | 2026-11-06 |
+| [0011](0011-sign-in-without-a-password.md) | Sign in without a password | Accepted | 2026-11-06 |
+| [0012](0012-keep-sessions-in-postgresql.md) | Keep sessions in PostgreSQL | Accepted | 2026-11-06 |
+| [0013](0013-remember-me-with-a-rotating-hashed-token.md) | Remember me with a rotating, hashed token | Accepted | 2026-11-06 |
+| [0014](0014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md) | Protect against CSRF with a token in a cookie and Fetch Metadata | Accepted | 2026-11-06 |
 
 ## How to write one
 

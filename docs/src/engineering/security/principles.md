@@ -159,7 +159,7 @@ handlers, so that a catch-all handler cannot turn it into a 500.
 ## 🔑 Signing in
 
 A user signs in with a code of six digits sent to their email, in two calls: one asks for the code, the other
-sends it back. [ADR 0010](../adr/0010-sign-in-without-a-password.md) records why DrinkIt signs users in this way.
+sends it back. [ADR 0011](../adr/0011-sign-in-without-a-password.md) records why DrinkIt signs users in this way.
 
 ```mermaid
 ---
@@ -245,7 +245,7 @@ flowchart LR
 
 The cookies hold random values only, and what they grant lives in rows that a revocation deletes. A session ends
 after 30 idle minutes or 8 hours, and `Sessions.revokeAll` signs a user out everywhere at once.
-[ADR 0011](../adr/0011-keep-sessions-in-postgresql.md) records why the session lives in PostgreSQL and how long it
+[ADR 0012](../adr/0012-keep-sessions-in-postgresql.md) records why the session lives in PostgreSQL and how long it
 lasts. An anonymous caller gets no row: the CSRF token lives in its cookie, and the starter keeps no refused request.
 
 Every cookie is `Secure`, `SameSite=Lax` and `Path=/`, and the session and remember-me cookies are `HttpOnly`:
@@ -263,7 +263,7 @@ start with a prefix and no `Secure`.
 
 A remember-me cookie opens a new session once the current one has ended. Its token changes at each use and is stored
 hashed, so that a stolen copy shows itself the first time both copies are used, and it lasts 30 days from the
-sign-in. [ADR 0012](../adr/0012-remember-me-with-a-rotating-hashed-token.md) explains the rotation, its grace for
+sign-in. [ADR 0013](../adr/0013-remember-me-with-a-rotating-hashed-token.md) explains the rotation, its grace for
 parallel requests and the theft detection.
 
 ```mermaid
@@ -295,7 +295,7 @@ cross-site `POST`, and two checks of the backend stand behind it, on every metho
   the user typed. A client that sends no such header, such as curl, still needs the token.
 
 The sign-in needs the token too: without it, another site could sign the victim in to the attacker's account.
-[ADR 0013](../adr/0013-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md) records why the token lives in
+[ADR 0014](../adr/0014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md) records why the token lives in
 a cookie rather than in the session.
 
 ## 📋 Security headers

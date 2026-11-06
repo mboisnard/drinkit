@@ -24,7 +24,7 @@ services:
       start_interval: 1s
 
   # Applies the changelogs of deployment/updater, then its demo data, each time compose starts. Local only: a
-  # deployment runs the default changelog, never the demo one, whose admin anyone reading the local logs can sign in as
+  # deployment runs the default changelog, never the demo one, whose admin anyone reading the local emails can sign in as
   updater:
     image: ghcr.io/mboisnard/drinkit-updater:latest@sha256:839cfa2acbb037f42d0c03b9da897ffd67b0dddcc03d057edcec948c43cc4a56
     depends_on:
@@ -70,6 +70,28 @@ services:
       retries: 10
       start_period: 30s
       start_interval: 1s
+
+  mailpit:
+    image: axllent/mailpit:v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      MP_DISABLE_VERSION_CHECK: true
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 2s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+      start_interval: 1s
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
 
   flipt:
     image: flipt/flipt:v2.14.1@sha256:fb8087a8819ae06a4ca84aaa7ab31bb4acb65006a38f4cc04c30fdf16e4e2630

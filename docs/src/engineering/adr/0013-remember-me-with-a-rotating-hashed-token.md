@@ -1,4 +1,4 @@
-# 0012. Remember me with a rotating, hashed token
+# 0013. Remember me with a rotating, hashed token
 
 - Status: accepted
 - Date: 2026-11-06
@@ -10,7 +10,7 @@ itself the first time both copies are used.
 ## Context
 
 Sessions are short, 30 minutes idle and 8 hours at most, as
-[ADR 0011](0011-keep-sessions-in-postgresql.md) records. A user still expects to stay signed in on their own phone for
+[ADR 0012](0012-keep-sessions-in-postgresql.md) records. A user still expects to stay signed in on their own phone for
 weeks, especially one who scans a bottle in a shop and does not want to sign in again first.
 
 The remember-me services that Spring ships do not fit as they are: one keeps the session itself alive for weeks, one

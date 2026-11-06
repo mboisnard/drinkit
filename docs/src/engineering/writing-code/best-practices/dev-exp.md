@@ -16,7 +16,10 @@ frontend the app on `localhost:3000`.
   data. A new database gets its schema, and a changelog you pull reaches yours at the next start. A changelog that
   fails stops the backend.
 - **An account is ready to sign in.** `demo@drinkit.test` is an admin of the local database. It signs in with a
-  code that the backend writes to its logs, since the `dev` profile sends no email.
+  code that the backend emails to [Mailpit](https://mailpit.axllent.org/), which keeps every email of a local start
+  and shows it on `http://localhost:8025`: nothing reaches a real mailbox.
+  [ADR 0010](../../adr/0010-send-emails-over-smtp-to-a-server-chosen-per-environment.md) records how each
+  environment sends its emails.
   [ADR 0003](../../adr/0003-apply-the-schema-through-the-updater.md) records why the demo data never reaches a
   deployed database.
 

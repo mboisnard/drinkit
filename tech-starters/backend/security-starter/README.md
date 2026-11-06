@@ -135,10 +135,10 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 - **Tables**: the [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md) creates
   the `drinkit_session` tables of the sessions, the remember-me tokens and the sign-in codes. The sign-in by code needs
   PostgreSQL.
-- **Choices**: ADRs [0010](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0010-sign-in-without-a-password.md),
-  [0011](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0011-keep-sessions-in-postgresql.md),
-  [0012](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0012-remember-me-with-a-rotating-hashed-token.md)
-  and [0013](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0013-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md)
+- **Choices**: ADRs [0011](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0011-sign-in-without-a-password.md),
+  [0012](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0012-keep-sessions-in-postgresql.md),
+  [0013](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0013-remember-me-with-a-rotating-hashed-token.md)
+  and [0014](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md)
   record the choices of the sign-in, the sessions, the remember-me and the CSRF protection.
 
 ## Configuration

@@ -35,6 +35,11 @@ emailSender.send(
 - **With `spring.mail.host` set**, the email goes to that SMTP server.
 - **Without a host**, the starter warns at startup and logs each email at `DEBUG`.
 
+The `dev` profile of the backend sends to the [Mailpit](https://mailpit.axllent.org/) of the local compose file, whose
+web interface on `http://localhost:8025` shows each email.
+[ADR 0010](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0010-send-emails-over-smtp-to-a-server-chosen-per-environment.md)
+records the SMTP server of each environment.
+
 ## Configuration
 
 | Property | Default | Environment variable |

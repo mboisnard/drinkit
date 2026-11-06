@@ -72,7 +72,7 @@ the header:
 1. In the cookie jar settings, add `localhost` to the domains that scripts may read.
 2. Add this script to the collection, under "Pre-request".
 3. Send `GET {{baseUrl}}/api/auth/csrf`, then `POST {{baseUrl}}/api/auth/code` with `{"email": "demo@drinkit.test"}`.
-4. Read the code in the backend logs: the `dev` profile sets no mail server, so each email is logged instead.
+4. Read the code in the email, which the `dev` profile sends to Mailpit, on `http://localhost:8025`.
 5. Send `POST {{baseUrl}}/api/auth/code/sign-in` with `{"email": "demo@drinkit.test", "code": "<the code>"}`.
 
 ```js
