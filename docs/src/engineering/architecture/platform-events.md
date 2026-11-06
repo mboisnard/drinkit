@@ -1,8 +1,8 @@
 # Platform events
 
 A platform event is a message that one part of the application publishes and that other parts handle later, apart
-from the code that published it. The creation of a user, for one, triggers the verification email. Code publishes
-through `PlatformEventPublisher` and handles it in a method annotated `@PlatformEventHandler`, whose parameter is the
+from the code that published it. A request for a sign-in code, for one, triggers its email. Code publishes through
+`PlatformEventPublisher` and handles it in a method annotated `@PlatformEventHandler`, whose parameter is the
 event. Both come from [`messaging-starter`][starter], a [tech starter](tech-starters.md), and neither shows the
 transport, what carries the event from one to the other. It is Spring application events inside the process today,
 and RabbitMQ is the target. Read this page before you publish or handle a platform event.
@@ -14,20 +14,20 @@ is gone once handled.
 
 ## 🧭 Why asynchronous messages
 
-A use case publishes what happened and returns. The work that follows, such as an email or an update in another
+Code publishes what happened and returns. The work that follows, such as an email or an update in another
 [bounded context](modular-monolith.md), runs later in a handler:
 
 ```mermaid
 flowchart LR
-  usecase["Use case<br/>creates a user, publishes it, returns"] --> publisher{{PlatformEventPublisher}}
-  publisher -. later .-> email["Handler<br/>sends the verification email"]
-  publisher -. later .-> next["A new handler<br/>no change to the use case"]
+  request["Request for a sign-in code<br/>publishes it, answers"] --> publisher{{PlatformEventPublisher}}
+  publisher -. later .-> email["Handler<br/>emails the code"]
+  publisher -. later .-> next["A new handler<br/>no change to the publisher"]
 ```
 
-The handler neither slows the use case down nor makes it fail. Its effect is eventually consistent with the use
-case: the email leaves some time after the creation, and a failed handler leaves the user created. The publisher
-does not know its handlers, so a new reaction is a new handler. A business handler lives in `drinkit-backend` and
-calls a use case, as a primary adapter of the [hexagonal architecture](hexagonal-architecture.md), while a technical
+The handler neither slows the publisher down nor makes it fail. Its effect is eventually consistent with the
+publisher's: the email leaves some time after the answer, and a failed handler leaves that answer as it was. The
+publisher does not know its handlers, so a new reaction is a new handler. A business handler lives in `drinkit-backend`
+and calls a use case, as a primary adapter of the [hexagonal architecture](hexagonal-architecture.md), while a technical
 one lives in its starter. Once a broker carries the events, a message also survives a restart and reaches several
 queues.
 
@@ -77,7 +77,7 @@ its own. This keeps the starter simple as long as one instance runs, with these 
 - the event of a handler that fails every attempt is dropped, after a log line
 - an event published inside a nested transaction that rolls back to its savepoint still goes out when the outer
   transaction commits. The retry of an [event-sourced](event-sourcing.md) write runs in such a nested transaction:
-  publish once that write has succeeded, never inside it, as the creation of a user does
+  publish once that write has succeeded, never inside it
 
 [#549](https://github.com/mboisnard/drinkit/issues/549) plans to keep these events in the database until a handler
 succeeds. The rebuild of a search index does not wait for it: it counts its batches done in the database and starts
@@ -120,8 +120,8 @@ failed message will come back after the same growing delay as today, which gives
 recover, then wait in a dead-letter queue for someone to look at it. Delivery will be at least once, and in no set
 order. Write events and handlers by these rules now, so that the move costs nothing:
 
-- **An event is named in the past tense,** such as `UserCreated`: it states a fact, so the publisher depends on none
-  of the handlers that react to it.
+- **An event is named in the past tense,** such as `SignInCodeRequested`: it states a fact, so the publisher depends
+  on none of the handlers that react to it.
 - **An event carries ids and facts that serialize to JSON, never an entity.** An entity ties the handler to the
   publisher's model, and is out of date by the time the handler runs.
 - **A handler is idempotent,** since a message can arrive twice: handling it twice has the effect of handling it

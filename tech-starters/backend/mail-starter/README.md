@@ -1,7 +1,7 @@
 # Mail Starter
 
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
-that sends the application's emails, such as the verification code at registration. An adapter injects
+that sends the application's emails, such as a sign-in code. An adapter injects
 `EmailSender`, and the starter delivers each email to an SMTP server or, when none is set, writes it to the logs.
 
 ```mermaid
@@ -26,7 +26,7 @@ emailSender.send(
     Email(
         sender = Sender("contact@drinkit.com"),
         recipients = Recipients(setOf(Recipient("jane.doe@example.com"))),
-        subject = Subject("Your verification code"),
+        subject = Subject("Your DrinkIt sign-in code"),
         content = Content(TXT, "Your code is 731904"),
     ),
 )

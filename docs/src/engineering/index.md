@@ -35,7 +35,7 @@ its bottom.
 ## 🗂️ For reference
 
 - **[Tech radars](tech-radars/index.md)**: the technologies and practices in use, and how much we trust each.
-- **[Security](security/principles.md)**: sessions, cookies, CSRF, headers and passwords, and
+- **[Security](security/principles.md)**: sessions, cookies, CSRF, headers and sign-in, and
   [how to call the API](security/calling-the-api.md).
 - **Generated pages**: the [business domains](resources/domains/domains.md) and the
   [tech starters](resources/tech-starters/tech-starters.md), written from the code by the

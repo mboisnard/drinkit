@@ -26,14 +26,16 @@ sequenceDiagram
   participant API as DrinkIt API
   Client->>API: GET /api/auth/csrf
   API-->>Client: XSRF-TOKEN
-  Client->>API: POST /api/auth/login, X-XSRF-TOKEN
+  Client->>API: POST /api/auth/code, X-XSRF-TOKEN, {email}
+  API-->>Client: 204, the code goes to the email
+  Client->>API: POST /api/auth/code/sign-in, X-XSRF-TOKEN,<br/>{email, code, rememberMe}
   API-->>Client: SESSION, remember-me when asked, a new XSRF-TOKEN
   Client->>API: other calls, X-XSRF-TOKEN on each change
   Client->>API: POST /api/auth/logout, X-XSRF-TOKEN
   API-->>Client: every cookie expired
 ```
 
-A login, or a sign-in by the remember-me cookie, sets a new CSRF token in its response, which the next request
+A sign-in, by code or by the remember-me cookie, sets a new CSRF token in its response, which the next request
 sends. A logout expires it, so the client calls `GET /api/auth/csrf` again before its next change.
 
 ## From the Nuxt app
@@ -69,7 +71,9 @@ the header:
 
 1. In the cookie jar settings, add `localhost` to the domains that scripts may read.
 2. Add this script to the collection, under "Pre-request".
-3. Send `GET {{baseUrl}}/api/auth/csrf`, then the login.
+3. Send `GET {{baseUrl}}/api/auth/csrf`, then `POST {{baseUrl}}/api/auth/code` with `{"email": "demo@drinkit.test"}`.
+4. Read the code in the backend logs: the `dev` profile sets no mail server, so each email is logged instead.
+5. Send `POST {{baseUrl}}/api/auth/code/sign-in` with `{"email": "demo@drinkit.test", "code": "<the code>"}`.
 
 ```js
 const url = pm.variables.replaceIn(pm.request.url.toString())

@@ -380,7 +380,7 @@ apply, as the examples of [Foreign keys](#foreign-keys) show.
 | `drop-index-before-build` | In `ddl/`, `DROP INDEX CONCURRENTLY IF EXISTS` right before each `CREATE INDEX CONCURRENTLY` of the same index | A failed build is rebuilt instead of kept as an invalid index |
 | `ddl-changes-no-data` | No `INSERT`, `UPDATE`, `DELETE`, `MERGE`, `TRUNCATE` or `COPY` in `ddl/` | Data changes run after the schema, and are reviewed on their own |
 | `dml-changes-no-schema` | Only `SET`, `RESET`, `INSERT`, `UPDATE`, `DELETE`, `MERGE`, `WITH` and `SELECT` in `dml/` and the demo data | A schema change there would run after the `ddl/` files and escape their rules, and a `BEGIN` or `COMMIT` would cut the transaction that Liquibase opens around the file |
-| `demo-stays-local` | No demo file among those `db.changelog-master.yml` runs | Every deployment runs that changelog, and the password of the demo admin is public |
+| `demo-stays-local` | No demo file among those `db.changelog-master.yml` runs | Every deployment runs that changelog, and anyone can sign in as the demo admin of a local start |
 
 ### Rules of Squawk
 

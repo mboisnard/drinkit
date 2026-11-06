@@ -26,21 +26,25 @@ flowchart LR
   end
   subgraph backend["Backend, same origin as the app"]
     direction TB
-    starter["security-starter<br/>Fetch Metadata, CSRF token, session,<br/>login, remember-me, URL rules"]
-    application["Application<br/>EndpointRules, @PreAuthorize,<br/>UserAccounts, controllers"]
+    starter["security-starter<br/>Fetch Metadata, CSRF token, session,<br/>sign-in by code, remember-me, URL rules"]
+    application["Application<br/>EndpointRules, @PreAuthorize,<br/>UserAccounts, SignInCodeSender, controllers"]
     starter --> application
   end
   subgraph postgres["PostgreSQL"]
     direction TB
     session[("spring_session<br/>one row per session")]
     remember[("remember_me_token<br/>token hashes")]
-    user[("user<br/>Argon2id hashes")]
+    code[("sign_in_code<br/>code hashes")]
+    user[("user<br/>accounts and roles")]
   end
+  mail["Mail server"]
   browser -- "HTTPS: cookies, X-XSRF-TOKEN,<br/>Sec-Fetch-Site, JSON" --> starter
   starter -- "Set-Cookie, security headers,<br/>JSON or a problem detail" --> browser
   starter --> session
   starter --> remember
+  starter --> code
   application -- "UserAccounts adapter" --> user
+  application -- "the code, after the answer" --> mail
 ```
 
 The browser holds random ids and the CSRF token, and what they grant lives in PostgreSQL. The browser's defenses keep
@@ -56,10 +60,13 @@ title: Each threat and the defenses that stop it
 flowchart LR
   forged["Forged request from another site"]
   xss["Injected script reads the session"]
-  fixation["Session id planted before the login"]
+  fixation["Session id planted before the sign-in"]
   stolenSession["Session cookie stolen"]
   stolenRemember["Remember-me cookie stolen"]
-  guessed["Password guessed or reused"]
+  guessed["Sign-in code guessed"]
+  dumped["Sign-in code read in the database"]
+  enumerated["Accounts found by their email"]
+  flooded["Code emails sent in bulk"]
   framed["Another site frames or reads a response"]
   sniffed["JSON run as a script"]
   unruled["Endpoint added without a rule"]
@@ -76,11 +83,12 @@ flowchart LR
   subgraph backendSide["Checked by the backend"]
     token["CSRF token in X-XSRF-TOKEN"]
     fetch["Fetch Metadata"]
-    newId["New session id at login"]
+    newId["New session id at sign-in"]
     lifetime["256-bit ids, 30 min idle, 8 h at most,<br/>Sessions.revokeAll"]
     rotation["Token rotated at each use,<br/>replay detected, hashes only"]
-    argon["Argon2id, one 401 for every failure"]
-    rateLimit["Rate limiting, not built yet"]
+    codeLimits["Code used once, 10 min,<br/>3 wrong tries per email and hour,<br/>SHA-256 hash only"]
+    sameAnswer["Same 204 for any email,<br/>one 401 for every failure"]
+    rateLimit["Rate limiting per email and IP,<br/>not built yet"]
     deny["Refused by default,<br/>coverage test in the build"]
     preAuthorize["@PreAuthorize on the method"]
     vocabulary["OWASP event names, user ids only"]
@@ -90,8 +98,11 @@ flowchart LR
   fixation --> newId & transport
   stolenSession --> transport & lifetime
   stolenRemember --> httponly & rotation
-  guessed --> argon
+  guessed --> codeLimits
   guessed -.-> rateLimit
+  dumped --> codeLimits
+  enumerated --> sameAnswer
+  flooded -.-> rateLimit
   framed --> origin
   sniffed --> nosniff & csp
   unruled --> deny
@@ -110,7 +121,7 @@ title: What a request meets, in order
 ---
 flowchart LR
   request([Request]) --> forgery["Fetch Metadata,<br/>then the CSRF token"]
-  forgery --> starterEndpoints["login, logout:<br/>answer at once"]
+  forgery --> starterEndpoints["sign-in, logout:<br/>answer at once"]
   forgery --> identify["session, or remember-me,<br/>or anonymous"]
   identify --> url{"URL rules,<br/>first match decides"}
   url -- "no rule matches" --> refused["Refused: 401 or 403"]
@@ -119,8 +130,8 @@ flowchart LR
   method -- allowed --> controller([Controller])
 ```
 
-Forged requests are refused first, before they reach the login or the logout. The URL rules then run from top to
-bottom: the starter's login, logout and CSRF endpoints, `/actuator/health`, the application's `EndpointRules` beans
+Forged requests are refused first, before they reach the sign-in or the logout. The URL rules then run from top to
+bottom: the starter's code, sign-in, logout and CSRF endpoints, `/actuator/health`, the application's `EndpointRules` beans
 by `@Order`, and a last rule that refuses anything else. The starter's endpoints come first so that no rule of the
 application can lock users out, and health so that no rule hides it from the platform's probes. A broad pattern such
 as `/api/**` goes in the last `EndpointRules` bean, since the first match decides.
@@ -147,35 +158,63 @@ handlers, so that a catch-all handler cannot turn it into a 500.
 
 ## 🔑 Signing in
 
+A user signs in with a code of six digits sent to their email, in two calls: one asks for the code, the other
+sends it back. [ADR 0010](../adr/0010-sign-in-without-a-password.md) records why DrinkIt signs users in this way.
+
 ```mermaid
 ---
-title: A login
+title: A sign-in by code
 ---
 sequenceDiagram
   participant Nuxt
-  participant Security as Spring Security
+  participant Starter as security-starter
+  participant Sender as SignInCodeSender
   participant Accounts as UserAccounts
   participant DB as PostgreSQL
-  Nuxt->>Security: GET /api/auth/csrf
-  Security-->>Nuxt: 204, Set-Cookie __Host-XSRF-TOKEN
-  Nuxt->>Security: POST /api/auth/login, X-XSRF-TOKEN<br/>{username, password, rememberMe}
-  Security->>Accounts: findByLogin(username)
-  Accounts-->>Security: UserAccount, or null
-  Security->>Security: check the password, new session id, new CSRF token
-  Security->>DB: insert into spring_session, and remember_me_token if asked
-  Security-->>Nuxt: 204, Set-Cookie __Host-SESSION, __Host-remember-me, __Host-XSRF-TOKEN
+  Nuxt->>Starter: GET /api/auth/csrf
+  Starter-->>Nuxt: 204, Set-Cookie __Host-XSRF-TOKEN
+  Nuxt->>Starter: POST /api/auth/code, X-XSRF-TOKEN<br/>{email}
+  Starter->>DB: replace the code hash of the email in sign_in_code
+  Starter->>Sender: send(email, code, locale)
+  Starter-->>Nuxt: 204, whatever the email
+  Note over Nuxt: the user reads the code in their mailbox
+  Nuxt->>Starter: POST /api/auth/code/sign-in, X-XSRF-TOKEN<br/>{email, code, rememberMe}
+  Starter->>DB: try the code, deleted once accepted
+  Starter->>Accounts: findByLogin(email), or register(email, locale) when none
+  Accounts-->>Starter: UserAccount: found, reactivated or created
+  Starter->>Starter: new session id, new CSRF token
+  Starter->>DB: insert into spring_session, and remember_me_token if asked
+  Starter-->>Nuxt: 204, Set-Cookie __Host-SESSION, __Host-remember-me, __Host-XSRF-TOKEN
 ```
 
-`UserAccounts` is the port the application implements to hand its accounts to the starter, which reads no table of the
-application. The login changes the session id, so that an id planted before the login is worth nothing after it, and
-replaces the CSRF token in its own response. An unknown login, a wrong password and a disabled account give the same
-401, so that the answer does not tell which logins exist. The application changes the session id the same way through
-`CurrentUser`, when it signs a user in after a registration or reloads their roles.
+The starter draws the code at random and keeps only its SHA-256 hash, for 10 minutes. An email gets 3 wrong tries per
+hour, whatever code it holds: a new request replaces the earlier code of that email, never its tries. The request never
+looks the email up, so it answers the same 204, as fast, whether an account exists or not. The email is trimmed and
+lower-cased before anything else.
 
-Passwords are hashed with Argon2id, and each hash keeps its `{argon2}` prefix so that a later change of algorithm can
-still read it. A password alone still signs a user in, and nothing slows down repeated attempts yet.
-[ADR 0010](../adr/0010-sign-in-without-a-password.md) records why DrinkIt replaces the password with a passkey,
-Google or Apple, or a code sent by email.
+The code is accepted once. The starter then asks the application for the account, and DrinkIt's backend brings back
+a user deleted less than 30 days ago or creates a new one. A user therefore exists only once a code has proven their
+email, and a new user completes their profile to get `ROLE_USER`. A wrong, used or expired code, the last try spent,
+or an account the application refuses give the same 401.
+
+The sign-in changes the session id, so that an id planted before it is worth nothing after it, and replaces the CSRF
+token in its own response. It also grants the factor of a one-time token, with its time, for a later check of a
+recent sign-in. The application changes the session id the same way through `CurrentUser`, when it signs in a user
+proven another way or reloads their roles.
+
+A code of six digits can be found back from its hash, which is why it lives minutes. Nothing limits the requests per
+email or per address yet: a caller can ask for code after code, and so send emails to any address.
+
+### Where each piece lives
+
+| Piece | Kind | Where |
+|---|---|---|
+| The code: its draw, hash, expiry and tries | Authentication | `security-starter`, in `drinkit_session.sign_in_code` |
+| The sending of the code | A channel the application picks | `SignInCodeSender`: `drinkit-backend` publishes a [platform event](../architecture/platform-events.md), whose handler emails the code after the answer |
+| The account: its creation, reactivation and roles | Business | The `user` [event stream](../architecture/event-sourcing.md), which the starter reaches through `UserAccounts` |
+
+`UserAccounts` and `SignInCodeSender` are the ports the application implements, so that the starter reads no table
+of the application and sends no email itself.
 
 ## 🍪 Sessions and cookies
 
@@ -188,14 +227,14 @@ flowchart LR
     direction TB
     sessionCookie["__Host-SESSION, HttpOnly<br/>the session id, 256 random bits<br/>until the browser closes"]
     rememberCookie["__Host-remember-me, HttpOnly<br/>a series per device, and a token<br/>30 days from the sign-in"]
-    xsrfCookie["__Host-XSRF-TOKEN, read by the app<br/>the CSRF token, no copy on the server<br/>replaced at each login, expired at logout"]
+    xsrfCookie["__Host-XSRF-TOKEN, read by the app<br/>the CSRF token, no copy on the server<br/>replaced at each sign-in, expired at logout"]
   end
   subgraph postgres["PostgreSQL"]
     direction TB
     session[("spring_session<br/>user id, creation, last access<br/>30 min idle, 8 h at most")]
     attributes[("spring_session_attributes, JSONB<br/>SecurityContext: user id, roles<br/>SessionData: a value per SessionKey")]
     remember[("remember_me_token<br/>series, user id, SHA-256<br/>of the current and previous token")]
-    user[("user, the application's<br/>Argon2id hash of the password")]
+    user[("user, the application's<br/>accounts and roles")]
   end
   sessionCookie -- "id" --> session
   session --- attributes
@@ -255,7 +294,7 @@ cross-site `POST`, and two checks of the backend stand behind it, on every metho
 - **Fetch Metadata.** The starter refuses a request whose `Sec-Fetch-Site` is neither `same-origin` nor `none`, a URL
   the user typed. A client that sends no such header, such as curl, still needs the token.
 
-The login needs the token too: without it, another site could sign the victim in to the attacker's account.
+The sign-in needs the token too: without it, another site could sign the victim in to the attacker's account.
 [ADR 0013](../adr/0013-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md) records why the token lives in
 a cookie rather than in the session.
 
@@ -286,9 +325,10 @@ cookies one by one instead.
 The starter logs each security event under a name of OWASP's
 [logging vocabulary](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Vocabulary_Cheat_Sheet.html), such as
 `authn_login_success`, `authn_login_fail`, `authn_token_reuse`, `authz_fail` or `session_revoked`, so that an alert
-can match on them. A user appears by their id only, and no email, password, token, cookie or session id reaches the
-[logs](../build-and-data/logging.md): a log is read by more people than the database. An anonymous caller refused is
-the normal start of every visit, and is not logged.
+can match on them. A success names its method, such as `authn_login_success:<id>,method=email_code` or
+`method=remember_me`. A user appears by their id only, and no email, sign-in code, token, cookie or session id
+reaches the [logs](../build-and-data/logging.md): a log is read by more people than the database. An anonymous
+caller refused is the normal start of every visit, and is not logged.
 
 ## 🧩 What the business code uses
 
