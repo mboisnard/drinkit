@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 @Service
 internal class EmailNotificationSender(private val emailSender: EmailSender) : NotificationSender {
 
-    override fun send(notification: Notification): Boolean = with(notification) {
+    override fun queue(notification: Notification) = with(notification) {
         val body = checkNotNull(content) { "An email is sent from a content, not from a template" }
         val email = Email(
             sender = Sender("contact@drinkit.com"),
@@ -23,6 +23,5 @@ internal class EmailNotificationSender(private val emailSender: EmailSender) : N
         )
 
         emailSender.send(email)
-        true
     }
 }
