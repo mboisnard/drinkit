@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS drinkit_application.user
     enabled        BOOLEAN                  NOT NULL,
     roles          VARCHAR(50) ARRAY        NOT NULL,
     modified       TIMESTAMP WITH TIME ZONE NOT NULL,
-    CONSTRAINT roles_check CHECK (roles::VARCHAR[] && ARRAY['ROLE_ADMIN'::VARCHAR, 'ROLE_USER'::VARCHAR, 'ROLE_REGISTRATION_IN_PROGRESS'::VARCHAR])
+    CONSTRAINT roles_check CHECK (roles::VARCHAR[] <@ ARRAY['ROLE_ADMIN'::VARCHAR, 'ROLE_USER'::VARCHAR, 'ROLE_REGISTRATION_IN_PROGRESS'::VARCHAR] AND cardinality(roles) > 0)
 );
 
 CREATE INDEX CONCURRENTLY IF NOT EXISTS user_email_idx

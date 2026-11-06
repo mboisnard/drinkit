@@ -149,7 +149,7 @@ open class User(
     override fun getIndexes(): List<Index> = listOf(USER_EMAIL_IDX, USER_ENABLED_IDX)
     override fun getPrimaryKey(): UniqueKey<UserRecord> = USER_PKEY
     override fun getChecks(): List<Check<UserRecord>> = listOf(
-        Internal.createCheck(this, DSL.name("roles_check"), "(((roles)::character varying[] && ARRAY['ROLE_ADMIN'::character varying, 'ROLE_USER'::character varying, 'ROLE_REGISTRATION_IN_PROGRESS'::character varying]))", true)
+        Internal.createCheck(this, DSL.name("roles_check"), "((((roles)::character varying[] <@ ARRAY['ROLE_ADMIN'::character varying, 'ROLE_USER'::character varying, 'ROLE_REGISTRATION_IN_PROGRESS'::character varying]) AND (cardinality(roles) > 0)))", true)
     )
     override fun `as`(alias: String): User = User(DSL.name(alias), this)
     override fun `as`(alias: Name): User = User(alias, this)
