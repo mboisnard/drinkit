@@ -5,6 +5,7 @@ package com.drinkit.security.generated.jooq
 
 
 import com.drinkit.security.generated.jooq.tables.RememberMeToken
+import com.drinkit.security.generated.jooq.tables.SignInCode
 import com.drinkit.security.generated.jooq.tables.SpringSession
 import com.drinkit.security.generated.jooq.tables.SpringSessionAttributes
 
@@ -35,6 +36,11 @@ open class DrinkitSession : SchemaImpl(DSL.name("drinkit_session"), DefaultCatal
     val REMEMBER_ME_TOKEN: RememberMeToken get() = RememberMeToken.REMEMBER_ME_TOKEN
 
     /**
+     * The table <code>drinkit_session.sign_in_code</code>.
+     */
+    val SIGN_IN_CODE: SignInCode get() = SignInCode.SIGN_IN_CODE
+
+    /**
      * The table <code>drinkit_session.spring_session</code>.
      */
     val SPRING_SESSION: SpringSession get() = SpringSession.SPRING_SESSION
@@ -48,6 +54,7 @@ open class DrinkitSession : SchemaImpl(DSL.name("drinkit_session"), DefaultCatal
 
     override fun getTables(): List<Table<*>> = listOf(
         RememberMeToken.REMEMBER_ME_TOKEN,
+        SignInCode.SIGN_IN_CODE,
         SpringSession.SPRING_SESSION,
         SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES
     )

@@ -9,7 +9,6 @@ import com.drinkit.generated.jooq.tables.Cellar
 import com.drinkit.generated.jooq.tables.ExchangeRate
 import com.drinkit.generated.jooq.tables.User
 import com.drinkit.generated.jooq.tables.UserEvent
-import com.drinkit.generated.jooq.tables.VerificationToken
 
 
 
@@ -32,8 +31,3 @@ val USER: User = User.USER
  * The table <code>drinkit_application.user_event</code>.
  */
 val USER_EVENT: UserEvent = UserEvent.USER_EVENT
-
-/**
- * The table <code>drinkit_application.verification_token</code>.
- */
-val VERIFICATION_TOKEN: VerificationToken = VerificationToken.VERIFICATION_TOKEN

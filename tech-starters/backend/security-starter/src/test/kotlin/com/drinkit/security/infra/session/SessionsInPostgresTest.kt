@@ -7,8 +7,8 @@ import com.drinkit.security.PostgresSessionsTest
 import com.drinkit.security.REMEMBER_ME_COOKIE
 import com.drinkit.security.SESSION_COOKIE
 import com.drinkit.security.Sessions
+import com.drinkit.security.SpySignInCodeSender
 import com.drinkit.security.TestAccounts
-import com.drinkit.security.USER_PASSWORD
 import com.drinkit.security.generated.jooq.DrinkitSession
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainAll
@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.system.CapturedOutput
 import org.springframework.http.HttpHeaders
 import org.springframework.jdbc.core.simple.JdbcClient
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.transaction.support.TransactionTemplate
 import tools.jackson.databind.json.JsonMapper
@@ -35,12 +34,12 @@ internal class SessionsInPostgresTest(
     private val database: JdbcClient,
     private val transactions: TransactionTemplate,
     accounts: InMemoryUserAccounts,
-    encoder: PasswordEncoder,
+    private val codes: SpySignInCodeSender,
     private val sessions: Sessions,
 ) {
 
     private val browser = CookieBrowser(mockMvc)
-    private val testAccounts = TestAccounts(accounts, encoder)
+    private val testAccounts = TestAccounts(accounts)
 
     @Test
     fun `keeps a login across requests, in JSON`() {
@@ -48,7 +47,7 @@ internal class SessionsInPostgresTest(
         val account = testAccounts.user()
 
         // When
-        browser.login(account.login, USER_PASSWORD)
+        browser.signIn(account.login, codes)
 
         // Then
         browser.get("/api/cellars/me").andExpect { jsonPath("$.id") { value(account.id) } }
@@ -63,7 +62,7 @@ internal class SessionsInPostgresTest(
         val underContextPath = CookieBrowser(mockMvc, contextPath = "/drinkit")
 
         // When
-        val login = underContextPath.login(account.login, USER_PASSWORD).andReturn().response
+        val login = underContextPath.signIn(account.login, codes).andReturn().response
 
         // Then
         val setCookie = login.getHeaders(HttpHeaders.SET_COOKIE).single { it.startsWith("$SESSION_COOKIE=") }
@@ -72,23 +71,22 @@ internal class SessionsInPostgresTest(
     }
 
     @Test
-    fun `keeps no password hash in the session of a user the application signs in or refreshes`() {
+    fun `keeps no sign-in code in the session of a user who signed in with it`() {
         // Given
-        val account = testAccounts.withHash("{argon2}a-hash-that-stays-with-the-accounts")
+        val account = testAccounts.user()
 
         // When
-        browser.post("/api/public/sign-in-as/${account.id}").andExpect { status { isOk() } }
-        browser.post("/api/cellars/refresh").andExpect { status { isOk() } }
+        browser.signIn(account.login, codes).andExpect { status { isNoContent() } }
 
         // Then
-        attributesOf(account.id).toString() shouldNotContain "a-hash-that-stays-with-the-accounts"
+        attributesOf(account.id).toString() shouldNotContain codes.lastCodeOf(account.login)
     }
 
     @Test
     fun `ends a session 8 hours after its creation, however active`() {
         // Given
         val account = testAccounts.user()
-        browser.login(account.login, USER_PASSWORD)
+        browser.signIn(account.login, codes)
 
         // When
         age(account.id, Duration.ofHours(8).plusMinutes(1))
@@ -101,7 +99,7 @@ internal class SessionsInPostgresTest(
     fun `keeps a session younger than 8 hours`() {
         // Given
         val account = testAccounts.user()
-        browser.login(account.login, USER_PASSWORD)
+        browser.signIn(account.login, codes)
 
         // When
         age(account.id, Duration.ofHours(8).minusMinutes(1))
@@ -114,7 +112,7 @@ internal class SessionsInPostgresTest(
     fun `signs out, without an error, a user whose session can no longer be read`(output: CapturedOutput) {
         // Given
         val account = testAccounts.user()
-        browser.login(account.login, USER_PASSWORD)
+        browser.signIn(account.login, codes)
 
         // When
         transactions.executeWithoutResult {
@@ -135,7 +133,7 @@ internal class SessionsInPostgresTest(
     fun `deletes the session at logout`() {
         // Given
         val account = testAccounts.user()
-        browser.login(account.login, USER_PASSWORD)
+        browser.signIn(account.login, codes)
 
         // When
         browser.post("/api/auth/logout").andExpect { status { isNoContent() } }
@@ -148,8 +146,8 @@ internal class SessionsInPostgresTest(
     fun `revokes every session and remembered login of a user, and logs it`(output: CapturedOutput) {
         // Given
         val account = testAccounts.user()
-        browser.login(account.login, USER_PASSWORD)
-        val phone = CookieBrowser(mockMvc).apply { login(account.login, USER_PASSWORD, rememberMe = true) }
+        browser.signIn(account.login, codes)
+        val phone = CookieBrowser(mockMvc).apply { signIn(account.login, codes, rememberMe = true) }
         val phoneOpenedAgain = CookieBrowser(mockMvc).apply { keep(phone.cookie(REMEMBER_ME_COOKIE).shouldNotBeNull()) }
 
         // When
@@ -177,7 +175,7 @@ internal class SessionsInPostgresTest(
     fun `reads back the session data of a user, with its types`() {
         // Given
         val account = testAccounts.user()
-        browser.login(account.login, USER_PASSWORD)
+        browser.signIn(account.login, codes)
 
         // When
         browser.put("/api/public/preferences").andExpect { status { isNoContent() } }

@@ -8,7 +8,6 @@ import com.drinkit.generated.jooq.tables.Cellar
 import com.drinkit.generated.jooq.tables.ExchangeRate
 import com.drinkit.generated.jooq.tables.User
 import com.drinkit.generated.jooq.tables.UserEvent
-import com.drinkit.generated.jooq.tables.VerificationToken
 
 import kotlin.collections.List
 
@@ -51,18 +50,12 @@ open class DrinkitApplication : SchemaImpl(DSL.name("drinkit_application"), Defa
      */
     val USER_EVENT: UserEvent get() = UserEvent.USER_EVENT
 
-    /**
-     * The table <code>drinkit_application.verification_token</code>.
-     */
-    val VERIFICATION_TOKEN: VerificationToken get() = VerificationToken.VERIFICATION_TOKEN
-
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
         Cellar.CELLAR,
         ExchangeRate.EXCHANGE_RATE,
         User.USER,
-        UserEvent.USER_EVENT,
-        VerificationToken.VERIFICATION_TOKEN
+        UserEvent.USER_EVENT
     )
 }

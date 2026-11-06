@@ -39,33 +39,25 @@ open class UserRecord private constructor() : UpdatableRecordImpl<UserRecord>(Us
         set(value): Unit = set(4, value)
         get(): String = get(4) as String
 
-    open var password: String
-        set(value): Unit = set(5, value)
-        get(): String = get(5) as String
-
     open var lastconnection: OffsetDateTime?
-        set(value): Unit = set(6, value)
-        get(): OffsetDateTime? = get(6) as OffsetDateTime?
+        set(value): Unit = set(5, value)
+        get(): OffsetDateTime? = get(5) as OffsetDateTime?
 
     open var status: String
-        set(value): Unit = set(7, value)
-        get(): String = get(7) as String
-
-    open var verified: Boolean
-        set(value): Unit = set(8, value)
-        get(): Boolean = get(8) as Boolean
+        set(value): Unit = set(6, value)
+        get(): String = get(6) as String
 
     open var enabled: Boolean
-        set(value): Unit = set(9, value)
-        get(): Boolean = get(9) as Boolean
+        set(value): Unit = set(7, value)
+        get(): Boolean = get(7) as Boolean
 
     open var roles: Array<String?>
-        set(value): Unit = set(10, value)
-        get(): Array<String?> = get(10) as Array<String?>
+        set(value): Unit = set(8, value)
+        get(): Array<String?> = get(8) as Array<String?>
 
     open var modified: OffsetDateTime
-        set(value): Unit = set(11, value)
-        get(): OffsetDateTime = get(11) as OffsetDateTime
+        set(value): Unit = set(9, value)
+        get(): OffsetDateTime = get(9) as OffsetDateTime
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -76,16 +68,14 @@ open class UserRecord private constructor() : UpdatableRecordImpl<UserRecord>(Us
     /**
      * Create a detached, initialised UserRecord
      */
-    constructor(id: String, firstname: String? = null, lastname: String? = null, birthdate: LocalDate? = null, email: String, password: String, lastconnection: OffsetDateTime? = null, status: String, verified: Boolean, enabled: Boolean, roles: Array<String?>, modified: OffsetDateTime): this() {
+    constructor(id: String, firstname: String? = null, lastname: String? = null, birthdate: LocalDate? = null, email: String, lastconnection: OffsetDateTime? = null, status: String, enabled: Boolean, roles: Array<String?>, modified: OffsetDateTime): this() {
         this.id = id
         this.firstname = firstname
         this.lastname = lastname
         this.birthdate = birthdate
         this.email = email
-        this.password = password
         this.lastconnection = lastconnection
         this.status = status
-        this.verified = verified
         this.enabled = enabled
         this.roles = roles
         this.modified = modified

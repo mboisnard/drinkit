@@ -12,7 +12,7 @@ interface CurrentUser {
     /** The connected user, or null for an anonymous caller or outside a request. */
     fun orNull(): ConnectedUser?
 
-    /** Signs this request in as [userId], with a new session id, as a login would. Used right after a registration. */
+    /** Signs this request in as [userId], with a new session id, as a sign-in would, for a user proven another way. */
     fun signIn(userId: String): ConnectedUser
 
     /** Reloads the connected user's roles from [UserAccounts] under a new session id. Null when the account is gone. */

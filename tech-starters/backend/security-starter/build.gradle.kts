@@ -9,7 +9,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-session-jdbc")
     api("org.springframework.boot:spring-boot-starter-security")
-    runtimeOnly(libs.bouncycastle.bcprov)
 
     compileOnly("org.springframework.boot:spring-boot-starter-actuator")
 
@@ -26,7 +25,7 @@ jooq {
         configuration.apply {
             generator.apply {
                 database.apply {
-                    includes = "spring_session|spring_session_attributes|remember_me_token"
+                    includes = "spring_session|spring_session_attributes|remember_me_token|sign_in_code"
                     inputSchema = "drinkit_session"
                 }
                 target.apply {

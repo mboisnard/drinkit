@@ -1,5 +1,6 @@
 package com.drinkit.common
 
+import java.time.Duration
 import java.time.LocalDate
 
 object Constants {
@@ -13,10 +14,7 @@ object Constants {
 
     const val MAX_EMAIL_LENGTH = 100
 
-    const val MIN_PASSWORD_LENGTH = 10
-
-    // The login of the security starter refuses a longer one
-    const val MAX_PASSWORD_LENGTH = 128
+    val DELETED_ACCOUNT_RETENTION: Duration = Duration.ofDays(30)
 
     val MIN_BIRTH_DATE: LocalDate = LocalDate.parse("1900-01-01")
 

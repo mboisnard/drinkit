@@ -7,11 +7,12 @@ import org.springframework.security.authentication.RememberMeAuthenticationToken
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent
 import org.springframework.security.authorization.event.AuthorizationDeniedEvent
+import org.springframework.security.core.authority.FactorGrantedAuthority
 
 /**
  * Writes the security events in the vocabulary of the OWASP Logging Vocabulary cheat sheet, such as
  * `authn_login_success`, `authn_login_fail`, `authz_fail` or `session_revoked`, so that alerts and investigations
- * can search for a stable event name. Each line names the user by id only, never by email, and holds no password,
+ * can search for a stable event name. Each line names the user by id only, never by email, and holds no code,
  * token, cookie or session id: personal data and secrets stay out of the logs.
  *
  * OWASP: ASVS 5.0 V16.3.1, V16.3.2, V16.2.5, Logging Vocabulary and Logging Cheat Sheets (event names, no secrets).
@@ -43,8 +44,13 @@ internal class SecurityEventLogger {
 
     @EventListener
     fun onLoginSuccess(event: AuthenticationSuccessEvent) {
-        val method = if (event.authentication is RememberMeAuthenticationToken) "remember_me" else "password"
-        loginSucceeded(event.authentication.name, method)
+        val authentication = event.authentication
+        val method = when {
+            authentication is RememberMeAuthenticationToken -> "remember_me"
+            authentication.authorities.any { it.authority == FactorGrantedAuthority.OTT_AUTHORITY } -> "email_code"
+            else -> "other"
+        }
+        loginSucceeded(authentication.name, method)
     }
 
     @EventListener(AbstractAuthenticationFailureEvent::class)

@@ -29,8 +29,11 @@ internal interface PublicApi {
 
 internal interface AuthApi {
 
-    @PostMapping("/api/auth/login")
-    fun login()
+    @PostMapping("/api/auth/code")
+    fun requestSignInCode()
+
+    @PostMapping("/api/auth/code/sign-in")
+    fun signInWithCode()
 }
 
 internal interface UnruledApi {

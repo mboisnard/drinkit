@@ -8,8 +8,6 @@ import com.drinkit.generated.jooq.DrinkitApplication
 import com.drinkit.generated.jooq.indexes.USER_EMAIL_IDX
 import com.drinkit.generated.jooq.indexes.USER_ENABLED_IDX
 import com.drinkit.generated.jooq.keys.USER_PKEY
-import com.drinkit.generated.jooq.keys.VERIFICATION_TOKEN__FK_USER
-import com.drinkit.generated.jooq.tables.VerificationToken.VerificationTokenPath
 import com.drinkit.generated.jooq.tables.records.UserRecord
 
 import java.time.LocalDate
@@ -25,7 +23,6 @@ import org.jooq.ForeignKey
 import org.jooq.Index
 import org.jooq.InverseForeignKey
 import org.jooq.Name
-import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
@@ -106,11 +103,6 @@ open class User(
     val EMAIL: TableField<UserRecord, String?> = createField(DSL.name("email"), SQLDataType.VARCHAR(255).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.user.password</code>.
-     */
-    val PASSWORD: TableField<UserRecord, String?> = createField(DSL.name("password"), SQLDataType.VARCHAR(255).nullable(false), this, "")
-
-    /**
      * The column <code>drinkit_application.user.lastconnection</code>.
      */
     val LASTCONNECTION: TableField<UserRecord, OffsetDateTime?> = createField(DSL.name("lastconnection"), SQLDataType.TIMESTAMPWITHTIMEZONE(6), this, "")
@@ -119,11 +111,6 @@ open class User(
      * The column <code>drinkit_application.user.status</code>.
      */
     val STATUS: TableField<UserRecord, String?> = createField(DSL.name("status"), SQLDataType.VARCHAR(50).nullable(false), this, "")
-
-    /**
-     * The column <code>drinkit_application.user.verified</code>.
-     */
-    val VERIFIED: TableField<UserRecord, Boolean?> = createField(DSL.name("verified"), SQLDataType.BOOLEAN.nullable(false), this, "")
 
     /**
      * The column <code>drinkit_application.user.enabled</code>.
@@ -158,38 +145,9 @@ open class User(
      * Create a <code>drinkit_application.user</code> table reference
      */
     constructor(): this(DSL.name("user"), null)
-
-    constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UserRecord>?, parentPath: InverseForeignKey<out Record, UserRecord>?): this(Internal.createPathAlias(path, childPath, parentPath), path, childPath, parentPath, USER, null, null)
-
-    /**
-     * A subtype implementing {@link Path} for simplified path-based joins.
-     */
-    open class UserPath : User, Path<UserRecord> {
-        constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UserRecord>?, parentPath: InverseForeignKey<out Record, UserRecord>?): super(path, childPath, parentPath)
-        private constructor(alias: Name, aliased: Table<UserRecord>): super(alias, aliased)
-        override fun `as`(alias: String): UserPath = UserPath(DSL.name(alias), this)
-        override fun `as`(alias: Name): UserPath = UserPath(alias, this)
-        override fun `as`(alias: Table<*>): UserPath = UserPath(alias.qualifiedName, this)
-    }
     override fun getSchema(): Schema? = if (aliased()) null else DrinkitApplication.DRINKIT_APPLICATION
     override fun getIndexes(): List<Index> = listOf(USER_EMAIL_IDX, USER_ENABLED_IDX)
     override fun getPrimaryKey(): UniqueKey<UserRecord> = USER_PKEY
-
-    private lateinit var _verificationToken: VerificationTokenPath
-
-    /**
-     * Get the implicit to-many join path to the
-     * <code>drinkit_application.verification_token</code> table
-     */
-    fun verificationToken(): VerificationTokenPath {
-        if (!this::_verificationToken.isInitialized)
-            _verificationToken = VerificationTokenPath(this, null, VERIFICATION_TOKEN__FK_USER.inverseKey)
-
-        return _verificationToken;
-    }
-
-    val verificationToken: VerificationTokenPath
-        get(): VerificationTokenPath = verificationToken()
     override fun getChecks(): List<Check<UserRecord>> = listOf(
         Internal.createCheck(this, DSL.name("roles_check"), "(((roles)::character varying[] && ARRAY['ROLE_ADMIN'::character varying, 'ROLE_USER'::character varying, 'ROLE_REGISTRATION_IN_PROGRESS'::character varying]))", true)
     )

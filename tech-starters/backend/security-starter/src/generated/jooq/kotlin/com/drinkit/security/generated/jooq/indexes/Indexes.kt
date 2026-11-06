@@ -6,6 +6,7 @@ package com.drinkit.security.generated.jooq.indexes
 
 
 import com.drinkit.security.generated.jooq.tables.RememberMeToken
+import com.drinkit.security.generated.jooq.tables.SignInCode
 import com.drinkit.security.generated.jooq.tables.SpringSession
 
 import org.jooq.Index
@@ -19,6 +20,7 @@ import org.jooq.impl.Internal
 // -------------------------------------------------------------------------
 
 val REMEMBER_ME_TOKEN_USER_ID_IDX: Index = Internal.createIndex(DSL.name("remember_me_token_user_id_idx"), RememberMeToken.REMEMBER_ME_TOKEN, arrayOf(RememberMeToken.REMEMBER_ME_TOKEN.USER_ID), false)
+val SIGN_IN_CODE_ATTEMPTS_RESET_AT_IDX: Index = Internal.createIndex(DSL.name("sign_in_code_attempts_reset_at_idx"), SignInCode.SIGN_IN_CODE, arrayOf(SignInCode.SIGN_IN_CODE.ATTEMPTS_RESET_AT), false)
 val SPRING_SESSION_EXPIRY_TIME_IDX: Index = Internal.createIndex(DSL.name("spring_session_expiry_time_idx"), SpringSession.SPRING_SESSION, arrayOf(SpringSession.SPRING_SESSION.EXPIRY_TIME), false)
 val SPRING_SESSION_PRINCIPAL_NAME_IDX: Index = Internal.createIndex(DSL.name("spring_session_principal_name_idx"), SpringSession.SPRING_SESSION, arrayOf(SpringSession.SPRING_SESSION.PRINCIPAL_NAME), false)
 val SPRING_SESSION_SESSION_ID_IDX: Index = Internal.createIndex(DSL.name("spring_session_session_id_idx"), SpringSession.SPRING_SESSION, arrayOf(SpringSession.SPRING_SESSION.SESSION_ID), true)

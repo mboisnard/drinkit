@@ -93,28 +93,57 @@ paths:
         '204':
           description: Cellar Deleted
 
-  /api/auth/login:
+  /api/auth/code:
     post:
-      operationId: authenticateUser
+      operationId: requestSignInCode
       tags:
         - auth
-      summary: Sign a user in
+      summary: Send a sign-in code to an email
       description: |
-        Served by the security starter, not by a controller. Sets the session cookie, and the remember-me cookie when
-        asked. Replaces the XSRF-TOKEN cookie in the same response, for the next unsafe request to send.
+        Served by the security starter, not by a controller. Sends a code of six digits to the email, valid for ten
+        minutes, in place of any earlier code of that email. The email gets three wrong tries per hour, whatever code
+        it holds. Answers the same, as fast, whether the email has an account or not: nothing is created until the
+        code is entered.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: 'authParameters.yaml#/components/schemas/SignInRequest'
+              $ref: 'authParameters.yaml#/components/schemas/SignInCodeRequest'
+      security:
+        - xsrfToken: []
+      responses:
+        '400':
+          description: No email in the body
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
+        '204':
+          description: Code sent, when the email can receive it
+
+  /api/auth/code/sign-in:
+    post:
+      operationId: signInWithCode
+      tags:
+        - auth
+      summary: Sign in with the code sent by email
+      description: |
+        Served by the security starter, not by a controller. Signs in the account of the email, creates it when the
+        email has none, or brings back an account deleted less than 30 days ago. Sets the session cookie, and the
+        remember-me cookie when asked. Replaces the XSRF-TOKEN cookie in the same response, for the next unsafe
+        request to send.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'authParameters.yaml#/components/schemas/SignInWithCodeRequest'
       security:
         - xsrfToken: []
       responses:
         '401':
           description: |
-            Wrong login or password, or a disabled account, with the same body for each: a problem detail of RFC 9457,
-            as application/problem+json.
+            Wrong, used or expired code, or an account that cannot sign in, with the same body for each: a problem
+            detail of RFC 9457, as application/problem+json.
         '403':
           $ref: 'common.yaml#/components/responses/Forbidden'
         '204':
@@ -151,82 +180,6 @@ paths:
       responses:
         '204':
           description: XSRF-TOKEN cookie set
-
-  /api/registration/new:
-    post:
-      operationId: createNewUser
-      tags:
-        - registration
-      summary: Create a new user
-      description: | 
-        Create a new user with email and password (this user is disable until email confirmation)
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: 'registrationParameters.yaml#/components/schemas/CreateUserRequest'
-      security:
-        - xsrfToken: []
-      responses:
-        '403':
-          $ref: 'common.yaml#/components/responses/Forbidden'
-        '400':
-          description: Bad request
-        '201':
-          description: User created
-          content:
-            application/json:
-              schema:
-                $ref: 'common.yaml#/components/schemas/UserId'
-
-  /api/registration/email/confirmation:
-    post:
-      operationId: confirmUserEmail
-      tags:
-        - registration
-      summary: Confirm User Email
-      description: |
-        Confirm the created user email using the validation code sent by the system
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: 'registrationParameters.yaml#/components/schemas/ConfirmEmailRequest'
-      security:
-        - session: []
-          xsrfToken: []
-      responses:
-        '401':
-          $ref: 'common.yaml#/components/responses/Unauthorized'
-        '403':
-          $ref: 'common.yaml#/components/responses/Forbidden'
-        '400':
-          description: Bad request
-        '200':
-          description: Email confirmed
-
-  /api/registration/email/resend/validation:
-    post:
-      operationId: resendValidationToken
-      tags:
-        - registration
-      summary: Resend validation token
-      description: |
-        Resend validation token for connected user
-      security:
-        - session: []
-          xsrfToken: []
-      responses:
-        '401':
-          $ref: 'common.yaml#/components/responses/Unauthorized'
-        '403':
-          $ref: 'common.yaml#/components/responses/Forbidden'
-        '400':
-          description: Bad request
-        '200':
-          description: Validation token resent
 
   /api/registration/user/information:
     post:

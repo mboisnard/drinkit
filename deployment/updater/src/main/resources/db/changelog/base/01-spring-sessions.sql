@@ -60,3 +60,19 @@ CREATE TABLE IF NOT EXISTS drinkit_session.remember_me_token
 
 CREATE INDEX CONCURRENTLY IF NOT EXISTS remember_me_token_user_id_idx
     ON drinkit_session.remember_me_token (user_id);
+
+-- Sign-in code: one live code per login, sent by email and stored as its hash in hexadecimal. A new request
+-- replaces the code, but not the tries the login has left until attempts_reset_at, so that asking for code after
+-- code gives no new tries. A row goes once its code has expired and its tries are reset
+
+CREATE TABLE IF NOT EXISTS drinkit_session.sign_in_code
+(
+    login             VARCHAR(320)             NOT NULL PRIMARY KEY,
+    code_hash         VARCHAR(64)              NOT NULL,
+    expires_at        TIMESTAMP WITH TIME ZONE NOT NULL,
+    attempts_left     INT                      NOT NULL,
+    attempts_reset_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE INDEX CONCURRENTLY IF NOT EXISTS sign_in_code_attempts_reset_at_idx
+    ON drinkit_session.sign_in_code (attempts_reset_at);

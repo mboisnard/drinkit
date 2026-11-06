@@ -12,4 +12,6 @@ class SpyNotificationSender : NotificationSender {
     }
 
     fun count(): Int = sentNotifications.size
+
+    fun lastSent(): Notification? = sentNotifications.lastOrNull()
 }

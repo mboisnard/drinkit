@@ -3,8 +3,10 @@ package com.drinkit.security
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import java.util.Locale
 
 private const val LOGIN = "ada@drinkit.test"
+private const val NEW_LOGIN = "grace@drinkit.test"
 
 /** The behavior every [UserAccounts] keeps: run it against the application's adapter. */
 abstract class UserAccountsTestContract {
@@ -36,5 +38,14 @@ abstract class UserAccountsTestContract {
 
         // Then
         byId.shouldNotBeNull() shouldBe accounts.findByLogin(LOGIN)
+    }
+
+    @Test
+    fun `finds by login the account it registers for an unknown login`() {
+        // When
+        val registered = accounts.register(NEW_LOGIN, Locale.FRENCH)
+
+        // Then
+        registered.shouldNotBeNull() shouldBe accounts.findByLogin(NEW_LOGIN)
     }
 }

@@ -87,6 +87,35 @@ abstract class UsersTestContract {
     }
 
     @Test
+    fun `finds the deleted user of an email`() {
+        // Given
+        val user = userFixtures.givenAUserHistory()
+            .let { User.from(it) }
+            .copy(status = UserStatus.DELETED)
+        repository.saveOrUpdate(user)
+
+        // When
+        val foundUser = repository.findDeletedBy(user.email)
+
+        // Then
+        foundUser shouldBe user
+    }
+
+    @Test
+    fun `finds no deleted user for an email whose user is enabled`() {
+        // Given
+        val user = userFixtures.givenAUserHistory()
+            .let { User.from(it) }
+        repository.saveOrUpdate(user)
+
+        // When
+        val foundUser = repository.findDeletedBy(user.email)
+
+        // Then
+        foundUser shouldBe null
+    }
+
+    @Test
     fun `finds no user by an unknown email`() {
         // Given
         val email = Email("nobody@drinkit.test")

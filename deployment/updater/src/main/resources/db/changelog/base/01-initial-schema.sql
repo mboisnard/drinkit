@@ -45,10 +45,8 @@ CREATE TABLE IF NOT EXISTS drinkit_application.user
     lastname       VARCHAR(100),
     birthdate      DATE,
     email          VARCHAR(255)             NOT NULL,
-    password       VARCHAR(255)             NOT NULL,
     lastConnection TIMESTAMP WITH TIME ZONE,
     status         VARCHAR(50)              NOT NULL,
-    verified       BOOLEAN                  NOT NULL,
     enabled        BOOLEAN                  NOT NULL,
     roles          VARCHAR(50) ARRAY        NOT NULL,
     modified       TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -60,19 +58,6 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS user_email_idx
 
 CREATE INDEX CONCURRENTLY IF NOT EXISTS user_enabled_idx
     ON drinkit_application.user (enabled);
-
--- Verification Token
-
-CREATE TABLE IF NOT EXISTS drinkit_application.verification_token
-(
-    user_id     VARCHAR(24)                 NOT NULL PRIMARY KEY,
-    token       VARCHAR(100)                NOT NULL,
-    expiry_date TIMESTAMP WITH TIME ZONE    NOT NULL,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES drinkit_application.user (id) ON DELETE CASCADE
-);
-
-CREATE INDEX CONCURRENTLY IF NOT EXISTS verification_token_user_id_token_expiry_date_idx
-    ON drinkit_application.verification_token (user_id, token, expiry_date);
 
 -- Configuration
 

@@ -28,9 +28,9 @@ internal class JsonSessionConverterTest {
         .build()
 
     @Test
-    fun `reads back a password login with its factor`() {
+    fun `reads back a sign-in by code with its factor`() {
         // Given
-        val factor = FactorGrantedAuthority.withAuthority("FACTOR_PASSWORD").issuedAt(Instant.EPOCH).build()
+        val factor = FactorGrantedAuthority.withAuthority("FACTOR_OTT").issuedAt(Instant.EPOCH).build()
         val login = UsernamePasswordAuthenticationToken.authenticated(user, null, user.authorities + factor)
 
         // When

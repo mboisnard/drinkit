@@ -11,6 +11,11 @@ spring:
       ecb:
         base-url: https://www.ecb.europa.eu
 
+starters:
+  security:
+    code:
+      max-email-length: 100 # MAX_EMAIL_LENGTH of the domain
+
 server:
   port: ${PORT:8080}
   forward-headers-strategy: native

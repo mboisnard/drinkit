@@ -3,10 +3,12 @@ package com.drinkit.security.infra.chain
 import com.drinkit.security.EndpointRules
 import com.drinkit.security.infra.SecurityStarterProperties
 import com.drinkit.security.infra.SecurityStarterProperties.Cookie.Companion.SAME_SITE
+import com.drinkit.security.infra.code.CODE_REQUEST_PATH
+import com.drinkit.security.infra.code.CODE_SIGN_IN_PATH
+import com.drinkit.security.infra.code.EmailCodeAuthenticationProvider
+import com.drinkit.security.infra.code.EmailCodeSignInConfigurer
+import com.drinkit.security.infra.code.EmailCodeSignInFilter
 import com.drinkit.security.infra.events.SecurityEventLogger
-import com.drinkit.security.infra.login.JsonLoginConfigurer
-import com.drinkit.security.infra.login.JsonLoginFilter
-import com.drinkit.security.infra.login.LOGIN_PATH
 import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -22,6 +24,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.security.authorization.AuthorizationEventPublisher
 import org.springframework.security.authorization.SpringAuthorizationEventPublisher
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -67,10 +70,10 @@ private const val ACTUATOR_ENDPOINTS =
     "org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration"
 
 /**
- * Builds the one filter chain that protects every request of the application: the JSON login, the logout, the CSRF
- * protection of a single-page app, the security headers, and the access rules the application declares as
- * [EndpointRules]. It refuses any request no rule matches, so that a new endpoint is closed until someone opens it,
- * and it registers before Spring Boot's own chains, which then back off.
+ * Builds the one filter chain that protects every request of the application: the sign-in by a code sent by email,
+ * the logout, the CSRF protection of a single-page app, the security headers, and the access rules the application
+ * declares as [EndpointRules]. It refuses any request no rule matches, so that a new endpoint is closed until someone
+ * opens it, and it registers before Spring Boot's own chains, which then back off.
  *
  * OWASP: ASVS 5.0 V8.2.1, V3.4, Authorization and HTTP Headers Cheat Sheets (deny by default, security headers).
  */
@@ -93,6 +96,7 @@ internal class SecurityAutoConfiguration {
         context: ApplicationContext,
         endpointRules: ObjectProvider<EndpointRules>,
         rememberMeServices: ObjectProvider<RememberMeServices>,
+        emailCodeAuthenticationProvider: EmailCodeAuthenticationProvider,
         csrfTokenRepository: CsrfTokenRepository,
         sessionAuthenticationStrategy: SessionAuthenticationStrategy,
         securityContextRepository: SecurityContextRepository,
@@ -105,6 +109,9 @@ internal class SecurityAutoConfiguration {
         // single-page app reads from the XSRF cookie and sends back in the X-XSRF-TOKEN header.
         http.csrf { it.spa().csrfTokenRepository(csrfTokenRepository) }
         rememberMeServices.ifAvailable { services -> http.rememberMe { it.rememberMeServices(services) } }
+        http.authenticationProvider(emailCodeAuthenticationProvider)
+        // Spring Boot also gives the provider bean to a parent manager, which would try a refused code a second time
+        http.getSharedObject(AuthenticationManagerBuilder::class.java).parentAuthenticationManager(null)
 
         http {
             securityContext { this.securityContextRepository = securityContextRepository }
@@ -116,7 +123,12 @@ internal class SecurityAutoConfiguration {
             // By default, Spring saves a refused request in the session to replay it after the login. An API never
             // replays one, and saving it would open a session for every anonymous caller it refuses.
             requestCache { requestCache = NullRequestCache() }
-            with(JsonLoginConfigurer(JsonLoginFilter(jsonMapper), errorResponses))
+            with(
+                EmailCodeSignInConfigurer(
+                    EmailCodeSignInFilter(jsonMapper, properties.code.maxEmailLength),
+                    errorResponses,
+                ),
+            )
             logout {
                 logoutUrl = LOGOUT_PATH
                 logoutSuccessHandler = HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)
@@ -145,7 +157,8 @@ internal class SecurityAutoConfiguration {
             addFilterBefore<CsrfFilter>(FetchMetadataFilter(errorResponses))
             authorizeHttpRequests {
                 authorize(DispatcherTypeRequestMatcher(DispatcherType.ERROR), permitAll)
-                authorize(HttpMethod.POST, LOGIN_PATH, permitAll)
+                authorize(HttpMethod.POST, CODE_REQUEST_PATH, permitAll)
+                authorize(HttpMethod.POST, CODE_SIGN_IN_PATH, permitAll)
                 authorize(HttpMethod.POST, LOGOUT_PATH, permitAll)
                 authorize(HttpMethod.GET, CSRF_PATH, permitAll)
                 if (ClassUtils.isPresent(ACTUATOR_ENDPOINTS, context.classLoader)) {

@@ -3,8 +3,8 @@ package com.drinkit.security.infra.login
 import com.drinkit.security.Browser
 import com.drinkit.security.InMemoryUserAccounts
 import com.drinkit.security.SecuredApplicationTest
+import com.drinkit.security.SpySignInCodeSender
 import com.drinkit.security.TestAccounts
-import com.drinkit.security.USER_PASSWORD
 import com.drinkit.security.keptXsrfCookie
 import io.kotest.matchers.collections.shouldNotBeIn
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -12,20 +12,23 @@ import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.system.CapturedOutput
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.servlet.MockMvc
 
 @SecuredApplicationTest
-internal class CurrentUserTest(mockMvc: MockMvc, private val accounts: InMemoryUserAccounts, encoder: PasswordEncoder) {
+internal class CurrentUserTest(
+    mockMvc: MockMvc,
+    private val accounts: InMemoryUserAccounts,
+    codes: SpySignInCodeSender,
+) {
 
-    private val browser = Browser(mockMvc)
-    private val testAccounts = TestAccounts(accounts, encoder)
+    private val browser = Browser(mockMvc, codes)
+    private val testAccounts = TestAccounts(accounts)
 
     @Test
     fun `gives the roles of the user, without the factors of its login`() {
         // Given
         val account = testAccounts.user()
-        browser.login(account.login, USER_PASSWORD)
+        browser.signIn(account.login)
 
         // When
         val me = browser.get("/api/cellars/me")
@@ -70,7 +73,7 @@ internal class CurrentUserTest(mockMvc: MockMvc, private val accounts: InMemoryU
     fun `reloads the roles of the user at refresh, in a new session with a new XSRF token`() {
         // Given
         val account = testAccounts.user()
-        browser.login(account.login, USER_PASSWORD)
+        browser.signIn(account.login)
         val sessionId = browser.session.id
         val xsrf = browser.fetchXsrfCookie()
         val admin = accounts.findById(account.id).shouldNotBeNull().copy(roles = setOf("ROLE_USER", "ROLE_ADMIN"))
@@ -89,7 +92,7 @@ internal class CurrentUserTest(mockMvc: MockMvc, private val accounts: InMemoryU
     fun `signs out at refresh a user whose account is gone`() {
         // Given
         val account = testAccounts.user()
-        browser.login(account.login, USER_PASSWORD)
+        browser.signIn(account.login)
         accounts.remove(account.id)
 
         // When

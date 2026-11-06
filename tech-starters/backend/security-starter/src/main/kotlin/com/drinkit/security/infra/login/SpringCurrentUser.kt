@@ -60,7 +60,7 @@ internal class SpringCurrentUser(
     }
 
     // Rebuilt from the current authentication rather than a new one, so that it stays remembered or not and keeps the
-    // FACTOR_ authorities its login proved, such as the password: only the roles are replaced.
+    // FACTOR_ authorities its sign-in proved, such as the email code: only the roles are replaced.
     private fun Authentication.reloadedWith(user: UserDetails) = toBuilder()
         .principal(user)
         .authorities { authorities ->
@@ -70,8 +70,8 @@ internal class SpringCurrentUser(
         .build()
 
     private fun connect(authentication: Authentication): ConnectedUser {
-        // A login erases the password hash in Spring's ProviderManager, which signIn and refresh do not go through:
-        // without this, the hash would be stored in the session row.
+        // Spring's ProviderManager erases the credentials of a sign-in, which signIn and refresh do not go through:
+        // without this, they would be stored in the session row.
         (authentication as? CredentialsContainer)?.eraseCredentials()
 
         val exchange = currentExchange()

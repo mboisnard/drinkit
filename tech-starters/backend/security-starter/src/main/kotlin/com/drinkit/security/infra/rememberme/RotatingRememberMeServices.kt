@@ -4,7 +4,6 @@ import com.drinkit.security.Sessions
 import com.drinkit.security.infra.SecurityStarterProperties
 import com.drinkit.security.infra.events.SecurityEventLogger
 import com.drinkit.security.infra.hashOf
-import com.drinkit.security.infra.login.JsonLoginFilter
 import com.drinkit.security.infra.login.UserAccountsUserDetailsService
 import com.drinkit.security.infra.matchesHash
 import com.drinkit.security.infra.randomToken
@@ -30,8 +29,8 @@ private const val NANOS_PER_MICRO = 1_000L
 /**
  * Signs a returning user in from their remember-me cookie, which holds a series and a token. The token changes at
  * each visit and is stored hashed, so that a token that comes back after its rotation reveals a theft, of the cookie
- * or of the browser: the user is then signed out everywhere. A series ends at a fixed time after the password was
- * given, however often the user comes back, so that a stolen cookie does not open the account forever.
+ * or of the browser: the user is then signed out everywhere. A series ends at a fixed time after the sign-in, however
+ * often the user comes back, so that a stolen cookie does not open the account forever.
  *
  * OWASP: ASVS 5.0 V7.2.3, V7.3.2, V7.4.1 (rotated hashed token, reuse detection, absolute lifetime).
  */
@@ -53,8 +52,7 @@ internal class RotatingRememberMeServices(
     // Rows keep microseconds: a time with nanoseconds would shift every comparison and lifetime by a fraction
     private val microsecondClock = Clock.tick(clock, Duration.ofNanos(NANOS_PER_MICRO))
 
-    override fun rememberMeRequested(request: HttpServletRequest, parameter: String) =
-        JsonLoginFilter.rememberMeRequested(request)
+    override fun rememberMeRequested(request: HttpServletRequest, parameter: String) = request.rememberMeRequested
 
     override fun onLoginSuccess(
         request: HttpServletRequest,

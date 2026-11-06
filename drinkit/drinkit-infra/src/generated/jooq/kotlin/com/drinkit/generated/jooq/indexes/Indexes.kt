@@ -7,7 +7,6 @@ package com.drinkit.generated.jooq.indexes
 
 import com.drinkit.generated.jooq.tables.Cellar
 import com.drinkit.generated.jooq.tables.User
-import com.drinkit.generated.jooq.tables.VerificationToken
 
 import org.jooq.Index
 import org.jooq.impl.DSL
@@ -22,4 +21,3 @@ import org.jooq.impl.Internal
 val CELLAR_OWNER_ID_IDX: Index = Internal.createIndex(DSL.name("cellar_owner_id_idx"), Cellar.CELLAR, arrayOf(Cellar.CELLAR.OWNER_ID), false)
 val USER_EMAIL_IDX: Index = Internal.createIndex(DSL.name("user_email_idx"), User.USER, arrayOf(User.USER.EMAIL), false)
 val USER_ENABLED_IDX: Index = Internal.createIndex(DSL.name("user_enabled_idx"), User.USER, arrayOf(User.USER.ENABLED), false)
-val VERIFICATION_TOKEN_USER_ID_TOKEN_EXPIRY_DATE_IDX: Index = Internal.createIndex(DSL.name("verification_token_user_id_token_expiry_date_idx"), VerificationToken.VERIFICATION_TOKEN, arrayOf(VerificationToken.VERIFICATION_TOKEN.USER_ID, VerificationToken.VERIFICATION_TOKEN.TOKEN, VerificationToken.VERIFICATION_TOKEN.EXPIRY_DATE), false)

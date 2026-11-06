@@ -38,13 +38,11 @@
     <ID>NullableBooleanCheck:AnnotatedInfo.kt:UseCaseInfo$domain.customName?.let { className.contains(it.replace(" ", ""), ignoreCase = true) } ?: false</ID>
     <ID>ReturnCount:AnnotatedInfo.kt:CoreDomainInfo$fun findAssociatedUseCases: List&lt;UseCaseInfo&gt;</ID>
     <ID>ReturnCount:CompleteProfileInformation.kt:ProfileCompletionDecider$fun invoke: Decision</ID>
-    <ID>ReturnCount:ConfirmVerificationToken.kt:VerificationTokenDecider$fun decide: Decision</ID>
     <ID>ReturnCount:CreateNewUser.kt:UserCreationDecider$fun invoke: Decision</ID>
     <ID>ReturnCount:DeleteUser.kt:UserDeletionDecider$fun decide: Decision</ID>
     <ID>ReturnCount:ExchangeRateApiProvider.kt:ExchangeRateApiProvider$override fun fetchRates: List&lt;ExchangeRate&gt;</ID>
     <ID>ReturnCount:FindExchangeRate.kt:FindExchangeRate$private fun crossRateCalculationFromEuro: ExchangeRate?</ID>
     <ID>ReturnCount:PromoteAsAdmin.kt:AdminPromotionDecider$fun decide: Decision</ID>
-    <ID>ReturnCount:SendVerificationToken.kt:VerificationTokenSendingDecider$fun decide: Decision</ID>
     <ID>SpreadOperator:DrinkitApplication.kt:(*args)</ID>
     <ID>SpreadOperator:JooqUtils.kt:(*table.fields())</ID>
     <ID>SpreadOperator:UpdaterApplication.kt:(*args)</ID>
@@ -53,7 +51,6 @@
     <ID>TooManyFunctions:JooqPostgresExtension.kt:JooqPostgresExtension : BeforeAllCallbackAfterEachCallbackAfterAllCallbackParameterResolver</ID>
     <ID>UnsafeCallOnNullableType:CompleteProfileInformation.kt:CompleteProfileInformation$users.findEnabledBy(userId)!!</ID>
     <ID>UnsafeCallOnNullableType:ConfigurationKey.kt:ConfigurationKey$this::class.simpleName!!</ID>
-    <ID>UnsafeCallOnNullableType:ConfirmVerificationToken.kt:ConfirmVerificationToken$users.findEnabledBy(userId)!!</ID>
     <ID>UnsafeCallOnNullableType:DocumentationSymbolProcessor.kt:DocumentationSymbolProcessor$A::class.qualifiedName!!</ID>
     <ID>UnsafeCallOnNullableType:GCPCloudVisionAnalyzer.kt:GCPCloudVisionAnalyzer$ex.message!!</ID>
     <ID>UnsafeCallOnNullableType:GenerateObjectId.kt:GenerateObjectId$idType.primaryConstructor!!</ID>

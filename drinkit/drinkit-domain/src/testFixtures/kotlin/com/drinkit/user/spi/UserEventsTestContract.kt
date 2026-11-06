@@ -1,10 +1,14 @@
 package com.drinkit.user.spi
 
 import com.drinkit.event.sourcing.transaction.DuplicateSequenceException
+import com.drinkit.user.DeleteUserCommand
+import com.drinkit.user.ReactivateUserCommand
 import com.drinkit.user.UserFixtures
 import com.drinkit.user.core.Author
+import com.drinkit.user.core.PromotedAsAdmin
 import com.drinkit.user.core.UserHistory
-import com.drinkit.user.core.Verified
+import com.drinkit.user.withDeleted
+import com.drinkit.user.withReactivated
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
@@ -34,9 +38,24 @@ abstract class UserEventsTestContract {
         val savedUser = users.findEnabledBy(userInitialized.userId)
         savedUser.shouldNotBeNull() should {
             it.email shouldBe userInitialized.email
-            it.password shouldBe userInitialized.password
             it.roles shouldBe userInitialized.roles
         }
+    }
+
+    @Test
+    fun `keeps a deleted then reactivated user enabled`() {
+        // Given
+        val history = userFixtures.givenAUserHistory()
+        val author = Author.Connected(history.initEvent.userId)
+        val deleted = history.withDeleted(DeleteUserCommand(author), date = userFixtures.givenANewDate)
+        val reactivated = deleted.withReactivated(ReactivateUserCommand(author), date = userFixtures.givenANewDate)
+
+        // When
+        (listOf(reactivated.initEvent) + reactivated.remainingEvents).forEach { userEvents.save(it) }
+
+        // Then
+        userEvents.findAllBy(history.initEvent.userId) shouldBe reactivated
+        users.findEnabledBy(history.initEvent.userId).shouldNotBeNull()
     }
 
     @Test
@@ -45,7 +64,7 @@ abstract class UserEventsTestContract {
         val userInitialized = userFixtures.givenAUserHistory().initEvent
         userEvents.save(userInitialized)
 
-        val verifiedAtTheSameSequenceId = Verified(
+        val promotedAtTheSameSequenceId = PromotedAsAdmin(
             userId = userInitialized.userId,
             date = userFixtures.givenANewDate,
             author = Author.Connected(userInitialized.userId),
@@ -53,6 +72,6 @@ abstract class UserEventsTestContract {
         )
 
         // When / Then
-        shouldThrow<DuplicateSequenceException> { userEvents.save(verifiedAtTheSameSequenceId) }
+        shouldThrow<DuplicateSequenceException> { userEvents.save(promotedAtTheSameSequenceId) }
     }
 }

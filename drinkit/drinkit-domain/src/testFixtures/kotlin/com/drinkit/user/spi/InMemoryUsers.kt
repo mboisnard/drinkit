@@ -3,6 +3,7 @@ package com.drinkit.user.spi
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
+import com.drinkit.user.core.UserStatus
 
 class InMemoryUsers : Users {
 
@@ -18,6 +19,9 @@ class InMemoryUsers : Users {
     override fun findEnabledBy(email: Email): User? = users.values.firstOrNull { it.email == email && it.enabled }
 
     override fun exists(email: Email): Boolean = users.values.any { it.email == email }
+
+    override fun findDeletedBy(email: Email): User? =
+        users.values.firstOrNull { it.email == email && it.status == UserStatus.DELETED }
 
     fun count(): Int = users.size
 }

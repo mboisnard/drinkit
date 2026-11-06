@@ -7,7 +7,6 @@ import com.drinkit.user.UserCreationDecider.Decision.EmailAlreadyExists
 import com.drinkit.user.UserCreationDecider.Decision.EventToPersist
 import com.drinkit.user.UserCreationDecider.Decision.ValidationFailed
 import com.drinkit.user.UserFixtures.Companion.VALID_EMAIL
-import com.drinkit.user.UserFixtures.Companion.VALID_PASSWORD
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.Roles.Role.ROLE_REGISTRATION_IN_PROGRESS
@@ -27,14 +26,12 @@ internal class CreateNewUserTest {
     private val generateId = userFixtures.generateId
     private val users = userFixtures.users
     private val userEvents = userFixtures.userEvents
-    private val spyEventPublisher = userFixtures.spyEventPublisher
 
     @Test
-    fun `persist a new user with event & projection and publish a platform event`() {
+    fun `persists a new user of an email alone, with its event and its projection`() {
         // Given
         val command = CreateNewUserCommand(
             email = VALID_EMAIL,
-            password = VALID_PASSWORD,
             author = userFixtures.givenAnUnloggedAuthor,
             locale = Locale.FRANCE,
         )
@@ -47,7 +44,6 @@ internal class CreateNewUserTest {
         val createdUser = result.user
         userEvents.findAllBy(createdUser.id).shouldNotBeNull()
         users.findEnabledBy(createdUser.id) shouldBe createdUser
-        spyEventPublisher.countEventsOfType(com.drinkit.user.spi.UserCreated::class) shouldBe 1
     }
 
     @Test
@@ -56,7 +52,6 @@ internal class CreateNewUserTest {
         val email = VALID_EMAIL
         val command = CreateNewUserCommand(
             email = email,
-            password = VALID_PASSWORD,
             author = userFixtures.givenAnUnloggedAuthor,
             locale = Locale.FRANCE,
         )
@@ -79,7 +74,6 @@ internal class CreateNewUserTest {
             // Given
             val command = CreateNewUserCommand(
                 email = VALID_EMAIL,
-                password = VALID_PASSWORD,
                 author = userFixtures.givenAnUnloggedAuthor,
                 locale = Locale.FRANCE,
             )
@@ -101,7 +95,6 @@ internal class CreateNewUserTest {
             // Given
             val command = CreateNewUserCommand(
                 email = Email("invalidEmail@"),
-                password = VALID_PASSWORD,
                 author = userFixtures.givenAnUnloggedAuthor,
                 locale = Locale.FRANCE,
             )
@@ -125,7 +118,6 @@ internal class CreateNewUserTest {
             val date = userFixtures.givenANewDate
             val command = CreateNewUserCommand(
                 email = VALID_EMAIL,
-                password = VALID_PASSWORD,
                 author = userFixtures.givenAnUnloggedAuthor,
                 locale = Locale.FRANCE,
             )
@@ -145,7 +137,6 @@ internal class CreateNewUserTest {
                 it.date shouldBe date
                 it.author shouldBe command.author
                 it.email shouldBe command.email
-                it.password shouldBe command.password
                 it.roles shouldBe Roles(setOf(ROLE_REGISTRATION_IN_PROGRESS))
             }
         }

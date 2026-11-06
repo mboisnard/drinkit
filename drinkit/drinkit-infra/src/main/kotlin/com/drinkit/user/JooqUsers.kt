@@ -5,7 +5,6 @@ import com.drinkit.generated.jooq.tables.records.UserRecord
 import com.drinkit.postgresql.JooqRepository
 import com.drinkit.user.core.BirthDate
 import com.drinkit.user.core.Email
-import com.drinkit.user.core.EncodedPassword
 import com.drinkit.user.core.FirstName
 import com.drinkit.user.core.LastName
 import com.drinkit.user.core.ProfileInformation
@@ -32,9 +31,7 @@ internal class JooqUsers(private val dsl: DSLContext, private val clock: Clock) 
         val query = dsl.insertInto(USER)
             .set(USER.ID, user.id.value)
             .set(USER.EMAIL, user.email.value)
-            .set(USER.PASSWORD, user.password.value)
             .set(USER.STATUS, user.status.name)
-            .set(USER.VERIFIED, user.verified)
             .set(USER.ENABLED, user.enabled)
             .set(USER.ROLES, user.roles.allAsString().toTypedArray())
             .set(USER.FIRSTNAME, user.profile?.firstName?.value)
@@ -44,9 +41,7 @@ internal class JooqUsers(private val dsl: DSLContext, private val clock: Clock) 
             .onConflict(USER.ID)
             .doUpdate()
             .set(USER.EMAIL, user.email.value)
-            .set(USER.PASSWORD, user.password.value)
             .set(USER.STATUS, user.status.name)
-            .set(USER.VERIFIED, user.verified)
             .set(USER.ENABLED, user.enabled)
             .set(USER.ROLES, user.roles.allAsString().toTypedArray())
             .set(USER.FIRSTNAME, user.profile?.firstName?.value)
@@ -77,15 +72,18 @@ internal class JooqUsers(private val dsl: DSLContext, private val clock: Clock) 
         return count != 0
     }
 
+    override fun findDeletedBy(email: Email): User? = dsl.selectFrom(USER)
+        .where(USER.EMAIL.eq(email.value))
+        .and(USER.STATUS.eq(UserStatus.DELETED.name))
+        .fetchOne { it.toDomain() }
+
     private fun UserRecord.toDomain() = User(
         id = UserId(id),
         email = Email(email),
-        password = EncodedPassword(password),
         profile = toProfile(firstname, lastname, birthdate),
         lastConnection = lastconnection,
         roles = toRoles(roles),
         status = toStatus(status),
-        verified = verified,
     )
 
     private fun toProfile(firstname: String?, lastname: String?, birthdate: LocalDate?): ProfileInformation? {

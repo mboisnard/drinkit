@@ -18,6 +18,7 @@ dependencies {
     openApiInput(project(":drinkit-api-contract"))
 
     testImplementation(testFixtures(project(":drinkit-domain")))
+    testImplementation(testFixtures(project(":messaging-starter")))
     testImplementation(testFixtures(project(":security-starter")))
 }
 

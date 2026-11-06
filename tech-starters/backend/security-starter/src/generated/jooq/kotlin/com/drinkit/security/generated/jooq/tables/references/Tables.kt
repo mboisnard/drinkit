@@ -6,6 +6,7 @@ package com.drinkit.security.generated.jooq.tables.references
 
 
 import com.drinkit.security.generated.jooq.tables.RememberMeToken
+import com.drinkit.security.generated.jooq.tables.SignInCode
 import com.drinkit.security.generated.jooq.tables.SpringSession
 import com.drinkit.security.generated.jooq.tables.SpringSessionAttributes
 
@@ -15,6 +16,11 @@ import com.drinkit.security.generated.jooq.tables.SpringSessionAttributes
  * The table <code>drinkit_session.remember_me_token</code>.
  */
 val REMEMBER_ME_TOKEN: RememberMeToken = RememberMeToken.REMEMBER_ME_TOKEN
+
+/**
+ * The table <code>drinkit_session.sign_in_code</code>.
+ */
+val SIGN_IN_CODE: SignInCode = SignInCode.SIGN_IN_CODE
 
 /**
  * The table <code>drinkit_session.spring_session</code>.

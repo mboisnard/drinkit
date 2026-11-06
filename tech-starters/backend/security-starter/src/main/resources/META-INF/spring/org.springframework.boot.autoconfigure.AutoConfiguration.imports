@@ -2,3 +2,4 @@ com.drinkit.security.infra.chain.SecurityAutoConfiguration
 com.drinkit.security.infra.login.UserAccountsAutoConfiguration
 com.drinkit.security.infra.rememberme.RememberMeAutoConfiguration
 com.drinkit.security.infra.session.SessionsAutoConfiguration
+com.drinkit.security.infra.code.SignInCodeAutoConfiguration

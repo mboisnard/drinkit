@@ -9,18 +9,14 @@ import com.drinkit.generated.jooq.tables.Cellar
 import com.drinkit.generated.jooq.tables.ExchangeRate
 import com.drinkit.generated.jooq.tables.User
 import com.drinkit.generated.jooq.tables.UserEvent
-import com.drinkit.generated.jooq.tables.VerificationToken
 import com.drinkit.generated.jooq.tables.records.CellarRecord
 import com.drinkit.generated.jooq.tables.records.ExchangeRateRecord
 import com.drinkit.generated.jooq.tables.records.UserEventRecord
 import com.drinkit.generated.jooq.tables.records.UserRecord
-import com.drinkit.generated.jooq.tables.records.VerificationTokenRecord
 
-import org.jooq.ForeignKey
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
 import org.jooq.impl.Internal
-import org.jooq.impl.QOM.ForeignKeyRule
 
 
 
@@ -32,10 +28,3 @@ val CELLAR_PKEY: UniqueKey<CellarRecord> = Internal.createUniqueKey(Cellar.CELLA
 val EXCHANGE_RATE_PKEY: UniqueKey<ExchangeRateRecord> = Internal.createUniqueKey(ExchangeRate.EXCHANGE_RATE, DSL.name("exchange_rate_pkey"), arrayOf(ExchangeRate.EXCHANGE_RATE.SOURCE_CURRENCY, ExchangeRate.EXCHANGE_RATE.TARGET_CURRENCY), true)
 val USER_PKEY: UniqueKey<UserRecord> = Internal.createUniqueKey(User.USER, DSL.name("user_pkey"), arrayOf(User.USER.ID), true)
 val USER_EVENT_PKEY: UniqueKey<UserEventRecord> = Internal.createUniqueKey(UserEvent.USER_EVENT, DSL.name("user_event_pkey"), arrayOf(UserEvent.USER_EVENT.USER_ID, UserEvent.USER_EVENT.SEQUENCE_ID), true)
-val VERIFICATION_TOKEN_PKEY: UniqueKey<VerificationTokenRecord> = Internal.createUniqueKey(VerificationToken.VERIFICATION_TOKEN, DSL.name("verification_token_pkey"), arrayOf(VerificationToken.VERIFICATION_TOKEN.USER_ID), true)
-
-// -------------------------------------------------------------------------
-// FOREIGN KEY definitions
-// -------------------------------------------------------------------------
-
-val VERIFICATION_TOKEN__FK_USER: ForeignKey<VerificationTokenRecord, UserRecord> = Internal.createForeignKey(VerificationToken.VERIFICATION_TOKEN, DSL.name("fk_user"), arrayOf(VerificationToken.VERIFICATION_TOKEN.USER_ID), com.drinkit.generated.jooq.keys.USER_PKEY, arrayOf(User.USER.ID), true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION)
