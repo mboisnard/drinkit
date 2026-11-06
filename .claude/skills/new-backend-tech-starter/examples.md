@@ -261,13 +261,13 @@ internal class SmsAutoConfigurationTest {
 Written for a developer who consumes the starter, never for its maintainer: no internal class names, no wiring
 details.
 
-1. `# <Name> Starter` and one sentence on what it provides.
-2. `## What is <concept>?`: a few sentences and concrete use cases.
-3. `## Architecture Overview`: a Mermaid `sequenceDiagram` for the main flow, a `graph LR` for the component
-   boundaries and, with several implementations, for the selection. The existing starters colour consumer code
-   `#e1f5e1`, the public API `#e1e5ff`, the internal implementation `#fff3e1` and an external system `#ffe1e1`.
-4. `## Key Features`: what the consumer gains, with snippets.
-5. `## Configuration`: a table of each property, its default, its environment variable, and whether production
-   must set it.
-6. `## Usage`: the Gradle dependency, a business-code example, a test with the fixture, the integration test
-   annotation.
+1. `# <Name> Starter`, then one to three sentences on what it is for, in plain words.
+2. One small Mermaid diagram of where it fits: the application, the starter's API, the technology behind it, in a
+   few nodes.
+3. `## Usage`: the Gradle dependency, the minimal code or configuration, and the settings with their default and
+   environment variable.
+4. `## Tests`, when a consumer needs one: the fixture or the integration test annotation, in a few lines.
+5. `## Limits`, when a reader would trip on one: one to three bullets.
+
+A detail of the internals, an edge case or an explanation that a documentation page holds stays out: the README
+links the page instead, and names no issue.
