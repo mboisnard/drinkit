@@ -41,7 +41,7 @@ to it is a structuring choice: ask first, as `AGENTS.md` says.
 ## Backward compatibility
 
 The frontend and the backend deploy separately, so once DrinkIt is deployed, a change that fails a consumer built
-before it never lands in one pull request. Until then, ADR 0015 lets it land in one that adapts both sides. "Evolving the contract" on the
+before it never lands in one pull request. Until then, it may land in one that adapts both sides. "Evolving the contract" on the
 [contract-first page](../../../docs/src/engineering/architecture/contract-first.md) gives the breaking changes,
 the expand and contract steps, the pull request in which the frontend moves, and the opposite order for a new enum
 value in a response. Renaming an `operationId` or a tag changes no HTTP exchange: it renames the generated methods
