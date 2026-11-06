@@ -46,6 +46,8 @@ internal class RegistrationController(
 
             CompleteProfileInformation.Result.Forbidden -> ResponseEntity.status(HttpStatus.FORBIDDEN).build()
 
+            CompleteProfileInformation.Result.InvalidProfile -> ResponseEntity.badRequest().build()
+
             CompleteProfileInformation.Result.UserNotFound -> ResponseEntity.notFound().build()
         }
     }

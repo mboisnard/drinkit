@@ -50,10 +50,7 @@ internal class JooqUserEvents(
                 .execute()
         } catch (ex: DataAccessException) {
             if (ex.isEventSourcingSequenceException(USER_EVENT_PKEY.name)) {
-                throw DuplicateSequenceException(
-                    "${event.sequenceId} already exists for ${event.userId} when trying to save $event",
-                    ex,
-                )
+                throw DuplicateSequenceException("${event.sequenceId} already exists for ${event.userId}", ex)
             }
 
             throw ex

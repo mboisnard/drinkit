@@ -25,11 +25,11 @@ data class FirstName(val value: String) {
         addUnless(value.isNotBlank(), "FirstName should not be blank")
         addUnless(
             value.containsNoInvisibleCharacter(),
-            "FirstName should not contains invisible characters, $value",
+            "FirstName should not contains invisible characters",
         )
         addUnless(
             value.hasLengthBetween(MIN_FIRSTNAME_LENGTH, MAX_FIRSTNAME_LENGTH),
-            "FirstName should have size between $MIN_FIRSTNAME_LENGTH and $MAX_FIRSTNAME_LENGTH, $value",
+            "FirstName should have size between $MIN_FIRSTNAME_LENGTH and $MAX_FIRSTNAME_LENGTH",
         )
     }
 }
@@ -39,11 +39,11 @@ data class LastName(val value: String) {
         addUnless(value.isNotBlank(), "LastName should not be blank")
         addUnless(
             value.containsNoInvisibleCharacter(),
-            "LastName should not contains invisible characters, $value",
+            "LastName should not contains invisible characters",
         )
         addUnless(
             value.hasLengthBetween(MIN_LASTNAME_LENGTH, MAX_LASTNAME_LENGTH),
-            "LastName should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH, $value",
+            "LastName should have size between $MIN_LASTNAME_LENGTH and $MAX_LASTNAME_LENGTH",
         )
     }
 }
@@ -52,7 +52,7 @@ data class BirthDate(val value: LocalDate) {
     fun validate() = buildList {
         addUnless(
             value.isStrictlyBetween(MIN_BIRTH_DATE, LocalDate.now(Clock.systemUTC())),
-            "Birthdate should be between $MIN_BIRTH_DATE and now, $value",
+            "Birthdate should be between $MIN_BIRTH_DATE and now",
         )
     }
 }
