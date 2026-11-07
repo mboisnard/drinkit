@@ -1,0 +1,66 @@
+#!/bin/sh
+#
+# Prints the tokens of a Claude Code session per model, for its main thread and each type of subagent: peak is the
+# largest context of one call, weighted prices each kind of token against an input token of the same model.
+
+command -v jq >/dev/null 2>&1 || {
+    echo "session-tokens needs jq" >&2
+    exit 1
+}
+[ $# -eq 1 ] && [ -f "$1" ] || {
+    echo "usage: session-tokens <transcript.jsonl>, from ~/.claude/projects/<project>/" >&2
+    exit 1
+}
+
+tab=$(printf '\t')
+
+# Prints a line per assistant message of transcript <file>, tagged with <part>. On stdin, since the folders of
+# ~/.claude/projects start with a dash that jq would read as an option
+usage() {
+    jq -r --arg part "$2" 'select(.type == "assistant" and .message.usage and .message.model != "<synthetic>")
+        | .message as $m | $m.usage as $u
+        | [$m.id // .uuid // "", $part, $m.model, $u.input_tokens // 0, $u.cache_creation_input_tokens // 0,
+           $u.cache_read_input_tokens // 0, $u.output_tokens // 0] | @tsv' <"$1"
+}
+
+# The subagents of a session live in a folder named after its transcript
+messages() {
+    usage "$1" main
+    for transcript in "${1%.jsonl}"/subagents/*.jsonl; do
+        [ -f "$transcript" ] || continue
+        part=$(jq -r '.agentType // empty' 2>/dev/null <"${transcript%.jsonl}.meta.json")
+        usage "$transcript" "${part:-agent}"
+    done
+}
+
+# A message streamed over several lines repeats its id, and its last line holds its whole output
+messages "$1" | awk -F "$tab" -v OFS="$tab" '
+    $1 == "" { $1 = "line " NR }
+    !($1 in row) || $7 >= output[$1] { row[$1] = $0; output[$1] = $7 }
+    END {
+        for (id in row) {
+            split(row[id], field, FS)
+            key = field[2] OFS field[3]
+            context = field[4] + field[5] + field[6]
+            calls[key]++; input[key] += field[4]; write[key] += field[5]; read[key] += field[6]
+            out[key] += field[7]
+            if (context > peak[key]) peak[key] = context
+        }
+        for (key in calls) {
+            weighted = input[key] + 1.25 * write[key] + 0.1 * read[key] + 5 * out[key]
+            printf "%s\t%d\t%d\t%d\t%d\t%d\t%d\t%.0f\n", key, calls[key], input[key], write[key], read[key],
+                out[key], peak[key], weighted
+        }
+    }
+' | sort -t "$tab" -k 9,9nr | awk -F "$tab" '
+    BEGIN {
+        format = "%-20s %-24s %8s %12s %12s %14s %12s %10s %14s\n"
+        printf format, "part", "model", "calls", "input", "cache write", "cache read", "output", "peak", "weighted"
+    }
+    {
+        printf format, $1, $2, $3, $4, $5, $6, $7, $8, $9
+        for (column = 3; column <= 9; column++) if (column != 8) total[column] += $column
+        if ($8 > total[8]) total[8] = $8
+    }
+    END { printf format, "total", "", total[3], total[4], total[5], total[6], total[7], total[8], total[9] }
+'
