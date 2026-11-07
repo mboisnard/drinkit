@@ -6,10 +6,14 @@ import com.drinkit.security.infra.code.EmailCodeAuthenticationProvider
 import com.drinkit.security.infra.code.SignInCode
 import com.drinkit.security.infra.code.SignInCodes
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.AutoConfigurations
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.context.annotation.ImportCandidates
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider
 import org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation
+import org.springframework.core.type.classreading.SimpleMetadataReaderFactory
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.core.authority.AuthorityUtils
@@ -26,9 +30,18 @@ private val PATH_VARIABLE = Regex("""\{[^}]*}""")
 
 /**
  * Reads the Spring mappings of the types of [apiPackage], such as the interfaces generated from an OpenAPI contract,
- * and asks the starter's chain, built with [rules] alone, which ones it refuses. No application is started.
+ * and asks the starter's chain which ones it refuses. The chain holds [rules], by the names of their beans, plus the
+ * rules of the other tech starters on the classpath, such as the stream of sse-starter, under the application's
+ * [properties]: a rule named as a starter's replaces it, and a starter disabled brings none. No application is started.
  */
-class EndpointRulesCoverage(private val rules: List<EndpointRules>, private val apiPackage: String) {
+class EndpointRulesCoverage(
+    private val rules: Map<String, EndpointRules>,
+    private val apiPackage: String,
+    private val properties: List<String> = emptyList(),
+) {
+
+    constructor(rules: List<EndpointRules>, apiPackage: String, properties: List<String> = emptyList()) :
+        this(rules.withIndex().associate { (index, rule) -> "endpointRules$index" to rule }, apiPackage, properties)
 
     private val anonymous = AnonymousAuthenticationToken(
         "coverage",
@@ -39,8 +52,9 @@ class EndpointRulesCoverage(private val rules: List<EndpointRules>, private val 
     fun unruledEndpoints(): List<String> {
         val endpoints = endpoints()
         val unruled = mutableListOf<Pair<String, String>>()
-        rules.foldIndexed(securityChain()) { index, runner, rule ->
-            runner.withBean("endpointRules$index", EndpointRules::class.java, { rule })
+        val chain = properties.fold(securityChain()) { runner, property -> runner.withPropertyValues(property) }
+        rules.entries.fold(chain) { runner, (name, rule) ->
+            runner.withBean(name, EndpointRules::class.java, { rule })
         }.run { context ->
             // The matcher of the actuator's health endpoint finds the context through the servlet context
             context.servletContext?.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context)
@@ -49,12 +63,14 @@ class EndpointRulesCoverage(private val rules: List<EndpointRules>, private val 
         return unruled.map { (method, path) -> "$method $path" }.sorted()
     }
 
-    private fun securityChain() = WebApplicationContextRunner()
-        .withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration::class.java))
-        .withBean(JsonMapper::class.java, { JsonMapper() })
-        .withBean(EmailCodeAuthenticationProvider::class.java, {
-            EmailCodeAuthenticationProvider(NoSignInCodes, InMemoryUserAccounts(), Clock.systemUTC())
-        })
+    private fun securityChain() = startersRules().fold(
+        WebApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration::class.java))
+            .withBean(JsonMapper::class.java, { JsonMapper() })
+            .withBean(EmailCodeAuthenticationProvider::class.java, {
+                EmailCodeAuthenticationProvider(NoSignInCodes, InMemoryUserAccounts(), Clock.systemUTC())
+            }),
+    ) { runner, starter -> runner.withConfiguration(AutoConfigurations.of(starter)) }
 
     private fun isUnruled(context: WebApplicationContext, method: String, path: String): Boolean {
         val request = MockHttpServletRequest(context.servletContext, method, path.replace(PATH_VARIABLE, "sample"))
@@ -83,6 +99,20 @@ class EndpointRulesCoverage(private val rules: List<EndpointRules>, private val 
         scanner.addIncludeFilter { _, _ -> true }
         return scanner.findCandidateComponents(apiPackage)
             .map { ClassUtils.forName(checkNotNull(it.beanClassName), javaClass.classLoader) }
+    }
+
+    // The auto-configurations that bring their rules when security-starter is there, read without loading any class
+    private fun startersRules(): List<Class<*>> {
+        val classLoader = javaClass.classLoader
+        val metadata = SimpleMetadataReaderFactory(classLoader)
+
+        return ImportCandidates.load(AutoConfiguration::class.java, classLoader)
+            .filter { name ->
+                val condition = metadata.getMetadataReader(name).annotationMetadata
+                    .getAnnotationAttributes(ConditionalOnClass::class.java.name, true)
+                (condition?.get("value") as Array<*>?).orEmpty().contains(EndpointRules::class.java.name)
+            }
+            .map { ClassUtils.forName(it, classLoader) }
     }
 
     private fun join(prefix: String, path: String) =
