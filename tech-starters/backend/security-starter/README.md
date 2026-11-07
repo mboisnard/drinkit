@@ -167,7 +167,11 @@ From `testFixtures(project(":security-starter"))`:
 - `SpySignInCodeSender` keeps the last code sent to each login, for the test to sign in with, and `failFor(login)`
   makes the sending throw, as an unreachable mail server would.
 - `EndpointRulesCoverage(rules, apiPackage).unruledEndpoints()` lists the operations of the API contract that no rule
-  matches, without starting the application.
+  matches, without starting the application. It applies the rules that the other tech starters of the classpath bring,
+  such as the stream of `sse-starter`. Rules given by bean name replace the starter's rule of that name, and
+  `properties`, such as `starters.sse.enabled=false`, are those the application runs with. It finds a starter's
+  rule in an auto-configuration of `AutoConfiguration.imports` whose `@ConditionalOnClass` names `EndpointRules` by
+  class.
 
 ```kotlin
 val accounts = InMemoryUserAccounts("ada@drinkit.test" to UserAccount("ada-id", setOf("ROLE_USER")))
