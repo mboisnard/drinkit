@@ -29,7 +29,9 @@ is the decision to work it: step 4 moves it to In progress. Note an open blocker
 ## 3. Read the issue
 
 Read the whole issue, its parent epic and the code it touches. The criteria are under "Acceptance criteria", or
-"Expected behavior" for a bug.
+"Expected behavior" for a bug. A search across modules or conventions goes to the `code-explorer` agent, which
+hands back facts with their `path:line`: every file read here stays in the context of the session until it ends.
+Read yourself only the files you will change.
 
 Ask the maintainer before going on when a criterion is ambiguous or out of reach, or when the work needs a
 structuring choice. Once the maintainer settles it, record it with the `new-adr` skill in the same branch. Work
@@ -88,8 +90,9 @@ Blocking findings are gaps of the round. Its Important findings are fixed, or li
 reason they wait.
 
 On `NEEDS_WORK`, fix every gap in its whole extent, rerun its proof, commit, then start a new judge: never resume
-the previous one. After a second `NEEDS_WORK`, ask the maintainer whether to open the pull request with the
-remaining gaps listed, or to stop.
+the previous one. From the second round on, its prompt names the previous head, so the judge checks the delta
+since the last verdict rather than the whole branch. After a second `NEEDS_WORK`, ask the maintainer whether to
+open the pull request with the remaining gaps listed, or to stop.
 
 A verdict counts only for the head commit it names. Before any push, that commit is `git rev-parse HEAD`: a
 commit made after the verdict, a fix for CI included, needs a new round.
@@ -106,10 +109,10 @@ again, stop and report.
 
 ## 10. Review the pull request
 
-Once the pull request is open, start a fresh `general-purpose` agent with
-[the review prompt](examples.md#review-prompt) while CI runs, and wait for its findings. It follows `review-pr`,
-whose `SKILL.md` it reads itself since that skill loads only by name, and posts nothing: the maintainer reads the
-findings first. Like the judge's, its prompt holds no account of the work.
+Once the pull request is open, start a fresh `pr-reviewer` agent with
+[the review prompt](examples.md#review-prompt) while CI runs, and wait for its findings. It follows `review-pr`
+and posts nothing: the maintainer reads the findings first. Like the judge's, its prompt holds no account of the
+work.
 
 Write its findings, with the head commit it reviewed, to
 `$(git rev-parse --path-format=absolute --git-path claude/review.md)`, and put them in the report, each with its

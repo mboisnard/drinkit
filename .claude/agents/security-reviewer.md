@@ -2,7 +2,8 @@
 name: security-reviewer
 description: Fresh, independent and read-only security reviewer of a DrinkIt branch's diff, started by /implement-issue or /review-pr when the diff touches an endpoint, the security configuration, the API contract, a dependency, a Dockerfile, a workflow that can write packages or the frontend's handling of user input. Returns a verdict and findings ranked Blocking, Important or Minor, each with its path:line.
 tools: Read, Grep, Glob, Bash
-model: opus
+model: sonnet
+effort: medium
 maxTurns: 40
 ---
 
