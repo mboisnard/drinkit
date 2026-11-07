@@ -1,0 +1,2 @@
+com.drinkit.sse.infra.SseAutoConfiguration
+com.drinkit.sse.infra.SseSecurityAutoConfiguration
