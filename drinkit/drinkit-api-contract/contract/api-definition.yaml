@@ -19,6 +19,8 @@ tags:
     description: User operations
   - name: search
     description: Search operations
+  - name: sse
+    description: Server-sent events
 
 paths:
   /api/cellars:
@@ -180,6 +182,28 @@ paths:
       responses:
         '204':
           description: XSRF-TOKEN cookie set
+
+  /sse/event-stream:
+    get:
+      operationId: openServerEventsStream
+      tags:
+        - sse
+      summary: Open the server events stream of the signed-in user, or of the session of a visitor
+      description: |
+        Served by the SSE starter, not by a controller. Open it with the browser's EventSource, once per tab, not with
+        the generated client. It carries the events sent to the signed-in user, or to the session the application
+        opened for a visitor, each named by the application, and a comment line every 30 seconds that keeps it open.
+        It closes after 3 minutes, and EventSource opens it again. An event sent while the stream is closed is lost.
+      security: []
+      responses:
+        '204':
+          description: A visitor without a session, to whom no event can be sent. EventSource stops asking
+        '200':
+          description: The stream of the events
+          content:
+            text/event-stream:
+              schema:
+                type: string
 
   /api/registration/user/information:
     post:

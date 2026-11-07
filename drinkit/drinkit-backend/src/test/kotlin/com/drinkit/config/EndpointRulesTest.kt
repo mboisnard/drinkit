@@ -11,6 +11,7 @@ internal class EndpointRulesTest {
         EndpointRulesCoverage(
             rules = listOf(SecurityConfiguration().drinkitEndpoints()),
             apiPackage = "com.drinkit.api.generated.api",
+            servedByStarters = listOf("GET /sse/event-stream"),
         ).unruledEndpoints() shouldBe emptyList()
     }
 }
