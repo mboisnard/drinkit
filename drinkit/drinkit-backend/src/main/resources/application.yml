@@ -1,7 +1,7 @@
 spring:
   application.name: drinkit
   profiles:
-    include: monitoring,ocr,webclient
+    include: monitoring,ocr
   threads.virtual.enabled: true
 
   http:

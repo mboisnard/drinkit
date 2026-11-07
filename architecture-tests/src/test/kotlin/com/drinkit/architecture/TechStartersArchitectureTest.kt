@@ -75,7 +75,6 @@ internal class TechStartersArchitectureTest {
                 "starters.<name>.enabled and @ConditionalOnMissingBean, and is gone in an application of another " +
                 "root package. Declare the bean in the starter's @AutoConfiguration"
             suppress {
-                classFqName("com.drinkit.webclient.rest.RestClientRetryConfiguration", WEB_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.FeatureFlagsConfig", OPS_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.OpenFeatureFeatureFlags", OPS_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.OpenFeatureHealthIndicator", OPS_STARTERS)
@@ -110,10 +109,6 @@ internal class TechStartersArchitectureTest {
             description = "The application's own bean wins over a starter's: annotate the @Bean " +
                 "@ConditionalOnMissingBean"
             suppress {
-                function(
-                    "com.drinkit.webclient.rest.RestClientRetryConfiguration.retryingHttpServiceGroupConfigurer",
-                    WEB_STARTERS,
-                )
                 function("com.drinkit.featureflags.infra.FeatureFlagsConfig.openFeatureAPI", OPS_STARTERS)
                 function("com.drinkit.featureflags.infra.FeatureFlagsConfig.featureFlagFilter", OPS_STARTERS)
                 function("com.drinkit.featureflags.infra.FeatureFlagsConfig.openFeatureFliptClient", OPS_STARTERS)
