@@ -29,6 +29,9 @@ dependencies {
   out of service.
 - **Info**: git, build, Java, OS and process.
 - **Observations**: the spans of the Spring Security filters are off.
+- **Logs**: plain text, and one JSON line per event with `LOGGING_STRUCTURED_FORMAT_CONSOLE=logstash`, each with an
+  `application` field. The [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/logging.md)
+  says when.
 
 ## Monitoring a third party
 
