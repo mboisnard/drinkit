@@ -7,6 +7,7 @@ squawk = "2.70.0"
 
 # BOM Versions
 cucumber-dependencies = "8.0.4"
+opentelemetry-dependencies = "1.67.0"
 spring-ai-dependencies = "2.0.2"
 spring-boot-dependencies = "4.1.2"
 spring-cloud-gcp-dependencies = "8.2.4"
@@ -35,6 +36,7 @@ testcontainers-meilisearch = "2.0.0"
 [libraries]
 # BOM Dependencies
 cucumber-dependencies-bom = { module = "io.cucumber:cucumber-bom", version.ref = "cucumber-dependencies" }
+opentelemetry-dependencies-bom = { module = "io.opentelemetry:opentelemetry-bom", version.ref = "opentelemetry-dependencies" }
 spring-ai-dependencies-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai-dependencies" }
 spring-boot-dependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-dependencies" }
 spring-cloud-gcp-dependencies-bom = { module = "com.google.cloud:spring-cloud-gcp-dependencies", version.ref = "spring-cloud-gcp-dependencies" }
