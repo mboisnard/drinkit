@@ -156,7 +156,7 @@ the stricter of the two wins. A forgotten URL rule refuses the endpoint, and a t
 when an operation of the API contract has none. A forgotten annotation leaves the URL rule in force.
 
 Every refusal answers a JSON problem detail: 403 for a forged request, and for a rule 401 to an anonymous caller,
-403 to a signed-in one. The starter rethrows a refusal from a controller ahead of the application's exception
+403 to a signed-in one. Its `traceId` leads to the [logs](../build-and-data/logging.md) of the request. The starter rethrows a refusal from a controller ahead of the application's exception
 handlers, so that a catch-all handler cannot turn it into a 500.
 
 ## 🔑 Signing in

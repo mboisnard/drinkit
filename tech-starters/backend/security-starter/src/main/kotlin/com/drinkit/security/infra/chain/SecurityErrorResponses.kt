@@ -2,6 +2,7 @@ package com.drinkit.security.infra.chain
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.MDC
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
@@ -45,12 +46,14 @@ internal class SecurityErrorResponses(private val jsonMapper: JsonMapper) :
 
         jsonMapper.writeValue(
             response.outputStream,
-            mapOf(
-                "type" to "about:blank",
-                "title" to status.reasonPhrase,
-                "status" to status.value(),
-                "instance" to request.requestURI,
-            ),
+            buildMap {
+                put("type", "about:blank")
+                put("title", status.reasonPhrase)
+                put("status", status.value())
+                put("instance", request.requestURI)
+                // Put there by Micrometer Tracing, when the application has it: the logs of the request share it
+                MDC.get("traceId")?.let { put("traceId", it) }
+            },
         )
     }
 }

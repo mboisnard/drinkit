@@ -25,8 +25,15 @@ We use the Logstash format: Datadog maps its `level`, `message` and `logger_name
 ## 🔗 Fields of every line
 
 Each key of the MDC (the map of values that Logback attaches to every log of a thread) becomes a field of the JSON
-line. With Micrometer Tracing on the classpath, Spring Boot puts `traceId` and `spanId` there, and the plain text
-shows them after the level. Every line logged during one request shares its `traceId`.
+line. Three keys are set for each request:
+
+- `traceId` and `spanId`, by Micrometer Tracing, which the plain text also shows after the level. Every line logged
+  during one request shares its `traceId`, even when the export to OpenTelemetry is off.
+- `user.id`, by the `security-starter`, once the caller is signed in.
+
+A problem detail, the body of a 400, 401 or 403 that Spring or the `security-starter` writes, carries the same
+`traceId`. A user who reports an error gives it, and the logs of that request come up in one search. The MDC lives
+on its thread: work handed to another thread, such as a platform event, starts without these keys.
 
 ## 🙈 What never reaches a log
 

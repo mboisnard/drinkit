@@ -132,6 +132,9 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
   and lower-cased.
   [Calling the API](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/security/calling-the-api.md)
   shows how a front end or Postman uses them.
+- **Logs**: each log of a signed-in user's request carries `user.id`, and each refusal its `traceId`, as the
+  [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/logging.md)
+  says.
 - **Tables**: the [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md) creates
   the `drinkit_session` tables of the sessions, the remember-me tokens and the sign-in codes. The sign-in by code needs
   PostgreSQL.
