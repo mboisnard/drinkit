@@ -71,6 +71,20 @@ internal class WebClientAutoConfigurationTest {
     }
 
     @Test
+    fun `once its retries are spent, a GET gives the caller every I-O failure, the last one first`() {
+        runner.withPropertyValues("starters.webclient.retry.max-retries=1")
+            .withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 10) })
+            .run { context ->
+                // When
+                val failure = shouldThrow<ResourceAccessException> { context.getBean<GreetingClient>().greeting() }
+
+                // Then
+                failure.cause?.message shouldBe "$CONNECTION_RESET 2"
+                failure.cause?.suppressed?.map { it.message } shouldBe listOf("$CONNECTION_RESET 1")
+            }
+    }
+
+    @Test
     fun `the application's own retry configurer replaces the starter's`() {
         runner.withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 1) })
             .withBean(
@@ -129,7 +143,7 @@ internal class WebClientAutoConfigurationTest {
                 override fun executeInternal(): ClientHttpResponse {
                     attempts++
                     if (attempts <= failuresBeforeSuccess) {
-                        throw IOException(CONNECTION_RESET)
+                        throw IOException("$CONNECTION_RESET $attempts")
                     }
                     return MockClientHttpResponse(GREETING.toByteArray(), HttpStatus.OK)
                 }
