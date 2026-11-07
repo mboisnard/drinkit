@@ -27,8 +27,9 @@ graph LR
 
 - **One concern, no business word.** A starter depends on no module of the application and reads no table of a
   bounded context. A starter that needs two sentences to describe is two starters.
-- **Adding the dependency is enough.** One `@AutoConfiguration` does the wiring, with no Spring profile, and
-  `starters.<name>.enabled=false` turns it off. A bean found by component scan cannot reliably back off.
+- **Adding the dependency is enough.** Its `@AutoConfiguration` classes do the wiring, one plus one per optional
+  integration, with no Spring profile, and `starters.<name>.enabled=false` turns it off. A bean found by component
+  scan cannot reliably back off.
 - **The application has the last word.** Every bean backs off when the application declares its own, and every
   setting has a default under `starters.<name>.*` that an environment variable overrides.
 - **A small public API.** Everything else is Kotlin `internal`. A starter over a vendor SDK wraps what it must

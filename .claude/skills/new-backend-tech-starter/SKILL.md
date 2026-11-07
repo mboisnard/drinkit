@@ -1,6 +1,6 @@
 ---
 name: new-backend-tech-starter
-description: Creates a backend tech starter under tech-starters/backend, or brings an existing one up to convention, wired by one auto-configuration with no Spring profile, with its configuration properties, test fixtures and documentation. Use it when asked for a new tech starter, a reusable technical library for the backend, or a migration of an existing starter away from profile-based activation.
+description: Creates a backend tech starter under tech-starters/backend, or brings an existing one up to convention, wired by its auto-configurations with no Spring profile, with its configuration properties, test fixtures and documentation. Use it when asked for a new tech starter, a reusable technical library for the backend, or a migration of an existing starter away from profile-based activation.
 paths:
   - "tech-starters/backend/**"
 ---
@@ -16,8 +16,9 @@ the starter up to convention, as step 7 does, is an issue of its own.
 
 - [ ] No dependency on an application module (`-domain`, `-infra`, `-backend`), and everything but the public
       API is `internal`.
-- [ ] One `@AutoConfiguration` class, listed in `AutoConfiguration.imports`, does all the wiring. `src/main` holds
-      no `@Service`, `@Component`, `@Repository` or `@Configuration` stereotype, and no Spring profile.
+- [ ] One `@AutoConfiguration` class, plus one per optional integration, all listed in `AutoConfiguration.imports`,
+      does all the wiring. `src/main` holds no `@Service`, `@Component`, `@Repository` or `@Configuration`
+      stereotype, and no Spring profile.
 - [ ] Every bean is `@ConditionalOnMissingBean`, and `starters.<name>.enabled=false` switches the starter off.
 - [ ] Properties live under `starters.<name>.*`, constructor-bound with defaults in Kotlin, and the README gives
       each one's environment variable.
@@ -45,7 +46,7 @@ Settle these from the issue, and ask the maintainer what it leaves open, a new m
 6. Its properties, their defaults, and which ones production must set.
 7. Its test support: a double only, or also a Testcontainers JUnit extension.
 
-## 2. One auto-configuration, no stereotype
+## 2. Auto-configurations, no stereotype
 
 The component scan of an application starts from the package of its `@SpringBootApplication`, `com.drinkit` for
 `drinkit-backend`, which holds every starter package. That is why the older starters work with bare `@Service`
@@ -62,6 +63,13 @@ Traps:
   `org.springframework.boot.autoconfigure.jdbc`. Check each import against the jar before writing it.
 - Never add the starter to `spring.profiles.include`, and never use `@Profile`, even to choose an
   implementation: a starter that behaves differently in `dev` needs a property.
+
+An optional integration, such as a health indicator, a servlet filter or the access rule of an endpoint, goes in an
+`@AutoConfiguration` of its own, listed in the same `.imports` file, guarded by `@ConditionalOnClass` naming the
+type by class, with its dependency declared `compileOnly`. Never in a nested `@Configuration`, which the
+application's scan registers on its own, and which `starters.no-stereotype` refuses. A starter that serves an
+endpoint brings its `EndpointRules` that way, outside `/api/**`, as `SseSecurityAutoConfiguration` does, and
+`EndpointRulesCoverage` applies it in the application's coverage test.
 
 Several implementations: one property selects, its default is the safest one, and one branch carries
 `matchIfMissing = true` so the context always starts.

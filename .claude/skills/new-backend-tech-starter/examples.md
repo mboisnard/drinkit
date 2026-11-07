@@ -103,11 +103,23 @@ internal class SmsAutoConfiguration {
 
 ```
 com.drinkit.sms.infra.SmsAutoConfiguration
+com.drinkit.sms.infra.SmsHealthAutoConfiguration
 ```
 
-An optional integration, such as an actuator health indicator or a servlet filter, goes in a nested
-`@Configuration(proxyBeanMethods = false)` class guarded by `@ConditionalOnClass` or
-`@ConditionalOnWebApplication`, with its dependency declared `compileOnly`.
+An optional integration, such as an actuator health indicator or a servlet filter, goes in an auto-configuration of
+its own, listed in the same `.imports` file:
+
+```kotlin
+@AutoConfiguration(after = [SmsAutoConfiguration::class])
+@ConditionalOnClass(HealthIndicator::class)
+@ConditionalOnProperty(prefix = "starters.sms", name = ["enabled"], matchIfMissing = true)
+internal class SmsHealthAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(name = ["smsHealthIndicator"])
+    fun smsHealthIndicator(sender: SmsSender): HealthIndicator = SmsHealthIndicator(sender)
+}
+```
 
 ## Configuration properties
 
