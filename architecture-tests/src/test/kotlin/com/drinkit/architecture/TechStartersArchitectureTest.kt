@@ -49,7 +49,6 @@ internal class TechStartersArchitectureTest {
                 "internal: mark the class, or make it internal. A data or value class is a value that a tool " +
                 "takes, and needs no mark"
             suppress {
-                classFqName("com.drinkit.sse.SseApi", WEB_STARTERS)
                 classFqName("com.drinkit.ocr.OCRResponse", OPS_STARTERS)
             }
             classes {
@@ -69,13 +68,13 @@ internal class TechStartersArchitectureTest {
     }
 
     @Test
-    fun `a tech starter wires its beans without stereotype annotations`() {
+    fun `a tech starter registers its beans in its auto-configuration, not through the application's scan`() {
         rule("starters.no-stereotype") {
-            description = "Only a scan of the starter's packages finds a @Component or @Service: declare the bean in " +
-                "the starter's @AutoConfiguration"
+            description = "The scan of an application starts above the packages of its starters, so it registers a " +
+                "@Component, a @RestController or a nested @Configuration of a starter on its own: that bean ignores " +
+                "starters.<name>.enabled and @ConditionalOnMissingBean, and is gone in an application of another " +
+                "root package. Declare the bean in the starter's @AutoConfiguration"
             suppress {
-                classFqName("com.drinkit.sse.SseApi", WEB_STARTERS)
-                classFqName("com.drinkit.sse.InMemoryEmitters", WEB_STARTERS)
                 classFqName("com.drinkit.webclient.rest.RestClientRetryConfiguration", WEB_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.FeatureFlagsConfig", OPS_STARTERS)
                 classFqName("com.drinkit.featureflags.infra.OpenFeatureFeatureFlags", OPS_STARTERS)

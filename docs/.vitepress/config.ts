@@ -163,6 +163,7 @@ export default withMermaid(
                   { text: '0012. Sessions in PostgreSQL', link: '0012-keep-sessions-in-postgresql' },
                   { text: '0013. Remember me by a rotating token', link: '0013-remember-me-with-a-rotating-hashed-token' },
                   { text: '0014. CSRF token in a cookie', link: '0014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata' },
+                  { text: '0015. Server events over SSE', link: '0015-push-server-events-over-sse-to-a-user-or-a-session' },
                 ],
               },
 

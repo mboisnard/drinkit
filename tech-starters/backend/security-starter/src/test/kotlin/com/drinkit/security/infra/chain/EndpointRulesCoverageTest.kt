@@ -26,4 +26,13 @@ internal class EndpointRulesCoverageTest {
             "GET /api/unruled",
         )
     }
+
+    @Test
+    fun `leaves out the operations a tech starter serves, which the starter's tests cover`() {
+        EndpointRulesCoverage(
+            rules = listOf(publicEndpoints, userEndpoints),
+            apiPackage = "com.drinkit.security.infra.chain.api",
+            servedByStarters = listOf("GET /api/unruled"),
+        ).unruledEndpoints() shouldBe listOf("DELETE /api/cellars/{cellarId}", "DELETE /api/public/ping")
+    }
 }

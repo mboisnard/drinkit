@@ -27,8 +27,13 @@ private val PATH_VARIABLE = Regex("""\{[^}]*}""")
 /**
  * Reads the Spring mappings of the types of [apiPackage], such as the interfaces generated from an OpenAPI contract,
  * and asks the starter's chain, built with [rules] alone, which ones it refuses. No application is started.
+ * [servedByStarters] lists the operations another tech starter serves and opens, such as `GET /sse/event-stream`.
  */
-class EndpointRulesCoverage(private val rules: List<EndpointRules>, private val apiPackage: String) {
+class EndpointRulesCoverage(
+    private val rules: List<EndpointRules>,
+    private val apiPackage: String,
+    private val servedByStarters: List<String> = emptyList(),
+) {
 
     private val anonymous = AnonymousAuthenticationToken(
         "coverage",
@@ -44,7 +49,9 @@ class EndpointRulesCoverage(private val rules: List<EndpointRules>, private val 
         }.run { context ->
             // The matcher of the actuator's health endpoint finds the context through the servlet context
             context.servletContext?.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context)
-            endpoints.filterTo(unruled) { (method, path) -> isUnruled(context, method, path) }
+            endpoints.filterTo(unruled) { (method, path) ->
+                "$method $path" !in servedByStarters && isUnruled(context, method, path)
+            }
         }
         return unruled.map { (method, path) -> "$method $path" }.sorted()
     }

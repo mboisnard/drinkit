@@ -131,10 +131,13 @@ flowchart LR
 ```
 
 Forged requests are refused first, before they reach the sign-in or the logout. The URL rules then run from top to
-bottom: the starter's code, sign-in, logout and CSRF endpoints, `/actuator/health`, the application's `EndpointRules` beans
-by `@Order`, and a last rule that refuses anything else. The starter's endpoints come first so that no rule of the
+bottom: the starter's code, sign-in, logout and CSRF endpoints, `/actuator/health`, the `EndpointRules` beans by
+`@Order`, and a last rule that refuses anything else. The starter's endpoints come first so that no rule of the
 application can lock users out, and health so that no rule hides it from the platform's probes. A broad pattern such
-as `/api/**` goes in the last `EndpointRules` bean, since the first match decides.
+as `/api/**` goes in the last `EndpointRules` bean, since the first match decides. The beans are the application's,
+and those of the other tech starters that serve an endpoint, such as the stream of `sse-starter`:
+[ADR 0015](../adr/0015-push-server-events-over-sse-to-a-user-or-a-session.md) records why that starter brings the rule
+of its own stream.
 
 ```mermaid
 ---

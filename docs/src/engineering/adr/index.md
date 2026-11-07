@@ -45,6 +45,7 @@ the other. The status says where a decision stands:
 | [0012](0012-keep-sessions-in-postgresql.md) | Keep sessions in PostgreSQL | Accepted | 2026-11-06 |
 | [0013](0013-remember-me-with-a-rotating-hashed-token.md) | Remember me with a rotating, hashed token | Accepted | 2026-11-06 |
 | [0014](0014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md) | Protect against CSRF with a token in a cookie and Fetch Metadata | Accepted | 2026-11-06 |
+| [0015](0015-push-server-events-over-sse-to-a-user-or-a-session.md) | Push server events over SSE, to a user or a session | Accepted | 2026-11-07 |
 
 ## How to write one
 
