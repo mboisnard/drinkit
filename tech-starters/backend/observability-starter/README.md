@@ -33,6 +33,40 @@ dependencies {
   `application` field. The [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/logging.md)
   says when.
 
+## OpenTelemetry
+
+Micrometer traces each request and puts its `traceId` and `spanId` in the logs. Nothing leaves the application until
+`starters.observability.opentelemetry.enabled=true`: Spring Boot then pushes the metrics and the traces over OTLP to
+a collector, such as the Datadog Agent. Logs stay on the console, which the log platform already reads.
+
+To see the traces on your machine, start [Grafana LGTM](https://github.com/grafana/docker-otel-lgtm), then the
+application with the export on, and open Grafana on `http://localhost:3000`:
+
+```
+docker run --rm -p 3000:3000 -p 4318:4318 grafana/otel-lgtm
+STARTERS_OBSERVABILITY_OPENTELEMETRY_ENABLED=true \
+MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT=http://localhost:4318/v1/traces \
+MANAGEMENT_TRACING_SAMPLING_PROBABILITY=1.0 \
+./gradlew :drinkit-backend:bootRun
+```
+
+The application starts a new trace for each request: it ignores the `traceparent` a caller sends, since a caller
+from the internet would choose its own `traceId` and force its requests into the samples. Once the export is on, it
+sends its own `traceparent` to the APIs it calls. A service behind a gateway that sets a trusted `traceparent` follows it with
+`MANAGEMENT_TRACING_PROPAGATION_CONSUME=W3C`.
+
+Spring Boot samples 10 % of the traces by default. A metric or a span of your own goes through the `ObservationRegistry`
+of Micrometer, never through the OpenTelemetry API: one observation gives a timer and a span.
+
+```kotlin
+Observation.createNotStarted("ocr.analyze", observationRegistry)
+    .lowCardinalityKeyValue("analyzer", "tesseract")
+    .observe { analyzer.analyze(image) }
+```
+
+A low-cardinality value, such as an analyzer, tags the metric and the span. An id goes in a
+`highCardinalityKeyValue`, which tags the span alone.
+
 ## Monitoring a third party
 
 A starter that talks to a third party brings its own `HealthIndicator`, in an `@AutoConfiguration` of its own guarded
@@ -46,6 +80,15 @@ already tell whether it answers.
 | Property | Default | Environment variable |
 |---|---|---|
 | `starters.observability.enabled` | `true`, `false` leaves Actuator to the defaults of Spring Boot | `STARTERS_OBSERVABILITY_ENABLED` |
+| `starters.observability.opentelemetry.enabled` | `false`, `true` pushes the metrics and the traces over OTLP | `STARTERS_OBSERVABILITY_OPENTELEMETRY_ENABLED` |
+
+Once the export is on, production sets the collector:
+
+| Property | Environment variable |
+|---|---|
+| `management.opentelemetry.tracing.export.otlp.endpoint` | `MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT` |
+| `management.otlp.metrics.export.url`, `http://localhost:4318/v1/metrics` by default | `MANAGEMENT_OTLP_METRICS_EXPORT_URL` |
+| `management.opentelemetry.resource-attributes.deployment.environment` | `MANAGEMENT_OPENTELEMETRY_RESOURCEATTRIBUTES_DEPLOYMENT_ENVIRONMENT` |
 
 Every `management.*` key of the application overrides the starter's.
 
