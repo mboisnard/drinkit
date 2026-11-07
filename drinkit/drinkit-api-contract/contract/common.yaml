@@ -68,9 +68,10 @@ components:
   responses:
     Unauthorized:
       description: |
-        No user is signed in. The body is a problem detail of RFC 9457, as application/problem+json.
+        No user is signed in. The body is a problem detail of RFC 9457, as application/problem+json, with the traceId of
+        the request.
 
     Forbidden:
       description: |
         Refused: the X-XSRF-TOKEN header is missing or wrong, the request comes from another site, or the user lacks
-        the role. The body is a problem detail of RFC 9457, as application/problem+json.
+        the role. The body is a problem detail of RFC 9457, as application/problem+json, with the traceId of the request.

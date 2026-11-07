@@ -29,7 +29,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.access.intercept.AuthorizationFilter
 import org.springframework.security.web.authentication.RememberMeServices
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler
@@ -149,6 +151,7 @@ internal class SecurityAutoConfiguration {
                 crossOriginResourcePolicy { policy = CrossOriginResourcePolicy.SAME_ORIGIN }
             }
             addFilterBefore<CsrfFilter>(FetchMetadataFilter(errorResponses))
+            addFilterAfter<AuthorizationFilter>(UserIdLoggingFilter(SecurityContextHolder.getContextHolderStrategy()))
             authorizeHttpRequests {
                 authorize(DispatcherTypeRequestMatcher(DispatcherType.ERROR), permitAll)
                 authorize(HttpMethod.POST, CODE_REQUEST_PATH, permitAll)
