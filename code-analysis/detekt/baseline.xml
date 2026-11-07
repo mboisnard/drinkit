@@ -46,7 +46,6 @@
     <ID>SpreadOperator:DrinkitApplication.kt:(*args)</ID>
     <ID>SpreadOperator:JooqUtils.kt:(*table.fields())</ID>
     <ID>SpreadOperator:UpdaterApplication.kt:(*args)</ID>
-    <ID>TooGenericExceptionCaught:SseApi.kt:SseApi$ex: Exception</ID>
     <ID>TooGenericExceptionThrown:FakeExchangeRateProvider.kt:FakeExchangeRateProvider$throw RuntimeException("Provider failed")</ID>
     <ID>TooManyFunctions:JooqPostgresExtension.kt:JooqPostgresExtension : BeforeAllCallbackAfterEachCallbackAfterAllCallbackParameterResolver</ID>
     <ID>UnsafeCallOnNullableType:CompleteProfileInformation.kt:CompleteProfileInformation$users.findEnabledBy(userId)!!</ID>
