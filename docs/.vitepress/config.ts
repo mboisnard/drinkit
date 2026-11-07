@@ -128,6 +128,7 @@ export default withMermaid(
                   { text: 'Hooks', link: 'hooks' },
                   { text: 'Skills', link: 'skills' },
                   { text: 'Subagents', link: 'sub-agents' },
+                  { text: 'Cost optimization', link: 'cost-optimization' },
                   { text: 'Tooling', link: 'tooling' },
                 ],
               },

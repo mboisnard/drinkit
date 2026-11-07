@@ -3,7 +3,7 @@
 A harness is everything around a coding agent that steers it before it acts and checks its work after. DrinkIt is
 written with Claude Code, and its harness keeps humans and agents alike from merging a change that breaks master or
 that nobody checked. It is made of [`AGENTS.md`][agents-md] and the [skills](skills.md) the agent reads, the
-[hooks](hooks.md) it cannot skip, two reviewing [subagents](sub-agents.md), the [CI](../delivery/ci-cd.md) and the
+[hooks](hooks.md) it cannot skip, the reviewing and exploring [subagents](sub-agents.md), the [CI](../delivery/ci-cd.md) and the
 master ruleset. Only the maintainer, who owns the repository, merges. A person without an agent meets the same CI and
 ruleset, and the git hooks once they turn them on in their clone. [Tooling](tooling.md) lists the tools used around the
 agents.
