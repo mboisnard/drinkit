@@ -67,6 +67,9 @@ Observation.createNotStarted("ocr.analyze", observationRegistry)
 A low-cardinality value, such as an analyzer, tags the metric and the span. An id goes in a
 `highCardinalityKeyValue`, which tags the span alone.
 
+[ADR 0016](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
+records why Micrometer, and why the export waits for a switch.
+
 ## Monitoring a third party
 
 A starter that talks to a third party brings its own `HealthIndicator`, in an `@AutoConfiguration` of its own guarded
