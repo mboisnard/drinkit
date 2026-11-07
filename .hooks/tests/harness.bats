@@ -8,13 +8,15 @@ setup() {
     repository=$(cd "$HOOKS/.." && pwd)
     broken=$work/broken
     git init -q "$broken"
-    mkdir -p "$broken/.hooks/git" "$broken/.hooks/claude" "$broken/.hooks/tests" "$broken/.claude/skills/sample"
+    mkdir -p "$broken/.hooks/git" "$broken/.hooks/claude" "$broken/.hooks/tools" "$broken/.hooks/tests" \
+        "$broken/.claude/skills/sample"
 }
 
-# Each hook of <root>/.hooks/git and <root>/.hooks/claude without its .hooks/tests/<hook>.bats.
+# Each hook of <root>/.hooks/git and <root>/.hooks/claude, and each script of <root>/.hooks/tools, without its
+# .hooks/tests/<name>.bats.
 hooks_without_suite() {
     local hook
-    for hook in "$1"/.hooks/git/* "$1"/.hooks/claude/*; do
+    for hook in "$1"/.hooks/git/* "$1"/.hooks/claude/* "$1"/.hooks/tools/*; do
         [ -f "$hook" ] || continue
         [ -f "$1/.hooks/tests/${hook##*/}.bats" ] || echo "${hook#"$1"/}"
     done
@@ -69,10 +71,11 @@ relative_links_leading_nowhere() {
     refute_output
 }
 
-@test "a hook without its suite is reported" {
-    touch "$broken/.hooks/git/pre-push" "$broken/.hooks/claude/session-context" "$broken/.hooks/tests/pre-push.bats"
+@test "a hook or a script without its suite is reported" {
+    touch "$broken/.hooks/git/pre-push" "$broken/.hooks/claude/session-context" "$broken/.hooks/tools/session-tokens"
+    touch "$broken/.hooks/tests/pre-push.bats"
     run hooks_without_suite "$broken"
-    assert_output ".hooks/claude/session-context"
+    assert_output "$(printf '%s\n' .hooks/claude/session-context .hooks/tools/session-tokens)"
 }
 
 @test "every command of the Claude Code settings runs a hook of .hooks/claude with a timeout" {

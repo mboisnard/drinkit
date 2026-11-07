@@ -61,7 +61,7 @@ each changed hook under dash too: `cd .hooks && HOOK_SHELL=dash npx bats tests/<
 Docker, from the root:
 
 ```
-docker run --rm -v "$PWD:/mnt:ro" -w /mnt --entrypoint sh "$(grep -o 'koalaman/shellcheck[^ ]*' .github/workflows/ci-hooks.yml)" -c 'shellcheck .hooks/git/* .hooks/claude/* .hooks/lib/*.sh .hooks/tests/*.bats .hooks/tests/*.bash'
+docker run --rm -v "$PWD:/mnt:ro" -w /mnt --entrypoint sh "$(grep -o 'koalaman/shellcheck[^ ]*' .github/workflows/ci-hooks.yml)" -c 'shellcheck .hooks/git/* .hooks/claude/* .hooks/tools/* .hooks/lib/*.sh .hooks/tests/*.bats .hooks/tests/*.bash'
 ```
 
 ### 5. Describe it
