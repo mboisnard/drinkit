@@ -3,7 +3,8 @@
 The code logs through [kotlin-logging](https://github.com/oshai/kotlin-logging) on Logback, the logger of Spring
 Boot, with `private val logger = KotlinLogging.logger { }` in each class. The `observability-starter` sets the
 format: plain text on a developer's machine, one JSON object per line everywhere else. Read this page before you add
-a log or deploy an environment.
+a log or deploy an environment. [ADR 0016](../adr/0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
+records why Micrometer and OpenTelemetry.
 
 ## 🧾 Plain text locally, JSON elsewhere
 
