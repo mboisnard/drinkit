@@ -82,6 +82,7 @@ Base: <git merge-base origin/master HEAD>
 Head: <git rev-parse HEAD>
 Pull request draft: <absolute path of claude/pr-body.md>
 Test list: <absolute path of claude/test-list.md>
+Previous head, from the second round on: <the head commit the previous verdict named>
 Previous gaps, from the second round on:
 - <gap as the judge wrote it>: <the commit and the command output that close it>
 ```
@@ -90,11 +91,12 @@ The `security-reviewer` prompt holds the worktree, the base and the head, nothin
 
 ## Review prompt
 
+For the `pr-reviewer` agent, whose definition holds the rules of the review: another agent given this prompt would
+not know them.
+
 ```
-Review pull request #<pr> by following .claude/skills/review-pr/SKILL.md and its examples.md, from <absolute path
-of the main checkout>. Post nothing on GitHub. Remove your pr-<pr> worktree and branch, then return the findings,
-each with its severity, its path:line and one or two sentences. Do not start the security-reviewer: the judge
-rounds start it whenever the diff calls for it.
+Pull request: <pr>
+Main checkout: <absolute path>
 ```
 
 ## Judge time limit
