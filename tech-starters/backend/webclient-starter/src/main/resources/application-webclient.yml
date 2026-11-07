@@ -1,6 +1,0 @@
-spring:
-  http:
-    # Defaults for every HTTP client. Each client group may override them.
-    clients:
-      connect-timeout: 2s
-      read-timeout: 5s
