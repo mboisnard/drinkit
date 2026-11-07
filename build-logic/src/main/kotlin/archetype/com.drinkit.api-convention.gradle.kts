@@ -19,7 +19,7 @@ dependencies {
     implementation("tools.jackson.module:jackson-module-kotlin")
 
     implementation(project(":kotlin-starter"))
-    implementation(project(":monitoring-starter"))
+    implementation(project(":observability-starter"))
 }
 
 // Create a `build-info.properties` file in resource folder, info available in Actuator
