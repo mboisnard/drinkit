@@ -19,7 +19,7 @@ setup() {
 echo "gradle \$(basename "\$PWD")" >>"$work/runs"
 echo "\$*" >>"$work/gradle-args"
 if [ -f "$work/rule-broken" ]; then
-    echo "TechStartersArchitectureTest > a tech starter wires its beans without stereotype annotations() FAILED"
+    echo "TechStartersArchitectureTest > a tech starter registers its beans in its auto-configuration, not through the application's scan() FAILED"
     echo "    java.lang.AssertionError: ✗ Rule: starters.no-stereotype"
     echo "    A tech starter wires its beans in one @AutoConfiguration: declare the bean there"
     echo ""
