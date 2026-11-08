@@ -62,8 +62,12 @@ internal class SignInCodeEmails(private val notificationSender: NotificationSend
 - **The `name` of a handler** is the queue a broker would create for it.
 - **`maxAttempts`** counts every attempt, 3 by default, and **`delay`** waits that many milliseconds after the
   commit.
+- **`idempotent = true`** runs the handler once per key of its event, through the
+  [idempotency starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/idempotency-starter/README.md),
+  and **`idempotencyKey`** reads that key from the event instead, as `#event.orderId`. An event carries a key derived
+  from the one of the request or the event that published it, so a replay of either publishes it under the same key.
 - **The application refuses to start** on a handler that takes anything but one platform event, or reuses a `name`,
-  or sets `maxAttempts` below 1 or a negative `delay`.
+  or sets `maxAttempts` below 1 or a negative `delay`, or is idempotent with a queue per instance.
 
 ## Configuration
 
@@ -83,6 +87,7 @@ spyEventPublisher.countEventsOfType(SignInCodeRequested::class) shouldBe 1
 
 ## Limits
 
-- Delivery is at least once and in no set order, so a handler is idempotent.
+- Delivery is at least once and in no set order, so a handler is idempotent: by its nature, such as an update to a
+  value, or with `idempotent = true`.
 - An event still waiting when the application stops is lost: the events live in the memory of the process.
 - An event published outside a transaction goes to its handlers at once.

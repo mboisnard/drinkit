@@ -14,6 +14,8 @@ internal class ManualScheduler {
 
     fun pendingCount(): Int = pending.size
 
+    fun runNext() = pending.removeFirst().invoke()
+
     // Until nothing is left: a failed delivery schedules its next attempt
     fun runAll() {
         while (pending.isNotEmpty()) {

@@ -1,14 +1,19 @@
 package com.drinkit.messaging.infra.springevents
 
+import com.drinkit.idempotency.CurrentIdempotencyKey
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldNotContainDuplicates
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.support.TransactionTemplate
 
 internal class SpringEventsPublisherTest {
 
-    private val springEvents = mutableListOf<Any>()
-    private val publisher = SpringEventsPublisher { springEvents += it }
+    private val deliveries = mutableListOf<Delivery>()
+    private val springEvents get() = deliveries.map { it.event }
+    private val publisher = SpringEventsPublisher { deliveries += it as Delivery }
     private val transaction = TransactionTemplate(NoOpTransactionManager())
 
     @Test
@@ -54,5 +59,41 @@ internal class SpringEventsPublisherTest {
 
         // Then
         springEvents shouldContainExactly listOf(SomethingHappened(1), SomethingHappened(1))
+    }
+
+    @Test
+    fun `an event published outside any request or event carries a key of its own`() {
+        // When
+        publisher.publish(SomethingHappened(1))
+        publisher.publish(SomethingHappened(1))
+
+        // Then
+        deliveries.map { it.idempotencyKey }.shouldNotContainDuplicates()
+    }
+
+    @Test
+    fun `an account creation retried after a server error publishes its event under the same key`() {
+        // Given
+        CurrentIdempotencyKey.with("account-creation-key") { publisher.publish(SomethingHappened(1)) }
+
+        // When
+        CurrentIdempotencyKey.with("account-creation-key") { publisher.publish(SomethingHappened(1)) }
+
+        // Then
+        val (first, retry) = deliveries.map { it.idempotencyKey }
+        retry shouldBe first
+        first shouldNotBe "account-creation-key"
+    }
+
+    @Test
+    fun `two cellars created by one request publish their events under two keys`() {
+        // When
+        CurrentIdempotencyKey.with("cellars-creation-key") {
+            publisher.publish(SomethingHappened(1))
+            publisher.publish(SomethingHappened(2))
+        }
+
+        // Then
+        deliveries.map { it.idempotencyKey }.shouldNotContainDuplicates()
     }
 }

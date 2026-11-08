@@ -5,4 +5,7 @@ plugins {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-autoconfigure")
+    implementation(project(":idempotency-starter"))
+
+    testImplementation(testFixtures(project(":idempotency-starter")))
 }
