@@ -51,6 +51,8 @@ paths:
       summary: Create a new cellar
       description: |
         Create a new cellar for the connected user
+      parameters:
+        - $ref: 'common.yaml#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -67,6 +69,12 @@ paths:
           $ref: 'common.yaml#/components/responses/Forbidden'
         '400':
           description: Bad Request (maybe wrong object validation)
+        '409':
+          $ref: 'common.yaml#/components/responses/IdempotencyKeyInUse'
+        '422':
+          $ref: 'common.yaml#/components/responses/IdempotencyKeyReused'
+        '413':
+          $ref: 'common.yaml#/components/responses/IdempotentRequestTooLarge'
         '201':
           description: Created
           content:
@@ -84,6 +92,7 @@ paths:
         Delete a cellar that you are the owner
       parameters:
         - $ref: 'cellarsParameters.yaml#/components/parameters/cellarId'
+        - $ref: 'common.yaml#/components/parameters/IdempotencyKey'
       security:
         - session: []
           xsrfToken: []
@@ -94,6 +103,12 @@ paths:
           $ref: 'common.yaml#/components/responses/Forbidden'
         '404':
           description: No cellar of the connected user has this id
+        '409':
+          $ref: 'common.yaml#/components/responses/IdempotencyKeyInUse'
+        '422':
+          $ref: 'common.yaml#/components/responses/IdempotencyKeyReused'
+        '413':
+          $ref: 'common.yaml#/components/responses/IdempotentRequestTooLarge'
         '204':
           description: Cellar Deleted
 

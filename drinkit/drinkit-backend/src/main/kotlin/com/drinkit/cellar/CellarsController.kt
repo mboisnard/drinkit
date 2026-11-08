@@ -10,6 +10,7 @@ import com.drinkit.api.generated.model.Point
 import com.drinkit.cellar.core.Cellar
 import com.drinkit.cellar.core.CellarId
 import com.drinkit.cellar.core.CellarName
+import com.drinkit.idempotency.Idempotent
 import com.drinkit.security.CurrentUser
 import com.drinkit.user.author
 import com.drinkit.user.userId
@@ -28,7 +29,11 @@ internal class CellarsController(
     private val currentUser: CurrentUser,
 ) : CellarsApi {
 
-    override fun createCellar(createCellarRequest: CreateCellarRequest): ResponseEntity<CellarId> {
+    @Idempotent
+    override fun createCellar(
+        createCellarRequest: CreateCellarRequest,
+        idempotencyKey: String?,
+    ): ResponseEntity<CellarId> {
         val command = createCellarRequest.toCommand()
 
         val createdCellarId = createCellar.invoke(command)
@@ -37,7 +42,8 @@ internal class CellarsController(
             .body(createdCellarId)
     }
 
-    override fun deleteCellar(cellarId: CellarId): ResponseEntity<Unit> =
+    @Idempotent
+    override fun deleteCellar(cellarId: CellarId, idempotencyKey: String?): ResponseEntity<Unit> =
         when (deleteCellar.invoke(cellarId, currentUser.get().author)) {
             DeleteCellar.Result.CellarDeleted -> ResponseEntity.noContent().build()
             DeleteCellar.Result.CellarNotFound -> ResponseEntity.notFound().build()
