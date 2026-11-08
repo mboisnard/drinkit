@@ -1,6 +1,8 @@
 package com.drinkit.kotlin
 
 import com.drinkit.documentation.tech.starter.TechStarterTool
+import java.security.MessageDigest
+import java.util.HexFormat
 
 // The zero-width joiners stay: emojis such as a family and several scripts need them
 val INVISIBLE_CHARS_REGEX = Regex("[\\p{Cc}\\p{Cf}&&[^\\u200C\\u200D]]")
@@ -32,3 +34,7 @@ fun String.isEmail(): Boolean = VALID_EMAIL_REGEX.matches(this)
 
 @TechStarterTool
 fun String.toKebabCase(): String = this.replace(Regex("(?<=[a-z])(?=[A-Z])"), "-").lowercase()
+
+/** In lower-case hexadecimal, the form of the hashes already stored. */
+@TechStarterTool
+fun String.sha256(): String = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(toByteArray()))
