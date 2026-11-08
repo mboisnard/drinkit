@@ -24,6 +24,18 @@ internal class CsrfTest(private val mockMvc: MockMvc) {
     }
 
     @Test
+    fun `accepts without CSRF token a POST the application frees from it`() {
+        mockMvc.post("/api/public/evaluate").andExpect { status { isNoContent() } }
+    }
+
+    @Test
+    fun `refuses a POST freed from CSRF that a browser says comes from another site`() {
+        mockMvc.post("/api/public/evaluate") {
+            header("Sec-Fetch-Site", "cross-site")
+        }.andExpect { status { isForbidden() } }
+    }
+
+    @Test
     fun `refuses a code request and a sign-in by code without CSRF token`() {
         listOf("/api/auth/code", "/api/auth/code/sign-in").forEach { path ->
             mockMvc.post(path) {

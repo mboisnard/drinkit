@@ -5,7 +5,6 @@ import com.drinkit.security.XSRF_COOKIE
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldStartWith
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpHeaders
 import org.springframework.test.web.servlet.MockMvc
@@ -21,8 +20,7 @@ internal class CookiesAndHeadersTest(private val mockMvc: MockMvc) {
         val response = mockMvc.get("/drinkit/api/auth/csrf") { contextPath = "/drinkit" }.andReturn().response
 
         // Then
-        val setCookie = response.getHeader(HttpHeaders.SET_COOKIE).orEmpty()
-        setCookie shouldStartWith "$XSRF_COOKIE="
+        val setCookie = response.getHeaders(HttpHeaders.SET_COOKIE).first { it.startsWith("$XSRF_COOKIE=") }
         setCookie.attributes() shouldContainAll listOf("Path=/", "Secure")
         setCookie.attributes() shouldNotContain "HttpOnly"
         // The mock response leaves SameSite out of the header it formats, which Tomcat writes

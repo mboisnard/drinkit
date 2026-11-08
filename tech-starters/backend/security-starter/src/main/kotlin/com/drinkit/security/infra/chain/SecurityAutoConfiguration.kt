@@ -104,8 +104,7 @@ internal class SecurityAutoConfiguration {
     ): SecurityFilterChain {
         val errorResponses = SecurityErrorResponses(jsonMapper)
 
-        // Outside the Kotlin DSL, which has no spa() yet (spring-security#18332)
-        http.csrf { it.spa().csrfTokenRepository(csrfTokenRepository) }
+        protectAgainstCsrf(http, csrfTokenRepository, endpointRules)
         rememberMeServices.ifAvailable { services -> http.rememberMe { it.rememberMeServices(services) } }
         http.authenticationProvider(emailCodeAuthenticationProvider)
         // Spring Boot also gives the provider bean to a parent manager, which would try a refused code a second time
@@ -150,6 +149,7 @@ internal class SecurityAutoConfiguration {
                 crossOriginOpenerPolicy { policy = CrossOriginOpenerPolicy.SAME_ORIGIN }
                 crossOriginResourcePolicy { policy = CrossOriginResourcePolicy.SAME_ORIGIN }
             }
+            addFilterBefore<CsrfFilter>(VisitorFilter(properties.cookie, properties.visitor.validity))
             addFilterBefore<CsrfFilter>(FetchMetadataFilter(errorResponses))
             addFilterAfter<AuthorizationFilter>(UserIdLoggingFilter(SecurityContextHolder.getContextHolderStrategy()))
             authorizeHttpRequests {
@@ -167,6 +167,20 @@ internal class SecurityAutoConfiguration {
         }
 
         return http.build()
+    }
+
+    // Outside the Kotlin DSL, which has no spa() yet (spring-security#18332)
+    private fun protectAgainstCsrf(
+        http: HttpSecurity,
+        csrfTokenRepository: CsrfTokenRepository,
+        endpointRules: ObjectProvider<EndpointRules>,
+    ) {
+        http.csrf { csrf ->
+            csrf.spa().csrfTokenRepository(csrfTokenRepository)
+            endpointRules.orderedStream().forEach { rules ->
+                rules.csrfFree().forEach { csrf.ignoringRequestMatchers(it) }
+            }
+        }
     }
 
     @Bean

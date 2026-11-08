@@ -7,6 +7,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -28,7 +29,9 @@ internal class SecurityTestApplication {
 
     @Bean
     @Order(1)
-    fun publicEndpoints() = endpointRules {
+    fun publicEndpoints() = endpointRules(
+        csrfFree = listOf(PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/public/evaluate")),
+    ) {
         authorize("/api/public/**", permitAll)
     }
 
@@ -42,7 +45,10 @@ internal class SecurityTestApplication {
 }
 
 @RestController
-internal class TestController(private val currentUser: CurrentUser) {
+internal class TestController(private val currentUser: CurrentUser, private val currentVisitor: CurrentVisitor) {
+
+    @GetMapping("/api/public/visitor")
+    fun visitor() = currentVisitor.id()
 
     @GetMapping("/api/public/me")
     fun publicMe() = currentUser.get()
@@ -76,6 +82,9 @@ internal class TestController(private val currentUser: CurrentUser) {
 
     @PostMapping("/api/public/ping")
     fun ping() = ResponseEntity.noContent().build<Unit>()
+
+    @PostMapping("/api/public/evaluate")
+    fun evaluate() = ResponseEntity.noContent().build<Unit>()
 
     @GetMapping("/api/unruled")
     fun unruled() = ResponseEntity.noContent().build<Unit>()

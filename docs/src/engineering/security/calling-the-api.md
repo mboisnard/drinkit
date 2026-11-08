@@ -14,6 +14,7 @@ Every path starts with the context path `/drinkit`: `http://localhost:8080/drink
 | Session | `SESSION` | `__Host-SESSION` |
 | CSRF token | `XSRF-TOKEN` | `__Host-XSRF-TOKEN` |
 | Remember-me | `remember-me` | `__Host-remember-me` |
+| Visitor | `visitor` | `__Host-visitor` |
 
 A browser accepts a `__Host-` cookie only from a secure origin, so the `dev` profile drops the prefix and the
 `Secure` flag.
