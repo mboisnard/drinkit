@@ -44,10 +44,11 @@
     },
     {
       "quadrant": "Languages & Frameworks",
-      "ring": "ASSESS",
+      "ring": "TRIAL",
       "label": "OpenFeature",
-      "description": "Feature flag evaluation behind a vendor-neutral API, with Flipt as provider",
-      "link": "https://openfeature.dev/"
+      "description": "Feature flags and A/B tests behind a vendor-neutral API, served to clients over OFREP, not used by a feature yet",
+      "link": "https://openfeature.dev/",
+      "moved": 1
     },
     {
       "quadrant": "Languages & Frameworks",
@@ -172,10 +173,18 @@
     },
     {
       "quadrant": "Databases & Middlewares",
-      "ring": "ASSESS",
+      "ring": "TRIAL",
       "label": "Flipt",
-      "description": "Feature flag server behind OpenFeature",
-      "link": "https://www.flipt.io/"
+      "description": "Feature flag provider of OpenFeature, its state in git per environment, not used by a feature yet",
+      "link": "https://www.flipt.io/",
+      "moved": 1
+    },
+    {
+      "quadrant": "Tools",
+      "ring": "ASSESS",
+      "label": "PostHog",
+      "description": "Planned tool that picks the variants of A/B tests and measures them, not wired yet",
+      "link": "https://posthog.com/"
     },
     {
       "quadrant": "Databases & Middlewares",

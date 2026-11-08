@@ -21,6 +21,8 @@ tags:
     description: Search operations
   - name: sse
     description: Server-sent events
+  - name: feature-management
+    description: Feature flags and A/B test variants for clients, after ADR 0017 and ADR 0018
 
 paths:
   /api/cellars:
@@ -204,6 +206,79 @@ paths:
             text/event-stream:
               schema:
                 type: string
+
+  /ofrep/v1/evaluate/flags:
+    post:
+      operationId: evaluateFlags
+      tags:
+        - feature-management
+      summary: Evaluate the flags and experiments a client asks for, for the signed-in user or the visitor
+      description: |
+        Served by the feature management starter, not by a controller, after the bulk evaluation of OFREP 0.4.0, so that
+        the OFREP provider of an OpenFeature client reads it. The context names the keys the client asks for, and any
+        other field of it is ignored: the backend evaluates for the signed-in user, or for the visitor of the security
+        starter. An experiment the user was drawn into answers the reason SPLIT. It asks for the CSRF token like any POST.
+      security: []
+      parameters:
+        - name: If-None-Match
+          in: header
+          required: false
+          schema:
+            type: string
+            maxLength: 100
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'featureManagementParameters.yaml#/components/schemas/OfrepBulkEvaluationRequest'
+      responses:
+        '200':
+          description: The flags and the variants, never kept by a shared cache
+          headers:
+            ETag:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: 'featureManagementParameters.yaml#/components/schemas/OfrepBulkEvaluationResponse'
+        '304':
+          description: Nothing changed since the ETag of If-None-Match
+        '400':
+          description: A key that is not in kebab case, or more than 50 keys
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
+
+  /experiments/{key}/exposures:
+    post:
+      operationId: reportExposure
+      tags:
+        - feature-management
+      summary: Report that a client showed the variant of an experiment to the user or the visitor
+      description: |
+        Served by the feature management starter, not by a controller. The backend assigns the variant again, and
+        records the exposure only when it matches the reported one.
+      security: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            $ref: 'featureManagementParameters.yaml#/components/schemas/FeatureKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'featureManagementParameters.yaml#/components/schemas/ExposureReport'
+      responses:
+        '204':
+          description: Recorded, or dropped when the variant differs from the assigned one
+        '400':
+          description: No variant in the body, or a key that is not in kebab case
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
 
   /api/registration/user/information:
     post:
