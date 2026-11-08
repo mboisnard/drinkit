@@ -17,8 +17,9 @@ internal class WebClientAutoConfiguration {
     @ConditionalOnMissingBean(name = ["retryingHttpServiceGroupConfigurer"])
     fun retryingHttpServiceGroupConfigurer(properties: WebClientProperties) =
         RestClientHttpServiceGroupConfigurer { groups ->
-            groups.forEachClient { _, clientBuilder ->
-                clientBuilder.requestInterceptor(SafeRequestRetryInterceptor(properties.retry))
+            groups.forEachClient { group, clientBuilder ->
+                val honoursIdempotencyKey = group.name() in properties.retry.idempotentGroups
+                clientBuilder.requestInterceptor(RequestRetryInterceptor(properties.retry, honoursIdempotencyKey))
             }
         }
 }
