@@ -1,5 +1,6 @@
 package com.drinkit.mail.infra
 
+import com.drinkit.idempotency.CurrentIdempotencyKey
 import com.drinkit.mail.Content
 import com.drinkit.mail.Content.TextFormat.TXT
 import com.drinkit.mail.Email
@@ -10,6 +11,7 @@ import com.drinkit.mail.Recipients
 import com.drinkit.mail.Recipients.Recipient
 import com.drinkit.mail.Sender
 import com.drinkit.mail.Subject
+import io.kotest.assertions.nondeterministic.continually
 import io.kotest.assertions.nondeterministic.eventually
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
@@ -72,6 +74,21 @@ internal class EmailDeliveryTest {
             runBlocking {
                 eventually(5.seconds) { mailpit.lastEmail().subject shouldBe "Delivered on a later attempt" }
             }
+        }
+    }
+
+    @Test
+    fun `an email sent again by a replay of the request that sent it reaches the user once`(mailpit: Mailpit) {
+        runner.withBean(JavaMailSender::class.java, { mailpit.javaMailSender() }).run { context ->
+            val sender = context.getBean<EmailSender>()
+            CurrentIdempotencyKey.with("sign-in request") { sender.send(emailWithSubject("Sent once")) }
+            runBlocking { eventually(5.seconds) { mailpit.countEmailsWithSubject("Sent once") shouldBe 1 } }
+
+            // When
+            CurrentIdempotencyKey.with("sign-in request") { sender.send(emailWithSubject("Sent once")) }
+
+            // Then
+            runBlocking { continually(2.seconds) { mailpit.countEmailsWithSubject("Sent once") shouldBe 1 } }
         }
     }
 

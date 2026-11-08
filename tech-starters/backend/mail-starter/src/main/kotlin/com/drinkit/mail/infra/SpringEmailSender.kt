@@ -20,7 +20,7 @@ internal class SpringEmailSender(
         publisher.publish(SendEmail(email))
     }
 
-    @PlatformEventHandler("mail.delivery.queue")
+    @PlatformEventHandler("mail.delivery.queue", idempotent = true)
     fun deliver(command: SendEmail) {
         val email = command.email
         val message = mailSender.createMimeMessage()
