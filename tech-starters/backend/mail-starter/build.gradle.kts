@@ -12,4 +12,5 @@ dependencies {
     testFixturesImplementation("org.testcontainers:testcontainers")
 
     testImplementation(testFixtures(project(":messaging-starter")))
+    testImplementation(testFixtures(project(":idempotency-starter")))
 }

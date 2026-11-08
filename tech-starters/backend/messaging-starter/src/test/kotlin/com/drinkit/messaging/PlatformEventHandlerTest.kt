@@ -32,4 +32,22 @@ internal class PlatformEventHandlerTest {
 
         failure.message!! shouldContain "Handler something.queue: a delay does not combine with oneQueuePerInstance"
     }
+
+    @Test
+    fun `refuses an idempotent handler with a queue per instance`() {
+        val failure = shouldThrow<IllegalArgumentException> {
+            PlatformEventHandler(name = "something.queue", idempotent = true, oneQueuePerInstance = true).validate()
+        }
+
+        failure.message!! shouldContain "Handler something.queue: idempotent does not combine with oneQueuePerInstance"
+    }
+
+    @Test
+    fun `refuses an idempotency key on a handler that is not idempotent`() {
+        val failure = shouldThrow<IllegalArgumentException> {
+            PlatformEventHandler(name = "something.queue", idempotencyKey = "#event.id").validate()
+        }
+
+        failure.message!! shouldContain "Handler something.queue: an idempotencyKey needs idempotent = true"
+    }
 }

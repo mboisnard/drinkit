@@ -1,5 +1,6 @@
 package com.drinkit.messaging.infra.springevents
 
+import com.drinkit.idempotency.Idempotency
 import com.drinkit.messaging.PlatformEvent
 import com.drinkit.messaging.PlatformEventHandler
 import com.drinkit.messaging.infra.Retry
@@ -62,10 +63,25 @@ internal class PlatformEventHandlerProcessor(
 
         handler.validate()
 
+        val idempotency = if (handler.idempotent) {
+            checkNotNull(context.getBeanProvider(Idempotency::class.java).ifAvailable) {
+                "Handler ${handler.name} is idempotent: it needs the Idempotency of idempotency-starter"
+            }
+        } else {
+            null
+        }
+
         // The method of the bean the context hands out, so that a proxy around the handler still applies
         val invocable = AopUtils.selectInvocableMethod(method, context.getType(beanName))
-        return PlatformEventHandlerListener(handler, eventType, firstAttempt = retry, callHandler = { event ->
-            AopUtils.invokeJoinpointUsingReflection(context.getBean(beanName), invocable, arrayOf(event))
-        })
+
+        return PlatformEventHandlerListener(
+            handler,
+            eventType,
+            firstAttempt = retry,
+            idempotency = idempotency,
+            callHandler = { event ->
+                AopUtils.invokeJoinpointUsingReflection(context.getBean(beanName), invocable, arrayOf(event))
+            },
+        )
     }
 }

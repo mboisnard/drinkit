@@ -1,12 +1,18 @@
 package com.drinkit.messaging.infra.springevents
 
+import com.drinkit.idempotency.CurrentIdempotencyKey
+import com.drinkit.idempotency.inMemoryIdempotency
 import com.drinkit.messaging.PlatformEvent
 import com.drinkit.messaging.PlatformEventHandler
 import com.drinkit.messaging.infra.ExponentialBackoffRetry
+import com.drinkit.test.ControlledClock
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldNotContainDuplicates
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.logging.LogLevel
@@ -15,6 +21,7 @@ import org.springframework.boot.test.system.CapturedOutput
 import org.springframework.boot.test.system.OutputCaptureExtension
 import org.springframework.context.PayloadApplicationEvent
 import java.time.Duration
+import java.time.Instant
 
 @ExtendWith(OutputCaptureExtension::class)
 internal class PlatformEventHandlerListenerTest {
@@ -123,6 +130,117 @@ internal class PlatformEventHandlerListenerTest {
         output.out shouldContain "\tat com.drinkit.messaging"
     }
 
+    @Nested
+    inner class `Replaying an asynchronous event` {
+
+        private val clock = ControlledClock().fix(Instant.parse("2026-11-08T10:00:00Z"))
+        private val idempotency = inMemoryIdempotency(clock)
+        private val welcomeEmail = Delivery(SomethingHappened(1), idempotencyKey = "welcome-key")
+        private val sent = mutableListOf<PlatformEvent<*>>()
+
+        @Test
+        fun `a welcome email delivered twice reaches the user once`() {
+            // Given
+            val listener = mailListener { sent += it }
+
+            // When
+            listener.onApplicationEvent(springEventOf(welcomeEmail))
+            listener.onApplicationEvent(springEventOf(welcomeEmail))
+            scheduler.runAll()
+
+            // Then
+            sent shouldContainExactly listOf(SomethingHappened(1))
+        }
+
+        @Test
+        fun `a welcome email whose mail server is down is sent once the server is back`() {
+            // Given
+            var serverDown = true
+            val listener = mailListener {
+                check(!serverDown) { "Mail server down" }
+                sent += it
+            }
+            listener.onApplicationEvent(springEventOf(welcomeEmail))
+            scheduler.runNext()
+
+            // When
+            serverDown = false
+            scheduler.runAll()
+
+            // Then
+            sent shouldContainExactly listOf(SomethingHappened(1))
+        }
+
+        @Test
+        fun `a welcome email handled on two instances at once is sent once, never lost`() {
+            // Given
+            val otherScheduler = ManualScheduler()
+            val otherInstance = mailListener(otherScheduler) { sent += it }
+            val listener = mailListener {
+                otherInstance.onApplicationEvent(springEventOf(welcomeEmail))
+                otherScheduler.runNext()
+                sent += it
+            }
+
+            // When
+            listener.onApplicationEvent(springEventOf(welcomeEmail))
+            scheduler.runAll()
+
+            // Then
+            sent shouldContainExactly listOf(SomethingHappened(1))
+            otherScheduler.pendingCount() shouldBe 1
+            otherScheduler.runAll()
+            sent shouldContainExactly listOf(SomethingHappened(1))
+        }
+
+        @Test
+        fun `a welcome email delivered twice under the key its handler reads from it reaches the user once`() {
+            // Given
+            val listener = mailListener(idempotencyKey = "#event.id") { sent += it }
+
+            // When
+            listener.onApplicationEvent(springEventOf(Delivery(SomethingHappened(1), idempotencyKey = "first")))
+            listener.onApplicationEvent(springEventOf(Delivery(SomethingHappened(1), idempotencyKey = "second")))
+            scheduler.runAll()
+
+            // Then
+            sent shouldContainExactly listOf(SomethingHappened(1))
+        }
+
+        @Test
+        fun `an event published by a handler carries a key derived from the handler's key`() {
+            // Given
+            val keys = mutableListOf<String?>()
+            val listener = mailListener { keys += CurrentIdempotencyKey.derive("NextEvent") }
+
+            // When
+            listener.onApplicationEvent(springEventOf(welcomeEmail))
+            listener.onApplicationEvent(springEventOf(welcomeEmail.copy(idempotencyKey = "other-key")))
+            scheduler.runAll()
+
+            // Then
+            keys.shouldNotContainDuplicates()
+            keys.forEach { it shouldNotBe null }
+        }
+
+        private fun mailListener(
+            on: ManualScheduler = scheduler,
+            idempotencyKey: String = "",
+            send: (PlatformEvent<*>) -> Unit,
+        ) = PlatformEventHandlerListener(
+            handler = PlatformEventHandler(
+                name = "mail.delivery.queue",
+                idempotent = true,
+                idempotencyKey = idempotencyKey,
+            ),
+            eventType = SomethingHappened::class.java,
+            callHandler = send,
+            firstAttempt = ExponentialBackoffRetry(initialDelay = Duration.ofSeconds(1)),
+            idempotency = idempotency,
+            schedule = on::schedule,
+        )
+    }
+
     private fun listenerOf(maxAttempts: Int = 3, delay: Duration = Duration.ZERO, handle: (PlatformEvent<*>) -> Unit) =
         PlatformEventHandlerListener(
             handler = PlatformEventHandler(
@@ -136,5 +254,7 @@ internal class PlatformEventHandlerListenerTest {
             schedule = scheduler::schedule,
         )
 
-    private fun springEventOf(event: PlatformEvent<*>) = PayloadApplicationEvent(this, event)
+    private fun springEventOf(event: PlatformEvent<*>) = springEventOf(Delivery.of(event))
+
+    private fun springEventOf(delivery: Delivery) = PayloadApplicationEvent(this, delivery)
 }

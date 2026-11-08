@@ -61,6 +61,21 @@ internal class PlatformEventHandlerProcessorTest {
             }
     }
 
+    @Test
+    fun `refuses an idempotent handler without the idempotency starter`() {
+        runner.withBean(IdempotentHandler::class.java)
+            .run { context ->
+                context.startupFailure.shouldNotBeNull().stackTraceToString() shouldContain
+                    "Handler idempotent.handler.queue is idempotent: it needs the Idempotency of idempotency-starter"
+            }
+    }
+
+    internal class IdempotentHandler {
+
+        @PlatformEventHandler(name = "idempotent.handler.queue", idempotent = true)
+        fun handle(event: SomethingHappened) = event.id
+    }
+
     internal class RecordingHandler {
         val received = CompletableFuture<SomethingHappened>()
         val thread = CompletableFuture<Thread>()
