@@ -11,6 +11,7 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.util.Locale
+import java.util.UUID
 
 internal class DomainUserAccountsTest : UserAccountsTestContract() {
 
@@ -21,6 +22,7 @@ internal class DomainUserAccountsTest : UserAccountsTestContract() {
         users = userFixtures.users,
         createNewUser = userFixtures.createNewUser,
         reactivateUser = userFixtures.reactivateUser,
+        currentVisitor = { UUID.randomUUID().toString() },
     )
 
     override fun givenAnAccount(login: String): UserAccount {

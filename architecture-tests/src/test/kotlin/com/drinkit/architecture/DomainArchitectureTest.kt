@@ -150,7 +150,6 @@ internal class DomainArchitectureTest {
                 "Random"
             suppress {
                 file("*/com/drinkit/user/core/ProfileInformation.kt", FOLLOW_UP)
-                file("*/com/drinkit/common/CorrelationId.kt", FOLLOW_UP)
             }
             files {
                 that().inModules(DOMAINS)

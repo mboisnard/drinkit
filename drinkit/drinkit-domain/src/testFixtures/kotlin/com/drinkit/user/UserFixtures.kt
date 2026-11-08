@@ -1,7 +1,7 @@
 package com.drinkit.user
 
-import com.drinkit.common.CorrelationId
 import com.drinkit.common.FakeGenerateId
+import com.drinkit.common.VisitorId
 import com.drinkit.faker
 import com.drinkit.test.ControlledClock
 import com.drinkit.user.core.Author
@@ -18,6 +18,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import java.util.UUID
 
 class UserFixtures(
     val generateId: FakeGenerateId = FakeGenerateId(),
@@ -58,7 +59,7 @@ class UserFixtures(
     val givenAUserId: UserId get() = generateId.invoke(UserId::class)
     val givenANewDate: OffsetDateTime get() = OffsetDateTime.now(controlledClock).truncatedTo(ChronoUnit.MICROS)
 
-    val givenAnUnloggedAuthor: Unlogged get() = Unlogged(CorrelationId.create())
+    val givenAnUnloggedAuthor: Unlogged get() = Unlogged(VisitorId(UUID.randomUUID().toString()))
     val givenAConnectedAuthor: Author.Connected get() = Author.Connected(givenAUserId)
 
     fun givenAnInitializedUser(
@@ -76,7 +77,7 @@ class UserFixtures(
     fun givenAUserHistory(
         userId: UserId = givenAUserId,
         email: Email = VALID_EMAIL,
-        author: Author = Unlogged(CorrelationId.create()),
+        author: Author = Unlogged(VisitorId(UUID.randomUUID().toString())),
         initEventModifier: (Initialized) -> Initialized = { it },
     ): UserHistory {
         val decision = UserCreationDecider.invoke(
