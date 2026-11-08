@@ -1,7 +1,10 @@
 package com.drinkit.webclient.infra
 
+import com.drinkit.idempotency.CurrentIdempotencyKey
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.autoconfigure.AutoConfigurations
@@ -19,6 +22,7 @@ import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.mock.http.client.MockClientHttpRequest
 import org.springframework.mock.http.client.MockClientHttpResponse
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer
 import org.springframework.web.service.annotation.GetExchange
@@ -114,12 +118,72 @@ internal class WebClientAutoConfigurationTest {
             }
     }
 
+    @Nested
+    inner class `Calling a provider` {
+
+        private val idempotentRunner = runner.withPropertyValues("starters.webclient.retry.idempotent-groups=greeting")
+
+        @Test
+        fun `a provider call carrying a key is retried after a network failure`() {
+            idempotentRunner.withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 1) })
+                .run { context ->
+                    // When
+                    context.getBean<GreetingClient>().greet(key = "greeting-1")
+
+                    // Then
+                    context.getBean<FlakyServer>().keys shouldBe listOf("greeting-1", "greeting-1")
+                }
+        }
+
+        @Test
+        fun `a provider call without a key is never retried`() {
+            idempotentRunner.withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 1) })
+                .run { context ->
+                    // When
+                    shouldThrow<ResourceAccessException> { context.getBean<GreetingClient>().greet() }
+
+                    // Then
+                    context.getBean<FlakyServer>().attempts shouldBe 1
+                }
+        }
+
+        @Test
+        fun `a provider call made for an event carries a key derived from the event's, kept on a replay`() {
+            idempotentRunner.withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 0) })
+                .run { context ->
+                    // When
+                    repeat(
+                        2,
+                    ) { CurrentIdempotencyKey.with("welcome-email") { context.getBean<GreetingClient>().greet() } }
+
+                    // Then
+                    val (first, replay) = context.getBean<FlakyServer>().keys
+                    first shouldNotBe null
+                    replay shouldBe first
+                }
+        }
+
+        @Test
+        fun `a call carrying a key to a provider that does not honour keys is sent once`() {
+            runner.withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 1) })
+                .run { context ->
+                    // When
+                    shouldThrow<ResourceAccessException> { context.getBean<GreetingClient>().greet(key = "greeting-1") }
+
+                    // Then
+                    context.getBean<FlakyServer>().attempts shouldBe 1
+                }
+        }
+    }
+
     interface GreetingClient {
         @GetExchange("/greeting")
         fun greeting(): String
 
         @PostExchange("/greeting")
-        fun greet(): String
+        fun greet(
+            @RequestHeader(IDEMPOTENCY_KEY_HEADER, required = false) key: String? = null,
+        ): String
     }
 
     // A configurer of the application's own, as the clients of a module declare one for their group
@@ -137,11 +201,13 @@ internal class WebClientAutoConfigurationTest {
     class FlakyServer(private val failuresBeforeSuccess: Int) : ClientHttpRequestFactory {
         var attempts = 0
             private set
+        val keys = mutableListOf<String?>()
 
         override fun createRequest(uri: URI, httpMethod: HttpMethod): ClientHttpRequest =
             object : MockClientHttpRequest(httpMethod, uri) {
                 override fun executeInternal(): ClientHttpResponse {
                     attempts++
+                    keys += headers.getFirst(IDEMPOTENCY_KEY_HEADER)
                     if (attempts <= failuresBeforeSuccess) {
                         throw IOException("$CONNECTION_RESET $attempts")
                     }

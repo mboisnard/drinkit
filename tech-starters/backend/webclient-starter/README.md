@@ -32,6 +32,12 @@ sequenceDiagram
 
 A response, even a `503`, is never retried: only a request that got no answer is.
 
+A group whose API honours the `Idempotency-Key` header is listed in `starters.webclient.retry.idempotent-groups`. Its
+`POST`, `PUT`, `PATCH` and `DELETE` that carry the header are retried too, and those sent while a request or an event
+is handled get a key derived from its own, through the
+[idempotency starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/idempotency-starter/README.md):
+a replay of the request or the event sends the same key, which the provider recognizes.
+
 ## Usage
 
 A module declares the starter in its build file:
@@ -63,6 +69,7 @@ internal class RatesClients
 | `starters.webclient.enabled` | `true`, `false` removes the retries and the default timeouts | `STARTERS_WEBCLIENT_ENABLED` |
 | `starters.webclient.retry.max-retries` | `3`, the retries after the first attempt | `STARTERS_WEBCLIENT_RETRY_MAXRETRIES` |
 | `starters.webclient.retry.delay` | `100ms`, between two attempts | `STARTERS_WEBCLIENT_RETRY_DELAY` |
+| `starters.webclient.retry.idempotent-groups` | none, the groups whose API honours `Idempotency-Key` | `STARTERS_WEBCLIENT_RETRY_IDEMPOTENTGROUPS` |
 
 ## Tests
 
