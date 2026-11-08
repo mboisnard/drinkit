@@ -1,11 +1,11 @@
 package com.drinkit.user.core
 
-import com.drinkit.common.CorrelationId
+import com.drinkit.common.VisitorId
 
 sealed interface Author {
     data class Connected(val userId: UserId) : Author
 
-    data class Unlogged(val correlationId: CorrelationId) : Author
+    data class Unlogged(val visitorId: VisitorId) : Author
 
     fun connectedAuthorOrFail(): Connected = when (this) {
         is Connected -> this

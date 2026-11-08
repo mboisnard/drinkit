@@ -1,6 +1,7 @@
 package com.drinkit.user
 
-import com.drinkit.common.CorrelationId
+import com.drinkit.common.VisitorId
+import com.drinkit.security.CurrentVisitor
 import com.drinkit.security.UserAccount
 import com.drinkit.security.UserAccounts
 import com.drinkit.user.core.Author
@@ -17,6 +18,7 @@ internal class DomainUserAccounts(
     private val users: Users,
     private val createNewUser: CreateNewUser,
     private val reactivateUser: ReactivateUser,
+    private val currentVisitor: CurrentVisitor,
 ) : UserAccounts {
 
     @Transactional(readOnly = true)
@@ -47,7 +49,7 @@ internal class DomainUserAccounts(
         }
 
     private fun create(email: Email, locale: Locale): UserAccount? {
-        val command = CreateNewUserCommand(Author.Unlogged(CorrelationId.create()), email, locale)
+        val command = CreateNewUserCommand(Author.Unlogged(VisitorId(currentVisitor.id())), email, locale)
         return when (val result = createNewUser.invoke(command)) {
             is CreateNewUser.Result.UserCreated -> result.user.toAccount()
 
