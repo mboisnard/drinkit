@@ -166,6 +166,8 @@ export default withMermaid(
                   { text: '0014. CSRF token in a cookie', link: '0014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata' },
                   { text: '0015. Server events over SSE', link: '0015-push-server-events-over-sse-to-a-user-or-a-session' },
                   { text: '0016. Observability on Micrometer', link: '0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand' },
+                  { text: '0017. Feature flags through OpenFeature', link: '0017-feature-flags-through-openfeature' },
+                  { text: '0018. A/B tests behind a flag, with PostHog', link: '0018-ab-tests-behind-a-flag-with-posthog' },
                 ],
               },
 
