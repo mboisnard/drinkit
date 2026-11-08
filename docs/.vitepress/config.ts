@@ -168,6 +168,7 @@ export default withMermaid(
                   { text: '0016. Observability on Micrometer', link: '0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand' },
                   { text: '0017. Feature flags through OpenFeature', link: '0017-feature-flags-through-openfeature' },
                   { text: '0018. A/B tests behind a flag, with PostHog', link: '0018-ab-tests-behind-a-flag-with-posthog' },
+                  { text: '0019. Run requests and events once per idempotency key', link: '0019-run-requests-and-events-once-per-idempotency-key' },
                 ],
               },
 

@@ -89,3 +89,21 @@ CREATE TABLE IF NOT EXISTS drinkit_application.search_index_rebuild
     done_batches   BIGINT[]                 NOT NULL,
     started        TIMESTAMP WITH TIME ZONE NOT NULL
 );
+
+-- Idempotency keys, one row per key an entry point took, forgotten after the retention of idempotency-starter
+
+CREATE TABLE IF NOT EXISTS drinkit_application.idempotency_key
+(
+    scope         TEXT                     NOT NULL,
+    key_hash      TEXT                     NOT NULL,
+    owner         UUID                     NOT NULL,
+    fingerprint   TEXT                     NOT NULL,
+    taken_at      TIMESTAMP WITH TIME ZONE NOT NULL,
+    lease_until   TIMESTAMP WITH TIME ZONE NOT NULL,
+    completed_at  TIMESTAMP WITH TIME ZONE,
+    outcome       BYTEA,
+    PRIMARY KEY (scope, key_hash)
+);
+
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idempotency_key_taken_at_idx
+    ON drinkit_application.idempotency_key (taken_at);
