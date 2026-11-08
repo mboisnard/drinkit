@@ -1,0 +1,2 @@
+com.drinkit.idempotency.infra.IdempotencyAutoConfiguration
+com.drinkit.idempotency.infra.http.IdempotencyWebAutoConfiguration
