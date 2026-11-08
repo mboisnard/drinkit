@@ -1,5 +1,6 @@
 package com.drinkit.security.infra.rememberme
 
+import com.drinkit.kotlin.sha256
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.security.InMemoryUserAccounts
 import com.drinkit.security.Sessions
@@ -18,13 +19,11 @@ import org.jooq.Query
 import org.junit.jupiter.api.Test
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
-import java.security.MessageDigest
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.Base64
-import java.util.HexFormat
 
 private const val USER_ID = "64656d6f0000000000000001"
 private const val SERIES = "a-series"
@@ -41,7 +40,7 @@ internal class RotatingRememberMeServicesTest {
     fun `signs nobody out everywhere when the series ends while its token rotates`(dsl: DSLContext) {
         // Given
         RememberMeTokens(dsl)
-            .create(RememberMeSeries(SERIES, USER_ID, sha256(TOKEN), null, now, now), null)
+            .create(RememberMeSeries(SERIES, USER_ID, TOKEN.sha256(), null, now, now), null)
         val services = servicesOn(dsl.endingTheSeriesBeforeItsRotation())
 
         // When
@@ -79,9 +78,6 @@ internal class RotatingRememberMeServicesTest {
     private fun returningBrowser() = MockHttpServletRequest().apply {
         setCookies(Cookie(cookie.rememberMe, Base64.getEncoder().encodeToString("$SERIES:$TOKEN".toByteArray())))
     }
-
-    private fun sha256(token: String) =
-        HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(token.toByteArray()))
 
     private class RecordingSessions : Sessions {
         val revoked = mutableListOf<String>()

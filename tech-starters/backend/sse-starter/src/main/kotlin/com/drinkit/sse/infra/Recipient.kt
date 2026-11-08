@@ -1,8 +1,7 @@
 package com.drinkit.sse.infra
 
+import com.drinkit.kotlin.sha256
 import org.springframework.web.servlet.function.ServerRequest
-import java.security.MessageDigest
-import java.util.HexFormat
 
 @JvmInline
 internal value class Recipient private constructor(private val key: String) {
@@ -12,7 +11,7 @@ internal value class Recipient private constructor(private val key: String) {
         fun user(userId: String) = Recipient("user:$userId")
 
         // A session id is a secret: the events and the streams only hold its hash
-        fun session(sessionId: String) = Recipient("session:${sha256(sessionId)}")
+        fun session(sessionId: String) = Recipient("session:${sessionId.sha256()}")
 
         /** The signed-in user, else the session the application opened, else nobody. */
         fun of(request: ServerRequest): Recipient? {
@@ -24,8 +23,5 @@ internal value class Recipient private constructor(private val key: String) {
             val sessionId = request.servletRequest().getSession(false)?.id
             return sessionId?.let(::session)
         }
-
-        private fun sha256(value: String) =
-            HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(value.toByteArray()))
     }
 }

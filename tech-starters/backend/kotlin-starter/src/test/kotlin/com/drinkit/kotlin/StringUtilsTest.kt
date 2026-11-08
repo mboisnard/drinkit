@@ -33,6 +33,11 @@ internal class StringUtilsTest {
     }
 
     @Test
+    fun `hashes in the lower-case hexadecimal of SHA-256, so that the hashes already stored still match`() {
+        "abc".sha256() shouldBe "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    }
+
+    @Test
     fun `an address with a dotted local part and a subdomain is an email`() {
         "jane.doe+cellar@mail.example.co.uk".isEmail() shouldBe true
     }

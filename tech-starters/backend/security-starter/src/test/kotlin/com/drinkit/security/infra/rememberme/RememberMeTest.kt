@@ -1,5 +1,6 @@
 package com.drinkit.security.infra.rememberme
 
+import com.drinkit.kotlin.sha256
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.security.CookieBrowser
 import com.drinkit.security.InMemoryUserAccounts
@@ -28,12 +29,10 @@ import org.springframework.boot.test.system.CapturedOutput
 import org.springframework.http.HttpHeaders
 import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.test.web.servlet.MockMvc
-import java.security.MessageDigest
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.Base64
-import java.util.HexFormat
 
 // A Linux clock gives nanoseconds, which PostgreSQL rounds to microseconds: the tests run on such an instant everywhere
 private val NOW_WITH_NANOSECONDS = Instant.now().truncatedTo(ChronoUnit.SECONDS).plusNanos(999_999_600)
@@ -91,7 +90,7 @@ internal class RememberMeTest(
         val (series, token) = decode(rememberMeCookie())
         database.sql("SELECT token_hash, user_agent FROM drinkit_session.remember_me_token WHERE series = ?")
             .param(series).query { row, _ -> row.getString(1) to row.getString(2) }
-            .single() shouldBe (sha256(token) to "Firefox")
+            .single() shouldBe (token.sha256() to "Firefox")
     }
 
     @Test
@@ -306,7 +305,4 @@ internal class RememberMeTest(
 
     private fun encode(series: String, token: String) =
         Base64.getEncoder().withoutPadding().encodeToString("$series:$token".toByteArray())
-
-    private fun sha256(token: String) =
-        HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(token.toByteArray()))
 }
