@@ -65,7 +65,36 @@ components:
 
   # No content: the security filters write these bodies, and a content type here would join the produces of each
   # generated mapping, refusing a request that accepts application/json only
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: |
+        A key the client draws once per action, a UUID for instance, and sends again on each retry of that action: a
+        retry then gets the answer of the first request, and the action runs once. Kept 24 hours.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 255
+        example: 8e03978e-40d5-43e8-bc93-6894a57f9324
+
   responses:
+    IdempotencyKeyInUse:
+      description: |
+        A request with this Idempotency-Key still runs: retry after the seconds of the Retry-After header. The body is
+        a problem detail of RFC 9457, as application/problem+json.
+
+    IdempotencyKeyReused:
+      description: |
+        This Idempotency-Key was sent with another request. The body is a problem detail of RFC 9457, as
+        application/problem+json.
+
+    IdempotentRequestTooLarge:
+      description: |
+        A request with an Idempotency-Key carries a body of at most 64 KB. The body is a problem detail of RFC 9457, as
+        application/problem+json.
+
     Unauthorized:
       description: |
         No user is signed in. The body is a problem detail of RFC 9457, as application/problem+json, with the traceId of
