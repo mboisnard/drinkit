@@ -47,6 +47,8 @@ the other. The status says where a decision stands:
 | [0014](0014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md) | Protect against CSRF with a token in a cookie and Fetch Metadata | Accepted | 2026-11-06 |
 | [0015](0015-push-server-events-over-sse-to-a-user-or-a-session.md) | Push server events over SSE, to a user or a session | Accepted | 2026-11-07 |
 | [0016](0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md) | Observe through Micrometer, and export over OpenTelemetry on demand | Accepted | 2026-11-07 |
+| [0017](0017-feature-flags-through-openfeature.md) | Feature flags through OpenFeature, with Flipt as provider | Accepted | 2026-11-08 |
+| [0018](0018-ab-tests-behind-a-flag-with-posthog.md) | A/B tests behind a flag, with PostHog choosing the variant | Accepted | 2026-11-08 |
 
 ## How to write one
 
