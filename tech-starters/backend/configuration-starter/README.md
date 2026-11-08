@@ -3,7 +3,7 @@
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
 that keeps in PostgreSQL the settings an operator changes without a restart, such as a limit or a switch. A setting
 fixed at startup stays a `@ConfigurationProperties` class, and a release to some users goes through the
-[feature flags starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/feature-flags-starter/README.md).
+[feature management starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/feature-management-starter/README.md).
 
 ```mermaid
 flowchart LR

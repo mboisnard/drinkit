@@ -1,0 +1,4 @@
+com.drinkit.featuremanagement.infra.FeatureManagementAutoConfiguration
+com.drinkit.featuremanagement.infra.FeatureManagementHealthAutoConfiguration
+com.drinkit.featuremanagement.infra.FeatureManagementWebAutoConfiguration
+com.drinkit.featuremanagement.infra.FeatureManagementSecurityAutoConfiguration

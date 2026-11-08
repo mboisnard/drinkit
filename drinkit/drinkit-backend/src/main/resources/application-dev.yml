@@ -37,7 +37,7 @@ starters:
   search-engine:
     meilisearch:
       api-key: masterKey
-  feature-flags:
+  feature-management:
     flipt:
       url: http://localhost:8082
-      namespace: default
+      environment: development

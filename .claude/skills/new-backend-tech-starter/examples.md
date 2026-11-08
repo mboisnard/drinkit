@@ -221,7 +221,7 @@ internal class JooqSmsOutbox(private val dsl: DSLContext) : SmsOutbox { … }
 
 - In-memory, when the starter holds state: `InMemoryConfigurations` in `configuration-starter`.
 - Spy, when it only produces side effects: `SpyEmailSender` in `mail-starter`.
-- Programmable, when a test steers its behaviour: `InMemoryFeatureFlags` in `feature-flags-starter`, written by hand
+- Programmable, when a test steers its behaviour: `InMemoryFeatureFlags` in `feature-management-starter`, written by hand
   like the others.
 - A JUnit extension and its meta-annotation, when consumers need the real infrastructure:
   `MeilisearchExtension` and `@MeilisearchIntegrationTest` in `search-engine-starter`.
