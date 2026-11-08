@@ -28,7 +28,6 @@
     <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("100.00")</ID>
     <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("110.00")</ID>
     <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("112.34")</ID>
-    <ID>MagicNumber:FeatureFlagsConfig.kt:FeatureFlagsConfig$10</ID>
     <ID>MagicNumber:Percentage.kt:Percentage$100</ID>
     <ID>MaxLineLength:Aggregate.kt:Aggregate$*</ID>
     <ID>MaxLineLength:DocumentationSymbolProcessor.kt:DocumentationSymbolProcessor$* KSP processor that orchestrates documentation generation from [CoreDomain], [Usecase] and [TechStarterTool] annotations.</ID>

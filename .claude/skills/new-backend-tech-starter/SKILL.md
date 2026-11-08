@@ -78,7 +78,7 @@ Several implementations: one property selects, its default is the safest one, an
 
 Properties go under `starters.<name>.*`, never under `spring.*`, `server.*` or `management.*`. The environment
 variable is the property uppercased, with `.` turned into `_` and hyphens removed:
-`starters.feature-flags.flipt.url` is `STARTERS_FEATUREFLAGS_FLIPT_URL`. Do not reproduce the old
+`starters.feature-management.flipt.url` is `STARTERS_FEATUREMANAGEMENT_FLIPT_URL`. Do not reproduce the old
 `${DRINKIT_XXX:}` placeholders, which hide a property from Spring's metadata.
 
 A default for a key Spring owns, such as `spring.datasource.*`, goes in a defaults file loaded at the lowest

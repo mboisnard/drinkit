@@ -118,9 +118,6 @@ internal class SpringArchitectureTest {
         rule("spring.configuration-named-configuration") {
             description = "The wiring of a module is found by its name: rename the @Configuration class " +
                 "*Configuration"
-            suppress {
-                classFqName("com.drinkit.featureflags.infra.FeatureFlagsConfig", OPS_STARTERS)
-            }
             classes {
                 that().inModule(ALL)
                 that().annotatedWith("Configuration")
