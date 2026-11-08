@@ -123,6 +123,7 @@ A controller reads and changes the connected user:
 currentUser.get()                   // the connected user, or a 401 for an anonymous caller
 currentUser.signIn(userId)          // a user proven another way, with a new session id
 currentUser.refresh()               // after the user's roles changed
+currentVisitor.id()                 // the browser behind the request, signed in or not
 sessions.revokeAll(userId)          // signs another user out everywhere
 sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // computed once per session
 ```
@@ -132,6 +133,10 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
   and lower-cased.
   [Calling the API](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/security/calling-the-api.md)
   shows how a front end or Postman uses them.
+- **Visitor**: each request gets its visitor, a random id that a `visitor` cookie keeps for 30 days after the last
+  visit, also logged as `visitor.id`. A visitor is a browser, not a person: two people on one browser share it.
+- **Requests without CSRF token**: `endpointRules(csrfFree = listOf(matcher)) { … }` frees from the token a request
+  that changes no state on the server, next to its access rule. Fetch Metadata still refuses it cross-site.
 - **Logs**: each log of a signed-in user's request carries `user.id`, and each refusal its `traceId`, as the
   [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/logging.md)
   says.
@@ -157,6 +162,7 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 | `starters.security.code.max-email-length` | `320`, the longest email the application takes | `STARTERS_SECURITY_CODE_MAXEMAILLENGTH` |
 | `starters.security.cookie.prefix` | `__Host-`, empty over plain http | `STARTERS_SECURITY_COOKIE_PREFIX` |
 | `starters.security.cookie.secure` | `true`, `false` over plain http | `STARTERS_SECURITY_COOKIE_SECURE` |
+| `starters.security.visitor.validity` | `30d` after the last visit | `STARTERS_SECURITY_VISITOR_VALIDITY` |
 | `starters.security.enabled` | `true` | `STARTERS_SECURITY_ENABLED` |
 
 ## Tests

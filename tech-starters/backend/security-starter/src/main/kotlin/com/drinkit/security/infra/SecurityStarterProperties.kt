@@ -10,6 +10,7 @@ private const val CODE_MINUTES = 10L
 private const val CODE_ATTEMPTS = 3
 private const val CODE_ATTEMPTS_HOURS = 1L
 private const val EMAIL_MAX_LENGTH = 320
+private const val VISITOR_DAYS = 30L
 
 /** OWASP: ASVS 5.0 V3.3, V7.3.1, V7.3.2, Session Management Cheat Sheet (cookie attributes, timeouts). */
 @ConfigurationProperties(prefix = "starters.security")
@@ -19,6 +20,7 @@ internal data class SecurityStarterProperties(
     val rememberMe: RememberMe = RememberMe(),
     val code: Code = Code(),
     val cookie: Cookie = Cookie(),
+    val visitor: Visitor = Visitor(),
 ) {
     data class Session(
         val idleTimeout: Duration = Duration.ofMinutes(IDLE_MINUTES),
@@ -26,6 +28,8 @@ internal data class SecurityStarterProperties(
     )
 
     data class RememberMe(val validity: Duration = Duration.ofDays(REMEMBER_ME_DAYS))
+
+    data class Visitor(val validity: Duration = Duration.ofDays(VISITOR_DAYS))
 
     data class Code(
         val validity: Duration = Duration.ofMinutes(CODE_MINUTES),
@@ -51,6 +55,7 @@ internal data class SecurityStarterProperties(
         val session get() = "${prefix}SESSION"
         val xsrfToken get() = "${prefix}XSRF-TOKEN"
         val rememberMe get() = "${prefix}remember-me"
+        val visitor get() = "${prefix}visitor"
 
         // Path=/ even when the application runs under a context path: a __Host- cookie requires it
         fun forSite(name: String, value: String?, maxAge: Int) = jakarta.servlet.http.Cookie(name, value).also {
