@@ -1,0 +1,12 @@
+# One environment for a developer's machine, in a git repository of the volume, with no remote: production sets a
+# remote kept for flags, never the code's repository (ADR 0017)
+storage:
+  local:
+    backend:
+      type: local
+      path: /var/opt/flipt/flags
+environments:
+  development:
+    name: development
+    storage: local
+    default: true

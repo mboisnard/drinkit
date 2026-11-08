@@ -98,7 +98,8 @@ services:
     ports:
       - "8082:8080"
     volumes:
-      - flipt-data:/var/opt/flipt # TODO change to real path
+      - ./flipt/config.yml:/etc/flipt/config/default.yml:ro
+      - flipt-data:/var/opt/flipt
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8080/health"]
       interval: 2s

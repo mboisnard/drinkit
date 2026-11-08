@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: components of the feature management api
+  version: 1.0.0
+  x-fragment: true
+paths: {}
+components:
+  schemas:
+    OfrepBulkEvaluationRequest:
+      type: object
+      description: The OFREP bulk request, whose context names the keys the client asks for
+      properties:
+        context:
+          type: object
+          properties:
+            flags:
+              type: string
+              maxLength: 5000
+              description: The keys of the flags, comma separated
+              example: new-checkout,dark-mode
+            experiments:
+              type: string
+              maxLength: 5000
+              description: The keys of the experiments, comma separated
+              example: checkout-test
+
+    OfrepBulkEvaluationResponse:
+      type: object
+      required:
+        - flags
+      properties:
+        flags:
+          type: array
+          maxItems: 500
+          items:
+            $ref: '#/components/schemas/OfrepFlag'
+
+    OfrepFlag:
+      type: object
+      required:
+        - key
+        - value
+      properties:
+        key:
+          $ref: '#/components/schemas/FeatureKey'
+        value:
+          description: A boolean for a flag, the name of a variant for an experiment
+        reason:
+          type: string
+          maxLength: 32
+          description: For an experiment, SPLIT when the user was drawn into it, which then calls for an exposure
+          example: SPLIT
+        variant:
+          type: string
+          maxLength: 64
+
+    ExposureReport:
+      type: object
+      required:
+        - variant
+      properties:
+        variant:
+          type: string
+          maxLength: 64
+          example: B
+
+    FeatureKey:
+      type: string
+      maxLength: 100
+      pattern: '^[a-z0-9][a-z0-9-]*$'
+      example: new-checkout
