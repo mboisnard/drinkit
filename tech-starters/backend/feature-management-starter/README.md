@@ -69,8 +69,8 @@ fun subjectAttributes() = SubjectAttributes { user -> mapOf("plan" to plans.of(u
   comma separated, for the subject of the request, with an ETag. It asks for the CSRF token like any POST.
 - **`POST /experiments/{key}/exposures`** records the exposure a client reports, when its variant is the one the
   backend assigns.
-- **Switched off**, the starter answers every flag with its default and every experiment with `control`, so that
-  the code and the clients keep working without Flipt.
+- **Switched off**, the starter answers every flag with its default and every experiment with `control`, and still
+  serves both endpoints, so that the code and the clients keep working without Flipt.
 - **With Spring Boot Actuator**, `/actuator/health` shows whether Flipt answers.
 
 ## Configuration
@@ -87,7 +87,9 @@ fun subjectAttributes() = SubjectAttributes { user -> mapOf("plan" to plans.of(u
 ## Tests
 
 `InMemoryFeatureFlags` and `InMemoryExperiments`, from `testFixtures(project(":feature-management-starter"))`, hold
-what a test sets and record what the code asked, for the subject they are given as the one of the request:
+what a test sets and record what the code asked, for the subject they are given as the one of the request. They
+answer like the real ones: a flag set off is off whatever the default, an unknown flag gives the default, an
+experiment with no variant set gives `control`:
 
 ```kotlin
 featureFlags.configure("new-checkout", enabled = true)

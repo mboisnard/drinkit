@@ -180,7 +180,8 @@ From `testFixtures(project(":security-starter"))`:
 - `InMemoryCurrentUser(accounts)` is the double of `CurrentUser`, for a test outside a request: nobody is signed in
   until `signIn(userId)` signs in an account of `accounts`.
 - `SpySignInCodeSender` keeps the last code sent to each login, for the test to sign in with, and `failFor(login)`
-  makes the sending throw, as an unreachable mail server would.
+  makes the sending throw, as an unreachable mail server would. `SignInCodeSenderTestContract` is the contract the
+  application's sender runs.
 - `EndpointRulesCoverage(rules, apiPackage).unruledEndpoints()` lists the operations of the API contract that no rule
   matches, without starting the application. It applies the rules that the other tech starters of the classpath bring,
   such as the stream of `sse-starter`. Rules given by bean name replace the starter's rule of that name, and

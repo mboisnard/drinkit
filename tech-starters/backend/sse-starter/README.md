@@ -136,7 +136,8 @@ fun serverEventsAccessRules() = endpointRules {
 
 ## Tests
 
-`SpyServerEvents`, from `testFixtures(project(":sse-starter"))`, records what the code under test sends:
+`SpyServerEvents`, from `testFixtures(project(":sse-starter"))`, records what the code under test sends, and refuses
+the event names the real sender refuses:
 
 ```kotlin
 val serverEvents = SpyServerEvents()
