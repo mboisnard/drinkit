@@ -171,6 +171,18 @@ internal class ConfigurationAutoConfigurationTest {
     }
 
     @Test
+    fun `registers no configurations without a database`() {
+        ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(ConfigurationAutoConfiguration::class.java))
+            .withBean(JsonMapper::class.java, { jacksonMapperBuilder().build() })
+            .withBean(Clock::class.java, { ControlledClock() })
+            .run { context ->
+                context.startupFailure shouldBe null
+                context.getBeanNamesForType(Configurations::class.java).toList().shouldBeEmpty()
+            }
+    }
+
+    @Test
     fun `registers nothing when disabled`() {
         runner.withPropertyValues("starters.configuration.enabled=false")
             .run { context ->

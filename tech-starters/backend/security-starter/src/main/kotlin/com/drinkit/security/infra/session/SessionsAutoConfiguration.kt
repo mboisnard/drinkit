@@ -7,6 +7,7 @@ import com.drinkit.security.infra.SecurityStarterProperties
 import com.drinkit.security.infra.SecurityStarterProperties.Cookie.Companion.SAME_SITE
 import com.drinkit.security.infra.events.SecurityEventLogger
 import com.drinkit.security.infra.rememberme.RememberMeTokens
+import org.jooq.DSLContext
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -14,6 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.jooq.autoconfigure.JooqAutoConfiguration
 import org.springframework.boot.session.autoconfigure.DefaultCookieSerializerCustomizer
 import org.springframework.boot.session.jdbc.autoconfigure.JdbcSessionAutoConfiguration
 import org.springframework.context.ApplicationContext
@@ -23,9 +25,8 @@ import org.springframework.session.FindByIndexNameSessionRepository
 import org.springframework.session.config.SessionRepositoryCustomizer
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository
 import tools.jackson.databind.json.JsonMapper
-import javax.sql.DataSource
 
-@AutoConfiguration(after = [JdbcSessionAutoConfiguration::class])
+@AutoConfiguration(after = [JooqAutoConfiguration::class, JdbcSessionAutoConfiguration::class])
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = "starters.security", name = ["enabled"], matchIfMissing = true)
 @EnableConfigurationProperties(SecurityStarterProperties::class)
@@ -34,7 +35,7 @@ internal class SessionsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(FindByIndexNameSessionRepository::class)
-    @ConditionalOnSingleCandidate(DataSource::class)
+    @ConditionalOnSingleCandidate(DSLContext::class)
     fun sessions(
         repository: FindByIndexNameSessionRepository<*>,
         rememberMeTokens: RememberMeTokens,

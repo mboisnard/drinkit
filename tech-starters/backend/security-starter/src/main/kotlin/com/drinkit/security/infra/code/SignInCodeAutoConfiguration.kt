@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.jooq.autoconfigure.JooqAutoConfiguration
 import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
 import org.springframework.boot.session.jdbc.autoconfigure.JdbcSessionAutoConfiguration
 import org.springframework.context.annotation.Bean
@@ -18,10 +19,12 @@ import org.springframework.web.servlet.function.RouterFunctions
 import org.springframework.web.servlet.function.ServerResponse
 import tools.jackson.databind.json.JsonMapper
 import java.time.Clock
-import javax.sql.DataSource
 
 /** Registers before Spring Boot's in-memory user, which then backs off. */
-@AutoConfiguration(after = [JdbcSessionAutoConfiguration::class], before = [UserDetailsServiceAutoConfiguration::class])
+@AutoConfiguration(
+    after = [JooqAutoConfiguration::class, JdbcSessionAutoConfiguration::class],
+    before = [UserDetailsServiceAutoConfiguration::class],
+)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = "starters.security", name = ["enabled"], matchIfMissing = true)
 @EnableConfigurationProperties(SecurityStarterProperties::class)
@@ -29,7 +32,7 @@ internal class SignInCodeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnSingleCandidate(DataSource::class)
+    @ConditionalOnSingleCandidate(DSLContext::class)
     fun signInCodes(dsl: DSLContext): SignInCodes = JooqSignInCodes(dsl)
 
     @Bean
