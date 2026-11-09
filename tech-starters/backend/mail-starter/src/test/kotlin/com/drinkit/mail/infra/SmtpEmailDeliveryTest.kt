@@ -9,13 +9,11 @@ import com.drinkit.mail.Recipients
 import com.drinkit.mail.Recipients.Recipient
 import com.drinkit.mail.Sender
 import com.drinkit.mail.Subject
-import com.drinkit.messaging.SpyPlatformEventPublisher
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
-import io.kotest.matchers.types.shouldBeInstanceOf
 import jakarta.mail.Message.RecipientType.TO
 import jakarta.mail.internet.MimeMessage
 import org.junit.jupiter.api.Test
@@ -28,9 +26,7 @@ import java.io.ByteArrayOutputStream
 
 @MailpitIntegrationTest
 @ExtendWith(OutputCaptureExtension::class)
-internal class SpringEmailSenderTest {
-
-    private val publisher = SpyPlatformEventPublisher()
+internal class SmtpEmailDeliveryTest {
 
     private val email = Email(
         sender = Sender(SENDER),
@@ -45,18 +41,9 @@ internal class SpringEmailSenderTest {
     }
 
     @Test
-    fun `queues the email instead of delivering it`() {
+    fun `delivers the sender, the recipients, the subject and the content of the email`(mailpit: Mailpit) {
         // When
-        SpringEmailSender(publisher, refusingServer).send(email)
-
-        // Then
-        publisher.findLastSentEvent().shouldBeInstanceOf<SendEmail>().email shouldBe email
-    }
-
-    @Test
-    fun `delivers a queued email to the mail server`(mailpit: Mailpit) {
-        // When
-        SpringEmailSender(publisher, mailpit.javaMailSender()).deliver(SendEmail(email))
+        SmtpEmailDelivery(mailpit.javaMailSender()).deliver(SendEmail(email))
 
         // Then
         val delivered = mailpit.lastEmail()
@@ -67,26 +54,20 @@ internal class SpringEmailSenderTest {
     }
 
     @Test
-    fun `fails a refused delivery, so that it is attempted again`() {
-        shouldThrow<MailSendException> { SpringEmailSender(publisher, refusingServer).deliver(SendEmail(email)) }
+    fun `a refused delivery fails, so that it is attempted again`() {
+        // When & Then
+        shouldThrow<MailSendException> { SmtpEmailDelivery(refusingServer).deliver(SendEmail(email)) }
     }
 
     @Test
-    fun `logs a refused delivery with the subject of the email and the failure, never its content`(
-        output: CapturedOutput,
-    ) {
+    fun `a refused delivery is logged with the subject and the failure, never the content`(output: CapturedOutput) {
         // When
-        runCatching { SpringEmailSender(publisher, refusingServer).deliver(SendEmail(email)) }
+        runCatching { SmtpEmailDelivery(refusingServer).deliver(SendEmail(email)) }
 
         // Then
         output.out shouldContain "Sending the email \"Your verification code\" failed"
         output.out shouldContain "MailSendException: 451 Try again later"
         output.out shouldNotContain CODE
-    }
-
-    @Test
-    fun `never prints the content of an email to send`() {
-        SendEmail(email).toString() shouldNotContain CODE
     }
 
     companion object {

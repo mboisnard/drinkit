@@ -60,8 +60,9 @@ decides which email to send and calls `send`, which returns once the email is qu
   persistence, with no code of its own.
 - An email waiting for its delivery lives in memory, as every platform event until
   [#549](https://github.com/mboisnard/drinkit/issues/549): a restart loses it.
-- Delivery is at least once: a server that takes an email but answers after the timeout fails the attempt, and the
-  next one sends the email again, until [#619](https://github.com/mboisnard/drinkit/issues/619) records what was already sent.
+- Each email is delivered once per event, by the idempotency of
+  [ADR 0019](0019-run-requests-and-events-once-per-idempotency-key.md): an email held past the 5 minute lease may
+  leave twice.
 - A broker would carry the content of each email, a sign-in code included.
 
 ## Alternatives

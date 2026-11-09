@@ -78,8 +78,9 @@ internal class EmailDeliveryTest {
     }
 
     @Test
-    fun `an email sent again by a replay of the request that sent it reaches the user once`(mailpit: Mailpit) {
+    fun `an email sent again by a replayed request is delivered once`(mailpit: Mailpit) {
         runner.withBean(JavaMailSender::class.java, { mailpit.javaMailSender() }).run { context ->
+            // Given
             val sender = context.getBean<EmailSender>()
             CurrentIdempotencyKey.with("sign-in request") { sender.send(emailWithSubject("Sent once")) }
             runBlocking { eventually(5.seconds) { mailpit.countEmailsWithSubject("Sent once") shouldBe 1 } }

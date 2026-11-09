@@ -35,11 +35,22 @@ internal class NoopEmailSenderTest {
     }
 
     @Test
+    fun `warns at startup that emails are not sent`(output: CapturedOutput) {
+        // When
+        NoopEmailSender()
+
+        // Then
+        output.out shouldContain "WARN"
+        output.out shouldContain "No mail server in spring.mail.host: emails are not sent"
+    }
+
+    @Test
     fun `never writes the content or the recipients of the email to the logs`(output: CapturedOutput) {
         // When
         NoopEmailSender().send(email)
 
         // Then
+        output.out shouldContain "was not sent"
         output.out shouldNotContain CODE
         output.out shouldNotContain RECIPIENT
     }

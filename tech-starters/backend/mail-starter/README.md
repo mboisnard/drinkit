@@ -12,11 +12,42 @@ flowchart LR
     EmailSender -->|no host| Dropped["Dropped, with a warning"]
 ```
 
+## How it works
+
+`send` returns once the email is queued, without waiting for the mail server. Inside a transaction, the email is
+queued once the transaction commits, and never when it rolls back. The starter delivers through the
+[messaging starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/messaging-starter/README.md),
+which comes with it: with `starters.messaging.enabled=false` and a mail server set, the application refuses to start.
+The delivery also needs an `Idempotency` bean: the
+[idempotency starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/idempotency-starter/README.md)
+with PostgreSQL, or `inMemoryIdempotency()` in tests.
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant EmailSender
+    participant Delivery
+    participant Smtp as SMTP server
+    Caller->>EmailSender: send(email)
+    EmailSender-->>Caller: returns, the email queued after the commit
+    EmailSender->>Delivery: the email, on a thread of its own
+    Delivery->>Smtp: the email
+    alt the server takes it
+        Smtp-->>Delivery: 250
+    else the server refuses it, a 4xx or 5xx code or no answer
+        Smtp-->>Delivery: refused
+        Note over Delivery: WARN with the subject and the failure, then a new attempt after the retry waits
+        Note over Delivery: after the last attempt, ERROR naming the delivery, never the content
+    end
+```
+
+Each email is retried on its own, with the `starters.messaging.retry.*` waits, three attempts in all.
+No log line holds the content of an email. The failure of an attempt is logged whole, as the mail server words it:
+its message can name an address the server refused.
+
 ## Usage
 
-A module declares the starter in its build file. The starter delivers through the
-[messaging starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/messaging-starter/README.md),
-without which the application refuses to start once a mail server is set:
+A module declares the starter in its build file:
 
 ```kotlin
 dependencies {
@@ -45,51 +76,16 @@ web interface on `http://localhost:8025` shows each email.
 [ADR 0010](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0010-send-emails-over-smtp-to-a-server-chosen-per-environment.md)
 records the SMTP server of each environment.
 
-## When `send` returns
-
-`send` returns once the email is queued, without waiting for the mail server. Inside a transaction, the email is
-queued once the transaction commits, and never when it rolls back.
-
-```mermaid
-sequenceDiagram
-    participant Caller
-    participant EmailSender
-    participant Delivery as Handler mail.delivery.queue
-    participant Smtp as SMTP server
-    Caller->>EmailSender: send(email)
-    EmailSender-->>Caller: returns, the email queued after the commit
-    EmailSender->>Delivery: the email, on a thread of its own
-    Delivery->>Smtp: the email
-    alt the server takes it
-        Smtp-->>Delivery: 250
-    else the server refuses it, a 4xx or 5xx code or no answer
-        Smtp-->>Delivery: refused
-        Note over Delivery: WARN with the subject and the failure, then a new attempt after the retry waits
-        Note over Delivery: after the last attempt, ERROR naming the handler, never the content
-    end
-```
-
-Each email is retried on its own, with the `starters.messaging.retry.*` waits, three attempts in all.
-No log line holds the content of an email. The failure of an attempt is logged whole, as the mail server words it:
-its message can name an address the server refused.
-
-## What a restart loses
-
-An email still queued, or waiting for its next attempt, lives in memory: a restart loses it, as any platform event
-until [#549](https://github.com/mboisnard/drinkit/issues/549).
-
-An email can also leave more than once: a server that takes it but answers after the 5 second timeout fails the
-attempt, and the next one sends it again. The delivery is not idempotent yet: [#619](https://github.com/mboisnard/drinkit/issues/619) records what was already sent.
-
 ## Configuration
 
 | Property | Default | Environment variable |
 |---|---|---|
+| `starters.mail.enabled` | `true`, `false` registers no `EmailSender` | `STARTERS_MAIL_ENABLED` |
 | `spring.mail.host` | None, required in production: without it, emails are dropped | `SPRING_MAIL_HOST` |
 | `spring.mail.username` | None, required in production | `SPRING_MAIL_USERNAME` |
 | `spring.mail.password` | None, required in production | `SPRING_MAIL_PASSWORD` |
-| `spring.mail.port` | `587`, with STARTTLS and 5 second timeouts | `SPRING_MAIL_PORT` |
-| `starters.mail.enabled` | `true`, `false` registers no `EmailSender` | `STARTERS_MAIL_ENABLED` |
+| `spring.mail.port` | `587`, with STARTTLS | `SPRING_MAIL_PORT` |
+| `spring.mail.properties.mail.smtp.timeout`, with `connectiontimeout` and `writetimeout` | `5000` milliseconds each | `SPRING_MAIL_PROPERTIES_MAIL_SMTP_TIMEOUT` |
 
 ## Tests
 
@@ -100,3 +96,6 @@ From `testFixtures(project(":mail-starter"))`, `SpyEmailSender` records the emai
 ## Limits
 
 - A refusal for good, such as `550` for an unknown recipient, is retried like a temporary one, to the last attempt.
+- An email waiting for its delivery or for its next attempt lives in memory: a restart loses it.
+- Each email is delivered once per event. An email held past the 5 minute lease of the idempotency starter, by a
+  slow mail server, may leave twice.
