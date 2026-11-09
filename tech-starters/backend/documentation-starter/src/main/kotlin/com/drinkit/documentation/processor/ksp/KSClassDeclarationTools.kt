@@ -2,6 +2,10 @@ package com.drinkit.documentation.processor.ksp
 
 import com.drinkit.documentation.clean.architecture.CoreDomain
 import com.drinkit.documentation.clean.architecture.Usecase
+import com.drinkit.documentation.processor.ksp.documentation.CoreDomainInfo
+import com.drinkit.documentation.processor.ksp.documentation.MethodInfo
+import com.drinkit.documentation.processor.ksp.documentation.TechStarterToolInfo
+import com.drinkit.documentation.processor.ksp.documentation.UseCaseInfo
 import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.isInternal
@@ -58,11 +62,13 @@ internal fun KSAnnotation.getStringArgument(argName: String): String? =
     (arguments.find { it.name?.asString() == argName }?.value as? String)
         ?.takeIf { it.isNotBlank() }
 
+private val GENERATED_METHOD = Regex("component\\d+|copy|equals|hashCode|toString|<init>")
+
+internal fun isGeneratedMethod(name: String) = GENERATED_METHOD.matches(name)
+
 private fun KSClassDeclaration.extractMethods(): List<MethodInfo> = getDeclaredFunctions()
     .filter { !it.isPrivate() && !it.isInternal() }
-    .filter { !it.simpleName.asString().startsWith("component") }
-    .filter { !it.simpleName.asString().startsWith("copy") }
-    .filter { !listOf("<init>", "equals", "hashCode", "toString").contains(it.simpleName.asString()) }
+    .filterNot { isGeneratedMethod(it.simpleName.asString()) }
     .map { function ->
         MethodInfo(
             name = function.simpleName.asString(),

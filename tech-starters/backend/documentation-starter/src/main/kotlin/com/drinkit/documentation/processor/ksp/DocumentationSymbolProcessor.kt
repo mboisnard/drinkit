@@ -2,10 +2,14 @@ package com.drinkit.documentation.processor.ksp
 
 import com.drinkit.documentation.clean.architecture.CoreDomain
 import com.drinkit.documentation.clean.architecture.Usecase
+import com.drinkit.documentation.processor.ksp.documentation.CoreDomainInfo
 import com.drinkit.documentation.processor.ksp.documentation.CreateCoreDomainDocumentation
 import com.drinkit.documentation.processor.ksp.documentation.CreateCoreDomainsOverviewDocumentation
 import com.drinkit.documentation.processor.ksp.documentation.CreateTechStarterDocumentation
 import com.drinkit.documentation.processor.ksp.documentation.CreateTechStartersOverviewDocumentation
+import com.drinkit.documentation.processor.ksp.documentation.TechStarterToolInfo
+import com.drinkit.documentation.processor.ksp.documentation.TechStarterTopLevelInfo
+import com.drinkit.documentation.processor.ksp.documentation.UseCaseInfo
 import com.drinkit.documentation.tech.starter.TechStarterTool
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
@@ -13,7 +17,9 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.validate
 
 /**
@@ -31,7 +37,7 @@ internal class DocumentationSymbolProcessor(
     private lateinit var coreDomains: List<CoreDomainInfo>
     private lateinit var useCasesByPackage: Map<String, List<UseCaseInfo>>
     private lateinit var techStarterTools: List<TechStarterToolInfo>
-    private lateinit var techStarterFunctions: List<TechStarterFunctionInfo>
+    private lateinit var techStarterTopLevelTools: List<TechStarterTopLevelInfo>
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         coreDomains = collectInfo<CoreDomain, KSClassDeclaration, _>(resolver, KSClassDeclaration::toCoreDomain)
@@ -41,9 +47,12 @@ internal class DocumentationSymbolProcessor(
             resolver,
             KSClassDeclaration::toTechStarterTool,
         )
-        techStarterFunctions = collectInfo<TechStarterTool, KSFunctionDeclaration, _>(
+        techStarterTopLevelTools = collectInfo<TechStarterTool, KSFunctionDeclaration, _>(
             resolver,
             KSFunctionDeclaration::toTechStarterFunction,
+        ) + collectInfo<TechStarterTool, KSPropertyDeclaration, _>(
+            resolver,
+            KSPropertyDeclaration::toTechStarterProperty,
         )
 
         return emptyList()
@@ -62,13 +71,13 @@ internal class DocumentationSymbolProcessor(
             logger.warn("Core domain documentation generation completed")
         }
 
-        if (techStarterTools.isNotEmpty() || techStarterFunctions.isNotEmpty() || moduleName.endsWith("-starter")) {
+        if (techStarterTools.isNotEmpty() || techStarterTopLevelTools.isNotEmpty() || moduleName.endsWith("-starter")) {
             logger.warn("Generating documentation for tech starter tools")
 
-            createTechStarterDocumentation.invoke(moduleName, techStarterTools, techStarterFunctions)
+            createTechStarterDocumentation.invoke(moduleName, techStarterTools, techStarterTopLevelTools)
             createTechStartersOverviewDocumentation.invoke(
                 moduleName,
-                techStarterTools.size + techStarterFunctions.size,
+                techStarterTools.size + techStarterTopLevelTools.size,
             )
 
             logger.warn("Tech starter tools documentation generation completed")
@@ -81,8 +90,8 @@ internal class DocumentationSymbolProcessor(
     ): List<T> = resolver.getSymbolsWithAnnotation(A::class.qualifiedName!!)
         .filterIsInstance<D>()
         .filter { it.validate() }
-        // A member function is documented with its class: only a top-level function is a tool of its own
-        .filter { it !is KSFunctionDeclaration || it.parentDeclaration == null }
+        // A member is documented with its class: only a top-level function or property is a tool of its own
+        .filter { it !is KSDeclaration || it is KSClassDeclaration || it.parentDeclaration == null }
         .map { declaration -> mapper(declaration, declaration.findAnnotation<A>()) }
         .toList()
 }

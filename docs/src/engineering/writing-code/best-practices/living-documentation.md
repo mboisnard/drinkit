@@ -59,7 +59,7 @@ Some annotations of `documentation-starter` feed the generated pages, the others
 |---|---|---|---|
 | `@CoreDomain` | A domain type, an entity or a value of the business, such as `User` | A page that lists its use cases | [Clean architecture](../../architecture/clean-architecture.md) |
 | `@Usecase` | A use case, the `@Service` of the domain that carries out one business operation | A line on the page of the domain type of its package, or else of the one its name contains | [Clean architecture](../../architecture/clean-architecture.md) |
-| `@TechStarterTool` | A class or a top-level function of a tech starter's public API | A line on the page of its starter, which opens with the starter's `README.md` | [Tech starters](../../architecture/tech-starters.md) |
+| `@TechStarterTool` | A class, a top-level function or a top-level property of a tech starter's public API | A line on the page of its starter, which opens with the starter's `README.md` | [Tech starters](../../architecture/tech-starters.md) |
 | `@Command` | The input of a use case that changes the state | Nothing | [CQRS](https://martinfowler.com/bliki/CQRS.html) |
 | `@Query` | The model a query returns, such as `User`, also a domain type and a projection | Nothing | [CQRS](https://martinfowler.com/bliki/CQRS.html) |
 | `@Aggregate` | The decision state of an aggregate, and most of its deciders (the pure functions that pick the event a command appends) | Nothing | [Event sourcing](../../architecture/event-sourcing.md) |

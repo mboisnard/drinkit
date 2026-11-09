@@ -1,4 +1,4 @@
-package com.drinkit.documentation.processor.ksp
+package com.drinkit.documentation.processor.ksp.documentation
 
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -79,7 +79,7 @@ internal class UseCaseInfoTest {
 
     @Test
     fun `use displayName when customName is null`() {
-        // Given & When
+        // Given
         val useCase = UseCaseInfo(
             packageName = "com.drinkit.user",
             className = "CreateUser",
@@ -87,13 +87,13 @@ internal class UseCaseInfoTest {
             description = null,
         )
 
-        // Then
+        // When & Then
         useCase.displayName shouldBe "Create User"
     }
 
     @Test
     fun `use customName as displayName when provided`() {
-        // Given & When
+        // Given
         val useCase = UseCaseInfo(
             packageName = "com.drinkit.user",
             className = "CreateUser",
@@ -101,7 +101,7 @@ internal class UseCaseInfoTest {
             description = null,
         )
 
-        // Then
+        // When & Then
         useCase.displayName shouldBe "Create New User Account"
     }
 }

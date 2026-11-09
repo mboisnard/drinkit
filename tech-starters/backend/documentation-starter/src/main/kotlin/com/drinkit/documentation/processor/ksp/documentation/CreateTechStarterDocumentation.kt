@@ -1,7 +1,5 @@
 package com.drinkit.documentation.processor.ksp.documentation
 
-import com.drinkit.documentation.processor.ksp.TechStarterFunctionInfo
-import com.drinkit.documentation.processor.ksp.TechStarterToolInfo
 import com.google.devtools.ksp.processing.KSPLogger
 import java.io.File
 
@@ -14,16 +12,16 @@ internal class CreateTechStarterDocumentation(
         File(outputFolderPath).apply { mkdirs() }
     }
 
-    fun invoke(moduleName: String, tools: List<TechStarterToolInfo>, functions: List<TechStarterFunctionInfo>) {
+    fun invoke(moduleName: String, tools: List<TechStarterToolInfo>, topLevelTools: List<TechStarterTopLevelInfo>) {
         logger.warn("  Processing module: $moduleName")
 
         val readmeContent = readReadmeIfExists()
         val outputFile = File(outputDirectory, "$moduleName.md")
         outputFile.writeText(
-            generateMarkdown(moduleName, tools, functions, readmeContent),
+            generateMarkdown(moduleName, tools, topLevelTools, readmeContent),
         )
 
-        logger.warn("    Generated: ${outputFile.name} (${tools.size + functions.size} tool(s))")
+        logger.warn("    Generated: ${outputFile.name} (${tools.size + topLevelTools.size} tool(s))")
     }
 
     private fun readReadmeIfExists(): String? {
@@ -39,14 +37,14 @@ internal class CreateTechStarterDocumentation(
     private fun generateMarkdown(
         moduleName: String,
         tools: List<TechStarterToolInfo>,
-        functions: List<TechStarterFunctionInfo>,
+        topLevelTools: List<TechStarterTopLevelInfo>,
         readmeContent: String?,
     ) = buildString {
         if (readmeContent != null) {
             appendLine(readmeContent)
             appendLine()
 
-            if (tools.isNotEmpty() || functions.isNotEmpty()) {
+            if (tools.isNotEmpty() || topLevelTools.isNotEmpty()) {
                 appendLine("---")
                 appendLine()
                 appendLine("## API Reference")
@@ -84,14 +82,14 @@ internal class CreateTechStarterDocumentation(
             }
         }
 
-        functions.sortedBy { it.displayName }.forEach { function ->
-            appendLine("### ${function.displayName}")
+        topLevelTools.sortedBy { it.displayName }.forEach { topLevelTool ->
+            appendLine("### ${topLevelTool.displayName}")
             appendLine()
-            appendDescription(function.description)
-            appendLine("**Function**: `${function.packageName}.${function.name}`")
+            appendDescription(topLevelTool.description)
+            appendLine("**${topLevelTool.kind}**: `${topLevelTool.packageName}.${topLevelTool.name}`")
             appendLine()
             appendLine("```kotlin")
-            appendLine(function.signature)
+            appendLine(topLevelTool.signature)
             appendLine("```")
             appendLine()
         }

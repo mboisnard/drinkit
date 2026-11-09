@@ -1,4 +1,4 @@
-package com.drinkit.documentation.processor.ksp
+package com.drinkit.documentation.processor.ksp.documentation
 
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
@@ -230,7 +230,7 @@ internal class CoreDomainInfoTest {
     }
 
     @Test
-    fun `should handle displayName with custom name for matching`() {
+    fun `matches a use case by the custom name of the domain`() {
         // Given
         val coreDomain = CoreDomainInfo(
             packageName = "com.drinkit.domain",
