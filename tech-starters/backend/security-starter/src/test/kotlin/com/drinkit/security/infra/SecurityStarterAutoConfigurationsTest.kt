@@ -72,7 +72,7 @@ import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration
 
 internal class SecurityStarterAutoConfigurationsTest {
 
-    private val baseRunner = WebApplicationContextRunner()
+    private val withoutJooq = WebApplicationContextRunner()
         .withConfiguration(
             AutoConfigurations.of(
                 JacksonAutoConfiguration::class.java,
@@ -80,7 +80,6 @@ internal class SecurityStarterAutoConfigurationsTest {
                 ServletWebSecurityAutoConfiguration::class.java,
                 UserDetailsServiceAutoConfiguration::class.java,
                 SessionAutoConfiguration::class.java,
-                JooqAutoConfiguration::class.java,
                 SecurityAutoConfiguration::class.java,
                 HealthAccessAutoConfiguration::class.java,
                 SessionsAutoConfiguration::class.java,
@@ -92,6 +91,7 @@ internal class SecurityStarterAutoConfigurationsTest {
         .withBean(UserAccounts::class.java, { InMemoryUserAccounts() })
         .withBean(SignInCodeSender::class.java, { SpySignInCodeSender() })
         .withBean(Clock::class.java, { Clock.systemUTC() })
+    private val baseRunner = withoutJooq.withConfiguration(AutoConfigurations.of(JooqAutoConfiguration::class.java))
 
     // Without PostgreSQL, the application gives the codes itself, as the tests do
     private val runner = baseRunner.withBean(SignInCodes::class.java, { InMemorySignInCodes() })
@@ -135,6 +135,21 @@ internal class SecurityStarterAutoConfigurationsTest {
         runner.run { context ->
             context.getBeanNamesForType(RememberMeServices::class.java).toList().shouldBeEmpty()
             context.getBeanNamesForType(RememberMeTokens::class.java).toList().shouldBeEmpty()
+        }
+    }
+
+    @Test
+    fun `remembers no login when the database comes without jOOQ`() {
+        // Given
+        val withDatabaseWithoutJooq = withoutJooq.withBean(SignInCodes::class.java, { InMemorySignInCodes() })
+            .withDatabase()
+
+        withDatabaseWithoutJooq.run { context ->
+            // When & Then
+            context.startupFailure shouldBe null
+            context.getBeanNamesForType(RememberMeTokens::class.java).toList().shouldBeEmpty()
+            context.getBeanNamesForType(RememberMeServices::class.java).toList().shouldBeEmpty()
+            context.getBeanNamesForType(Sessions::class.java).toList().shouldBeEmpty()
         }
     }
 
@@ -222,7 +237,9 @@ internal class SecurityStarterAutoConfigurationsTest {
 
     // Never connected to: the beans only keep the data source
     private val dataSource = DriverManagerDataSource("jdbc:postgresql://localhost:1/none")
-    private val withSessionsInDatabase = baseRunner
+    private val withSessionsInDatabase = baseRunner.withDatabase()
+
+    private fun WebApplicationContextRunner.withDatabase() = this
         .withBean(FindByIndexNameSessionRepository::class.java, { InMemoryIndexedSessions() })
         .withBean(DataSource::class.java, { dataSource })
         .withBean(PlatformTransactionManager::class.java, { DataSourceTransactionManager(dataSource) })

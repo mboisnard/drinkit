@@ -13,15 +13,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.jooq.autoconfigure.JooqAutoConfiguration
 import org.springframework.boot.session.jdbc.autoconfigure.JdbcSessionAutoConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.security.web.authentication.RememberMeServices
 import org.springframework.session.FindByIndexNameSessionRepository
 import java.time.Clock
-import javax.sql.DataSource
 
 /** Needs the sessions in PostgreSQL: without them, there is no remember-me login. */
-@AutoConfiguration(after = [JdbcSessionAutoConfiguration::class])
+@AutoConfiguration(after = [JooqAutoConfiguration::class, JdbcSessionAutoConfiguration::class])
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = "starters.security", name = ["enabled"], matchIfMissing = true)
 @EnableConfigurationProperties(SecurityStarterProperties::class)
@@ -29,13 +29,13 @@ internal class RememberMeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnSingleCandidate(DataSource::class)
+    @ConditionalOnSingleCandidate(DSLContext::class)
     fun rememberMeTokens(dsl: DSLContext) = RememberMeTokens(dsl)
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(FindByIndexNameSessionRepository::class)
-    @ConditionalOnSingleCandidate(DataSource::class)
+    @ConditionalOnSingleCandidate(DSLContext::class)
     @Suppress("LongParameterList")
     fun rememberMeServices(
         userAccounts: UserAccounts,

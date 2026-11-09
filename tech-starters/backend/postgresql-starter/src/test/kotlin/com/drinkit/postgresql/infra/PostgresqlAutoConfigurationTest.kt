@@ -74,6 +74,19 @@ internal class PostgresqlAutoConfigurationTest {
     }
 
     @Test
+    fun `checks no database before the application has one`() {
+        // Given
+        val withoutDatabase = ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(PostgresqlAutoConfiguration::class.java))
+
+        withoutDatabase.run { context ->
+            // When & Then
+            context.startupFailure shouldBe null
+            context.getBeanNamesForType(PostgresqlCheck::class.java).toList().shouldBeEmpty()
+        }
+    }
+
+    @Test
     fun `registers nothing when disabled`() {
         runner.withPropertyValues("starters.postgresql.enabled=false")
             .run { context ->
