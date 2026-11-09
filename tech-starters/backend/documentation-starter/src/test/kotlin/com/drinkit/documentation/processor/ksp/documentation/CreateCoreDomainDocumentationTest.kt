@@ -1,8 +1,6 @@
 package com.drinkit.documentation.processor.ksp.documentation
 
-import com.drinkit.documentation.processor.ksp.CoreDomainInfo
 import com.drinkit.documentation.processor.ksp.NoOpKSPLogger
-import com.drinkit.documentation.processor.ksp.UseCaseInfo
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
@@ -124,7 +122,7 @@ internal class CreateCoreDomainDocumentationTest {
     }
 
     @Test
-    fun `should generate markdown file with use case without description`() {
+    fun `lists a use case without a description by its name and its class`() {
         // Given
         val domain = CoreDomainInfo(
             packageName = "com.drinkit.user",
@@ -154,7 +152,7 @@ internal class CreateCoreDomainDocumentationTest {
     }
 
     @Test
-    fun `should create output directory if it does not exist`() {
+    fun `creates the folder of the pages when it is missing`() {
         // Given
         val nonExistentDir = File(tempDir, "nested/path/to/output")
         val createFile = CreateCoreDomainDocumentation(nonExistentDir.absolutePath, logger)
@@ -176,7 +174,7 @@ internal class CreateCoreDomainDocumentationTest {
     }
 
     @Test
-    fun `should use custom name in title when provided`() {
+    fun `names and titles the page after the custom name of the domain`() {
         // Given
         val domain = CoreDomainInfo(
             packageName = "com.drinkit.user",

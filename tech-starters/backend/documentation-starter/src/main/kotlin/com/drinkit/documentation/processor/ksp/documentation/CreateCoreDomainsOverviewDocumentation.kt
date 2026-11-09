@@ -1,7 +1,5 @@
 package com.drinkit.documentation.processor.ksp.documentation
 
-import com.drinkit.documentation.processor.ksp.CoreDomainInfo
-import com.drinkit.documentation.processor.ksp.UseCaseInfo
 import com.google.devtools.ksp.processing.KSPLogger
 import java.io.File
 

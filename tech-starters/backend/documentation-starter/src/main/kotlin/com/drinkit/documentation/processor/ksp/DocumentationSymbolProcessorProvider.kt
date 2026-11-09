@@ -14,9 +14,9 @@ private const val TECH_STARTERS_FOLDER = "/tech-starters"
 internal class DocumentationSymbolProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
         val logger = environment.logger
-        val docsOutputDir = environment.options["docsOutputDir"]
-        val moduleName = environment.options.getValue("moduleName")
-        val moduleSourceDir = environment.options.getValue("moduleSourceDir")
+        val docsOutputDir = environment.option("docsOutputDir")
+        val moduleName = environment.option("moduleName")
+        val moduleSourceDir = environment.option("moduleSourceDir")
         val domainsOutputPath = "$docsOutputDir$DOMAINS_FOLDER"
         val techStartersOutputPath = "$docsOutputDir$TECH_STARTERS_FOLDER"
 
@@ -36,4 +36,8 @@ internal class DocumentationSymbolProcessorProvider : SymbolProcessorProvider {
             moduleName = moduleName,
         )
     }
+}
+
+private fun SymbolProcessorEnvironment.option(name: String): String = requireNotNull(options[name]) {
+    "The KSP option $name is missing: apply the documentation-convention plugin"
 }

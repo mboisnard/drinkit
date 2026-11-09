@@ -1,4 +1,4 @@
-package com.drinkit.documentation.processor.ksp
+package com.drinkit.documentation.processor.ksp.documentation
 
 import kotlin.collections.filter
 import kotlin.collections.isNotEmpty
@@ -77,12 +77,13 @@ internal data class TechStarterToolInfo(
 
 internal data class MethodInfo(val name: String, val description: String?)
 
-internal data class TechStarterFunctionInfo(
+internal data class TechStarterTopLevelInfo(
     val packageName: String,
     val name: String,
     val customName: String?,
     val description: String?,
     val signature: String,
+    val kind: String = "Function",
 ) {
     val displayName: String
         get() = customName ?: name

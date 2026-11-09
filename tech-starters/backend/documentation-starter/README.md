@@ -37,7 +37,7 @@ The processor writes under `docs/src/engineering/resources/`, which is gitignore
 
 - **`domains/`**: a page per `@CoreDomain`, and the `domains.md` index.
 - **`tech-starters/`**: a page per tech starter, its `README.md` followed by an API Reference of its
-  `@TechStarterTool` classes and functions, and the `tech-starters.md` index.
+  `@TechStarterTool` classes, functions and properties, and the `tech-starters.md` index.
 
 ## Configuration
 
