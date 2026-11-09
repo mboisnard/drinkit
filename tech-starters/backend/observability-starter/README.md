@@ -33,11 +33,12 @@ dependencies {
   `application` field. The [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/logging.md)
   says when.
 
-## OpenTelemetry
+### OpenTelemetry
 
 Micrometer traces each request and puts its `traceId` and `spanId` in the logs. Nothing leaves the application until
 `starters.observability.opentelemetry.enabled=true`: Spring Boot then pushes the metrics and the traces over OTLP to
-a collector, such as the Datadog Agent. Logs stay on the console, which the log platform already reads.
+a collector, such as the Datadog Agent. Switched off, the starter exports nothing, whatever that property. Logs stay
+on the console, which the log platform already reads.
 
 To see the traces on your machine, start [Grafana LGTM](https://github.com/grafana/docker-otel-lgtm), then the
 application with the export on, and open Grafana on `http://localhost:3000`:
@@ -70,7 +71,7 @@ A low-cardinality value, such as an analyzer, tags the metric and the span. An i
 [ADR 0016](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
 records why Micrometer, and why the export waits for a switch.
 
-## Monitoring a third party
+### Monitoring a third party
 
 A starter that talks to a third party brings its own `HealthIndicator`, in an `@AutoConfiguration` of its own guarded
 by `@ConditionalOnClass(HealthIndicator::class)`, with `compileOnly("org.springframework.boot:spring-boot-health")`, as
@@ -82,7 +83,7 @@ already tell whether it answers.
 
 | Property | Default | Environment variable |
 |---|---|---|
-| `starters.observability.enabled` | `true`, `false` leaves Actuator to the defaults of Spring Boot | `STARTERS_OBSERVABILITY_ENABLED` |
+| `starters.observability.enabled` | `true`, `false` leaves Actuator to the defaults of Spring Boot, and still exports nothing | `STARTERS_OBSERVABILITY_ENABLED` |
 | `starters.observability.opentelemetry.enabled` | `false`, `true` pushes the metrics and the traces over OTLP | `STARTERS_OBSERVABILITY_OPENTELEMETRY_ENABLED` |
 
 Once the export is on, production sets the collector:

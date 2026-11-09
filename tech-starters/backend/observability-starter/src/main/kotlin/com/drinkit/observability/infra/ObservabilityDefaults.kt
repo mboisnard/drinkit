@@ -11,20 +11,10 @@ import org.springframework.core.io.support.ResourcePropertySource
 internal class ObservabilityDefaults : EnvironmentPostProcessor {
 
     override fun postProcessEnvironment(environment: ConfigurableEnvironment, application: SpringApplication) {
-        if (!environment.getProperty<Boolean>("starters.observability.enabled", true)) {
-            return
-        }
-
-        // Last, below every property source of the application
-        environment.propertySources.addLast(
-            ResourcePropertySource(
-                "observability-starter-defaults",
-                ClassPathResource("META-INF/drinkit/observability-defaults.properties"),
-            ),
-        )
+        val enabled = environment.getProperty<Boolean>("starters.observability.enabled", true)
 
         // Spring Boot pushes to localhost:4318 by default. Tracing itself stays on, for the traceId of the logs
-        if (!environment.getProperty<Boolean>("starters.observability.opentelemetry.enabled", false)) {
+        if (!enabled || !environment.getProperty<Boolean>("starters.observability.opentelemetry.enabled", false)) {
             environment.propertySources.addLast(
                 MapPropertySource(
                     "observability-starter-no-export",
@@ -36,5 +26,17 @@ internal class ObservabilityDefaults : EnvironmentPostProcessor {
                 ),
             )
         }
+
+        if (!enabled) {
+            return
+        }
+
+        // Last, below every property source of the application
+        environment.propertySources.addLast(
+            ResourcePropertySource(
+                "observability-starter-defaults",
+                ClassPathResource("META-INF/drinkit/observability-defaults.properties"),
+            ),
+        )
     }
 }

@@ -38,6 +38,19 @@ internal class OpenTelemetryExportTest {
         }
     }
 
+    @Test
+    fun `exports nothing once the starter is switched off, even with the export asked for`() {
+        // When
+        val switchedOff =
+            start("--starters.observability.enabled=false", "--starters.observability.opentelemetry.enabled=true")
+
+        // Then
+        switchedOff.use { context ->
+            context.containsBean("otlpMeterRegistry") shouldBe false
+            context.getBeansOfType(SpanExporter::class.java).values.shouldBeEmpty()
+        }
+    }
+
     private fun start(vararg arguments: String): ConfigurableApplicationContext =
         SpringApplicationBuilder(Application::class.java)
             .web(WebApplicationType.NONE)
