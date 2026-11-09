@@ -2,6 +2,7 @@ package com.drinkit.search.engine
 
 import com.meilisearch.sdk.Client
 import com.meilisearch.sdk.Config
+import com.meilisearch.sdk.model.IndexesQuery
 import io.vanslog.testcontainers.meilisearch.MeilisearchContainer
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -15,6 +16,7 @@ import org.testcontainers.utility.TestcontainersConfiguration
 // Keep in sync with deployment/local/compose.yml
 private const val MEILISEARCH_IMAGE_NAME = "getmeili/meilisearch:v1.56.0"
 private const val MASTER_KEY = "masterKey"
+private const val INDEXES_PAGE = 100
 
 class MeilisearchExtension :
     BeforeAllCallback,
@@ -38,9 +40,7 @@ class MeilisearchExtension :
     }
 
     override fun afterAll(extensionContext: ExtensionContext) {
-        client.indexes.results.forEach {
-            client.deleteIndex(it.uid)
-        }
+        allIndexes().map { client.deleteIndex(it).taskUid }.forEach(client::waitForTask)
     }
 
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean =
@@ -56,6 +56,13 @@ class MeilisearchExtension :
         TestcontainersConfiguration.getInstance()
             .updateUserConfig("testcontainers.reuse.enable", "true")
     }
+
+    // The engine lists its indexes a page at a time
+    private fun allIndexes(): List<String> = generateSequence(0) { it + INDEXES_PAGE }
+        .map { offset -> client.getIndexes(IndexesQuery().setOffset(offset).setLimit(INDEXES_PAGE)).results }
+        .takeWhile { it.isNotEmpty() }
+        .flatMap { page -> page.map { it.uid } }
+        .toList()
 
     private fun createClient(): Client {
         val config = Config(container.endpoint, MASTER_KEY)

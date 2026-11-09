@@ -33,6 +33,7 @@ internal abstract class SearchIndexTestContract {
 
     @Test
     fun `finds nothing for an id never saved`() {
+        // When & Then
         wines.find("unknown").shouldBeNull()
     }
 
@@ -83,8 +84,10 @@ internal abstract class SearchIndexTestContract {
 
     @Test
     fun `deletes an id never saved without failing`() {
+        // When
         wines.delete("unknown")
 
+        // Then
         wines.find("unknown").shouldBeNull()
     }
 
@@ -139,6 +142,19 @@ internal abstract class SearchIndexTestContract {
 
         // Then
         failure.code shouldBe "missing_document_id"
+    }
+
+    @Test
+    fun `refuses an index declared twice`() {
+        // Given
+        val name = "wines-${UUID.randomUUID()}"
+        declareWines(name, cellar)
+
+        // When
+        val failure = shouldThrow<IllegalArgumentException> { declareWines(name, cellar) }
+
+        // Then
+        failure.message shouldBe "Index $name is declared twice"
     }
 
     @Test
