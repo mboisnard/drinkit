@@ -3,6 +3,8 @@ package com.drinkit.idempotency.infra
 import com.drinkit.idempotency.Idempotency
 import com.drinkit.idempotency.IdempotentResult
 import com.drinkit.idempotency.InMemoryIdempotencyKeys
+import com.drinkit.idempotency.infra.jooq.HeldKey
+import com.drinkit.idempotency.infra.jooq.IdempotencyKeys
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test

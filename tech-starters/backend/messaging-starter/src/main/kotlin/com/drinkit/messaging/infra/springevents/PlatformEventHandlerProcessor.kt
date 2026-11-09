@@ -3,7 +3,7 @@ package com.drinkit.messaging.infra.springevents
 import com.drinkit.idempotency.Idempotency
 import com.drinkit.messaging.PlatformEvent
 import com.drinkit.messaging.PlatformEventHandler
-import com.drinkit.messaging.infra.Retry
+import com.drinkit.messaging.infra.retry.Retry
 import com.drinkit.messaging.validate
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils
 import org.springframework.aop.scope.ScopedProxyUtils

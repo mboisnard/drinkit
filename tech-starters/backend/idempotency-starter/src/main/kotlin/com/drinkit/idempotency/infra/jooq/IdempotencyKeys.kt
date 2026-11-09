@@ -1,4 +1,4 @@
-package com.drinkit.idempotency.infra
+package com.drinkit.idempotency.infra.jooq
 
 import java.time.Instant
 import java.util.UUID

@@ -6,7 +6,7 @@ import com.drinkit.idempotency.IdempotentResult
 import com.drinkit.kotlin.sha256
 import com.drinkit.messaging.PlatformEvent
 import com.drinkit.messaging.PlatformEventHandler
-import com.drinkit.messaging.infra.Retry
+import com.drinkit.messaging.infra.retry.Retry
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationListener
 import org.springframework.context.PayloadApplicationEvent

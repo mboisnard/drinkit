@@ -1,4 +1,4 @@
-package com.drinkit.messaging.infra
+package com.drinkit.messaging.infra.retry
 
 import java.time.Duration
 import kotlin.math.pow

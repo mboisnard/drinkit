@@ -3,6 +3,8 @@ package com.drinkit.idempotency.infra
 import com.drinkit.idempotency.CurrentIdempotencyKey
 import com.drinkit.idempotency.Idempotency
 import com.drinkit.idempotency.IdempotentResult
+import com.drinkit.idempotency.infra.jooq.HeldKey
+import com.drinkit.idempotency.infra.jooq.IdempotencyKeys
 import com.drinkit.kotlin.sha256
 import org.springframework.transaction.support.TransactionSynchronization
 import org.springframework.transaction.support.TransactionSynchronization.STATUS_COMMITTED

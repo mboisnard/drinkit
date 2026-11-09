@@ -100,6 +100,7 @@ Konture reads neither `build-logic`, nor the text of the build files, nor the re
 | A tech starter registers its beans in its auto-configuration, not through the application's scan | `starters.no-stereotype` | The scan of an application starts above the packages of its starters, so it registers a `@Component`, a `@RestController` or a nested `@Configuration` of a starter on its own: that bean ignores `starters.<name>.enabled` and `@ConditionalOnMissingBean`, and is gone in an application of another root package. Declare the bean in the starter's `@AutoConfiguration` |
 | A bean of a tech starter backs off when the application defines its own | `starters.beans-back-off` | The application's own bean wins over a starter's: annotate the `@Bean` `@ConditionalOnMissingBean` |
 | The settings of a tech starter live under starters | `starters.settings-under-starters-prefix` | Settings of a tech starter never clash with Spring's or the application's: put them under `starters.<name>` |
+| The packages of a tech starter depend on each other without a cycle | `starters.no-cycle-between-packages` | The packages of a tech starter depend on each other one way only: move the type that closes the cycle into the package the others use |
 | The package of a tech starter is named after the module | `starters.package-named-after-module` | A tech starter's code, test fixtures included, lives in the package named after its module, `com.drinkit.event.sourcing` for `event-sourcing-starter`: rename the package or the module |
 
 ## Tests

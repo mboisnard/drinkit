@@ -1,9 +1,9 @@
 package com.drinkit.idempotency
 
-import com.drinkit.idempotency.infra.HeldKey
-import com.drinkit.idempotency.infra.IdempotencyKeys
 import com.drinkit.idempotency.infra.IdempotencyProperties
 import com.drinkit.idempotency.infra.KeyedIdempotency
+import com.drinkit.idempotency.infra.jooq.HeldKey
+import com.drinkit.idempotency.infra.jooq.IdempotencyKeys
 import java.time.Clock
 import java.time.Instant
 

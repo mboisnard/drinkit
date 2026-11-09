@@ -1,9 +1,7 @@
 package com.drinkit.security.infra.login
 
 import com.drinkit.security.CurrentUser
-import com.drinkit.security.CurrentVisitor
 import com.drinkit.security.UserAccounts
-import com.drinkit.security.infra.chain.RequestCurrentVisitor
 import com.drinkit.security.infra.events.SecurityEventLogger
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -24,10 +22,6 @@ internal class UserAccountsAutoConfiguration {
     @ConditionalOnMissingBean
     fun securityContextHolderStrategy(): SecurityContextHolderStrategy =
         SecurityContextHolder.getContextHolderStrategy()
-
-    @Bean
-    @ConditionalOnMissingBean
-    fun currentVisitor(): CurrentVisitor = RequestCurrentVisitor()
 
     @Bean
     @ConditionalOnMissingBean

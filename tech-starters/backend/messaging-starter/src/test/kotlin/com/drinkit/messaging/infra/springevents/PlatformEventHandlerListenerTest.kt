@@ -4,7 +4,7 @@ import com.drinkit.idempotency.CurrentIdempotencyKey
 import com.drinkit.idempotency.inMemoryIdempotency
 import com.drinkit.messaging.PlatformEvent
 import com.drinkit.messaging.PlatformEventHandler
-import com.drinkit.messaging.infra.ExponentialBackoffRetry
+import com.drinkit.messaging.infra.retry.ExponentialBackoffRetry
 import com.drinkit.test.ControlledClock
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
