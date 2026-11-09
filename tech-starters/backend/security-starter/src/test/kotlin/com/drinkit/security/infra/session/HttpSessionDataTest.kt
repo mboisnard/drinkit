@@ -1,15 +1,12 @@
 package com.drinkit.security.infra.session
 
-import com.drinkit.security.InMemoryCurrentUser
-import com.drinkit.security.InMemoryUserAccounts
-import com.drinkit.security.UserAccount
 import com.drinkit.security.sessionKey
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import tools.jackson.module.kotlin.jacksonMapperBuilder
@@ -23,9 +20,7 @@ internal class HttpSessionDataTest {
     private val request = MockHttpServletRequest().also {
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(it))
     }
-    private val accounts = InMemoryUserAccounts("ada@drinkit.test" to UserAccount("user-1", setOf("ROLE_USER")))
-    private val currentUser = InMemoryCurrentUser(accounts).also { it.signIn("user-1") }
-    private val sessionData = HttpSessionData(currentUser, jacksonMapperBuilder().build())
+    private val sessionData = HttpSessionData(jacksonMapperBuilder().build())
 
     @AfterEach
     fun forgetRequest() {
@@ -75,14 +70,12 @@ internal class HttpSessionDataTest {
     }
 
     @Test
-    fun `refuses to keep a value for an anonymous caller, and opens no session`() {
-        // Given
-        val anonymousSessionData = HttpSessionData(InMemoryCurrentUser(), jacksonMapperBuilder().build())
+    fun `opens the session to keep a value`() {
+        // When
+        sessionData[preferences] = Preferences("EUR", listOf("Margaux"))
 
-        // When & Then
-        shouldThrow<AuthenticationCredentialsNotFoundException> {
-            anonymousSessionData[preferences] = Preferences("EUR", emptyList())
-        }
-        request.getSession(false).shouldBeNull()
+        // Then
+        request.getSession(false).shouldNotBeNull()
+        sessionData[preferences] shouldBe Preferences("EUR", listOf("Margaux"))
     }
 }
