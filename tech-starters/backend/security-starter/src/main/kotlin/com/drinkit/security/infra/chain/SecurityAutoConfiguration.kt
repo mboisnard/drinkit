@@ -16,7 +16,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
@@ -57,7 +56,6 @@ import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWrite
 import org.springframework.security.web.savedrequest.NullRequestCache
 import org.springframework.security.web.util.matcher.AnyRequestMatcher
 import org.springframework.security.web.util.matcher.DispatcherTypeRequestMatcher
-import org.springframework.util.ClassUtils
 import org.springframework.web.servlet.function.RouterFunction
 import org.springframework.web.servlet.function.RouterFunctions
 import org.springframework.web.servlet.function.ServerResponse
@@ -68,8 +66,6 @@ private const val CSRF_PATH = "/api/auth/csrf"
 
 private const val MANAGEMENT_WEB_SECURITY =
     "org.springframework.boot.security.autoconfigure.actuate.web.servlet.ManagementWebSecurityAutoConfiguration"
-private const val ACTUATOR_ENDPOINTS =
-    "org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration"
 
 /**
  * Refuses any request no [EndpointRules] matches, so that a new endpoint is closed until someone opens it.
@@ -92,7 +88,6 @@ internal class SecurityAutoConfiguration {
     @Suppress("LongParameterList")
     fun securityFilterChain(
         http: HttpSecurity,
-        context: ApplicationContext,
         endpointRules: ObjectProvider<EndpointRules>,
         rememberMeServices: ObjectProvider<RememberMeServices>,
         emailCodeAuthenticationProvider: EmailCodeAuthenticationProvider,
@@ -158,9 +153,6 @@ internal class SecurityAutoConfiguration {
                 authorize(HttpMethod.POST, CODE_SIGN_IN_PATH, permitAll)
                 authorize(HttpMethod.POST, LOGOUT_PATH, permitAll)
                 authorize(HttpMethod.GET, CSRF_PATH, permitAll)
-                if (ClassUtils.isPresent(ACTUATOR_ENDPOINTS, context.classLoader)) {
-                    authorize(EndpointRequest.to("health"), permitAll)
-                }
                 endpointRules.orderedStream().forEach { it.declare(this) }
                 authorize(anyRequest, UnruledEndpoint)
             }

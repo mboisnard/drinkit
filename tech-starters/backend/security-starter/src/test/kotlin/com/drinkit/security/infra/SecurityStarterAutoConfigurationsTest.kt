@@ -1,6 +1,7 @@
 package com.drinkit.security.infra
 
 import com.drinkit.security.CurrentUser
+import com.drinkit.security.EndpointRules
 import com.drinkit.security.InMemoryCurrentUser
 import com.drinkit.security.InMemoryUserAccounts
 import com.drinkit.security.SessionData
@@ -9,7 +10,9 @@ import com.drinkit.security.Sessions
 import com.drinkit.security.SignInCodeSender
 import com.drinkit.security.SpySignInCodeSender
 import com.drinkit.security.UserAccounts
+import com.drinkit.security.endpointRules
 import com.drinkit.security.infra.chain.FetchMetadataFilter
+import com.drinkit.security.infra.chain.HealthAccessAutoConfiguration
 import com.drinkit.security.infra.chain.SecurityAutoConfiguration
 import com.drinkit.security.infra.code.EmailCodeSignInFilter
 import com.drinkit.security.infra.code.InMemorySignInCodes
@@ -37,6 +40,7 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.getBean
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration
 import org.springframework.boot.autoconfigure.AutoConfigurations
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration
 import org.springframework.boot.jooq.autoconfigure.JooqAutoConfiguration
@@ -44,6 +48,7 @@ import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoCon
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration
 import org.springframework.boot.session.autoconfigure.DefaultCookieSerializerCustomizer
 import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration
+import org.springframework.boot.test.context.FilteredClassLoader
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner
 import org.springframework.core.convert.ConversionService
 import org.springframework.core.convert.support.DefaultConversionService
@@ -77,6 +82,7 @@ internal class SecurityStarterAutoConfigurationsTest {
                 SessionAutoConfiguration::class.java,
                 JooqAutoConfiguration::class.java,
                 SecurityAutoConfiguration::class.java,
+                HealthAccessAutoConfiguration::class.java,
                 SessionsAutoConfiguration::class.java,
                 RememberMeAutoConfiguration::class.java,
                 UserAccountsAutoConfiguration::class.java,
@@ -133,6 +139,21 @@ internal class SecurityStarterAutoConfigurationsTest {
     }
 
     @Test
+    fun `opens the health status to anyone when Actuator is there`() {
+        runner.run { context ->
+            context.containsBean("healthAccessRules") shouldBe true
+        }
+    }
+
+    @Test
+    fun `opens no health rule without Actuator`() {
+        runner.withClassLoader(FilteredClassLoader(WebEndpointAutoConfiguration::class.java))
+            .run { context ->
+                context.containsBean("healthAccessRules") shouldBe false
+            }
+    }
+
+    @Test
     fun `backs off from each bean the application declares itself`() {
         val ownChain = DefaultSecurityFilterChain(AnyRequestMatcher.INSTANCE)
         val ownCurrentUser = InMemoryCurrentUser()
@@ -143,6 +164,7 @@ internal class SecurityStarterAutoConfigurationsTest {
         }
         val ownConversion = DefaultConversionService()
         val ownRememberMe = NullRememberMeServices()
+        val ownHealthRules = endpointRules { }
 
         withSessionsInDatabase
             .withBean(SecurityFilterChain::class.java, { ownChain })
@@ -150,12 +172,14 @@ internal class SecurityStarterAutoConfigurationsTest {
             .withBean(SessionData::class.java, { ownSessionData })
             .withBean("springSessionConversionService", ConversionService::class.java, { ownConversion })
             .withBean(RememberMeServices::class.java, { ownRememberMe })
+            .withBean("healthAccessRules", EndpointRules::class.java, { ownHealthRules })
             .run { context ->
                 context.getBean<SecurityFilterChain>() shouldBeSameInstanceAs ownChain
                 context.getBean<CurrentUser>() shouldBeSameInstanceAs ownCurrentUser
                 context.getBean<SessionData>() shouldBeSameInstanceAs ownSessionData
                 context.getBean("springSessionConversionService") shouldBeSameInstanceAs ownConversion
                 context.getBean<RememberMeServices>() shouldBeSameInstanceAs ownRememberMe
+                context.getBean("healthAccessRules") shouldBeSameInstanceAs ownHealthRules
             }
     }
 

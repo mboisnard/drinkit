@@ -13,7 +13,8 @@ import kotlin.streams.asSequence
 const val DEFAULT_FETCH_SIZE = 1000
 
 @TechStarterTool
-inline fun <reified R : Record> allFields(table: Table<R>) = row(*table.fields()).convertFrom { it.into(R::class.java) }
+inline fun <reified R : Record> allFields(table: Table<R>) =
+    row(table.fields().toList()).convertFrom { it.into(R::class.java) }
 
 // The rows come from an open cursor: read them inside the caller's transaction, whose end closes the cursor
 @TechStarterTool
@@ -25,9 +26,9 @@ inline fun <reified R : Record, T> Select<R>.fetchSequence(
     .map { mapper.apply(it) }
     .asSequence()
 
+/** Whether PostgreSQL refused the statement on [constraint], such as the primary key of a table. */
 @TechStarterTool
-fun DataAccessException.isEventSourcingSequenceException(primaryKeyName: String): Boolean {
+fun DataAccessException.violates(constraint: String): Boolean {
     val mostSpecificCause = this.mostSpecificCause
-    return mostSpecificCause is PSQLException &&
-        mostSpecificCause.serverErrorMessage?.constraint == primaryKeyName
+    return mostSpecificCause is PSQLException && mostSpecificCause.serverErrorMessage?.constraint == constraint
 }
