@@ -1,5 +1,6 @@
 package com.drinkit.security.infra.chain
 
+import com.drinkit.security.CurrentVisitor
 import com.drinkit.security.EndpointRules
 import com.drinkit.security.infra.SecurityStarterProperties
 import com.drinkit.security.infra.SecurityStarterProperties.Cookie.Companion.SAME_SITE
@@ -82,6 +83,10 @@ private const val MANAGEMENT_WEB_SECURITY =
 @EnableWebSecurity
 @EnableMethodSecurity
 internal class SecurityAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun currentVisitor(): CurrentVisitor = RequestCurrentVisitor()
 
     @Bean
     @ConditionalOnMissingBean

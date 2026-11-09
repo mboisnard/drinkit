@@ -1,6 +1,7 @@
 package com.drinkit.idempotency.infra
 
 import com.drinkit.idempotency.Idempotency
+import com.drinkit.idempotency.infra.jooq.IdempotencyKeys
 import com.drinkit.idempotency.infra.jooq.JooqIdempotencyKeys
 import org.jooq.DSLContext
 import org.springframework.boot.autoconfigure.AutoConfiguration

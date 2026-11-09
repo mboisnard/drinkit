@@ -1,6 +1,9 @@
 package com.drinkit.messaging.infra
 
 import com.drinkit.messaging.PlatformEventPublisher
+import com.drinkit.messaging.infra.retry.ExponentialBackoffRetry
+import com.drinkit.messaging.infra.retry.FixedDelayRetry
+import com.drinkit.messaging.infra.retry.Retry
 import com.drinkit.messaging.infra.springevents.PlatformEventHandlerProcessor
 import com.drinkit.messaging.infra.springevents.SpringEventsPublisher
 import org.springframework.boot.autoconfigure.AutoConfiguration

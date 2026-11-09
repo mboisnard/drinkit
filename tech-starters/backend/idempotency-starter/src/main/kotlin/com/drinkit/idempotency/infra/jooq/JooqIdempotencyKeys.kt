@@ -2,8 +2,6 @@ package com.drinkit.idempotency.infra.jooq
 
 import com.drinkit.idempotency.generated.jooq.tables.records.IdempotencyKeyRecord
 import com.drinkit.idempotency.generated.jooq.tables.references.IDEMPOTENCY_KEY
-import com.drinkit.idempotency.infra.HeldKey
-import com.drinkit.idempotency.infra.IdempotencyKeys
 import org.jooq.Condition
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.row

@@ -1,4 +1,4 @@
-package com.drinkit.messaging.infra
+package com.drinkit.messaging.infra.retry
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainExactly

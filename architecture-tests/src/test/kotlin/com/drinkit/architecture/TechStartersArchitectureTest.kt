@@ -3,6 +3,7 @@ package com.drinkit.architecture
 import io.github.baole.konture.SourceSets
 import io.github.baole.konture.rule
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 
 // A jOOQ table import names its table, its record or its reference: ...tables.User, tables.records.UserRecord,
 // tables.references.USER
@@ -131,6 +132,31 @@ internal class TechStartersArchitectureTest {
                 }
             }
         }.check()
+    }
+
+    @Test
+    fun `the packages of a tech starter depend on each other without a cycle`() {
+        val starters = STARTERS.map(::listOf).filter { classesOf(it).isNotEmpty() }
+
+        // One failure per starter, all of them at once
+        assertAll(
+            starters.map { starter ->
+                {
+                    rule("starters.no-cycle-between-packages") {
+                        description = "The packages of a tech starter depend on each other one way only: move the " +
+                            "type that closes the cycle into the package the others use"
+                        suppress {
+                            slice("ocr.analyzers", OPS_STARTERS)
+                        }
+                        slices(sourceSetsOf(starter)) {
+                            matching("${rootPackageOf(classesOf(starter).first().packageName)}.(**)")
+                            not().haveKey { "generated" in it.split('.') }
+                            should().beFreeOfCycles()
+                        }
+                    }.check()
+                }
+            },
+        )
     }
 
     @Test
