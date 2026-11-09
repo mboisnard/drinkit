@@ -4,6 +4,7 @@ import com.drinkit.documentation.tech.starter.TechStarterTool
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+@TechStarterTool
 val SAFE_ROUNDING_MODE = RoundingMode.HALF_EVEN
 
 @TechStarterTool

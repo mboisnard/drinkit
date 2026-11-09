@@ -15,7 +15,7 @@ internal typealias CarHistory = History<CarEvent, CarCreated>
 internal class HistoryTest {
 
     @Test
-    fun `should create History with init event only`() {
+    fun `holds its initial event alone when nothing followed it`() {
         // Given
         val initEvent = CarCreated(
             id = UUID.randomUUID(),
@@ -33,7 +33,7 @@ internal class HistoryTest {
     }
 
     @Test
-    fun `should create History with init event and remaining events`() {
+    fun `keeps the initial event apart from the following ones`() {
         // Given
         val initEvent = CarCreated(
             id = UUID.randomUUID(),
@@ -65,7 +65,7 @@ internal class HistoryTest {
     }
 
     @Test
-    fun `should create History with a list of events`() {
+    fun `starts from its initial event and keeps the following ones in order`() {
         // Given
         val initEvent = CarCreated(
             id = UUID.randomUUID(),
@@ -95,7 +95,15 @@ internal class HistoryTest {
     }
 
     @Test
-    fun `should throw exception when the list of events does not start with the init event`() {
+    fun `refuses no event`() {
+        // When & Then
+        shouldThrow<IllegalArgumentException> {
+            CarHistory.from<CarEvent, CarCreated>(emptyList())
+        }
+    }
+
+    @Test
+    fun `refuses events that do not start with the initial event`() {
         // Given
         val carId = UUID.randomUUID()
         val event1 = CarPurchased(
@@ -118,7 +126,7 @@ internal class HistoryTest {
     }
 
     @Test
-    fun `should throw exception when events are not sequentially sorted`() {
+    fun `refuses events whose sequence ids go down`() {
         // Given
         val initEvent = CarCreated(
             id = UUID.randomUUID(),
@@ -146,7 +154,7 @@ internal class HistoryTest {
     }
 
     @Test
-    fun `should throw exception when two events share a sequence id`() {
+    fun `refuses two events of the same sequence id`() {
         // Given
         val initEvent = CarCreated(
             id = UUID.randomUUID(),

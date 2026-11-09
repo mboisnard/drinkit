@@ -1,4 +1,4 @@
-package com.drinkit.search.engine.infra.rebuild
+package com.drinkit.search.engine.infra.jooq
 
 import com.drinkit.search.engine.RebuildProgress
 import com.drinkit.search.engine.generated.jooq.tables.references.SEARCH_INDEX_REBUILD

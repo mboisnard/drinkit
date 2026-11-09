@@ -4,11 +4,15 @@ import com.drinkit.documentation.tech.starter.TechStarterTool
 import java.security.MessageDigest
 import java.util.HexFormat
 
-// The zero-width joiners stay: emojis such as a family and several scripts need them
+/** The zero-width joiners stay: emojis such as a family and several scripts need them */
+@TechStarterTool
 val INVISIBLE_CHARS_REGEX = Regex("[\\p{Cc}\\p{Cf}&&[^\\u200C\\u200D]]")
+
+@TechStarterTool
 val SPECIAL_CHAR_REGEX = Regex("[\\p{P}\\p{S}]")
 
-// OWASP Email Regex: https://owasp.org/www-community/OWASP_Validation_Regex_Repository
+/** OWASP Email Regex: https://owasp.org/www-community/OWASP_Validation_Regex_Repository */
+@TechStarterTool
 val VALID_EMAIL_REGEX = Regex("[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}")
 
 @TechStarterTool

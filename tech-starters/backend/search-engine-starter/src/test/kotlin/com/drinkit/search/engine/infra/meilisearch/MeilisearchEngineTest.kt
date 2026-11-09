@@ -49,6 +49,7 @@ internal class MeilisearchEngineTest : SearchEngineTestContract() {
 
     @Test
     fun `gives the size the engine takes`() {
+        // When & Then
         engine().information().size.shouldBePositive()
     }
 

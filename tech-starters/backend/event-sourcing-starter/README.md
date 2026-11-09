@@ -47,7 +47,7 @@ holds the whole example. What to know:
 - **`SequenceId.next()`** adds 10, for the
   [gaps between sequence ids](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/event-sourcing.md#gaps-between-sequence-ids).
 - **`EventsReducer`** leaves the state as it is for an event type with no handler, unless you pass your own default
-  handler.
+  handler. A type registered twice keeps the last handler.
 - **`@RetryableTransactional`**, on a use case class, runs it again on `DuplicateSequenceException`, three attempts
   at most, each in a new transaction or a savepoint.
 

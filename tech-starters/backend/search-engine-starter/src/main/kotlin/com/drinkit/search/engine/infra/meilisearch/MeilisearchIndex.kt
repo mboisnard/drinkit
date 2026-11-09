@@ -4,6 +4,7 @@ import com.drinkit.search.engine.RebuildProgress
 import com.drinkit.search.engine.SearchDocumentSource
 import com.drinkit.search.engine.SearchIndex
 import com.drinkit.search.engine.infra.rebuild.Rebuilds
+import com.drinkit.search.engine.infra.rebuild.RebuiltIndex
 import com.meilisearch.sdk.Client
 import com.meilisearch.sdk.exceptions.MeilisearchApiException
 import com.meilisearch.sdk.model.Settings
@@ -19,13 +20,14 @@ internal class MeilisearchIndex<T : Any>(
     tasks: MeilisearchTasks,
     private val jsonMapper: JsonMapper,
     private val rebuilds: Rebuilds,
-) : SearchIndex<T> {
+) : SearchIndex<T>,
+    RebuiltIndex {
 
     private val logger = KotlinLogging.logger {}
 
     override val name = definition.name
 
-    val source = definition.source
+    override val source = definition.source
 
     val live = EngineIndex(name, definition, client, tasks, jsonMapper)
 
@@ -63,6 +65,24 @@ internal class MeilisearchIndex<T : Any>(
     override fun rebuild(): RebuildProgress = rebuilds.start(this)
 
     override fun rebuildProgress(): RebuildProgress? = rebuilds.progress(name)
+
+    override fun prepareNext() {
+        next.drop()
+        next.createWithSettings()
+        // The swap needs both indexes: the engine may have lost the live one, or never received it at startup
+        live.createWithSettings()
+    }
+
+    override fun loadIntoNext(ids: List<String>) {
+        next.save(source.documents(ids))
+        // A document deleted while its batch was read would come back with the swap: its delete has passed
+        next.delete(ids - next.idsOf(source.documents(ids)))
+    }
+
+    override fun swapNext() {
+        next.await(next.swapWith(live))
+        next.drop()
+    }
 
     // Sent without waiting for the engine, so that a busy engine does not hold the startup back. A running rebuild gets
     // them too, or its swap would bring the settings of the previous start back

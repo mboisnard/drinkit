@@ -1,5 +1,6 @@
 package com.drinkit.search.engine.infra.meilisearch
 
+import com.drinkit.messaging.SpyPlatformEventPublisher
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.search.engine.Cellar
 import com.drinkit.search.engine.MeilisearchIntegrationTest
@@ -12,7 +13,6 @@ import com.drinkit.search.engine.Wine
 import com.drinkit.search.engine.awaitRebuilt
 import com.drinkit.search.engine.generated.jooq.DrinkitApplication
 import com.drinkit.search.engine.infra.Instances
-import com.drinkit.search.engine.infra.KeptEvents
 import com.drinkit.search.engine.infra.LostEvents
 import com.drinkit.search.engine.infra.declareIndex
 import com.drinkit.search.engine.infra.rebuild.SearchIndexBatchRequested
@@ -89,7 +89,7 @@ internal class MeilisearchRebuildTest {
         other.wines().rebuild()
 
         // Then
-        other.getBean<KeptEvents>().published.shouldBeEmpty()
+        other.getBean<SpyPlatformEventPublisher>().eventsOfType(SearchIndexBatchRequested::class).shouldBeEmpty()
     }
 
     @Test
@@ -366,8 +366,8 @@ internal class MeilisearchRebuildTest {
         getBean<ControlledClock>().add(duration)
     }
 
-    private fun ConfigurableApplicationContext.batch(number: Long) = getBean<KeptEvents>().published
-        .filterIsInstance<SearchIndexBatchRequested>()
+    private fun ConfigurableApplicationContext.batch(number: Long) = getBean<SpyPlatformEventPublisher>()
+        .eventsOfType(SearchIndexBatchRequested::class)
         .single { it.batch == number }
 
     private fun ConfigurableApplicationContext.deliver(batch: SearchIndexBatchRequested) =

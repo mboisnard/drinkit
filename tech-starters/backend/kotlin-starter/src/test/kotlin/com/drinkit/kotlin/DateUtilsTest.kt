@@ -12,11 +12,13 @@ internal class DateUtilsTest {
 
     @Test
     fun `a date inside the bounds is strictly between them`() {
+        // When & Then
         LocalDate.of(1982, 6, 15).isStrictlyBetween(min, max) shouldBe true
     }
 
     @Test
     fun `a date on either bound is not strictly between them`() {
+        // When & Then
         listOf(min, max).forAll { it.isStrictlyBetween(min, max) shouldBe false }
     }
 }

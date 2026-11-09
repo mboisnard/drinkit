@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 internal class SequenceIdTest {
 
     @Test
-    fun `sequenceId should start with value 0 as default value`() {
+    fun `starts at 0`() {
         // Given & When
         val sequenceId = SequenceId()
 
@@ -15,7 +15,7 @@ internal class SequenceIdTest {
     }
 
     @Test
-    fun `should leave an interval between two sequenceIds, so that an event can be inserted in between`() {
+    fun `leaves a gap after a sequence id, so that an event can be inserted in between`() {
         // Given
         val sequenceId = SequenceId(10)
 
@@ -27,7 +27,7 @@ internal class SequenceIdTest {
     }
 
     @Test
-    fun `should compare SequenceIds correctly`() {
+    fun `orders sequence ids by their value`() {
         // Given
         val sequenceId1 = SequenceId(10)
         val sequenceId2 = SequenceId(20)

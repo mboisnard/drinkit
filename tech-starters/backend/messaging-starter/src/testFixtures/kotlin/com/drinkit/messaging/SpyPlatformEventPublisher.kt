@@ -17,5 +17,8 @@ class SpyPlatformEventPublisher : PlatformEventPublisher {
     fun countEventsOfType(platformEventType: KClass<out PlatformEvent<*>>): Int =
         publishedPlatformEvents.count { it.javaClass.kotlin == platformEventType }
 
+    fun <T : PlatformEvent<*>> eventsOfType(platformEventType: KClass<T>): List<T> =
+        publishedPlatformEvents.filterIsInstance(platformEventType.java)
+
     fun findLastSentEvent(): PlatformEvent<*>? = publishedPlatformEvents.lastOrNull()
 }
