@@ -25,7 +25,8 @@ logs behind one property. Its OTLP export of metrics is on by default, towards `
   reserved to admins.
 - **Metrics and traces.** The code measures through Micrometer, an `ObservationRegistry` or a `MeterRegistry`, never
   through the OpenTelemetry API or a wrapper of our own. The starter exports over OTLP once
-  `starters.observability.opentelemetry.enabled` is true, through the JDK HTTP client. Until then, tracing still gives
+  `starters.observability.opentelemetry.enabled` is true, through the JDK HTTP client, and never while
+  `starters.observability.enabled` is false. Until then, tracing still gives
   each request its `traceId`, which reaches no collector. A trace starts in the application: the `traceparent` that a
   caller sends is ignored, so that no one on the internet chooses a `traceId` or forces a trace into the samples.
 - **Logs.** Plain text on a developer's machine, one JSON line per event in the Logstash format elsewhere. Each line
