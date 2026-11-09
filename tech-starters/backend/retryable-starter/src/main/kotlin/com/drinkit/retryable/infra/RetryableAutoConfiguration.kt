@@ -14,6 +14,6 @@ import org.springframework.resilience.retry.MethodRetryEvent
 internal class RetryableAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = ["loggingRetryListener"])
     fun loggingRetryListener(): ApplicationListener<MethodRetryEvent> = LoggingRetryListener()
 }
