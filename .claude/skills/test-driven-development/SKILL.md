@@ -54,6 +54,9 @@ Rules at every step:
 - Never weaken, skip or delete an assertion to get green. A test that looks wrong is reported to the maintainer.
 - An assertion never recomputes its expected value with the code under test.
 - One behavior per test: a name with "and" in it is two tests.
+- A test is named after the rule it proves, not its example. Its body reads in blocks marked `// Given`,
+  `// When` and `// Then`, each set apart by a blank line, even in a short test. A test with nothing to set up has
+  no `// Given`, and an action asserted where it runs, such as a `shouldThrow`, is `// When & Then`.
 - Tests are fast, independent and repeatable: no sleep, no shared mutable state, time and identifiers from test
   doubles.
 - Once the list is done, no value shaped after a test remains: the code works for every valid input.

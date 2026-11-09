@@ -5,6 +5,8 @@ import com.drinkit.documentation.tech.starter.TechStarterTool
 /**
  * An [idempotent] handler runs once per key of its event, however many times it is delivered: the key of the
  * delivery, or the one [idempotencyKey] reads from the event, a SpEL expression such as `#event.orderId`.
+ *
+ * [delay] is in milliseconds. A broker implementation reads [exchange] and [oneQueuePerInstance] to route the event.
  */
 @TechStarterTool
 @Suppress("LongParameterList")

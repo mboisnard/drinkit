@@ -7,7 +7,7 @@ import org.springframework.core.env.getProperty
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.support.ResourcePropertySource
 
-internal class WebClientDefaults : EnvironmentPostProcessor {
+internal class WebClientDefaultsEnvironmentPostProcessor : EnvironmentPostProcessor {
 
     override fun postProcessEnvironment(environment: ConfigurableEnvironment, application: SpringApplication) {
         if (!environment.getProperty<Boolean>("starters.webclient.enabled", true)) {

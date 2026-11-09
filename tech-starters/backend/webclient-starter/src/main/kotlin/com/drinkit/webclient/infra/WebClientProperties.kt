@@ -6,10 +6,10 @@ import java.time.Duration
 @ConfigurationProperties(prefix = "starters.webclient")
 internal data class WebClientProperties(val enabled: Boolean = true, val retry: Retry = Retry()) {
 
-    /** [idempotentGroups]: the groups whose API honours the `Idempotency-Key` header. */
     data class Retry(
         val maxRetries: Long = 3,
         val delay: Duration = DEFAULT_DELAY,
+        /** The groups whose API honours the `Idempotency-Key` header. */
         val idempotentGroups: Set<String> = emptySet(),
     )
 

@@ -19,10 +19,11 @@ the starter up to convention, as step 7 does, is an issue of its own.
 - [ ] One `@AutoConfiguration` class, plus one per optional integration, all listed in `AutoConfiguration.imports`,
       does all the wiring. `src/main` holds no `@Service`, `@Component`, `@Repository` or `@Configuration`
       stereotype, and no Spring profile.
-- [ ] Every bean is `@ConditionalOnMissingBean`, and `starters.<name>.enabled=false` switches the starter off.
+- [ ] Every bean is `@ConditionalOnMissingBean`, by name when its type is generic or shared, and
+      `starters.<name>.enabled=false` switches the starter off.
 - [ ] Properties live under `starters.<name>.*`, constructor-bound with defaults in Kotlin, and the README gives
       each one's environment variable.
-- [ ] `testFixtures` ship a hand-written double that consumers' tests use.
+- [ ] `testFixtures` ship a hand-written double of each public interface that consumers' tests use.
 - [ ] `ApplicationContextRunner` tests cover the default bean, the back-off, the disabled starter and each
       implementation branch, and one `*TestContract` runs against both the double and the real implementation.
 - [ ] `@TechStarterTool` marks the public API, and the README is written for the developer who consumes it.
@@ -33,8 +34,9 @@ the starter up to convention, as step 7 does, is an issue of its own.
 ## 1. Before writing anything
 
 Read the convention plugins the build file needs, and one existing starter close to the need, from
-`ls tech-starters/backend`. A starter without an `AutoConfiguration.imports` file predates this skill (component
-scan, often a profile): copy its tests and fixtures, never its wiring.
+`ls tech-starters/backend`. A starter whose `src/main` holds a stereotype, or whose profile is in
+`spring.profiles.include`, predates this skill: copy its tests and fixtures, never its wiring. A starter with no
+bean, such as `kotlin-starter`, is a plain library with no auto-configuration and no switch: that is not a gap.
 
 Settle these from the issue, and ask the maintainer what it leaves open, a new module being a structuring choice:
 
@@ -57,7 +59,11 @@ application with another base package imports the starter.
 Traps:
 
 - An `internal class` is fine, but its `@Bean` methods carry no `internal` modifier: Kotlin mangles the name of
-  an internal function with a module suffix, and Spring no longer finds it.
+  an internal function with a module suffix, and Spring no longer finds it. A bean of an `internal` type still
+  backs off: Kotlin compiles `internal` to `public`.
+- `@ConditionalOnMissingBean` without attributes matches the raw return type. A bean of a generic or shared type,
+  such as `ApplicationListener<…>`, `RouterFunction<…>` or `HealthIndicator`, backs off by name, or any bean of the
+  application of that type switches it off.
 - Spring Boot 4 split its auto-configurations into modules and moved them:
   `org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration`, not
   `org.springframework.boot.autoconfigure.jdbc`. Check each import against the jar before writing it.
@@ -74,12 +80,19 @@ endpoint brings its `EndpointRules` that way, outside `/api/**`, as `SseSecurity
 Several implementations: one property selects, its default is the safest one, and one branch carries
 `matchIfMissing = true` so the context always starts.
 
+A starter made of features that depend on each other, as `security-starter` is, may keep one auto-configuration per
+feature in a package per feature, each ordered by `after` on those it needs. Under `infra/`, the classes stay flat
+while the starter uses one technology, and a subpackage named after each technology appears with the second one.
+The auto-configuration and the properties are named `<Name>AutoConfiguration` and `<Name>Properties`, with
+`Starter` before the suffix only when Spring Boot already has the name, as `CacheStarterProperties`.
+
 ## 3. Configuration
 
 Properties go under `starters.<name>.*`, never under `spring.*`, `server.*` or `management.*`. The environment
 variable is the property uppercased, with `.` turned into `_` and hyphens removed:
 `starters.feature-management.flipt.url` is `STARTERS_FEATUREMANAGEMENT_FLIPT_URL`. Do not reproduce the old
-`${DRINKIT_XXX:}` placeholders, which hide a property from Spring's metadata.
+`${DRINKIT_XXX:}` placeholders, which hide a property from Spring's metadata. A starter whose only property is
+`enabled` reads it in `@ConditionalOnProperty` with no properties class, and its README documents it.
 
 A default for a key Spring owns, such as `spring.datasource.*`, goes in a defaults file loaded at the lowest
 precedence by an `EnvironmentPostProcessor`, so that the application and the environment always win. In Spring
@@ -95,13 +108,17 @@ starter's tables like the `jooq` block of `configuration-starter`. The changelog
 The repository is registered by a `@Bean` method of the auto-configuration and carries
 `@Transactional(propagation = Propagation.MANDATORY)`: the consumer's use case owns the transaction. Not
 `@JooqRepository`, which is meta-annotated `@Repository`: under a component scan it would register a second
-instance. Keep that one for the business modules.
+instance. Keep that one for the business modules. A repository that a servlet filter calls, outside any use case,
+as the sign-in codes of `security-starter`, opens its own transaction with `REQUIRED`.
 
 ## 5. Tests and fixtures
 
 Tests come first, through the `test-driven-development` skill. The starter's tests have three layers: the wiring,
-with `ApplicationContextRunner`; the behaviour, in a `*TestContract` run by each implementation, like
-`ConfigurationsTestContract`; and the integration, with `@JooqIntegrationTest` or the starter's own extension.
+with `ApplicationContextRunner`; the behaviour, in a `*TestContract` run by each implementation and by the double,
+like `ConfigurationsTestContract`; and the integration, with `@JooqIntegrationTest` or the starter's own extension.
+A double of a public interface always runs the contract, however simple it is: when the real behaviour changes, the
+double breaks with it. A test is named after the rule it proves, never after its example, and marks its
+`// Given`, `// When` and `// Then` blocks.
 
 The fixtures are plain public classes that implement the public interface, so the compiler breaks them when the
 API changes. The kinds and their models are in [examples.md](examples.md#test-fixtures).

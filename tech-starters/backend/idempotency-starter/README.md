@@ -8,7 +8,9 @@ that runs an action once per key, however many times it is sent:
 - **A request is retried after its commit**, following a server error: the events it publishes again carry the same
   keys, so their handlers skip them, and so do the providers it calls.
 
-It keeps each key in PostgreSQL for 24 hours, with what the first run answered.
+It keeps each key in PostgreSQL for 24 hours, with what the first run answered. It is built in-house, as
+[ADR 0019](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0019-run-requests-and-events-once-per-idempotency-key.md)
+explains.
 
 ```mermaid
 flowchart LR
@@ -67,16 +69,6 @@ flowchart LR
     N["no current key"] --> E3["event<br/>a random key"]
 ```
 
-## A good key
-
-A key names one action, the same on each of its tries: drawn once by whoever starts the action, or read from the
-business data, never from a clock or a random value drawn again on each try.
-
-The email of a sign-in code is the example. Its delivery is keyed by the event that carries the code, so a broker
-that delivers it twice sends one email. A second request for a code issues a new code, so a new event and a second
-email, which is right: that email holds the code the user now needs. A key built from the email address alone would
-drop it.
-
 ## Usage
 
 ```kotlin
@@ -119,7 +111,9 @@ fun ship(event: OrderPaid)
 - The key is the delivery's, or the one `idempotencyKey` reads from the event, a SpEL expression on `#event`.
 - A delivery that finds its key running on another instance waits for it, without spending an attempt.
 
-**Any other code** calls `Idempotency` itself:
+**Any other code** calls `Idempotency` itself, with a key that names one action and is the same on each of its tries:
+drawn once by whoever starts the action, or read from the business data, never from a clock or a random value drawn
+again on each try.
 
 ```kotlin
 when (val result = idempotency.once(scope = "import.wines", key = fileId) { importWines(file) }) {
@@ -129,6 +123,9 @@ when (val result = idempotency.once(scope = "import.wines", key = fileId) { impo
     IdempotentResult.Mismatch -> error("Never: no fingerprint given")
 }
 ```
+
+Keying an email of a sign-in code by the event that carries the code sends it once per event, and a second request for
+a code, which issues a new code, sends a second email: a key built from the email address alone would drop it.
 
 `CurrentIdempotencyKey` holds the key of the request or the event being handled, and `idempotency.key` of the MDC
 copies it into the logs.
@@ -144,25 +141,6 @@ retried on a network error.
 | `starters.idempotency.enabled` | `true`, `false` registers no `Idempotency` | `STARTERS_IDEMPOTENCY_ENABLED` |
 | `starters.idempotency.retention` | `24h`, how long a key is kept | `STARTERS_IDEMPOTENCY_RETENTION` |
 | `starters.idempotency.lease` | `5m`, after which a request or a handler whose instance crashed runs again on the next try | `STARTERS_IDEMPOTENCY_LEASE` |
-
-## Why not a library
-
-[idempotency4j](https://github.com/josipmusa/idempotency4j) 0.6.0, the closest library, failed a spike on DrinkIt,
-as [ADR 0019](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0019-run-requests-and-events-once-per-idempotency-key.md)
-records. The starter takes its design and keeps what DrinkIt needs:
-
-| | idempotency4j | This starter |
-|---|---|---|
-| Run once outside HTTP | `IdempotencyEngine`, its `Outcome` | `Idempotency.once`, its `IdempotentResult` |
-| Declared on a method | an aspect that proxies the class, which a final Kotlin class refuses | a servlet filter, and an attribute of the handler |
-| A key per user | no place for it | the scope holds the user or the visitor and the endpoint |
-| Table | `idempotency_records`, outside any schema | `drinkit_application.idempotency_key`, through jOOQ |
-| Owner and lease | yes | yes, taken from it |
-| Answer committed with the writes | `JOIN_TRANSACTION`, an option | always, for an endpoint |
-| Lease renewed while it runs | a heartbeat | a lease long enough for a request or an email |
-| Fingerprint | the body | the method, the path, the query string and the body |
-| Key carried into events and provider calls | no | `CurrentIdempotencyKey` and its derived keys |
-| Purge | `@Scheduled`, on every instance | at each take, until a scheduler exists |
 
 ## Tests
 

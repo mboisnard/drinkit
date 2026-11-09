@@ -56,8 +56,8 @@ Then it registers its clients in a group, whose base URL is set under `spring.ht
 internal class RatesClients
 ```
 
-- **Timeouts**: 2 seconds to connect and 5 seconds to read, for every client. `spring.http.clients.*` changes them
-  for all clients, `spring.http.serviceclient.<group>.*` for one group.
+- **Timeouts**: every client gets the defaults of the table below. `spring.http.clients.*` changes them for all
+  clients, `spring.http.serviceclient.<group>.*` for one group.
 - **Your own group configurers**: a `RestClientHttpServiceGroupConfigurer` of the application, such as one that
   reads XML, keeps the retries.
 - **Your own retries**: a bean named `retryingHttpServiceGroupConfigurer` replaces the starter's.
@@ -69,6 +69,8 @@ internal class RatesClients
 | `starters.webclient.enabled` | `true`, `false` removes the retries and the default timeouts | `STARTERS_WEBCLIENT_ENABLED` |
 | `starters.webclient.retry.max-retries` | `3`, the retries after the first attempt | `STARTERS_WEBCLIENT_RETRY_MAXRETRIES` |
 | `starters.webclient.retry.delay` | `100ms`, between two attempts | `STARTERS_WEBCLIENT_RETRY_DELAY` |
+| `spring.http.clients.connect-timeout` | `2s`, set by the starter, to connect | `SPRING_HTTP_CLIENTS_CONNECTTIMEOUT` |
+| `spring.http.clients.read-timeout` | `5s`, set by the starter, to read | `SPRING_HTTP_CLIENTS_READTIMEOUT` |
 | `starters.webclient.retry.idempotent-groups` | none, the groups whose API honours `Idempotency-Key` | `STARTERS_WEBCLIENT_RETRY_IDEMPOTENTGROUPS` |
 
 ## Tests

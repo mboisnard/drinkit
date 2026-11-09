@@ -1,5 +1,6 @@
 package com.drinkit.idempotency.infra.http
 
+import com.drinkit.idempotency.CurrentIdempotencyKey
 import com.drinkit.idempotency.Idempotency
 import com.drinkit.idempotency.Idempotent
 import com.drinkit.idempotency.IdempotentResult
@@ -18,7 +19,6 @@ import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 import org.springframework.web.util.ContentCachingResponseWrapper
 
-internal const val IDEMPOTENCY_KEY_HEADER = "Idempotency-Key"
 private const val KEY_IN_USE = "A request with this Idempotency-Key is still running"
 private const val KEY_REUSED = "This Idempotency-Key was sent with another request"
 private const val KEY_INVALID = "An Idempotency-Key holds 1 to 255 characters, not only blanks"
@@ -38,7 +38,7 @@ internal class IdempotencyFilter(
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
-        val key = request.getHeader(IDEMPOTENCY_KEY_HEADER)
+        val key = request.getHeader(CurrentIdempotencyKey.HEADER)
         val endpoint = key?.let { idempotentEndpointOf(request) }
 
         if (endpoint == null) {

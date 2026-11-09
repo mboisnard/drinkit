@@ -91,7 +91,7 @@ maintainer's language. A question, a security warning, an irreversible action an
 ## Code style
 
 No comments by default. One or two lines at most, only for what the code cannot say: a trap, an external
-constraint, why not the obvious way.
+constraint, why not the obvious way. A blank line sets apart each logical block of a function.
 
 ## This file
 

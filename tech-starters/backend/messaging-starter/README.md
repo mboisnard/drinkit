@@ -66,16 +66,21 @@ internal class SignInCodeEmails(private val notificationSender: NotificationSend
   [idempotency starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/idempotency-starter/README.md),
   and **`idempotencyKey`** reads that key from the event instead, as `#event.orderId`. An event carries a key derived
   from the one of the request or the event that published it, so a replay of either publishes it under the same key.
+- **`exchange` and `oneQueuePerInstance`** are read by a broker implementation and ignored by Spring events, as
+  [platform events](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/platform-events.md)
+  explains.
 - **The application refuses to start** on a handler that takes anything but one platform event, or reuses a `name`,
-  or sets `maxAttempts` below 1 or a negative `delay`, or is idempotent with a queue per instance.
+  or sets `maxAttempts` below 1 or a negative `delay`, or combines `oneQueuePerInstance` with a `delay` or with
+  `idempotent`, or sets an `idempotencyKey` without `idempotent = true`, or is idempotent where the application has no
+  `Idempotency` bean.
 
 ## Configuration
 
 | Property | Default | Environment variable |
 |---|---|---|
+| `starters.messaging.enabled` | `true`, `false` registers no publisher and calls no handler | `STARTERS_MESSAGING_ENABLED` |
 | `starters.messaging.retry.delay` | `30s`, doubled at each retry up to one hour | `STARTERS_MESSAGING_RETRY_DELAY` |
 | `starters.messaging.retry.exponential-backoff` | `true`, `false` keeps the delay the same | `STARTERS_MESSAGING_RETRY_EXPONENTIALBACKOFF` |
-| `starters.messaging.enabled` | `true`, `false` registers no publisher and calls no handler | `STARTERS_MESSAGING_ENABLED` |
 
 ## Tests
 

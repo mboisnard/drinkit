@@ -30,17 +30,20 @@ graph LR
 - **Adding the dependency is enough.** Its `@AutoConfiguration` classes do the wiring, one plus one per optional
   integration, with no Spring profile, and `starters.<name>.enabled=false` turns it off. A bean found by component
   scan cannot reliably back off.
-- **The application has the last word.** Every bean backs off when the application declares its own, and every
-  setting has a default under `starters.<name>.*` that an environment variable overrides.
+- **The application has the last word.** Every bean backs off when the application declares its own, by name when
+  its type is generic or shared, such as an `ApplicationListener`. Every setting has a default under
+  `starters.<name>.*` that an environment variable overrides.
 - **A small public API.** Everything else is Kotlin `internal`. A starter over a vendor SDK wraps what it must
   control and exposes the SDK for the rest, as [ADR 0008](../adr/0008-index-through-an-abstraction-search-with-meilisearch.md)
   records for the search engine.
-- **Tests come with it.** Its test fixtures hold a [hand-written double](../writing-code/testing/testdouble.md), and a
-  test contract, passed by both the double and the real implementation, keeps the double faithful.
+- **Tests come with it.** Its test fixtures hold a [hand-written double](../writing-code/testing/testdouble.md) of
+  each public interface, and a test contract, passed by both the double and the real implementation, keeps the
+  double faithful, however simple it is.
 
-Some starters predate these rules: the component scan of the application wires them, often with a Spring profile.
-Copy their tests, not their wiring. The [architecture tests](../writing-code/testing/architecture-tests.md) check the
-rules that show in the code.
+A starter with no bean, such as `kotlin-starter`, `test-starter` or `event-sourcing-starter`, is a plain library:
+no auto-configuration and no switch. `ocr-starter` still predates these rules: the component scan of the application
+wires it, with a Spring profile. Copy its tests, not its wiring. The
+[architecture tests](../writing-code/testing/architecture-tests.md) check the rules that show in the code.
 
 ## 🔧 Using or creating a starter
 

@@ -30,7 +30,7 @@ internal class PlatformEventHandlerListenerTest {
     private val received = mutableListOf<PlatformEvent<*>>()
 
     @Test
-    fun `calls the handler with a Spring event of its type, on the scheduler`() {
+    fun `a handler gets the events of its type on the scheduler, never on the publishing thread`() {
         val listener = listenerOf { received += it }
 
         // When
@@ -135,68 +135,68 @@ internal class PlatformEventHandlerListenerTest {
 
         private val clock = ControlledClock().fix(Instant.parse("2026-11-08T10:00:00Z"))
         private val idempotency = inMemoryIdempotency(clock)
-        private val welcomeEmail = Delivery(SomethingHappened(1), idempotencyKey = "welcome-key")
-        private val sent = mutableListOf<PlatformEvent<*>>()
+        private val delivery = Delivery(SomethingHappened(1), idempotencyKey = "delivery-key")
+        private val handled = mutableListOf<PlatformEvent<*>>()
 
         @Test
-        fun `a welcome email delivered twice reaches the user once`() {
+        fun `an idempotent handler runs once per key, however many deliveries`() {
             // Given
-            val listener = mailListener { sent += it }
+            val listener = idempotentListener { handled += it }
 
             // When
-            listener.onApplicationEvent(springEventOf(welcomeEmail))
-            listener.onApplicationEvent(springEventOf(welcomeEmail))
+            listener.onApplicationEvent(springEventOf(delivery))
+            listener.onApplicationEvent(springEventOf(delivery))
             scheduler.runAll()
 
             // Then
-            sent shouldContainExactly listOf(SomethingHappened(1))
+            handled shouldContainExactly listOf(SomethingHappened(1))
         }
 
         @Test
-        fun `a welcome email whose mail server is down is sent once the server is back`() {
+        fun `an idempotent handler that failed runs again on its next attempt`() {
             // Given
-            var serverDown = true
-            val listener = mailListener {
-                check(!serverDown) { "Mail server down" }
-                sent += it
+            var failing = true
+            val listener = idempotentListener {
+                check(!failing) { "Handler down" }
+                handled += it
             }
-            listener.onApplicationEvent(springEventOf(welcomeEmail))
+            listener.onApplicationEvent(springEventOf(delivery))
             scheduler.runNext()
 
             // When
-            serverDown = false
+            failing = false
             scheduler.runAll()
 
             // Then
-            sent shouldContainExactly listOf(SomethingHappened(1))
+            handled shouldContainExactly listOf(SomethingHappened(1))
         }
 
         @Test
-        fun `a welcome email handled on two instances at once is sent once, never lost`() {
+        fun `a delivery finding its key in flight on another instance runs once it is free, never twice`() {
             // Given
             val otherScheduler = ManualScheduler()
-            val otherInstance = mailListener(otherScheduler) { sent += it }
-            val listener = mailListener {
-                otherInstance.onApplicationEvent(springEventOf(welcomeEmail))
+            val otherInstance = idempotentListener(otherScheduler) { handled += it }
+            val listener = idempotentListener {
+                otherInstance.onApplicationEvent(springEventOf(delivery))
                 otherScheduler.runNext()
-                sent += it
+                handled += it
             }
 
             // When
-            listener.onApplicationEvent(springEventOf(welcomeEmail))
+            listener.onApplicationEvent(springEventOf(delivery))
             scheduler.runAll()
 
             // Then
-            sent shouldContainExactly listOf(SomethingHappened(1))
+            handled shouldContainExactly listOf(SomethingHappened(1))
             otherScheduler.pendingCount() shouldBe 1
             otherScheduler.runAll()
-            sent shouldContainExactly listOf(SomethingHappened(1))
+            handled shouldContainExactly listOf(SomethingHappened(1))
         }
 
         @Test
-        fun `a welcome email delivered twice under the key its handler reads from it reaches the user once`() {
+        fun `an idempotent handler keyed by its idempotencyKey expression runs once per value read from the event`() {
             // Given
-            val listener = mailListener(idempotencyKey = "#event.id") { sent += it }
+            val listener = idempotentListener(idempotencyKey = "#event.id") { handled += it }
 
             // When
             listener.onApplicationEvent(springEventOf(Delivery(SomethingHappened(1), idempotencyKey = "first")))
@@ -204,18 +204,18 @@ internal class PlatformEventHandlerListenerTest {
             scheduler.runAll()
 
             // Then
-            sent shouldContainExactly listOf(SomethingHappened(1))
+            handled shouldContainExactly listOf(SomethingHappened(1))
         }
 
         @Test
         fun `an event published by a handler carries a key derived from the handler's key`() {
             // Given
             val keys = mutableListOf<String?>()
-            val listener = mailListener { keys += CurrentIdempotencyKey.derive("NextEvent") }
+            val listener = idempotentListener { keys += CurrentIdempotencyKey.derive("NextEvent") }
 
             // When
-            listener.onApplicationEvent(springEventOf(welcomeEmail))
-            listener.onApplicationEvent(springEventOf(welcomeEmail.copy(idempotencyKey = "other-key")))
+            listener.onApplicationEvent(springEventOf(delivery))
+            listener.onApplicationEvent(springEventOf(delivery.copy(idempotencyKey = "other-key")))
             scheduler.runAll()
 
             // Then
@@ -223,18 +223,18 @@ internal class PlatformEventHandlerListenerTest {
             keys.forEach { it shouldNotBe null }
         }
 
-        private fun mailListener(
+        private fun idempotentListener(
             on: ManualScheduler = scheduler,
             idempotencyKey: String = "",
-            send: (PlatformEvent<*>) -> Unit,
+            handle: (PlatformEvent<*>) -> Unit,
         ) = PlatformEventHandlerListener(
             handler = PlatformEventHandler(
-                name = "mail.delivery.queue",
+                name = "idempotent.handler.queue",
                 idempotent = true,
                 idempotencyKey = idempotencyKey,
             ),
             eventType = SomethingHappened::class.java,
-            callHandler = send,
+            callHandler = handle,
             firstAttempt = ExponentialBackoffRetry(initialDelay = Duration.ofSeconds(1)),
             idempotency = idempotency,
             schedule = on::schedule,

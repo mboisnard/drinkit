@@ -1,6 +1,8 @@
 package com.drinkit.messaging.infra.springevents
 
 import com.drinkit.idempotency.CurrentIdempotencyKey
+import com.drinkit.messaging.PlatformEvent
+import com.drinkit.messaging.PlatformEventPublisherTestContract
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldNotContainDuplicates
@@ -8,13 +10,17 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.support.TransactionTemplate
+import kotlin.reflect.KClass
 
-internal class SpringEventsPublisherTest {
+internal class SpringEventsPublisherTest : PlatformEventPublisherTestContract() {
 
     private val deliveries = mutableListOf<Delivery>()
     private val springEvents get() = deliveries.map { it.event }
-    private val publisher = SpringEventsPublisher { deliveries += it as Delivery }
+    override val publisher = SpringEventsPublisher { deliveries += it as Delivery }
     private val transaction = TransactionTemplate(NoOpTransactionManager())
+
+    override fun countPublished(type: KClass<out PlatformEvent<*>>): Int =
+        deliveries.count { type.isInstance(it.event) }
 
     @Test
     fun `an event published in a transaction becomes a Spring event only once the transaction commits`() {
@@ -72,7 +78,7 @@ internal class SpringEventsPublisherTest {
     }
 
     @Test
-    fun `an account creation retried after a server error publishes its event under the same key`() {
+    fun `a replayed request publishes its events under the same keys`() {
         // Given
         CurrentIdempotencyKey.with("account-creation-key") { publisher.publish(SomethingHappened(1)) }
 
@@ -86,7 +92,7 @@ internal class SpringEventsPublisherTest {
     }
 
     @Test
-    fun `two cellars created by one request publish their events under two keys`() {
+    fun `events published by one request each get their own key`() {
         // When
         CurrentIdempotencyKey.with("cellars-creation-key") {
             publisher.publish(SomethingHappened(1))

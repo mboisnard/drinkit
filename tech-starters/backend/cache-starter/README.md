@@ -37,15 +37,16 @@ fun exchangeRatesCacheTtl() = CacheTtl("exchange-rates", Duration.ofHours(1))
 - **`CacheTtl`**: the module that owns a cache declares its time to live as a `CacheTtl` bean.
 - **The time to live of a cache**: `starters.cache.ttl.<cache>` first, then its `CacheTtl`, then
   `starters.cache.default-ttl`.
+- **In a transaction**: a put or an eviction waits for the commit, so a rollback leaves the cache as it was.
 
 ## Configuration
 
 | Property | Default | Environment variable |
 |---|---|---|
+| `starters.cache.enabled` | `true`, `false` runs every method on each call | `STARTERS_CACHE_ENABLED` |
 | `starters.cache.default-ttl` | `10m` | `STARTERS_CACHE_DEFAULTTTL` |
 | `starters.cache.ttl.<cache>` | the `CacheTtl` of the module | `STARTERS_CACHE_TTL_<CACHE>` |
-| `starters.cache.maximum-size` | `10000` | `STARTERS_CACHE_MAXIMUMSIZE` |
-| `starters.cache.enabled` | `true`, `false` runs every method on each call | `STARTERS_CACHE_ENABLED` |
+| `starters.cache.maximum-size` | `10000` entries per cache | `STARTERS_CACHE_MAXIMUMSIZE` |
 
 ## Tests
 

@@ -28,7 +28,8 @@ Start where a test pins the most behavior:
 The shapes of a test, of its Kotest assertions, of a port's contract and of a mutation are in
 [examples.md](examples.md).
 
-1. Write the test and run it. It passes, since the behavior exists.
+1. Write the test, named after its rule and marked `// Given`, `// When`, `// Then` as `test-driven-development`
+   says, and run it. It passes, since the behavior exists.
 2. Break the behavior on purpose: invert a condition, change a returned value. Run the test again: it must fail,
    for the reason its name says. Then revert only your mutation, not the rest of the file, and run it once more.
 3. Tick the line.
