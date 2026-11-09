@@ -137,6 +137,8 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
   keeps the actuator to admins. The rule comes first among the `EndpointRules`: one of the application ordered
   `Ordered.HIGHEST_PRECEDENCE` too may come before it, so the application changes it by declaring a bean named
   `healthAccessRules`. The other actuator endpoints follow the rules of the application.
+- **Session data**: the first write of `SessionData` opens the session, even for a visitor who has not signed in,
+  and the sign-in keeps what it holds. A read or a removal opens none.
 - **Visitor**: each request gets its visitor, a random id that a `visitor` cookie keeps for 30 days after the last
   visit, also logged as `visitor.id`. A visitor is a browser, not a person: two people on one browser share it.
 - **Requests without CSRF token**: `endpointRules(csrfFree = listOf(matcher)) { … }` frees from the token a request

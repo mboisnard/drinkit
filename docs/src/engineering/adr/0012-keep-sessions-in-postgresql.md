@@ -26,12 +26,15 @@ cookie carries only its id, 256 random bits.
 - **Attributes as JSON.** The attributes are written as JSONB, from an allowlist of types. A property added or
   removed, or a class renamed, is handled in the conversion instead of breaking every stored session, and a row that
   can no longer be read signs only its user out.
+- **A session for a visitor at the first write.** A visitor who has not signed in gets a row only once the
+  application writes its `SessionData`, and the sign-in keeps that data under a new session id. Any other anonymous
+  request opens no session, so a client without cookies cannot fill the table.
 - **Sessions that end.** A session also ends on its own:
 
 | Duration | Value | Why |
 |---|---|---|
 | Idle timeout | 30 minutes | A device left unattended stops being signed in |
-| Absolute lifetime | 8 hours since the sign-in | A stolen session id stops working the same day, even when kept busy |
+| Absolute lifetime | 8 hours since the session opened | A stolen session id stops working the same day, even when kept busy |
 
 A session that ends can start again from the remember-me cookie of
 [ADR 0013](0013-remember-me-with-a-rotating-hashed-token.md). A user may be signed in on any number of devices, and
@@ -44,6 +47,9 @@ signing out everywhere deletes all their rows at once.
 - Each request reads its session from PostgreSQL, and writes it back when it changes: a load on the database that
   Redis would have taken.
 - A row reads as plain JSON in `psql`.
+- What a visitor chose before signing in, such as a preference, follows it into its account. The 8 hours of such a
+  session count from that first write, not from the sign-in.
+- An endpoint open to visitors that writes `SessionData` adds a row for each new browser that calls it.
 - The starter owns the conversion to JSON and the queries that read and write it, which a Spring Session upgrade can
   break.
 
@@ -54,6 +60,10 @@ signing out everywhere deletes all their rows at once.
 - **A signed token such as a JWT.** Rejected because a revocation waits for the token's expiry or needs a deny list,
   which is state again, and a token in the browser's storage is open to any injected script. It offered no lookup per
   request.
+- **No session data for a visitor.** Rejected because the application could keep nothing for a visitor until the
+  sign-in. It offered no row for any anonymous request.
+- **A session at a visitor's first request.** Rejected because a client without cookies, such as a bot, would add a
+  row at each request. It offered session data with no condition.
 - **Spring Session's Java serialization.** Rejected because its rows cannot be read, and a changed class breaks every
   stored session. It offered no code to write.
 

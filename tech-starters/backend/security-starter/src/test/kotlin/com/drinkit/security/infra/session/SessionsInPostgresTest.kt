@@ -187,6 +187,22 @@ internal class SessionsInPostgresTest(
         }
     }
 
+    @Test
+    fun `keeps the session data of a visitor through the sign-in`() {
+        // Given
+        browser.put("/api/public/preferences").andExpect { status { isNoContent() } }
+        browser.cookie(SESSION_COOKIE).shouldNotBeNull()
+
+        // When
+        browser.signIn(testAccounts.user().login, codes)
+
+        // Then
+        browser.get("/api/public/preferences").andExpect {
+            jsonPath("$[0]") { value("Margaux, Pomerol") }
+            jsonPath("$[1]") { value("USD") }
+        }
+    }
+
     private fun sessionIdsOf(userId: String) =
         database.sql("SELECT session_id FROM drinkit_session.spring_session WHERE principal_name = ?")
             .param(userId).query(String::class.java).list()

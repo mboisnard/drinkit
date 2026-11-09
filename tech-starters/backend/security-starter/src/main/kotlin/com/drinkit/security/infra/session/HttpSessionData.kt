@@ -1,9 +1,7 @@
 package com.drinkit.security.infra.session
 
-import com.drinkit.security.CurrentUser
 import com.drinkit.security.SessionData
 import com.drinkit.security.SessionKey
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import tools.jackson.core.JacksonException
@@ -16,7 +14,7 @@ private const val ATTRIBUTE_PREFIX = "starters.security.session."
  * Each value is stored as a JSON text, read back with the type of its key. A value that can no longer be read, after
  * its type changed, is absent rather than an error.
  */
-internal class HttpSessionData(private val currentUser: CurrentUser, private val jsonMapper: JsonMapper) : SessionData {
+internal class HttpSessionData(private val jsonMapper: JsonMapper) : SessionData {
 
     override fun <T : Any> get(key: SessionKey<T>): T? {
         val json = request().getSession(false)?.getAttribute(key.attribute) as? String ?: return null
@@ -28,7 +26,6 @@ internal class HttpSessionData(private val currentUser: CurrentUser, private val
     }
 
     override fun <T : Any> set(key: SessionKey<T>, value: T) {
-        currentUser.orNull() ?: throw AuthenticationCredentialsNotFoundException("An anonymous caller has no session")
         request().getSession(true).setAttribute(key.attribute, jsonMapper.writeValueAsString(value))
     }
 

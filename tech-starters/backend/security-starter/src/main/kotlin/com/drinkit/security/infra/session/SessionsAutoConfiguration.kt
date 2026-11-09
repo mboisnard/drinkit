@@ -1,6 +1,5 @@
 package com.drinkit.security.infra.session
 
-import com.drinkit.security.CurrentUser
 import com.drinkit.security.SessionData
 import com.drinkit.security.Sessions
 import com.drinkit.security.infra.SecurityStarterProperties
@@ -44,8 +43,7 @@ internal class SessionsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun sessionData(currentUser: CurrentUser, jsonMapper: JsonMapper): SessionData =
-        HttpSessionData(currentUser, jsonMapper)
+    fun sessionData(jsonMapper: JsonMapper): SessionData = HttpSessionData(jsonMapper)
 
     // Conditions on the bean name, not on the type: Spring Boot declares its own beans of these types, so a condition
     // on the type would always find one, and the starter would never register its own.

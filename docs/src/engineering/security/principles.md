@@ -249,7 +249,8 @@ flowchart LR
 The cookies hold random values only, and what they grant lives in rows that a revocation deletes. A session ends
 after 30 idle minutes or 8 hours, and `Sessions.revokeAll` signs a user out everywhere at once.
 [ADR 0012](../adr/0012-keep-sessions-in-postgresql.md) records why the session lives in PostgreSQL and how long it
-lasts. An anonymous caller gets no row: the CSRF token lives in its cookie, and the starter keeps no refused request.
+lasts. An anonymous caller gets no row until the application writes its `SessionData`: the CSRF token lives in its
+cookie, and the starter keeps no refused request.
 
 Every cookie is `Secure`, `SameSite=Lax` and `Path=/`, and the session and remember-me cookies are `HttpOnly`:
 
@@ -349,8 +350,8 @@ flowchart LR
 ```
 
 A controller reads the connected user from `CurrentUser`, and turns it into the `Author` that the use cases of the
-domain take, so that the domain never depends on the starter. `SessionData` keeps values in the user's session, and
-`Sessions.revokeAll` signs a user out everywhere, after a role change or a deletion. The
+domain take, so that the domain never depends on the starter. `SessionData` keeps values in the session of a user or
+a visitor, and `Sessions.revokeAll` signs a user out everywhere, after a role change or a deletion. The
 [README of `security-starter`](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/security-starter/README.md)
 shows how an application plugs it in.
 
