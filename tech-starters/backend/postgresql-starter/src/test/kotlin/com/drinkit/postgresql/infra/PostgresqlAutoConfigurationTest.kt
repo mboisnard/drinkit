@@ -35,6 +35,7 @@ internal class PostgresqlAutoConfigurationTest {
     @Test
     fun `talks to PostgreSQL with optimistic locking`() {
         runner.run { context ->
+            // When & Then
             val dsl = context.getBean<DSLContext>()
             dsl.dialect() shouldBe SQLDialect.POSTGRES
             dsl.settings().isExecuteWithOptimisticLocking shouldBe true
@@ -43,34 +44,46 @@ internal class PostgresqlAutoConfigurationTest {
 
     @Test
     fun `lets the application replace the jOOQ settings of the starter`() {
-        runner.withBean(
+        // Given
+        val withOwnCustomizer = runner.withBean(
             STARTER_CUSTOMIZER,
             DefaultConfigurationCustomizer::class.java,
             { DefaultConfigurationCustomizer { } },
         )
-            .run { context ->
-                context.getBean<DSLContext>().settings().isExecuteWithOptimisticLocking shouldBe false
-            }
+
+        withOwnCustomizer.run { context ->
+            // When & Then
+            context.getBean<DSLContext>().settings().isExecuteWithOptimisticLocking shouldBe false
+        }
     }
 
     @Test
     fun `turns a conflict on a versioned record into an optimistic locking failure`() {
-        runner.withConfiguration(AutoConfigurations.of(PersistenceExceptionTranslationAutoConfiguration::class.java))
+        // Given
+        val withConflictingShelves = runner
+            .withConfiguration(AutoConfigurations.of(PersistenceExceptionTranslationAutoConfiguration::class.java))
             .withBean(ConflictingShelves::class.java)
-            .run { context ->
-                shouldThrow<OptimisticLockingFailureException> { context.getBean<ConflictingShelves>().store() }
-            }
+
+        withConflictingShelves.run { context ->
+            // When & Then
+            shouldThrow<OptimisticLockingFailureException> { context.getBean<ConflictingShelves>().store() }
+        }
     }
 
     @Test
     fun `watches the queries slower than the threshold of the application`() {
-        runner.withPropertyValues("starters.postgresql.slow-query-threshold=2s")
-            .run { context ->
-                val listeners = context.getBean<DSLContext>().configuration().executeListenerProviders()
-                    .map { it.provide() }
-                    .filterIsInstance<SlowQueryListener>()
-                listeners.map { it.threshold } shouldContainExactly listOf(Duration.ofSeconds(2))
-            }
+        // Given
+        val withThreshold = runner.withPropertyValues("starters.postgresql.slow-query-threshold=2s")
+
+        withThreshold.run { context ->
+            // When
+            val listeners = context.getBean<DSLContext>().configuration().executeListenerProviders()
+                .map { it.provide() }
+                .filterIsInstance<SlowQueryListener>()
+
+            // Then
+            listeners.map { it.threshold } shouldContainExactly listOf(Duration.ofSeconds(2))
+        }
     }
 
     @Test
@@ -88,11 +101,14 @@ internal class PostgresqlAutoConfigurationTest {
 
     @Test
     fun `registers nothing when disabled`() {
-        runner.withPropertyValues("starters.postgresql.enabled=false")
-            .run { context ->
-                context.getBeanNamesForType(PostgresqlAutoConfiguration::class.java).toList().shouldBeEmpty()
-                context.containsBean(STARTER_CUSTOMIZER) shouldBe false
-            }
+        // Given
+        val disabled = runner.withPropertyValues("starters.postgresql.enabled=false")
+
+        disabled.run { context ->
+            // When & Then
+            context.getBeanNamesForType(PostgresqlAutoConfiguration::class.java).toList().shouldBeEmpty()
+            context.containsBean(STARTER_CUSTOMIZER) shouldBe false
+        }
     }
 
     @Repository

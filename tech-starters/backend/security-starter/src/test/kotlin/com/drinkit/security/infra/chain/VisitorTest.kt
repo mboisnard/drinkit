@@ -17,9 +17,11 @@ internal class VisitorTest(private val mockMvc: MockMvc) {
 
     @Test
     fun `gives a first visit its visitor, kept 30 days by an HttpOnly cookie`() {
+        // When
         val response = mockMvc.get("/api/public/visitor").andReturn().response
-        val cookie = response.getCookie(VISITOR_COOKIE)!!
 
+        // Then
+        val cookie = response.getCookie(VISITOR_COOKIE)!!
         response.contentAsString shouldBe cookie.value
         cookie.maxAge shouldBe THIRTY_DAYS
         cookie.isHttpOnly shouldBe true
@@ -27,20 +29,25 @@ internal class VisitorTest(private val mockMvc: MockMvc) {
 
     @Test
     fun `keeps the visitor of its cookie, for 30 more days`() {
+        // Given
         val visitorId = UUID.randomUUID().toString()
 
+        // When
         val response = mockMvc.get("/api/public/visitor") { cookie(Cookie(VISITOR_COOKIE, visitorId)) }
             .andReturn().response
 
+        // Then
         response.contentAsString shouldBe visitorId
         response.getCookie(VISITOR_COOKIE)!!.maxAge shouldBe THIRTY_DAYS
     }
 
     @Test
     fun `replaces a cookie that holds no visitor id`() {
+        // When
         val response = mockMvc.get("/api/public/visitor") { cookie(Cookie(VISITOR_COOKIE, "<script>")) }
             .andReturn().response
 
+        // Then
         response.contentAsString shouldNotBe "<script>"
         UUID.fromString(response.contentAsString)
     }

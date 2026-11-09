@@ -150,18 +150,26 @@ internal class SignInCodeTest(
 
     @Test
     fun `refuses a code request for what is not an email`() {
-        browser.post("/api/auth/code") {
+        // When
+        val request = browser.post("/api/auth/code") {
             contentType = MediaType.APPLICATION_JSON
             content = """{"email": "not an email"}"""
-        }.andExpect { status { isBadRequest() } }
+        }
+
+        // Then
+        request.andExpect { status { isBadRequest() } }
     }
 
     @Test
     fun `refuses a code request for an email longer than the application takes`() {
-        browser.post("/api/auth/code") {
+        // When
+        val request = browser.post("/api/auth/code") {
             contentType = MediaType.APPLICATION_JSON
             content = """{"email": "${"a".repeat(90)}@drinkit.test"}"""
-        }.andExpect { status { isBadRequest() } }
+        }
+
+        // Then
+        request.andExpect { status { isBadRequest() } }
     }
 
     @Test

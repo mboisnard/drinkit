@@ -24,11 +24,13 @@ internal class PostgresqlSettingsTest {
 
     @Test
     fun `refuses an update that would change every row`(dsl: DSLContext) {
+        // When & Then
         shouldThrow<DataAccessException> { dsl.update(book).set(title, "Dune").execute() }
     }
 
     @Test
     fun `refuses a delete that would remove every row`(dsl: DSLContext) {
+        // When & Then
         shouldThrow<DataAccessException> { dsl.deleteFrom(book).execute() }
     }
 }

@@ -1,2 +1,2 @@
 org.springframework.boot.EnvironmentPostProcessor=\
-com.drinkit.observability.infra.ObservabilityDefaults
+com.drinkit.observability.infra.ObservabilityDefaultsEnvironmentPostProcessor

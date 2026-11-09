@@ -27,26 +27,39 @@ internal class UserIdLoggingFilterTest {
 
     @Test
     fun `logs the id of the signed-in user during the request`() {
+        // Given
         givenSignedIn("user-1")
 
-        logged() shouldBe "user-1"
+        // When
+        val userId = logged()
+
+        // Then
+        userId shouldBe "user-1"
     }
 
     @Test
     fun `forgets the user once the request ends`() {
+        // Given
         givenSignedIn("user-1")
 
+        // When
         logged()
 
+        // Then
         MDC.get(USER_ID_LOG_KEY) shouldBe null
     }
 
     @Test
     fun `logs no user for an anonymous caller`() {
+        // Given
         val roles = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS")
         holder.context = SecurityContextImpl(AnonymousAuthenticationToken("key", "anonymousUser", roles))
 
-        logged() shouldBe null
+        // When
+        val userId = logged()
+
+        // Then
+        userId shouldBe null
     }
 
     private fun givenSignedIn(userId: String) {

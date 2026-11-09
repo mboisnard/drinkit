@@ -29,12 +29,20 @@ internal class CookiesAndHeadersTest(private val mockMvc: MockMvc) {
 
     @Test
     fun `sends the security headers over https`() {
-        mockMvc.get("/api/auth/csrf") { secure = true }.andExpectSecurityHeaders()
+        // When
+        val response = mockMvc.get("/api/auth/csrf") { secure = true }
+
+        // Then
+        response.andExpectSecurityHeaders()
     }
 
     @Test
     fun `sends the security headers over http, as behind a proxy that ends TLS`() {
-        mockMvc.get("/api/auth/csrf") { secure = false }.andExpectSecurityHeaders()
+        // When
+        val response = mockMvc.get("/api/auth/csrf") { secure = false }
+
+        // Then
+        response.andExpectSecurityHeaders()
     }
 
     private fun ResultActionsDsl.andExpectSecurityHeaders() = andExpect {

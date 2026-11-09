@@ -8,7 +8,7 @@ import org.springframework.core.env.getProperty
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.support.ResourcePropertySource
 
-internal class ObservabilityDefaults : EnvironmentPostProcessor {
+internal class ObservabilityDefaultsEnvironmentPostProcessor : EnvironmentPostProcessor {
 
     override fun postProcessEnvironment(environment: ConfigurableEnvironment, application: SpringApplication) {
         val enabled = environment.getProperty<Boolean>("starters.observability.enabled", true)

@@ -17,7 +17,11 @@ internal class OpenTelemetryExportTest {
 
     @Test
     fun `exports nothing by default, even with a collector set`() {
-        start().use { context ->
+        // When
+        val byDefault = start()
+
+        // Then
+        byDefault.use { context ->
             context.containsBean("otlpMeterRegistry") shouldBe false
             context.getBeansOfType(SpanExporter::class.java).values.shouldBeEmpty()
         }
@@ -25,14 +29,22 @@ internal class OpenTelemetryExportTest {
 
     @Test
     fun `traces each request even when nothing is exported`() {
-        start().use { context ->
+        // When
+        val byDefault = start()
+
+        // Then
+        byDefault.use { context ->
             context.getBean(Tracer::class.java).shouldNotBeNull()
         }
     }
 
     @Test
     fun `exports metrics and traces once switched on`() {
-        start("--starters.observability.opentelemetry.enabled=true").use { context ->
+        // When
+        val switchedOn = start("--starters.observability.opentelemetry.enabled=true")
+
+        // Then
+        switchedOn.use { context ->
             context.containsBean("otlpMeterRegistry") shouldBe true
             context.getBeansOfType(SpanExporter::class.java).values.shouldNotBeEmpty()
         }

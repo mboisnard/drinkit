@@ -27,23 +27,36 @@ internal class JSONBToJacksonConverterTest {
 
     @Test
     fun `drops the null character that PostgreSQL refuses in a JSONB text`(dsl: DSLContext) {
-        dsl.roundTrip(Note("Pasted\u0000 text")) shouldBe Note("Pasted text")
+        // When
+        val note = dsl.roundTrip(Note("Pasted\u0000 text"))
+
+        // Then
+        note shouldBe Note("Pasted text")
     }
 
     @Test
     fun `keeps a backslash followed by u0000 written in the text`(dsl: DSLContext) {
-        dsl.roundTrip(Note("""C:\u0000""")) shouldBe Note("""C:\u0000""")
+        // When
+        val note = dsl.roundTrip(Note("""C:\u0000"""))
+
+        // Then
+        note shouldBe Note("""C:\u0000""")
     }
 
     @Test
     fun `brings numbers back unchanged`(dsl: DSLContext) {
+        // Given
         val amounts = Amounts(
             price = "12345678901234567890.50".toBigDecimal(),
             count = Long.MAX_VALUE,
             ratio = 13.5,
         )
 
-        dsl.roundTrip(amounts) shouldBe amounts
+        // When
+        val roundTripped = dsl.roundTrip(amounts)
+
+        // Then
+        roundTripped shouldBe amounts
     }
 
     @Test

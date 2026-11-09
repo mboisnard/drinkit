@@ -50,15 +50,18 @@ internal class MultisetTest {
     // drops the authors without one, and a query per author is an N+1
     @Test
     fun `reads every author with their books in a single query`(dsl: DSLContext) {
+        // Given
         val queries = QueryCounter()
         val books = multiset(select(bookTitle).from(book).where(bookAuthorId.eq(authorId)).orderBy(bookTitle))
 
+        // When
         val authors = dsl.configuration().derive(DefaultExecuteListenerProvider(queries)).dsl()
             .select(authorName, books.mapping(::Book))
             .from(author)
             .orderBy(authorName)
             .fetch(mapping(::AuthorWithBooks))
 
+        // Then
         authors shouldContainExactly listOf(
             AuthorWithBooks("Austen", listOf(Book("Emma"), Book("Persuasion"))),
             AuthorWithBooks("Herbert", listOf(Book("Dune"))),

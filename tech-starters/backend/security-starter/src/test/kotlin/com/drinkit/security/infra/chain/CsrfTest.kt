@@ -17,7 +17,11 @@ internal class CsrfTest(private val mockMvc: MockMvc) {
 
     @Test
     fun `refuses a POST without CSRF token`() {
-        mockMvc.post("/api/public/ping").andExpect {
+        // When
+        val response = mockMvc.post("/api/public/ping")
+
+        // Then
+        response.andExpect {
             status { isForbidden() }
             content { contentType(MediaType.APPLICATION_PROBLEM_JSON) }
         }
@@ -25,18 +29,27 @@ internal class CsrfTest(private val mockMvc: MockMvc) {
 
     @Test
     fun `accepts without CSRF token a POST the application frees from it`() {
-        mockMvc.post("/api/public/evaluate").andExpect { status { isNoContent() } }
+        // When
+        val response = mockMvc.post("/api/public/evaluate")
+
+        // Then
+        response.andExpect { status { isNoContent() } }
     }
 
     @Test
     fun `refuses a POST freed from CSRF that a browser says comes from another site`() {
-        mockMvc.post("/api/public/evaluate") {
+        // When
+        val response = mockMvc.post("/api/public/evaluate") {
             header("Sec-Fetch-Site", "cross-site")
-        }.andExpect { status { isForbidden() } }
+        }
+
+        // Then
+        response.andExpect { status { isForbidden() } }
     }
 
     @Test
     fun `refuses a code request and a sign-in by code without CSRF token`() {
+        // When & Then
         listOf("/api/auth/code", "/api/auth/code/sign-in").forEach { path ->
             mockMvc.post(path) {
                 contentType = MediaType.APPLICATION_JSON
@@ -47,24 +60,36 @@ internal class CsrfTest(private val mockMvc: MockMvc) {
 
     @Test
     fun `refuses a code request a browser says comes from another site`() {
-        browser.post("/api/auth/code") {
+        // When
+        val response = browser.post("/api/auth/code") {
             contentType = MediaType.APPLICATION_JSON
             content = """{"email": "ada@drinkit.test"}"""
             header("Sec-Fetch-Site", "cross-site")
-        }.andExpect { status { isForbidden() } }
+        }
+
+        // Then
+        response.andExpect { status { isForbidden() } }
     }
 
     @Test
     fun `accepts the raw value of the XSRF cookie in the X-XSRF-TOKEN header`() {
-        browser.post("/api/public/ping").andExpect { status { isNoContent() } }
+        // When
+        val response = browser.post("/api/public/ping")
+
+        // Then
+        response.andExpect { status { isNoContent() } }
     }
 
     @Test
     fun `refuses a POST a browser says comes from another site`() {
-        mockMvc.post("/api/cellars") {
+        // When
+        val response = mockMvc.post("/api/cellars") {
             with(connectedAs(user))
             header("Sec-Fetch-Site", "cross-site")
-        }.andExpect {
+        }
+
+        // Then
+        response.andExpect {
             status { isForbidden() }
             content { contentType(MediaType.APPLICATION_PROBLEM_JSON) }
         }
@@ -72,9 +97,13 @@ internal class CsrfTest(private val mockMvc: MockMvc) {
 
     @Test
     fun `accepts a POST a browser says comes from the same origin`() {
-        mockMvc.post("/api/cellars") {
+        // When
+        val response = mockMvc.post("/api/cellars") {
             with(connectedAs(user))
             header("Sec-Fetch-Site", "same-origin")
-        }.andExpect { status { isCreated() } }
+        }
+
+        // Then
+        response.andExpect { status { isCreated() } }
     }
 }

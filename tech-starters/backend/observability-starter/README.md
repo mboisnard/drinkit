@@ -85,14 +85,9 @@ already tell whether it answers.
 |---|---|---|
 | `starters.observability.enabled` | `true`, `false` leaves Actuator to the defaults of Spring Boot, and still exports nothing | `STARTERS_OBSERVABILITY_ENABLED` |
 | `starters.observability.opentelemetry.enabled` | `false`, `true` pushes the metrics and the traces over OTLP | `STARTERS_OBSERVABILITY_OPENTELEMETRY_ENABLED` |
-
-Once the export is on, production sets the collector:
-
-| Property | Environment variable |
-|---|---|
-| `management.opentelemetry.tracing.export.otlp.endpoint` | `MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT` |
-| `management.otlp.metrics.export.url`, `http://localhost:4318/v1/metrics` by default | `MANAGEMENT_OTLP_METRICS_EXPORT_URL` |
-| `management.opentelemetry.resource-attributes.deployment.environment` | `MANAGEMENT_OPENTELEMETRY_RESOURCEATTRIBUTES_DEPLOYMENT_ENVIRONMENT` |
+| `management.opentelemetry.tracing.export.otlp.endpoint` | None, required in production once the export is on | `MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT` |
+| `management.otlp.metrics.export.url` | `http://localhost:4318/v1/metrics`, set in production once the export is on | `MANAGEMENT_OTLP_METRICS_EXPORT_URL` |
+| `management.opentelemetry.resource-attributes.deployment.environment` | None, set in production once the export is on | `MANAGEMENT_OPENTELEMETRY_RESOURCEATTRIBUTES_DEPLOYMENT_ENVIRONMENT` |
 
 Every `management.*` key of the application overrides the starter's.
 

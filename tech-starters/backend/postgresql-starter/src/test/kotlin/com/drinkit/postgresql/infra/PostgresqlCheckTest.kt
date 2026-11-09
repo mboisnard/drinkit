@@ -8,8 +8,10 @@ internal class PostgresqlCheckTest {
 
     @Test
     fun `refuses to start on a database other than PostgreSQL`() {
+        // When
         val failure = shouldThrow<IllegalStateException> { PostgresqlCheck { "H2" }.afterPropertiesSet() }
 
+        // Then
         failure.message shouldContain "H2"
     }
 }

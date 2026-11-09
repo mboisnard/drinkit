@@ -16,7 +16,11 @@ internal class AccessTest(private val mockMvc: MockMvc) {
 
     @Test
     fun `refuses an anonymous caller with a 401 problem`() {
-        mockMvc.get("/api/cellars/42").andExpect {
+        // When
+        val response = mockMvc.get("/api/cellars/42")
+
+        // Then
+        response.andExpect {
             status { isUnauthorized() }
             content { contentType(MediaType.APPLICATION_PROBLEM_JSON) }
             jsonPath("$.status") { value(401) }
@@ -26,12 +30,20 @@ internal class AccessTest(private val mockMvc: MockMvc) {
 
     @Test
     fun `lets a user through the rule of the application`() {
-        mockMvc.get("/api/cellars/42") { with(connectedAs(user)) }.andExpect { status { isOk() } }
+        // When
+        val response = mockMvc.get("/api/cellars/42") { with(connectedAs(user)) }
+
+        // Then
+        response.andExpect { status { isOk() } }
     }
 
     @Test
     fun `refuses an endpoint no rule declares, even to a user`() {
-        mockMvc.get("/api/unruled") { with(connectedAs(user)) }.andExpect {
+        // When
+        val response = mockMvc.get("/api/unruled") { with(connectedAs(user)) }
+
+        // Then
+        response.andExpect {
             status { isForbidden() }
             content { contentType(MediaType.APPLICATION_PROBLEM_JSON) }
             jsonPath("$.status") { value(403) }
@@ -40,7 +52,11 @@ internal class AccessTest(private val mockMvc: MockMvc) {
 
     @Test
     fun `refuses through @PreAuthorize what the rule of the application allows`() {
-        mockMvc.get("/api/admin/stats") { with(connectedAs(user)) }.andExpect {
+        // When
+        val response = mockMvc.get("/api/admin/stats") { with(connectedAs(user)) }
+
+        // Then
+        response.andExpect {
             status { isForbidden() }
             jsonPath("$.status") { value(403) }
         }
@@ -48,14 +64,23 @@ internal class AccessTest(private val mockMvc: MockMvc) {
 
     @Test
     fun `serves @PreAuthorize endpoints to the role they require`() {
+        // Given
         val admin = ConnectedUser("admin-1", setOf("ROLE_USER", "ROLE_ADMIN"))
 
-        mockMvc.get("/api/admin/stats") { with(connectedAs(admin)) }.andExpect { status { isOk() } }
+        // When
+        val response = mockMvc.get("/api/admin/stats") { with(connectedAs(admin)) }
+
+        // Then
+        response.andExpect { status { isOk() } }
     }
 
     @Test
     fun `answers 401 when an anonymous caller asks for the current user, despite a catch-all exception handler`() {
-        mockMvc.get("/api/public/me").andExpect {
+        // When
+        val response = mockMvc.get("/api/public/me")
+
+        // Then
+        response.andExpect {
             status { isUnauthorized() }
             jsonPath("$.status") { value(401) }
         }
@@ -64,7 +89,11 @@ internal class AccessTest(private val mockMvc: MockMvc) {
     @Test
     fun `gives the trace id of the request in its problem, so that its logs can be found`() {
         MDC.putCloseable("traceId", "4bf92f3577b34da6a3ce929d0e0e4736").use {
-            mockMvc.get("/api/cellars/42").andExpect {
+            // When
+            val response = mockMvc.get("/api/cellars/42")
+
+            // Then
+            response.andExpect {
                 jsonPath("$.traceId") { value("4bf92f3577b34da6a3ce929d0e0e4736") }
             }
         }

@@ -19,12 +19,20 @@ abstract class UserAccountsTestContract {
 
     @Test
     fun `finds no account for an unknown login`() {
-        accounts.findByLogin("nobody@drinkit.test") shouldBe null
+        // When
+        val found = accounts.findByLogin("nobody@drinkit.test")
+
+        // Then
+        found shouldBe null
     }
 
     @Test
     fun `finds no account for an unknown id`() {
-        accounts.findById("unknown-id") shouldBe null
+        // When
+        val found = accounts.findById("unknown-id")
+
+        // Then
+        found shouldBe null
     }
 
     @Test
