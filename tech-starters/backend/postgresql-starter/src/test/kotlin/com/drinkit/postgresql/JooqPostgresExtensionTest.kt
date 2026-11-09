@@ -14,8 +14,10 @@ internal class JooqPostgresExtensionTest {
 
     @Test
     fun `reports a query run again and again, as an N+1 does`(dsl: DSLContext, output: CapturedOutput) {
+        // When
         listOf("Dune", "Emma", "Ulysses").forEach { dsl.select(value(it)).fetch() }
 
+        // Then
         output.out shouldContain "Repeated statements were encountered"
     }
 }

@@ -18,16 +18,20 @@ internal class SlowQueryListenerTest {
 
     @Test
     fun `logs a slow query with its SQL, never the values it binds`(dsl: DSLContext, output: CapturedOutput) {
+        // When
         dsl.listenedFor(Duration.ofSeconds(2)).select(value("jane.doe@example.com")).fetch()
 
+        // Then
         output.out shouldContain "A query took 2000 ms, over the 1000 ms threshold: select ?"
         output.out shouldNotContain "jane.doe@example.com"
     }
 
     @Test
     fun `logs nothing for a query under the threshold`(dsl: DSLContext, output: CapturedOutput) {
+        // When
         dsl.listenedFor(Duration.ofMillis(3)).select(value("jane.doe@example.com")).fetch()
 
+        // Then
         output.out shouldNotContain "A query took"
     }
 

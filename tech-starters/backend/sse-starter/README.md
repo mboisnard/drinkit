@@ -129,10 +129,10 @@ fun serverEventsAccessRules() = endpointRules {
 
 | Property | Default | Environment variable |
 |---|---|---|
+| `starters.sse.enabled` | `true`, `false` registers no `ServerEvents` and serves no stream | `STARTERS_SSE_ENABLED` |
 | `starters.sse.timeout` | `3m`, kept under the idle timeout of the proxies in front of the application | `STARTERS_SSE_TIMEOUT` |
 | `starters.sse.heartbeat` | `30s` between two comments on each stream, shorter than the timeout | `STARTERS_SSE_HEARTBEAT` |
 | `starters.sse.max-streams` | `5` per user or session, one more closes the oldest | `STARTERS_SSE_MAXSTREAMS` |
-| `starters.sse.enabled` | `true` | `STARTERS_SSE_ENABLED` |
 
 ## Tests
 

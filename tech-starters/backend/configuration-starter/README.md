@@ -53,8 +53,8 @@ ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, modified = EXCLUDED.modi
 
 | Property | Default | Environment variable |
 |---|---|---|
-| `starters.cache.ttl.configurations` | `10m`, how long an instance serves a value before it reads the table again | `STARTERS_CACHE_TTL_CONFIGURATIONS` |
 | `starters.configuration.enabled` | `true`, `false` registers no `Configurations` | `STARTERS_CONFIGURATION_ENABLED` |
+| `starters.cache.ttl.configurations` | `10m`, how long an instance serves a value before it reads the table again | `STARTERS_CACHE_TTL_CONFIGURATIONS` |
 
 ## Tests
 

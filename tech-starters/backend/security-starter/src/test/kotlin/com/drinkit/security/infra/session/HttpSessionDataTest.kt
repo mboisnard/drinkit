@@ -1,7 +1,8 @@
 package com.drinkit.security.infra.session
 
-import com.drinkit.security.ConnectedUser
-import com.drinkit.security.CurrentUser
+import com.drinkit.security.InMemoryCurrentUser
+import com.drinkit.security.InMemoryUserAccounts
+import com.drinkit.security.UserAccount
 import com.drinkit.security.sessionKey
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.nulls.shouldBeNull
@@ -22,7 +23,8 @@ internal class HttpSessionDataTest {
     private val request = MockHttpServletRequest().also {
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(it))
     }
-    private val currentUser = FixedCurrentUser(ConnectedUser("user-1", setOf("ROLE_USER")))
+    private val accounts = InMemoryUserAccounts("ada@drinkit.test" to UserAccount("user-1", setOf("ROLE_USER")))
+    private val currentUser = InMemoryCurrentUser(accounts).also { it.signIn("user-1") }
     private val sessionData = HttpSessionData(currentUser, jacksonMapperBuilder().build())
 
     @AfterEach
@@ -32,7 +34,11 @@ internal class HttpSessionDataTest {
 
     @Test
     fun `reads nothing under a key never written`() {
-        sessionData[preferences].shouldBeNull()
+        // When
+        val read = sessionData[preferences]
+
+        // Then
+        read.shouldBeNull()
     }
 
     @Test
@@ -71,19 +77,12 @@ internal class HttpSessionDataTest {
     @Test
     fun `refuses to keep a value for an anonymous caller, and opens no session`() {
         // Given
-        currentUser.user = null
+        val anonymousSessionData = HttpSessionData(InMemoryCurrentUser(), jacksonMapperBuilder().build())
 
         // When & Then
         shouldThrow<AuthenticationCredentialsNotFoundException> {
-            sessionData[preferences] = Preferences("EUR", emptyList())
+            anonymousSessionData[preferences] = Preferences("EUR", emptyList())
         }
         request.getSession(false).shouldBeNull()
-    }
-
-    private class FixedCurrentUser(var user: ConnectedUser?) : CurrentUser {
-        override fun get() = user ?: throw AuthenticationCredentialsNotFoundException("Anonymous")
-        override fun orNull() = user
-        override fun signIn(userId: String) = error("Not used")
-        override fun refresh() = error("Not used")
     }
 }

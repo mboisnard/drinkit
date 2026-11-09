@@ -157,6 +157,7 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 
 | Property | Default | Environment variable |
 |---|---|---|
+| `starters.security.enabled` | `true`, `false` registers no sign-in, current user nor sessions | `STARTERS_SECURITY_ENABLED` |
 | `starters.security.session.idle-timeout` | `30m` | `STARTERS_SECURITY_SESSION_IDLETIMEOUT` |
 | `starters.security.session.absolute-timeout` | `8h` | `STARTERS_SECURITY_SESSION_ABSOLUTETIMEOUT` |
 | `starters.security.remember-me.validity` | `30d` after the sign-in | `STARTERS_SECURITY_REMEMBERME_VALIDITY` |
@@ -167,7 +168,6 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 | `starters.security.cookie.prefix` | `__Host-`, empty over plain http | `STARTERS_SECURITY_COOKIE_PREFIX` |
 | `starters.security.cookie.secure` | `true`, `false` over plain http | `STARTERS_SECURITY_COOKIE_SECURE` |
 | `starters.security.visitor.validity` | `30d` after the last visit | `STARTERS_SECURITY_VISITOR_VALIDITY` |
-| `starters.security.enabled` | `true` | `STARTERS_SECURITY_ENABLED` |
 
 ## Tests
 

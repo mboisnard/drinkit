@@ -17,10 +17,17 @@ internal class EndpointRulesCoverageTest {
 
     @Test
     fun `reports the operations of the API that no rule declares, and only them`() {
-        EndpointRulesCoverage(
+        // Given
+        val coverage = EndpointRulesCoverage(
             rules = listOf(publicEndpoints, userEndpoints),
             apiPackage = "com.drinkit.security.infra.chain.api",
-        ).unruledEndpoints() shouldBe listOf(
+        )
+
+        // When
+        val unruled = coverage.unruledEndpoints()
+
+        // Then
+        unruled shouldBe listOf(
             "DELETE /api/cellars/{cellarId}",
             "DELETE /api/public/ping",
             "GET /api/unruled",

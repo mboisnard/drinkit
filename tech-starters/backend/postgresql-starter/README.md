@@ -73,11 +73,11 @@ internal class JooqCellars(private val dslContext: DSLContext) : Cellars {
 
 | Property | Default | Environment variable |
 |---|---|---|
+| `starters.postgresql.enabled` | `true`, `false` leaves the pool and jOOQ to the defaults of Spring Boot | `STARTERS_POSTGRESQL_ENABLED` |
 | `spring.datasource.url` | None, required | `SPRING_DATASOURCE_URL` |
 | `spring.datasource.username` | None, required | `SPRING_DATASOURCE_USERNAME` |
 | `spring.datasource.password` | None, required | `SPRING_DATASOURCE_PASSWORD` |
 | `starters.postgresql.slow-query-threshold` | `500ms` | `STARTERS_POSTGRESQL_SLOWQUERYTHRESHOLD` |
-| `starters.postgresql.enabled` | `true` | `STARTERS_POSTGRESQL_ENABLED` |
 
 The timeouts live in `spring.datasource.hikari.data-source-properties.options`: setting it replaces all three.
 

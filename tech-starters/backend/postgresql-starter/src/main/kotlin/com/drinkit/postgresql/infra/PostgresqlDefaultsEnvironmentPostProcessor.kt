@@ -9,7 +9,7 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.support.ResourcePropertySource
 
 // Not a @PropertySource: the logging levels are read before any configuration class
-internal class PostgresqlDefaults : EnvironmentPostProcessor {
+internal class PostgresqlDefaultsEnvironmentPostProcessor : EnvironmentPostProcessor {
 
     override fun postProcessEnvironment(environment: ConfigurableEnvironment, application: SpringApplication) {
         if (!environment.getProperty<Boolean>("starters.postgresql.enabled", true)) {

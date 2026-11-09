@@ -14,14 +14,22 @@ internal class IncomingTraceContextTest {
 
     @Test
     fun `ignores the trace id a caller sends, even once the export is on`() {
-        start().use { context ->
-            traceIdOfRequestCarrying(context, CALLER_TRACE_PARENT) shouldNotBe CALLER_TRACE_ID
+        // When
+        val context = start()
+
+        // Then
+        context.use {
+            traceIdOfRequestCarrying(it, CALLER_TRACE_PARENT) shouldNotBe CALLER_TRACE_ID
         }
     }
 
     @Test
     fun `follows the caller's trace id once the application trusts it`() {
-        start("--management.tracing.propagation.consume=W3C").use { context ->
+        // When
+        val trusting = start("--management.tracing.propagation.consume=W3C")
+
+        // Then
+        trusting.use { context ->
             traceIdOfRequestCarrying(context, CALLER_TRACE_PARENT) shouldBe CALLER_TRACE_ID
         }
     }

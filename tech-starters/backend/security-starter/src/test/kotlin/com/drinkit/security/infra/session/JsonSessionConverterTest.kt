@@ -67,7 +67,11 @@ internal class JsonSessionConverterTest {
 
     @Test
     fun `reads back a text`() {
-        roundTrip("""{"currency": "EUR"}""") shouldBe """{"currency": "EUR"}"""
+        // When
+        val read = roundTrip("""{"currency": "EUR"}""")
+
+        // Then
+        read shouldBe """{"currency": "EUR"}"""
     }
 
     @Test
@@ -82,7 +86,11 @@ internal class JsonSessionConverterTest {
 
     @Test
     fun `refuses to read a class outside the allowed ones`() {
-        read("""["java.io.File", "/etc/passwd"]""".toByteArray()).shouldBeNull()
+        // When
+        val read = read("""["java.io.File", "/etc/passwd"]""".toByteArray())
+
+        // Then
+        read.shouldBeNull()
     }
 
     private fun roundTrip(value: Any) = read(

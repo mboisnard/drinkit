@@ -77,7 +77,7 @@ fun subjectAttributes() = SubjectAttributes { user -> mapOf("plan" to plans.of(u
 
 | Property | Default | Environment variable |
 |---|---|---|
-| `starters.feature-management.enabled` | `true` | `STARTERS_FEATUREMANAGEMENT_ENABLED` |
+| `starters.feature-management.enabled` | `true`, `false` answers every flag with its default and every experiment with `control` | `STARTERS_FEATUREMANAGEMENT_ENABLED` |
 | `starters.feature-management.flipt.url` | None, required when enabled | `STARTERS_FEATUREMANAGEMENT_FLIPT_URL` |
 | `starters.feature-management.flipt.namespace` | `default` | `STARTERS_FEATUREMANAGEMENT_FLIPT_NAMESPACE` |
 | `starters.feature-management.flipt.environment` | Flipt's default environment | `STARTERS_FEATUREMANAGEMENT_FLIPT_ENVIRONMENT` |

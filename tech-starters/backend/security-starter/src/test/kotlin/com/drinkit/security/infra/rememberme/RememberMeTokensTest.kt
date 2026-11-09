@@ -50,7 +50,11 @@ internal class RememberMeTokensTest {
 
     @Test
     fun `finds no unknown series`() {
-        tokens.find("unknown").shouldBeNull()
+        // When
+        val found = tokens.find("unknown")
+
+        // Then
+        found.shouldBeNull()
     }
 
     @Test

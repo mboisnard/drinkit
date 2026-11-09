@@ -28,7 +28,9 @@ internal class FeatureManagementAutoConfigurationTest {
     @Test
     fun `answers the default of a flag when Flipt does not answer, and reports Flipt down`() {
         // Given
-        runner.withPropertyValues("starters.feature-management.flipt.url=http://localhost:1").run { context ->
+        val withUnreachableFlipt = runner.withPropertyValues("starters.feature-management.flipt.url=http://localhost:1")
+
+        withUnreachableFlipt.run { context ->
             // When
             val enabled = context.getBean<FeatureFlags>().isEnabled("new-checkout", ada, default = true)
             val health = context.getBean<HealthIndicator>("fliptHealthIndicator").health()
@@ -42,7 +44,9 @@ internal class FeatureManagementAutoConfigurationTest {
     @Test
     fun `answers the defaults, with no Flipt, when the starter is switched off`() {
         // Given
-        runner.withPropertyValues("starters.feature-management.enabled=false").run { context ->
+        val disabled = runner.withPropertyValues("starters.feature-management.enabled=false")
+
+        disabled.run { context ->
             // When
             val enabled = context.getBean<FeatureFlags>().isEnabled("new-checkout", ada)
             val assignment = context.getBean<Experiments>().assign("checkout", ada)
@@ -56,9 +60,8 @@ internal class FeatureManagementAutoConfigurationTest {
 
     @Test
     fun `refuses to start without the URL of Flipt`() {
-        // When
         runner.run { context ->
-            // Then
+            // When & Then
             generateSequence(context.startupFailure) { it.cause }.last().message.orEmpty() shouldContain
                 "starters.feature-management.flipt.url"
         }

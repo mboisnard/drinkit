@@ -33,6 +33,7 @@ internal class SseAutoConfigurationTest {
     @Test
     fun `registers the server events, their streams and their endpoint`() {
         withMessaging.run { context ->
+            // When & Then
             context.getBean(ServerEvents::class.java).shouldBeInstanceOf<QueuedServerEvents>()
             context.getBeansOfType(InMemoryStreams::class.java).size shouldBe 1
             context.containsBean("serverEventsEndpoint") shouldBe true
@@ -41,15 +42,23 @@ internal class SseAutoConfigurationTest {
 
     @Test
     fun `backs off when the application declares its own server events`() {
+        // Given
         val own = SpyServerEvents()
+        val withOwnServerEvents = withMessaging.withBean(ServerEvents::class.java, { own })
 
-        withMessaging.withBean(ServerEvents::class.java, { own })
-            .run { context -> context.getBean(ServerEvents::class.java) shouldBeSameInstanceAs own }
+        withOwnServerEvents.run { context ->
+            // When & Then
+            context.getBean(ServerEvents::class.java) shouldBeSameInstanceAs own
+        }
     }
 
     @Test
     fun `registers nothing when disabled`() {
-        withMessaging.withPropertyValues("starters.sse.enabled=false").run { context ->
+        // Given
+        val disabled = withMessaging.withPropertyValues("starters.sse.enabled=false")
+
+        disabled.run { context ->
+            // When & Then
             context.getBeansOfType(ServerEvents::class.java) shouldBe emptyMap()
             context.containsBean("serverEventsEndpoint") shouldBe false
             context.containsBean("serverEventsAccessRules") shouldBe false
@@ -58,7 +67,11 @@ internal class SseAutoConfigurationTest {
 
     @Test
     fun `refuses a heartbeat that would not come before the stream times out`() {
-        withMessaging.withPropertyValues("starters.sse.heartbeat=3m").run { context ->
+        // Given
+        val withLateHeartbeat = withMessaging.withPropertyValues("starters.sse.heartbeat=3m")
+
+        withLateHeartbeat.run { context ->
+            // When & Then
             getMostSpecificCause(context.startupFailure.shouldNotBeNull()).message shouldBe
                 "starters.sse.heartbeat must be positive and shorter than starters.sse.timeout"
         }
@@ -67,6 +80,7 @@ internal class SseAutoConfigurationTest {
     @Test
     fun `refuses to start without the messaging starter, which carries the events to the streams`() {
         runner.run { context ->
+            // When & Then
             getMostSpecificCause(context.startupFailure.shouldNotBeNull()).message shouldBe
                 "The SSE starter delivers through the messaging starter: keep starters.messaging.enabled"
         }
@@ -74,15 +88,24 @@ internal class SseAutoConfigurationTest {
 
     @Test
     fun `brings no access rule without the security starter`() {
-        withMessaging.withClassLoader(FilteredClassLoader(EndpointRules::class.java))
-            .run { context -> context.containsBean("serverEventsAccessRules") shouldBe false }
+        // Given
+        val withoutSecurity = withMessaging.withClassLoader(FilteredClassLoader(EndpointRules::class.java))
+
+        withoutSecurity.run { context ->
+            // When & Then
+            context.containsBean("serverEventsAccessRules") shouldBe false
+        }
     }
 
     @Test
     fun `keeps the access rule the application gives its endpoint`() {
+        // Given
         val own = endpointRules { authorize("/sse/**", hasRole("USER")) }
+        val withOwnRules = withMessaging.withBean("serverEventsAccessRules", EndpointRules::class.java, { own })
 
-        withMessaging.withBean("serverEventsAccessRules", EndpointRules::class.java, { own })
-            .run { context -> context.getBean("serverEventsAccessRules") shouldBeSameInstanceAs own }
+        withOwnRules.run { context ->
+            // When & Then
+            context.getBean("serverEventsAccessRules") shouldBeSameInstanceAs own
+        }
     }
 }

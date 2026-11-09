@@ -99,6 +99,7 @@ internal class SecurityStarterAutoConfigurationsTest {
     @Test
     fun `secures the application with its own filter chain, sign-in by code, current user and sessions`() {
         runner.run { context ->
+            // When & Then
             context.getBean<SecurityFilterChain>().filters.map { it::class }.shouldContainAll(
                 EmailCodeSignInFilter::class,
                 FetchMetadataFilter::class,
@@ -115,6 +116,7 @@ internal class SecurityStarterAutoConfigurationsTest {
     @Test
     fun `leaves no user of Spring Boot with a generated password`() {
         runner.run { context ->
+            // When & Then
             context.getBeanNamesForType(UserDetailsService::class.java).toList().shouldBeEmpty()
         }
     }
@@ -122,6 +124,7 @@ internal class SecurityStarterAutoConfigurationsTest {
     @Test
     fun `remembers logins and revokes sessions when the sessions live in a database`() {
         withSessionsInDatabase.run { context ->
+            // When & Then
             context.getBean<RememberMeServices>().shouldBeInstanceOf<RotatingRememberMeServices>()
             context.getBean<SecurityFilterChain>().filters.map { it::class } shouldContain
                 RememberMeAuthenticationFilter::class
@@ -133,6 +136,7 @@ internal class SecurityStarterAutoConfigurationsTest {
     @Test
     fun `remembers no login without a database`() {
         runner.run { context ->
+            // When & Then
             context.getBeanNamesForType(RememberMeServices::class.java).toList().shouldBeEmpty()
             context.getBeanNamesForType(RememberMeTokens::class.java).toList().shouldBeEmpty()
         }
@@ -156,20 +160,25 @@ internal class SecurityStarterAutoConfigurationsTest {
     @Test
     fun `opens the health status to anyone when Actuator is there`() {
         runner.run { context ->
+            // When & Then
             context.containsBean("healthAccessRules") shouldBe true
         }
     }
 
     @Test
     fun `opens no health rule without Actuator`() {
-        runner.withClassLoader(FilteredClassLoader(WebEndpointAutoConfiguration::class.java))
-            .run { context ->
-                context.containsBean("healthAccessRules") shouldBe false
-            }
+        // Given
+        val withoutActuator = runner.withClassLoader(FilteredClassLoader(WebEndpointAutoConfiguration::class.java))
+
+        withoutActuator.run { context ->
+            // When & Then
+            context.containsBean("healthAccessRules") shouldBe false
+        }
     }
 
     @Test
     fun `backs off from each bean the application declares itself`() {
+        // Given
         val ownChain = DefaultSecurityFilterChain(AnyRequestMatcher.INSTANCE)
         val ownCurrentUser = InMemoryCurrentUser()
         val ownSessionData = object : SessionData {
@@ -180,59 +189,72 @@ internal class SecurityStarterAutoConfigurationsTest {
         val ownConversion = DefaultConversionService()
         val ownRememberMe = NullRememberMeServices()
         val ownHealthRules = endpointRules { }
-
-        withSessionsInDatabase
+        val withOwnBeans = withSessionsInDatabase
             .withBean(SecurityFilterChain::class.java, { ownChain })
             .withBean(CurrentUser::class.java, { ownCurrentUser })
             .withBean(SessionData::class.java, { ownSessionData })
             .withBean("springSessionConversionService", ConversionService::class.java, { ownConversion })
             .withBean(RememberMeServices::class.java, { ownRememberMe })
             .withBean("healthAccessRules", EndpointRules::class.java, { ownHealthRules })
-            .run { context ->
-                context.getBean<SecurityFilterChain>() shouldBeSameInstanceAs ownChain
-                context.getBean<CurrentUser>() shouldBeSameInstanceAs ownCurrentUser
-                context.getBean<SessionData>() shouldBeSameInstanceAs ownSessionData
-                context.getBean("springSessionConversionService") shouldBeSameInstanceAs ownConversion
-                context.getBean<RememberMeServices>() shouldBeSameInstanceAs ownRememberMe
-                context.getBean("healthAccessRules") shouldBeSameInstanceAs ownHealthRules
-            }
+
+        withOwnBeans.run { context ->
+            // When & Then
+            context.getBean<SecurityFilterChain>() shouldBeSameInstanceAs ownChain
+            context.getBean<CurrentUser>() shouldBeSameInstanceAs ownCurrentUser
+            context.getBean<SessionData>() shouldBeSameInstanceAs ownSessionData
+            context.getBean("springSessionConversionService") shouldBeSameInstanceAs ownConversion
+            context.getBean<RememberMeServices>() shouldBeSameInstanceAs ownRememberMe
+            context.getBean("healthAccessRules") shouldBeSameInstanceAs ownHealthRules
+        }
     }
 
     @Test
     fun `registers nothing when disabled`() {
-        withSessionsInDatabase.withPropertyValues("starters.security.enabled=false")
-            .run { context ->
-                context.getBeanNamesForType(CurrentUser::class.java).toList().shouldBeEmpty()
-                context.getBeanNamesForType(SignInCodes::class.java).toList().shouldBeEmpty()
-                context.containsBean("signInCodeEndpoint") shouldBe false
-                context.getBeanNamesForType(SessionData::class.java).toList().shouldBeEmpty()
-                context.containsBean("springSessionConversionService") shouldBe false
-                context.containsBean("securityStarterSessionRepository") shouldBe false
-                context.getBeanNamesForType(Sessions::class.java).toList().shouldBeEmpty()
-                context.getBeanNamesForType(RememberMeServices::class.java).toList().shouldBeEmpty()
-            }
+        // Given
+        val disabled = withSessionsInDatabase.withPropertyValues("starters.security.enabled=false")
+
+        disabled.run { context ->
+            // When & Then
+            context.getBeanNamesForType(CurrentUser::class.java).toList().shouldBeEmpty()
+            context.getBeanNamesForType(SignInCodes::class.java).toList().shouldBeEmpty()
+            context.containsBean("signInCodeEndpoint") shouldBe false
+            context.getBeanNamesForType(SessionData::class.java).toList().shouldBeEmpty()
+            context.containsBean("springSessionConversionService") shouldBe false
+            context.containsBean("securityStarterSessionRepository") shouldBe false
+            context.getBeanNamesForType(Sessions::class.java).toList().shouldBeEmpty()
+            context.getBeanNamesForType(RememberMeServices::class.java).toList().shouldBeEmpty()
+        }
     }
 
     @Test
     fun `refuses an unsecure cookie with a prefix`() {
-        runner.withPropertyValues("starters.security.cookie.secure=false")
-            .run { context ->
-                context.startupFailure?.rootCause()?.message.orEmpty() shouldContain
-                    "starters.security.cookie.prefix must be empty when starters.security.cookie.secure is false"
-            }
+        // Given
+        val withUnsecureCookie = runner.withPropertyValues("starters.security.cookie.secure=false")
+
+        withUnsecureCookie.run { context ->
+            // When & Then
+            context.startupFailure?.rootCause()?.message.orEmpty() shouldContain
+                "starters.security.cookie.prefix must be empty when starters.security.cookie.secure is false"
+        }
     }
 
     @Test
     fun `names the XSRF cookie without prefix nor Secure flag, for plain http in development`() {
-        runner.withPropertyValues("starters.security.cookie.prefix=", "starters.security.cookie.secure=false")
-            .run { context ->
-                val request = MockHttpServletRequest()
-                val response = MockHttpServletResponse()
-                val repository = context.getBean<CsrfTokenRepository>()
-                repository.saveToken(repository.generateToken(request), request, response)
+        // Given
+        val inDevelopment = runner
+            .withPropertyValues("starters.security.cookie.prefix=", "starters.security.cookie.secure=false")
 
-                response.getCookie("XSRF-TOKEN").shouldNotBeNull().secure shouldBe false
-            }
+        inDevelopment.run { context ->
+            val request = MockHttpServletRequest()
+            val response = MockHttpServletResponse()
+            val repository = context.getBean<CsrfTokenRepository>()
+
+            // When
+            repository.saveToken(repository.generateToken(request), request, response)
+
+            // Then
+            response.getCookie("XSRF-TOKEN").shouldNotBeNull().secure shouldBe false
+        }
     }
 
     // Never connected to: the beans only keep the data source

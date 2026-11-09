@@ -2,8 +2,9 @@ package com.drinkit.featuremanagement.infra
 
 import com.drinkit.featuremanagement.FlagSubject
 import com.drinkit.featuremanagement.infra.openfeature.OpenFeatureFeatureFlags
-import com.drinkit.security.ConnectedUser
-import com.drinkit.security.CurrentUser
+import com.drinkit.security.InMemoryCurrentUser
+import com.drinkit.security.InMemoryUserAccounts
+import com.drinkit.security.UserAccount
 import dev.openfeature.sdk.EvaluationContext
 import dev.openfeature.sdk.OpenFeatureAPI
 import dev.openfeature.sdk.providers.memory.Flag
@@ -13,16 +14,8 @@ import org.junit.jupiter.api.Test
 
 internal class RequestSubjectTest {
 
-    private var user: ConnectedUser? = null
-    private val currentUser = object : CurrentUser {
-        override fun get() = checkNotNull(user)
-
-        override fun orNull() = user
-
-        override fun signIn(userId: String) = error("Not signed in by this test")
-
-        override fun refresh() = user
-    }
+    private val accounts = InMemoryUserAccounts()
+    private val currentUser = InMemoryCurrentUser(accounts)
     private val subject = RequestSubject(currentUser, { "visitor-1" }, { mapOf("plan" to "vip") })
 
     @Test
@@ -36,7 +29,8 @@ internal class RequestSubjectTest {
             subject::get,
         )
 
-        user = ConnectedUser("ada", setOf("ROLE_USER", "ROLE_ADMIN"))
+        accounts.save("ada@drinkit.com", UserAccount("ada", setOf("ROLE_USER", "ROLE_ADMIN")))
+        currentUser.signIn("ada")
 
         // When
         val opened = listOf("admin-tools", "vip-cellar").filter { flags.isEnabled(it) }
@@ -47,9 +41,6 @@ internal class RequestSubjectTest {
 
     @Test
     fun `evaluates someone not signed in as their visitor, with no attribute`() {
-        // Given
-        user = null
-
         // When
         val evaluated = subject.get()
 

@@ -1,2 +1,2 @@
 org.springframework.boot.EnvironmentPostProcessor=\
-com.drinkit.postgresql.infra.PostgresqlDefaults
+com.drinkit.postgresql.infra.PostgresqlDefaultsEnvironmentPostProcessor

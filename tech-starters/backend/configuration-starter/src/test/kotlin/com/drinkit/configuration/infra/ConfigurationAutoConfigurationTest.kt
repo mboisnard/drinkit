@@ -58,6 +58,7 @@ internal class ConfigurationAutoConfigurationTest {
     @Test
     fun `reads the configurations from PostgreSQL`() {
         runner.run { context ->
+            // When & Then
             context.getBean<Configurations>().shouldBeInstanceOf<JooqConfigurations>()
         }
     }
@@ -65,12 +66,17 @@ internal class ConfigurationAutoConfigurationTest {
     @Test
     fun `serves a value it read from its cache`() {
         runner.run { context ->
+            // Given
             val configurations = context.getBean<Configurations>()
             configurations[retries] shouldBe 3
-
             anotherInstanceStores(context, "5")
+
             try {
-                configurations[retries] shouldBe 3
+                // When
+                val cached = configurations[retries]
+
+                // Then
+                cached shouldBe 3
             } finally {
                 inTransaction(context) { configurations.reset(retries) }
             }
@@ -79,33 +85,43 @@ internal class ConfigurationAutoConfigurationTest {
 
     @Test
     fun `reads again, once its cache entry is 10 minutes old, a value another instance changed`() {
+        // Given
         val ticker = ControlledTicker()
-        runner.withBean(Ticker::class.java, { ticker })
-            .run { context ->
-                val configurations = context.getBean<Configurations>()
-                configurations[retries] shouldBe 3
-                anotherInstanceStores(context, "5")
+        val withTicker = runner.withBean(Ticker::class.java, { ticker })
 
-                try {
-                    ticker.advance(Duration.ofMinutes(10).minusSeconds(1))
-                    configurations[retries] shouldBe 3
+        withTicker.run { context ->
+            val configurations = context.getBean<Configurations>()
+            configurations[retries] shouldBe 3
+            anotherInstanceStores(context, "5")
 
-                    ticker.advance(Duration.ofSeconds(2))
-                    configurations[retries] shouldBe 5
-                } finally {
-                    inTransaction(context) { configurations.reset(retries) }
-                }
+            try {
+                // When
+                ticker.advance(Duration.ofMinutes(10).minusSeconds(1))
+                val beforeExpiry = configurations[retries]
+                ticker.advance(Duration.ofSeconds(2))
+                val afterExpiry = configurations[retries]
+
+                // Then
+                beforeExpiry shouldBe 3
+                afterExpiry shouldBe 5
+            } finally {
+                inTransaction(context) { configurations.reset(retries) }
             }
+        }
     }
 
     @Test
     fun `reads at once the value it set`() {
         runner.run { context ->
+            // Given
             val configurations = context.getBean<Configurations>()
             configurations[retries] shouldBe 3
 
             try {
+                // When
                 inTransaction(context) { configurations[retries] = 5 }
+
+                // Then
                 configurations[retries] shouldBe 5
             } finally {
                 inTransaction(context) { configurations.reset(retries) }
@@ -116,13 +132,16 @@ internal class ConfigurationAutoConfigurationTest {
     @Test
     fun `never reads a value set in a transaction that rolls back`() {
         runner.run { context ->
+            // Given
             val configurations = context.getBean<Configurations>()
 
+            // When
             context.getBean<TransactionTemplate>().executeWithoutResult { status ->
                 configurations[retries] = 5
                 status.setRollbackOnly()
             }
 
+            // Then
             configurations[retries] shouldBe 3
         }
     }
@@ -130,14 +149,17 @@ internal class ConfigurationAutoConfigurationTest {
     @Test
     fun `never reads a value it read inside a transaction that rolls back`() {
         runner.run { context ->
+            // Given
             val configurations = context.getBean<Configurations>()
 
+            // When
             context.getBean<TransactionTemplate>().executeWithoutResult { status ->
                 configurations[retries] = 5
                 configurations[retries]
                 status.setRollbackOnly()
             }
 
+            // Then
             configurations[retries] shouldBe 3
         }
     }
@@ -145,49 +167,62 @@ internal class ConfigurationAutoConfigurationTest {
     @Test
     fun `refuses a value set outside a transaction`() {
         runner.run { context ->
+            // When & Then
             shouldThrow<IllegalTransactionStateException> { context.getBean<Configurations>()[retries] = 5 }
         }
     }
 
     @Test
     fun `lets the application replace the time to live of its cache`() {
-        runner.withBean(
+        // Given
+        val withOwnTtl = runner.withBean(
             "configurationsCacheTtl",
             CacheTtl::class.java,
             { CacheTtl("configurations", Duration.ofSeconds(5)) },
         )
-            .run { context ->
-                context.getBeansOfType(CacheTtl::class.java).values.toList() shouldBe
-                    listOf(CacheTtl("configurations", Duration.ofSeconds(5)))
-            }
+
+        withOwnTtl.run { context ->
+            // When & Then
+            context.getBeansOfType(CacheTtl::class.java).values.toList() shouldBe
+                listOf(CacheTtl("configurations", Duration.ofSeconds(5)))
+        }
     }
 
     @Test
     fun `backs off when the application declares its own configurations`() {
-        runner.withBean(Configurations::class.java, { InMemoryConfigurations() })
-            .run { context ->
-                context.getBean<Configurations>().shouldBeInstanceOf<InMemoryConfigurations>()
-            }
+        // Given
+        val withOwnConfigurations = runner.withBean(Configurations::class.java, { InMemoryConfigurations() })
+
+        withOwnConfigurations.run { context ->
+            // When & Then
+            context.getBean<Configurations>().shouldBeInstanceOf<InMemoryConfigurations>()
+        }
     }
 
     @Test
     fun `registers no configurations without a database`() {
-        ApplicationContextRunner()
+        // Given
+        val withoutDatabase = ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(ConfigurationAutoConfiguration::class.java))
             .withBean(JsonMapper::class.java, { jacksonMapperBuilder().build() })
             .withBean(Clock::class.java, { ControlledClock() })
-            .run { context ->
-                context.startupFailure shouldBe null
-                context.getBeanNamesForType(Configurations::class.java).toList().shouldBeEmpty()
-            }
+
+        withoutDatabase.run { context ->
+            // When & Then
+            context.startupFailure shouldBe null
+            context.getBeanNamesForType(Configurations::class.java).toList().shouldBeEmpty()
+        }
     }
 
     @Test
     fun `registers nothing when disabled`() {
-        runner.withPropertyValues("starters.configuration.enabled=false")
-            .run { context ->
-                context.getBeanNamesForType(Configurations::class.java).toList().shouldBeEmpty()
-            }
+        // Given
+        val disabled = runner.withPropertyValues("starters.configuration.enabled=false")
+
+        disabled.run { context ->
+            // When & Then
+            context.getBeanNamesForType(Configurations::class.java).toList().shouldBeEmpty()
+        }
     }
 
     private fun inTransaction(context: AssertableApplicationContext, action: () -> Unit) =
