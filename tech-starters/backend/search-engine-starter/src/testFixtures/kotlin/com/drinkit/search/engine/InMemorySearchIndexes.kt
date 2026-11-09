@@ -19,13 +19,12 @@ class InMemorySearchIndexes :
         source: SearchDocumentSource<T>,
         primaryKey: String,
         settings: String,
-    ): SearchIndex<T> = InMemorySearchIndex(
-        name,
-        primaryKey,
-        source,
-        jsonMapper.constructType(type.javaType),
-        jsonMapper,
-    ).also { declared += it }
+    ): SearchIndex<T> {
+        require(declared.none { it.name == name }) { "Index $name is declared twice" }
+
+        return InMemorySearchIndex(name, primaryKey, source, jsonMapper.constructType(type.javaType), jsonMapper)
+            .also { declared += it }
+    }
 
     override fun all(): List<SearchIndex<*>> = declared.toList()
 

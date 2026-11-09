@@ -1,7 +1,6 @@
 package com.drinkit.search.engine.infra.meilisearch
 
 import com.drinkit.postgresql.JooqIntegrationTest
-import com.drinkit.search.engine.Cellar
 import com.drinkit.search.engine.MeilisearchIntegrationTest
 import com.drinkit.search.engine.MeilisearchServer
 import com.drinkit.search.engine.SearchDocumentSource
@@ -15,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.meilisearch.sdk.Client
 import com.meilisearch.sdk.SearchRequest
 import com.meilisearch.sdk.model.Hybrid
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -29,16 +27,6 @@ internal class MeilisearchIndexTest : SearchIndexTestContract() {
 
     override fun declareWines(name: String, source: SearchDocumentSource<Wine>, primaryKey: String): SearchIndex<Wine> =
         application.declareIndex(name, source, primaryKey = primaryKey)
-
-    @Test
-    fun `refuses an index declared twice`() {
-        // Given
-        val name = "wines-${UUID.randomUUID()}"
-        application.declareIndex(name, Cellar())
-
-        // When, then
-        shouldThrow<IllegalArgumentException> { application.declareIndex(name, Cellar()) }
-    }
 
     @Test
     fun `finds by a hybrid search a document that carries its vectors`() {
