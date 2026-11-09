@@ -1,6 +1,7 @@
 package com.drinkit.security.infra
 
 import com.drinkit.security.CurrentUser
+import com.drinkit.security.InMemoryCurrentUser
 import com.drinkit.security.InMemoryUserAccounts
 import com.drinkit.security.SessionData
 import com.drinkit.security.SessionKey
@@ -134,7 +135,7 @@ internal class SecurityStarterAutoConfigurationsTest {
     @Test
     fun `backs off from each bean the application declares itself`() {
         val ownChain = DefaultSecurityFilterChain(AnyRequestMatcher.INSTANCE)
-        val ownCurrentUser = object : CurrentUser by SpringCurrentUserStub {}
+        val ownCurrentUser = InMemoryCurrentUser()
         val ownSessionData = object : SessionData {
             override fun <T : Any> get(key: SessionKey<T>): T? = null
             override fun <T : Any> set(key: SessionKey<T>, value: T) = Unit
@@ -203,11 +204,4 @@ internal class SecurityStarterAutoConfigurationsTest {
         .withBean(PlatformTransactionManager::class.java, { DataSourceTransactionManager(dataSource) })
 
     private fun Throwable.rootCause(): Throwable = cause?.rootCause() ?: this
-
-    private object SpringCurrentUserStub : CurrentUser {
-        override fun get() = error("stub")
-        override fun orNull() = null
-        override fun signIn(userId: String) = error("stub")
-        override fun refresh() = null
-    }
 }

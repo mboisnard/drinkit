@@ -173,6 +173,8 @@ From `testFixtures(project(":security-starter"))`:
 - `InMemoryUserAccounts` is the double of `UserAccounts`, and `UserAccountsTestContract` the contract its adapter
   runs. Its `register` creates an account with `ROLE_REGISTRATION_IN_PROGRESS`, unless the login was given to
   `refuseRegistrationOf`.
+- `InMemoryCurrentUser(accounts)` is the double of `CurrentUser`, for a test outside a request: nobody is signed in
+  until `signIn(userId)` signs in an account of `accounts`.
 - `SpySignInCodeSender` keeps the last code sent to each login, for the test to sign in with, and `failFor(login)`
   makes the sending throw, as an unreachable mail server would.
 - `EndpointRulesCoverage(rules, apiPackage).unruledEndpoints()` lists the operations of the API contract that no rule
