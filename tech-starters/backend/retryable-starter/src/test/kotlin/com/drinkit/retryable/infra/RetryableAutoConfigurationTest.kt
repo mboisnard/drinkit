@@ -22,7 +22,7 @@ internal class RetryableAutoConfigurationTest {
         .withConfiguration(AutoConfigurations.of(RetryableAutoConfiguration::class.java))
 
     @Test
-    fun `a failed call of a retryable method runs again`() {
+    fun `a method failing with an exception its policy names runs again`() {
         runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 1) })
             .run { context ->
                 // When
@@ -34,7 +34,7 @@ internal class RetryableAutoConfigurationTest {
     }
 
     @Test
-    fun `each failed attempt is logged`(output: CapturedOutput) {
+    fun `each failed attempt is logged at INFO`(output: CapturedOutput) {
         runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 2) })
             .run { context ->
                 // When
@@ -42,6 +42,7 @@ internal class RetryableAutoConfigurationTest {
 
                 // Then
                 FAILED_ATTEMPT_LOG.findAll(output.out).toList() shouldHaveSize 2
+                output.out shouldContain INFO_ATTEMPT_LOG
             }
     }
 
@@ -53,12 +54,13 @@ internal class RetryableAutoConfigurationTest {
                 context.getBean<FlakyCall>().call()
 
                 // Then
+                FAILED_ATTEMPT_LOG.findAll(output.out).toList() shouldHaveSize 1
                 output.out shouldNotContain FAILURE_MESSAGE
             }
     }
 
     @Test
-    fun `the end of the retries is logged`(output: CapturedOutput) {
+    fun `retries that run out are logged once at WARN with the class of the last failure`(output: CapturedOutput) {
         runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 5) })
             .run { context ->
                 // When
@@ -66,6 +68,7 @@ internal class RetryableAutoConfigurationTest {
 
                 // Then
                 STOPPED_RETRIES_LOG.findAll(output.out).toList() shouldHaveSize 1
+                output.out shouldContain WARN_STOPPED_LOG
                 output.out shouldContain
                     "stopped after 3 attempts, the last one failed with java.lang.IllegalStateException"
             }
@@ -97,11 +100,11 @@ internal class RetryableAutoConfigurationTest {
     }
 
     @Test
-    fun `the application's own retry listener replaces the starter's`(output: CapturedOutput) {
+    fun `a bean named loggingRetryListener replaces the starter's logging`(output: CapturedOutput) {
         val applicationListener = SpyRetryListener()
 
         runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 5) })
-            .withBean(SpyRetryListener::class.java, { applicationListener })
+            .withBean("loggingRetryListener", SpyRetryListener::class.java, { applicationListener })
             .run { context ->
                 // When
                 shouldThrow<IllegalStateException> { context.getBean<FlakyCall>().call() }
@@ -109,6 +112,22 @@ internal class RetryableAutoConfigurationTest {
                 // Then
                 applicationListener.countFailedAttempts() shouldBe 3
                 output.out shouldNotContain FAILED_ATTEMPT_LOG
+            }
+    }
+
+    @Test
+    fun `an application listener of its own does not switch off the retry logging`(output: CapturedOutput) {
+        val applicationListener = SpyRetryListener()
+
+        runner.withBean(FlakyCall::class.java, { FlakyCall(failuresBeforeSuccess = 1) })
+            .withBean(SpyRetryListener::class.java, { applicationListener })
+            .run { context ->
+                // When
+                context.getBean<FlakyCall>().call()
+
+                // Then
+                applicationListener.countFailedAttempts() shouldBe 1
+                FAILED_ATTEMPT_LOG.findAll(output.out).toList() shouldHaveSize 1
             }
     }
 
@@ -151,6 +170,8 @@ internal class RetryableAutoConfigurationTest {
 
     companion object {
         private val FAILED_ATTEMPT_LOG = Regex("Attempt of \\S+FlakyCall\\.call failed")
+        private val INFO_ATTEMPT_LOG = Regex("INFO.*Attempt of \\S+FlakyCall\\.call failed")
+        private val WARN_STOPPED_LOG = Regex("WARN.*Retries of \\S+FlakyCall\\.call stopped")
         private val STOPPED_RETRIES_LOG = Regex("Retries of \\S+FlakyCall\\.\\w+ stopped")
         private const val FAILURE_MESSAGE = "Personal data of attempt"
     }

@@ -50,7 +50,8 @@ fun promote(userId: UserId) { … }
 - **`maxRetries`** counts the retries after the first attempt: `maxRetries = 2` makes three attempts.
 - **Logs**: each failed attempt at `INFO`, the end of the retries at `WARN`, with the class of the exception and never
   its message, which can hold personal data.
-- **Your own listener**: an `ApplicationListener<MethodRetryEvent>` bean of the application replaces the logging.
+- **Your own listener**: an `ApplicationListener<MethodRetryEvent>` bean of the application runs next to the logging. A
+  bean named `loggingRetryListener` replaces the logging.
 
 ## Configuration
 
