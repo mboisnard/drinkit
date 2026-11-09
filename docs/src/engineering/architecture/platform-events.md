@@ -44,9 +44,13 @@ what a use case published. The attributes of the annotation ask a broker for:
   the memory of one instance, such as the browser connection that a server-sent event must reach.
 - **`delay`**: the time in milliseconds to wait before the first delivery to the handler.
 - **`maxAttempts`**: how many deliveries the handler gets before its event is given up, 3 by default.
+- **`idempotent`**: runs the handler once per key of its event, however many times it is delivered, through the
+  [idempotency starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/idempotency-starter/README.md).
+- **`idempotencyKey`**: a SpEL expression, such as `#event.orderId`, that reads the key from the event instead of using
+  the one the event carries. It needs `idempotent = true`.
 
-Spring events honor `delay` and `maxAttempts` today, and ignore the other attributes. Every handler still sets
-its `name`, so that the move to a broker changes no handler.
+Spring events honor `delay`, `maxAttempts`, `idempotent` and `idempotencyKey` today, and ignore the other
+attributes. Every handler still sets its `name`, so that the move to a broker changes no handler.
 
 ## 🔁 Retries with an exponential backoff
 
@@ -127,7 +131,8 @@ order. Write events and handlers by these rules now, so that the move costs noth
 - **An event carries ids and facts that serialize to JSON, never an entity.** An entity ties the handler to the
   publisher's model, and is out of date by the time the handler runs.
 - **A handler is idempotent,** since a message can arrive twice: handling it twice has the effect of handling it
-  once.
+  once. By its nature, such as an update to a value, or with `idempotent = true`, which runs it once per key through
+  the [idempotency starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/idempotency-starter/README.md).
 - **No handler relies on the order of events,** since retries and competing consumers reorder them.
 - **An event changes by [expand and contract][expand-and-contract].** A message can wait in a queue, or come back from
   a retry, long after it was published. Switching a publisher and its handlers at the same moment, with a feature

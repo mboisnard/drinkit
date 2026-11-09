@@ -23,6 +23,7 @@ import org.springframework.http.client.ClientHttpResponse
 import org.springframework.mock.http.client.MockClientHttpRequest
 import org.springframework.mock.http.client.MockClientHttpResponse
 import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer
 import org.springframework.web.service.annotation.GetExchange
@@ -50,7 +51,7 @@ internal class WebClientAutoConfigurationTest {
         )
 
     @Test
-    fun `a GET that failed on an I-O error is sent again`() {
+    fun `a safe request that got no answer is sent again, up to max-retries`() {
         runner.withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 2) })
             .run { context ->
                 // When
@@ -63,11 +64,24 @@ internal class WebClientAutoConfigurationTest {
     }
 
     @Test
-    fun `a POST is sent once, even when it fails`() {
+    fun `an unsafe request is sent once unless its group honours idempotency keys`() {
         runner.withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 1) })
             .run { context ->
                 // When
                 shouldThrow<ResourceAccessException> { context.getBean<GreetingClient>().greet() }
+
+                // Then
+                context.getBean<FlakyServer>().attempts shouldBe 1
+            }
+    }
+
+    @Test
+    fun `a safe request that got an answer is sent once, whatever the status`() {
+        val unavailable = FlakyServer(failuresBeforeSuccess = 0, status = HttpStatus.SERVICE_UNAVAILABLE)
+        runner.withBean(FlakyServer::class.java, { unavailable })
+            .run { context ->
+                // When
+                shouldThrow<HttpServerErrorException> { context.getBean<GreetingClient>().greeting() }
 
                 // Then
                 context.getBean<FlakyServer>().attempts shouldBe 1
@@ -106,7 +120,7 @@ internal class WebClientAutoConfigurationTest {
     }
 
     @Test
-    fun `a GET fails at once when the starter is switched off`() {
+    fun `switched off, the starter retries nothing`() {
         runner.withPropertyValues("starters.webclient.enabled=false")
             .withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 1) })
             .run { context ->
@@ -152,9 +166,9 @@ internal class WebClientAutoConfigurationTest {
             idempotentRunner.withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 0) })
                 .run { context ->
                     // When
-                    repeat(
-                        2,
-                    ) { CurrentIdempotencyKey.with("welcome-email") { context.getBean<GreetingClient>().greet() } }
+                    repeat(2) {
+                        CurrentIdempotencyKey.with("welcome-email") { context.getBean<GreetingClient>().greet() }
+                    }
 
                     // Then
                     val (first, replay) = context.getBean<FlakyServer>().keys
@@ -182,7 +196,7 @@ internal class WebClientAutoConfigurationTest {
 
         @PostExchange("/greeting")
         fun greet(
-            @RequestHeader(IDEMPOTENCY_KEY_HEADER, required = false) key: String? = null,
+            @RequestHeader(CurrentIdempotencyKey.HEADER, required = false) key: String? = null,
         ): String
     }
 
@@ -198,7 +212,8 @@ internal class WebClientAutoConfigurationTest {
             }
     }
 
-    class FlakyServer(private val failuresBeforeSuccess: Int) : ClientHttpRequestFactory {
+    class FlakyServer(private val failuresBeforeSuccess: Int, private val status: HttpStatus = HttpStatus.OK) :
+        ClientHttpRequestFactory {
         var attempts = 0
             private set
         val keys = mutableListOf<String?>()
@@ -207,11 +222,11 @@ internal class WebClientAutoConfigurationTest {
             object : MockClientHttpRequest(httpMethod, uri) {
                 override fun executeInternal(): ClientHttpResponse {
                     attempts++
-                    keys += headers.getFirst(IDEMPOTENCY_KEY_HEADER)
+                    keys += headers.getFirst(CurrentIdempotencyKey.HEADER)
                     if (attempts <= failuresBeforeSuccess) {
                         throw IOException("$CONNECTION_RESET $attempts")
                     }
-                    return MockClientHttpResponse(GREETING.toByteArray(), HttpStatus.OK)
+                    return MockClientHttpResponse(GREETING.toByteArray(), status)
                 }
             }
     }

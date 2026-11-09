@@ -27,7 +27,7 @@ internal class CacheStarterAutoConfigurationTest {
         )
 
     @Test
-    fun `serves the result of a cacheable method from the cache`() {
+    fun `a cacheable method runs once per key while its entry lives`() {
         runner.withBean(Library::class.java)
             .run { context ->
                 // Given
@@ -42,7 +42,7 @@ internal class CacheStarterAutoConfigurationTest {
     }
 
     @Test
-    fun `runs a cacheable method again once the time to live of its entry has passed`() {
+    fun `a cacheable method runs again once the time to live of its entry has passed`() {
         val ticker = ControlledTicker()
         runner.withBean(Library::class.java)
             .withBean(Ticker::class.java, { ticker })
@@ -85,67 +85,75 @@ internal class CacheStarterAutoConfigurationTest {
     }
 
     @Test
-    fun `expires an entry after the default time to live`() {
+    fun `a cache without a time to live of its own takes the default one`() {
         runner.run { context ->
+            // When & Then
             context.ttlOf("books") shouldBe Duration.ofMinutes(10)
         }
     }
 
     @Test
-    fun `expires an entry after the time to live its module declares`() {
+    fun `a cache takes the time to live its module declares`() {
         runner.withBean(CacheTtl::class.java, { CacheTtl("books", Duration.ofSeconds(30)) })
             .run { context ->
+                // When & Then
                 context.ttlOf("books") shouldBe Duration.ofSeconds(30)
             }
     }
 
     @Test
-    fun `lets the application override the time to live of a cache`() {
+    fun `the application overrides the time to live its module declares`() {
         runner.withBean(CacheTtl::class.java, { CacheTtl("books", Duration.ofSeconds(30)) })
             .withPropertyValues("starters.cache.ttl.books=5s")
             .run { context ->
+                // When & Then
                 context.ttlOf("books") shouldBe Duration.ofSeconds(5)
             }
     }
 
     @Test
-    fun `lets the application change the default time to live`() {
+    fun `the application changes the default time to live`() {
         runner.withPropertyValues("starters.cache.default-ttl=1h")
             .run { context ->
+                // When & Then
                 context.ttlOf("books") shouldBe Duration.ofHours(1)
             }
     }
 
     @Test
-    fun `bounds the number of entries of each cache`() {
+    fun `each cache holds a bounded number of entries`() {
         runner.run { context ->
+            // When & Then
             context.caffeineCache("books").policy().eviction().get().maximum shouldBe 10_000
         }
     }
 
     @Test
-    fun `records the hits and misses of each cache for its metrics`() {
+    fun `each cache records its hits and misses`() {
         runner.run { context ->
+            // When & Then
             context.caffeineCache("books").policy().isRecordingStats shouldBe true
         }
     }
 
     @Test
-    fun `backs off when the application declares its own customizer`() {
+    fun `the starter backs off when the application declares a bean named cacheStarterCaffeineCustomizer`() {
         runner.withBean(
             "cacheStarterCaffeineCustomizer",
             CacheManagerCustomizer::class.java,
             { CacheManagerCustomizer<CaffeineCacheManager> { } },
         )
             .run { context ->
+                // When & Then
                 context.ttlOf("books") shouldBe null
             }
     }
 
     @Test
-    fun `caches nothing when disabled`() {
+    fun `no cache manager exists when the starter is switched off`() {
         runner.withPropertyValues("starters.cache.enabled=false")
             .run { context ->
+                // When & Then
                 context.getBeanNamesForType(CacheManager::class.java).toList().shouldBeEmpty()
             }
     }

@@ -72,8 +72,8 @@ sequenceDiagram
 - A request whose instance crashes before its commit runs again once its lease of 5 minutes ends, since nothing of
   it committed. A request that outlives its lease rolls back once a retry takes its key over.
 - An idempotent endpoint holds one transaction for the whole request, and answers under 64 KB.
-- Every application with the messaging starter needs PostgreSQL, and a test of an idempotent handler without it
-  declares the in-memory double.
+- Only an application with an idempotent handler, the mail starter's included, needs PostgreSQL, or else declares
+  `inMemoryIdempotency()`, as a test of such a handler does.
 - The answer of a request stays in clear in the table for 24 hours.
 - The code of the starter is ours to maintain: a library that fits, or a broker with its own deduplication, would
   reopen the decision.
@@ -81,8 +81,9 @@ sequenceDiagram
 ## Alternatives
 
 - **idempotency4j.** Rejected because its aspect proxies classes, which Kotlin's final classes refuse, its table
-  ignores the schema, and its filter cannot scope a key to the user. It offered the annotation, the stores, the
-  HTTP replay and the joined transaction already written, a design the starter follows.
+  ignores the schema, its filter cannot scope a key to the user nor carry it into events and provider calls, and it
+  renews a lease with a heartbeat where the starter takes a lease long enough. It offered the annotation, the stores,
+  the HTTP replay and the joined transaction already written, a design the starter follows.
 - **Deduplicate on the message id only.** Rejected because a request replayed after its commit publishes new
   messages, with new ids. It offered no key to carry from a request to its events.
 - **Keys in Redis or the cache.** Rejected because a key that an eviction or a restart drops lets the action run

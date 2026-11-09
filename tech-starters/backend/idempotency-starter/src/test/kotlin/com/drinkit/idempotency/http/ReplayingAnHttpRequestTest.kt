@@ -51,7 +51,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a client retrying a cellar creation gets the first answer instead of a second cellar`() {
+    fun `a retried request gets the first answer back without running again`() {
         // Given
         createCellar("Cave du Rhône", key)
 
@@ -68,7 +68,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a retry never gets the cookies of the first answer`() {
+    fun `a replay never carries the cookies of the first answer`() {
         // Given
         createCellar("Cave du Rhône", key)
 
@@ -80,7 +80,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a client retrying while the first creation runs is told to retry later`() {
+    fun `a retry while the first request runs is told to come back later`() {
         // Given
         val pause = Cellars.Pause().also { cellars.pause = it }
         val first = CompletableFuture.supplyAsync { createCellar("Cave du Rhône", key).andReturn().response.status }
@@ -101,7 +101,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a client reusing a key for another cellar is refused`() {
+    fun `a key reused with another body is refused`() {
         // Given
         createCellar("Cave du Rhône", key)
 
@@ -114,7 +114,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `two users sending the same key each create their cellar`() {
+    fun `a key belongs to its user, two users never share one`() {
         // Given
         createCellar("Cave du Rhône", key, user = ada)
 
@@ -126,7 +126,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a creation outliving its lease leaves one cellar, the one of the retry that took over`() {
+    fun `a request outliving its lease keeps nothing once a retry took its key over`() {
         // Given
         clock.fix()
         val pause = Cellars.Pause().also { cellars.pause = it }
@@ -146,7 +146,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a creation its use case refused runs again when retried`() {
+    fun `a refusal whose transaction rolls back frees the key for the retry`() {
         // Given
         cellars.refused = true
         createCellar("Cave du Rhône", key).andExpect { status { isBadRequest() } }
@@ -161,7 +161,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a creation that failed on the server is undone before its retry runs`() {
+    fun `a 5xx answer rolls its writes back and frees the key`() {
         // Given
         cellars.nextAnswers += ResponseEntity.internalServerError().build()
         createCellar("Cave du Rhône", key).andExpect { status { isInternalServerError() } }
@@ -175,7 +175,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a creation the server asked to slow down is undone before its retry runs`() {
+    fun `a 429 answer rolls its writes back and frees the key`() {
         // Given
         cellars.nextAnswers += ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build()
         createCellar("Cave du Rhône", key).andExpect { status { isTooManyRequests() } }
@@ -189,7 +189,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `an answer too big to replay undoes its creation`() {
+    fun `an answer over 64 KB fails and rolls its writes back`() {
         // Given
         cellars.nextAnswers += ResponseEntity.ok("a".repeat(64 * 1024 + 1))
 
@@ -203,7 +203,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a client reusing a key with another query string is refused`() {
+    fun `a key reused with another query string is refused`() {
         // Given
         mockMvc.post("/cellars?region=rhone") { cellar("Cave du Rhône", key, ada) }
 
@@ -216,7 +216,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a key blank or too long to be a key is refused`() {
+    fun `a blank key or one over 255 characters is refused`() {
         // When
         val blank = createCellar("Cave du Rhône", " ")
         val tooLong = createCellar("Cave du Rhône", "k".repeat(256))
@@ -228,7 +228,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a keyed request too large to fingerprint is refused before it is read whole`() {
+    fun `a keyed request over 64 KB is refused before it is read whole`() {
         // When
         val creation = createCellar("a".repeat(64 * 1024), key)
 
@@ -238,7 +238,7 @@ internal class ReplayingAnHttpRequestTest(
     }
 
     @Test
-    fun `a creation sent without a key runs each time`() {
+    fun `a request without a key runs each time`() {
         // Given
         createCellar("Cave du Rhône", key = null)
 

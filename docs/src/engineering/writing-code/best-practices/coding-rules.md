@@ -20,6 +20,7 @@ Here’s how to achieve idempotency:
 - **Check First**: Before performing an action, always check if the system is already in the desired state. For example, before creating a user, check if a user with that email already exists.
 - **Succeed Silently**: If the desired state is already met, simply return a success response. Don't throw an error like "Cellar already deleted." Consider the duplicate request a success.
 - **Use Idempotency Keys**: When calling external services that support it, provide a unique idempotency key for each operation. This allows the receiving service to safely handle your repeated requests.
+- **Use the Idempotency Starter**: `@Idempotent` on an endpoint, `idempotent = true` on a `@PlatformEventHandler` and the idempotent groups of the web client run an action once per key. See the [idempotency starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/idempotency-starter/README.md).
 
 ## 🔀 Evolve a contract in steps
 

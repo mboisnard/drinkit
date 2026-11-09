@@ -226,8 +226,9 @@ internal class JooqSmsOutbox(private val dsl: DSLContext) : SmsOutbox { … }
 - A JUnit extension and its meta-annotation, when consumers need the real infrastructure:
   `MeilisearchExtension` and `@MeilisearchIntegrationTest` in `search-engine-starter`.
 
-The behaviour contract: `ConfigurationsTestContract`, run by `InMemoryConfigurationsTest` and
-`JooqConfigurationsTest`.
+Every one of them that implements a public interface has a behaviour contract, however simple the double:
+`ConfigurationsTestContract`, run by `InMemoryConfigurationsTest` and `JooqConfigurationsTest`. The contract holds
+the rules the double and the real implementation share, not what a spy records for its assertions.
 
 ## Wiring test
 
@@ -240,30 +241,42 @@ internal class SmsAutoConfigurationTest {
     @Test
     fun `registers the default sender`() {
         runner.run { context ->
+            // When & Then
             context.getBean(SmsSender::class.java).shouldBeInstanceOf<LoggingSmsSender>()
         }
     }
 
     @Test
     fun `backs off when the application declares its own bean`() {
-        runner.withBean(SmsSender::class.java, { SpySmsSender() })
-            .run { context ->
-                context.getBean(SmsSender::class.java).shouldBeInstanceOf<SpySmsSender>()
-            }
+        // Given
+        val withOwnSender = runner.withBean(SmsSender::class.java, { SpySmsSender() })
+
+        withOwnSender.run { context ->
+            // When & Then
+            context.getBean(SmsSender::class.java).shouldBeInstanceOf<SpySmsSender>()
+        }
     }
 
     @Test
     fun `registers nothing when disabled`() {
-        runner.withPropertyValues("starters.sms.enabled=false")
-            .run { context -> context.containsBean("smsSender") shouldBe false }
+        // Given
+        val disabled = runner.withPropertyValues("starters.sms.enabled=false")
+
+        disabled.run { context ->
+            // When & Then
+            context.containsBean("smsSender") shouldBe false
+        }
     }
 
     @Test
     fun `selects the vendor implementation`() {
-        runner.withPropertyValues("starters.sms.provider=vendor")
-            .run { context ->
-                context.getBean(SmsSender::class.java).shouldBeInstanceOf<VendorSmsSender>()
-            }
+        // Given
+        val withVendor = runner.withPropertyValues("starters.sms.provider=vendor")
+
+        withVendor.run { context ->
+            // When & Then
+            context.getBean(SmsSender::class.java).shouldBeInstanceOf<VendorSmsSender>()
+        }
     }
 }
 ```
@@ -318,9 +331,10 @@ dependencies {
 
 - **The diagram under the title** shows where the starter fits, in a few nodes, as a `flowchart LR`. Every README
   has one. A flow, such as a retry, a rebuild or a request, goes under "How it works" only, never in Usage.
-- **Configuration** is always a table of these three columns. A property required in production says so in its
-  default, such as "None, required in production". A starter with no setting has the heading and one line: "No
-  setting."
+- **Configuration** is always a table of these three columns, `enabled` first, one row per property. A property
+  required in production says so in its default, such as "None, required in production". A starter with no setting
+  has the heading and one line: "No setting."
 - **Tests** names what a consumer's test uses. A starter that needs nothing in a test says so in one line.
 - No colour styles in a diagram, no internal class names, no wiring details, and no issue numbers. An explanation
-  that a documentation page holds stays there: the README links the page.
+  that a documentation page holds stays there: the README links the page. Why the starter is built rather than taken
+  from a library is the matter of its ADR: the README links it.

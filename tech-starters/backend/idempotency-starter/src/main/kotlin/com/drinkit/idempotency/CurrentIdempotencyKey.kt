@@ -13,6 +13,9 @@ private const val LOG_KEY = "idempotency.key"
 @TechStarterTool
 object CurrentIdempotencyKey {
 
+    /** The header that carries the key of a request, sent by a client and to a provider alike. */
+    const val HEADER = "Idempotency-Key"
+
     private class Current(val key: String) {
         val published = mutableMapOf<String, Int>()
     }
