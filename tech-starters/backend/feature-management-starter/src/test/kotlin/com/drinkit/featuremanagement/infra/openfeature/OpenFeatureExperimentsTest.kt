@@ -1,6 +1,8 @@
 package com.drinkit.featuremanagement.infra.openfeature
 
 import com.drinkit.featuremanagement.Assignment
+import com.drinkit.featuremanagement.Experiments
+import com.drinkit.featuremanagement.ExperimentsTestContract
 import com.drinkit.featuremanagement.FlagSubject
 import com.drinkit.featuremanagement.InMemoryFeatureFlags
 import dev.openfeature.sdk.FeatureProvider
@@ -11,42 +13,39 @@ import dev.openfeature.sdk.providers.memory.InMemoryProvider
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
-internal class OpenFeatureExperimentsTest {
+internal class OpenFeatureExperimentsTest : ExperimentsTestContract() {
 
     private val ada = FlagSubject("ada")
     private val gates = InMemoryFeatureFlags()
+    private val variants = InMemoryProvider(emptyMap())
+
+    override fun fetchExperiments(): Experiments = experiments(variants)
+
+    override fun givenDrawnVariant(experiment: String, variant: String) {
+        gates.configure(experiment, enabled = true)
+        variants.updateFlag(experiment, drawing(variant))
+    }
 
     @Test
     fun `keeps the user out of the experiment, with control, while its gate is off`() {
         // Given
+        givenDrawnVariant("checkout", "B")
         gates.configure("checkout", enabled = false)
 
         // When
-        val assignment = experimentsDrawing("B").assign("checkout", ada)
+        val assignment = experiments(variants).assign("checkout", ada)
 
         // Then
         assignment shouldBe Assignment.outOf("checkout", ada)
     }
 
     @Test
-    fun `puts the user in the variant the provider draws once the gate is on`() {
-        // Given
-        gates.configure("checkout", enabled = true)
-
-        // When
-        val assignment = experimentsDrawing("B").assign("checkout", ada)
-
-        // Then
-        assignment shouldBe Assignment("checkout", ada, "B", inExperiment = true)
-    }
-
-    @Test
     fun `puts the user in the experiment when the provider draws control, so that control is exposed too`() {
         // Given
-        gates.configure("checkout", enabled = true)
+        givenDrawnVariant("checkout", "control")
 
         // When
-        val assignment = experimentsDrawing("control").assign("checkout", ada)
+        val assignment = experiments(variants).assign("checkout", ada)
 
         // Then
         assignment shouldBe Assignment("checkout", ada, "control", inExperiment = true)
@@ -64,14 +63,11 @@ internal class OpenFeatureExperimentsTest {
         assignment shouldBe Assignment.outOf("checkout", ada)
     }
 
-    private fun experimentsDrawing(variant: String) = experiments(
-        InMemoryProvider(
-            mapOf("checkout" to Flag.builder<String>().variant(variant, variant).defaultVariant(variant).build()),
-        ),
-    )
+    private fun drawing(variant: String) =
+        Flag.builder<String>().variant(variant, variant).defaultVariant(variant).build()
 
-    private fun experiments(variants: FeatureProvider): OpenFeatureExperiments {
-        val api = OpenFeatureAPI.createIsolated().apply { setProviderAndWait(variants) }
-        return OpenFeatureExperiments(gates, api.client) { ada }
+    private fun experiments(provider: FeatureProvider): OpenFeatureExperiments {
+        val api = OpenFeatureAPI.createIsolated().apply { setProviderAndWait(provider) }
+        return OpenFeatureExperiments(gates, api.client) { currentSubject }
     }
 }

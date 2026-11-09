@@ -3,6 +3,8 @@ package com.drinkit.user.signin
 import com.drinkit.messaging.SpyPlatformEventPublisher
 import com.drinkit.notification.core.Recipient
 import com.drinkit.notification.spi.SpyNotificationSender
+import com.drinkit.security.SignInCodeSender
+import com.drinkit.security.SignInCodeSenderTestContract
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -12,11 +14,16 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 import java.util.Locale
 
-internal class SignInCodeEmailsTest {
+internal class SignInCodeEmailsTest : SignInCodeSenderTestContract() {
 
     private val publisher = SpyPlatformEventPublisher()
     private val notifications = SpyNotificationSender()
     private val emails = SignInCodeEmails(publisher, notifications)
+
+    override fun fetchSignInCodeSender(): SignInCodeSender = emails
+
+    override fun codeSentTo(login: String) =
+        (publisher.findLastSentEvent() as SignInCodeRequested?)?.takeIf { it.email == login }?.code
 
     @Test
     fun `sends nothing during the request, only asks for the code to be emailed after it`() {
