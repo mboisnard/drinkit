@@ -56,8 +56,6 @@ class EndpointRulesCoverage(
         rules.entries.fold(chain) { runner, (name, rule) ->
             runner.withBean(name, EndpointRules::class.java, { rule })
         }.run { context ->
-            // The matcher of the actuator's health endpoint finds the context through the servlet context
-            context.servletContext?.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context)
             endpoints.filterTo(unruled) { (method, path) -> isUnruled(context, method, path) }
         }
         return unruled.map { (method, path) -> "$method $path" }.sorted()

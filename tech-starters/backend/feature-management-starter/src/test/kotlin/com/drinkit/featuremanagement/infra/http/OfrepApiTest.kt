@@ -1,4 +1,4 @@
-package com.drinkit.featuremanagement.infra.openfeature
+package com.drinkit.featuremanagement.infra.http
 
 import com.drinkit.featuremanagement.FlagSubject
 import com.drinkit.featuremanagement.InMemoryExperiments

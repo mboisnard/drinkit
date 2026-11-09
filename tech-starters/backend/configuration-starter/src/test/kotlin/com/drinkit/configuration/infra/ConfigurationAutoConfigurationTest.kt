@@ -3,6 +3,7 @@ package com.drinkit.configuration.infra
 import com.drinkit.cache.CacheTtl
 import com.drinkit.cache.ControlledTicker
 import com.drinkit.configuration.Configurations
+import com.drinkit.configuration.InMemoryConfigurations
 import com.drinkit.configuration.configurationKey
 import com.drinkit.configuration.generated.jooq.DrinkitApplication
 import com.drinkit.configuration.generated.jooq.tables.references.CONFIGURATION

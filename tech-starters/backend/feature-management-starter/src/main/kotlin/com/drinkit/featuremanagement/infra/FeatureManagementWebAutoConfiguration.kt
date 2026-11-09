@@ -3,9 +3,9 @@ package com.drinkit.featuremanagement.infra
 import com.drinkit.featuremanagement.Experiments
 import com.drinkit.featuremanagement.FeatureFlags
 import com.drinkit.featuremanagement.SubjectAttributes
-import com.drinkit.featuremanagement.infra.openfeature.EXPOSURES_PATH
-import com.drinkit.featuremanagement.infra.openfeature.OFREP_BULK_PATH
-import com.drinkit.featuremanagement.infra.openfeature.OfrepApi
+import com.drinkit.featuremanagement.infra.http.EXPOSURES_PATH
+import com.drinkit.featuremanagement.infra.http.OFREP_BULK_PATH
+import com.drinkit.featuremanagement.infra.http.OfrepApi
 import com.drinkit.security.CurrentUser
 import com.drinkit.security.CurrentVisitor
 import org.springframework.boot.autoconfigure.AutoConfiguration

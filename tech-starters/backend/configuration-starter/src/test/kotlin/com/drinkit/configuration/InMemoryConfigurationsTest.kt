@@ -1,6 +1,4 @@
-package com.drinkit.configuration.infra
-
-import com.drinkit.configuration.Configurations
+package com.drinkit.configuration
 
 internal class InMemoryConfigurationsTest : ConfigurationsTestContract() {
 

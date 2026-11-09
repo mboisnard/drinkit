@@ -65,7 +65,8 @@ internal class JooqCellars(private val dslContext: DSLContext) : Cellars {
 - **Optimistic locking**: a table named in `recordVersionFields` of the `jooq` block checks its version on
   `store()`, `update()` and `delete()` of a record, and throws `OptimisticLockingFailureException`.
 - **Helpers**: `JSONBToJacksonConverter` maps a JSONB column to a Kotlin type, `multiset(...).mapping(::Bottle)` reads
-  a nested collection in one query, and `fetchSequence` streams a large read inside the transaction.
+  a nested collection in one query, `fetchSequence` streams a large read inside the transaction, and
+  `exception.violates("cellar_pkey")` tells whether PostgreSQL refused a statement on that constraint.
 - **PostgreSQL only**: the application refuses to start on another database.
 
 ## Configuration

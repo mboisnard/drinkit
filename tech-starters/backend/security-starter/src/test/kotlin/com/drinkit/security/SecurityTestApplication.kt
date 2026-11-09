@@ -42,6 +42,12 @@ internal class SecurityTestApplication {
         authorize("/api/cellars/**", hasRole("USER"))
         authorize("/api/admin/**", hasRole("USER"))
     }
+
+    @Bean
+    @Order(3)
+    fun actuatorEndpoints() = endpointRules {
+        authorize("/actuator/**", hasRole("ADMIN"))
+    }
 }
 
 @RestController

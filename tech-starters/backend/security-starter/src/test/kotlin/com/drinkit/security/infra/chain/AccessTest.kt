@@ -71,7 +71,20 @@ internal class AccessTest(private val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `opens the health endpoint`() {
-        mockMvc.get("/actuator/health").andExpect { status { isOk() } }
+    fun `lets an anonymous probe read the health, even under a rule keeping the actuator to admins`() {
+        // When
+        val response = mockMvc.get("/actuator/health")
+
+        // Then
+        response.andExpect { status { isOk() } }
+    }
+
+    @Test
+    fun `refuses the other actuator endpoints to an anonymous caller`() {
+        // When
+        val response = mockMvc.get("/actuator/info")
+
+        // Then
+        response.andExpect { status { isUnauthorized() } }
     }
 }

@@ -1,7 +1,5 @@
-package com.drinkit.configuration.infra
+package com.drinkit.configuration
 
-import com.drinkit.configuration.Configurations
-import com.drinkit.configuration.configurationKey
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 

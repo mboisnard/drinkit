@@ -39,13 +39,17 @@ internal class SseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun serverEventsApi(streams: InMemoryStreams, properties: SseProperties) =
-        ServerEventsApi(streams, properties.timeout)
+    fun serverEventsSubscription(streams: InMemoryStreams, properties: SseProperties) =
+        ServerEventsSubscription(streams, properties.timeout)
 
     @Bean
     @ConditionalOnMissingBean(name = ["serverEventsEndpoint"])
-    fun serverEventsEndpoint(api: ServerEventsApi): RouterFunction<ServerResponse> =
-        RouterFunctions.route().GET(SERVER_EVENTS_PATH, api::subscribe).build()
+    fun serverEventsEndpoint(subscription: ServerEventsSubscription): RouterFunction<ServerResponse> =
+        RouterFunctions.route().GET(SERVER_EVENTS_PATH, subscription::subscribe).build()
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun serverEventsDelivery(streams: InMemoryStreams) = ServerEventsDelivery(streams)
 
     @Bean
     @ConditionalOnMissingBean

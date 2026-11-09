@@ -43,7 +43,6 @@
     <ID>ReturnCount:FindExchangeRate.kt:FindExchangeRate$private fun crossRateCalculationFromEuro: ExchangeRate?</ID>
     <ID>ReturnCount:PromoteAsAdmin.kt:AdminPromotionDecider$fun decide: Decision</ID>
     <ID>SpreadOperator:DrinkitApplication.kt:(*args)</ID>
-    <ID>SpreadOperator:JooqUtils.kt:(*table.fields())</ID>
     <ID>SpreadOperator:UpdaterApplication.kt:(*args)</ID>
     <ID>TooGenericExceptionThrown:FakeExchangeRateProvider.kt:FakeExchangeRateProvider$throw RuntimeException("Provider failed")</ID>
     <ID>TooManyFunctions:JooqPostgresExtension.kt:JooqPostgresExtension : BeforeAllCallbackAfterEachCallbackAfterAllCallbackParameterResolver</ID>

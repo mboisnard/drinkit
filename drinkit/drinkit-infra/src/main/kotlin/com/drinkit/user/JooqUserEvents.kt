@@ -6,7 +6,7 @@ import com.drinkit.generated.jooq.tables.references.USER_EVENT
 import com.drinkit.postgresql.JSONBToJacksonConverter
 import com.drinkit.postgresql.JooqRepository
 import com.drinkit.postgresql.fetchSequence
-import com.drinkit.postgresql.isEventSourcingSequenceException
+import com.drinkit.postgresql.violates
 import com.drinkit.user.core.Author
 import com.drinkit.user.core.Initialized
 import com.drinkit.user.core.User
@@ -49,7 +49,7 @@ internal class JooqUserEvents(
                 .set(USER_EVENT.PAYLOAD, payload)
                 .execute()
         } catch (ex: DataAccessException) {
-            if (ex.isEventSourcingSequenceException(USER_EVENT_PKEY.name)) {
+            if (ex.violates(USER_EVENT_PKEY.name)) {
                 throw DuplicateSequenceException("${event.sequenceId} already exists for ${event.userId}", ex)
             }
 

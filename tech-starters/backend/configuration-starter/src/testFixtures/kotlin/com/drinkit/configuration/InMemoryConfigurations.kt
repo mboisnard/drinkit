@@ -1,7 +1,4 @@
-package com.drinkit.configuration.infra
-
-import com.drinkit.configuration.ConfigurationKey
-import com.drinkit.configuration.Configurations
+package com.drinkit.configuration
 
 class InMemoryConfigurations : Configurations {
 

@@ -1,6 +1,7 @@
 package com.drinkit.configuration.infra
 
 import com.drinkit.configuration.Configurations
+import com.drinkit.configuration.ConfigurationsTestContract
 import com.drinkit.configuration.generated.jooq.DrinkitApplication
 import com.drinkit.configuration.generated.jooq.tables.references.CONFIGURATION
 import com.drinkit.postgresql.JooqIntegrationTest
