@@ -1,7 +1,5 @@
-package com.drinkit.mail.infra
+package com.drinkit.mail
 
-import com.drinkit.mail.Email
-import com.drinkit.mail.EmailSender
 import com.drinkit.mail.Recipients.Recipient
 
 class SpyEmailSender : EmailSender {
