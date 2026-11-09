@@ -12,6 +12,7 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-health")
 
     testImplementation("org.springframework.boot:spring-boot-health")
+    testImplementation(testFixtures(project(":messaging-starter")))
     testFixturesApi(libs.testcontainers.meilisearch)
     testFixturesApi("tools.jackson.module:jackson-module-kotlin")
 }

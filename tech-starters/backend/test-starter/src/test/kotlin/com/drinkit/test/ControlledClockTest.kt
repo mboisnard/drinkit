@@ -37,6 +37,7 @@ internal class ControlledClockTest {
 
     @Test
     fun `adding a duration to a clock that is not fixed fails`() {
+        // When & Then
         shouldThrow<IllegalArgumentException> { ControlledClock().add(Duration.ofMinutes(16)) }
     }
 
@@ -54,6 +55,7 @@ internal class ControlledClockTest {
 
     @Test
     fun `a clock derived with another zone is in that zone`() {
+        // When & Then
         ControlledClock().withZone(PARIS).zone shouldBe PARIS
     }
 

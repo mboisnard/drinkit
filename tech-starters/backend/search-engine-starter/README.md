@@ -58,7 +58,8 @@ dependencies {
 ```
 
 The starter needs `messaging-starter`, a `JsonMapper` and a `Clock` bean, and its `search_index_rebuild` table, which
-the [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md) creates.
+the [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md) creates. Without jOOQ's
+`DSLContext`, it declares nothing, not even the Meilisearch client.
 
 Declare an index with its source, which gives a rebuild the ids of the table page by page, then the documents of a
 page:
@@ -100,12 +101,12 @@ fun rebuildBottles() {
 
 | Property | Default | Environment variable |
 |---|---|---|
+| `starters.search-engine.enabled` | `true` | `STARTERS_SEARCHENGINE_ENABLED` |
 | `starters.search-engine.meilisearch.url` | `http://localhost:7700`, production sets it | `STARTERS_SEARCHENGINE_MEILISEARCH_URL` |
 | `starters.search-engine.meilisearch.api-key` | None, required in production: a key that can write | `STARTERS_SEARCHENGINE_MEILISEARCH_APIKEY` |
 | `starters.search-engine.task-timeout` | `30s` per write | `STARTERS_SEARCHENGINE_TASKTIMEOUT` |
 | `starters.search-engine.rebuild.batch-size` | `1000` ids | `STARTERS_SEARCHENGINE_REBUILD_BATCHSIZE` |
 | `starters.search-engine.rebuild.restart-after` | `30m`, then a stuck rebuild starts over | `STARTERS_SEARCHENGINE_REBUILD_RESTARTAFTER` |
-| `starters.search-engine.enabled` | `true` | `STARTERS_SEARCHENGINE_ENABLED` |
 
 ## Tests
 

@@ -29,9 +29,6 @@ class EventsReducer<Projection, Event : DomainEvent, InitialEvent : Event>(
 ) {
     private var handlers: Map<KClass<out Event>, (Projection, Event) -> Projection> = emptyMap()
 
-    /**
-     * Register a handler for the given event type.
-     */
     fun <T : Event> register(
         klass: KClass<T>,
         handler: (Projection, T) -> Projection,

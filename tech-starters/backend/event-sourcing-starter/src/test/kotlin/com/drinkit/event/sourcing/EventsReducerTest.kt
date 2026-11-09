@@ -12,7 +12,7 @@ import java.util.UUID
 internal class EventsReducerTest {
 
     @Test
-    fun `should build a projection from a sequence of events`() {
+    fun `folds each event in turn into the projection its initial event built`() {
         // Given
         val reducer = EventsReducer<CarProjection, CarEvent, CarCreated>(
             factory = CarProjection::applyInit,
@@ -58,7 +58,7 @@ internal class EventsReducerTest {
     }
 
     @Test
-    fun `should use default handler for unregistered event types`() {
+    fun `hands an event type with no handler to the default handler`() {
         // Given
         val reducer = EventsReducer<CarProjection, CarEvent, CarCreated>(
             factory = CarProjection::applyInit,
@@ -95,7 +95,8 @@ internal class EventsReducerTest {
 
         // When
 
-        // Reduce the events to build the final state, include MaintenanceCarriedOut which doesn't have a registered handler
+        // Reduce the events to build the final state, include MaintenanceCarriedOut which doesn't have a registered
+        // handler
         val result = reducer.reduce(initEvent, events)
 
         // Then
@@ -104,5 +105,73 @@ internal class EventsReducerTest {
         result.owner shouldBe "James Bond"
         result.maintenanceCount shouldBe 0 // Still 0 because MaintenanceCarriedOut was handled by the default handler
         result.sequenceId shouldBe SequenceId(30)
+    }
+
+    @Test
+    fun `leaves the projection as it is for an event type with no handler`() {
+        // Given
+        val reducer = EventsReducer<CarProjection, CarEvent, CarCreated>(
+            factory = CarProjection::applyInit,
+        )
+            .register<CarPurchased>(CarProjection::apply)
+
+        val initEvent = CarCreated(
+            id = UUID.randomUUID(),
+            sequenceId = SequenceId(),
+            date = OffsetDateTime.now(),
+            name = "Aston Martin DB5",
+        )
+        val events = listOf(
+            CarPurchased(
+                id = initEvent.id,
+                sequenceId = SequenceId(10),
+                date = OffsetDateTime.now(),
+                owner = "James Bond",
+            ),
+            MaintenanceCarriedOut(
+                id = initEvent.id,
+                sequenceId = SequenceId(20),
+                date = OffsetDateTime.now(),
+            ),
+        )
+
+        // When
+        val result = reducer.reduce(initEvent, events)
+
+        // Then
+        result.owner shouldBe "James Bond"
+        result.maintenanceCount shouldBe 0
+        result.sequenceId shouldBe SequenceId(10)
+    }
+
+    @Test
+    fun `keeps the last handler registered for an event type`() {
+        // Given
+        val reducer = EventsReducer<CarProjection, CarEvent, CarCreated>(
+            factory = CarProjection::applyInit,
+        )
+            .register<CarPurchased>(CarProjection::apply)
+            .register(CarPurchased::class) { projection, _ -> projection.copy(owner = "Q") }
+
+        val initEvent = CarCreated(
+            id = UUID.randomUUID(),
+            sequenceId = SequenceId(),
+            date = OffsetDateTime.now(),
+            name = "Aston Martin DB5",
+        )
+        val events = listOf(
+            CarPurchased(
+                id = initEvent.id,
+                sequenceId = SequenceId(10),
+                date = OffsetDateTime.now(),
+                owner = "James Bond",
+            ),
+        )
+
+        // When
+        val result = reducer.reduce(initEvent, events)
+
+        // Then
+        result.owner shouldBe "Q"
     }
 }

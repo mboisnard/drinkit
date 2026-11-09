@@ -7,6 +7,7 @@ import kotlin.reflect.typeOf
 @TechStarterTool
 interface SearchIndexes {
 
+    /** Throws an IllegalArgumentException for a name already declared */
     fun <T : Any> declare(
         name: String,
         type: KType,
@@ -30,9 +31,7 @@ inline fun <reified T : Any> SearchIndexes.declare(
 @TechStarterTool
 interface SearchDocumentSource<T : Any> {
 
-    // Ids in a stable order, the page after the id given: a rebuild reads every id of the source this way
     fun ids(after: String?, limit: Int): List<String>
 
-    // The documents of these ids that still exist
     fun documents(ids: List<String>): List<T>
 }

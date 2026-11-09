@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.health.contributor.HealthIndicator
 import org.springframework.boot.health.contributor.Status
+import org.springframework.boot.jooq.autoconfigure.JooqAutoConfiguration
 import org.springframework.boot.test.context.FilteredClassLoader
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
@@ -46,15 +47,19 @@ internal class SearchEngineAutoConfigurationTest {
 
     @Test
     fun `backs off before a client of the application`(server: MeilisearchServer, client: Client) {
-        runner(server).withBean(Client::class.java, { client })
-            .run { context ->
-                context.getBean<Client>() shouldBeSameInstanceAs client
-            }
+        // Given
+        val withOwnClient = runner(server).withBean(Client::class.java, { client })
+
+        withOwnClient.run { context ->
+            // When & Then
+            context.getBean<Client>() shouldBeSameInstanceAs client
+        }
     }
 
     @Test
     fun `provides the indexes and the engine of Meilisearch`(server: MeilisearchServer) {
         runner(server).run { context ->
+            // When & Then
             context.getBean<SearchIndexes>().shouldBeInstanceOf<MeilisearchIndexes>()
             context.getBean<SearchEngine>().shouldBeInstanceOf<MeilisearchEngine>()
         }
@@ -62,45 +67,70 @@ internal class SearchEngineAutoConfigurationTest {
 
     @Test
     fun `is switched off by its enabled property`(server: MeilisearchServer) {
-        runner(server).withPropertyValues("starters.search-engine.enabled=false")
-            .run { context ->
-                context.getBeansOfType(SearchIndexes::class.java).values.shouldBeEmpty()
-            }
+        // Given
+        val disabled = runner(server).withPropertyValues("starters.search-engine.enabled=false")
+
+        disabled.run { context ->
+            // When & Then
+            context.getBeansOfType(SearchIndexes::class.java).values.shouldBeEmpty()
+        }
+    }
+
+    @Test
+    fun `registers nothing without a jOOQ DSLContext`(server: MeilisearchServer) {
+        // Given
+        val withoutJooq =
+            runner(server).withPropertyValues("spring.autoconfigure.exclude=${JooqAutoConfiguration::class.java.name}")
+
+        withoutJooq.run { context ->
+            // When & Then
+            context.shouldStart()
+            context.getBeansOfType(SearchIndexes::class.java).values.shouldBeEmpty()
+        }
     }
 
     @Test
     fun `reports the engine up when it answers`(server: MeilisearchServer) {
         runner(server).run { context ->
+            // When & Then
             context.getBean<HealthIndicator>("meilisearchHealthIndicator").health()?.status shouldBe Status.UP
         }
     }
 
     @Test
     fun `reports the engine down when it does not answer`(server: MeilisearchServer) {
-        runner(server).withPropertyValues("starters.search-engine.meilisearch.url=http://localhost:1")
-            .run { context ->
-                context.getBean<HealthIndicator>("meilisearchHealthIndicator").health()?.status shouldBe Status.DOWN
-            }
+        // Given
+        val unreachable = runner(server).withPropertyValues("starters.search-engine.meilisearch.url=http://localhost:1")
+
+        unreachable.run { context ->
+            // When & Then
+            context.getBean<HealthIndicator>("meilisearchHealthIndicator").health()?.status shouldBe Status.DOWN
+        }
     }
 
     @Test
     fun `reports no health without the health module of Spring Boot`(server: MeilisearchServer) {
-        runner(server).withClassLoader(FilteredClassLoader(HealthIndicator::class.java))
-            .run { context ->
-                context.shouldStart()
-                context.containsBean("meilisearchHealthIndicator") shouldBe false
-            }
+        // Given
+        val withoutHealth = runner(server).withClassLoader(FilteredClassLoader(HealthIndicator::class.java))
+
+        withoutHealth.run { context ->
+            // When & Then
+            context.shouldStart()
+            context.containsBean("meilisearchHealthIndicator") shouldBe false
+        }
     }
 
     @Test
     fun `creates a declared index at startup with the settings of its file`(server: MeilisearchServer, client: Client) {
+        // Given
         val name = "wines-${UUID.randomUUID()}"
+        val withWines = runner(server).withIndex(name, "search/wines.json")
 
-        runner(server).withIndex(name, "search/wines.json")
-            .run { context ->
-                context.shouldStart()
-                eventually { client.getIndex(name).settings.searchableAttributes shouldBe arrayOf("name", "grapes") }
-            }
+        withWines.run { context ->
+            // When & Then
+            context.shouldStart()
+            eventually { client.getIndex(name).settings.searchableAttributes shouldBe arrayOf("name", "grapes") }
+        }
     }
 
     @Test
@@ -118,21 +148,27 @@ internal class SearchEngineAutoConfigurationTest {
 
     @Test
     fun `starts even when the engine does not answer`(server: MeilisearchServer) {
-        runner(server).withPropertyValues("starters.search-engine.meilisearch.url=http://localhost:1")
+        // Given
+        val unreachable = runner(server).withPropertyValues("starters.search-engine.meilisearch.url=http://localhost:1")
             .withIndex("wines", "search/wines.json")
-            .run { context ->
-                context.shouldStart()
-            }
+
+        unreachable.run { context ->
+            // When & Then
+            context.shouldStart()
+        }
     }
 
     @Test
     fun `refuses to start on an index declared without its settings file`(server: MeilisearchServer) {
-        runner(server).withIndex("wines", "search/missing.json")
-            .run { context ->
-                val failure = context.startupFailure.shouldNotBeNull()
-                NestedExceptionUtils.getMostSpecificCause(failure).message shouldBe
-                    "No settings file search/missing.json on the classpath"
-            }
+        // Given
+        val withMissingSettings = runner(server).withIndex("wines", "search/missing.json")
+
+        withMissingSettings.run { context ->
+            // When & Then
+            val failure = context.startupFailure.shouldNotBeNull()
+            NestedExceptionUtils.getMostSpecificCause(failure).message shouldBe
+                "No settings file search/missing.json on the classpath"
+        }
     }
 
     private fun ApplicationContextRunner.withIndex(name: String, settings: String) =
