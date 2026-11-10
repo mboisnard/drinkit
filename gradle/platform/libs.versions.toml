@@ -3,31 +3,31 @@
 jdk = "25"
 
 # Tool Versions
-squawk = "2.70.0"
+squawk = "2.71.0"
 
 # BOM Versions
 cucumber-dependencies = "8.0.4"
-opentelemetry-dependencies = "1.67.0"
+opentelemetry-dependencies = "1.68.0"
 spring-ai-dependencies = "2.0.2"
 spring-boot-dependencies = "4.1.2"
-spring-cloud-gcp-dependencies = "8.2.4"
+spring-cloud-gcp-dependencies = "8.3.1"
 
 # Runtime Versions
 bouncycastle = "1.86"
-bson = "5.13.0"
+bson = "5.14.0"
 jooq = "3.21.9"
-kotlin-logging = "8.0.4"
-ksp = "2.3.12"
+kotlin-logging = "8.0.6"
+ksp = "2.3.13"
 meilisearch = "0.22.1"
 openfeature-sdk = "1.23.0"
 openfeature-flipt-provider = "0.1.4"
 springdoc-openapi = "3.2.0"
-tess4j = "5.20.0"
+tess4j = "5.21.0"
 
 # Test Versions
 approvaltests = "31.0.0"
 rest-assured = "6.3.0"
-konture = "1.0.2"
+konture = "1.0.4"
 kotest = "6.2.6"
 kotlin-faker = "1.16.2"
 testcontainers-meilisearch = "2.0.0"
