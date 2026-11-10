@@ -19,7 +19,7 @@ jobs:
       # A maintained fork: actionlint itself has had no release since March 2026 and rejects `$/`.
       # Should the fork stop, rhysd/actionlint still runs with -ignore '"\$/', without checking the `$/` calls
       - name: Lint the workflows
-        uses: docker://ghcr.io/kjanat/actionlint:1.17.0@sha256:d484cccadf56b6a356466ade9af4c8e05c5dce1badaf0a9ecd0d7639d68d9c92
+        uses: docker://ghcr.io/kjanat/actionlint:1.17.1@sha256:c0a63b3e5c974c2466ead39404b70e448176beaff8c5ec7af0b2e96191aea661
 
   audit:
     name: Audit the workflows with zizmor

@@ -14,7 +14,7 @@ import org.testcontainers.utility.DockerImageName
 import org.testcontainers.utility.TestcontainersConfiguration
 
 // Keep in sync with deployment/local/compose.yml
-private const val MEILISEARCH_IMAGE_NAME = "getmeili/meilisearch:v1.56.0"
+private const val MEILISEARCH_IMAGE_NAME = "getmeili/meilisearch:v1.56.1"
 private const val MASTER_KEY = "masterKey"
 private const val INDEXES_PAGE = 100
 
