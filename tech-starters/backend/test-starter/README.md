@@ -49,6 +49,7 @@ clock.instant() shouldBe Instant.parse("2026-11-03T10:31:30Z")
 
 `reset()` makes it follow the system clock again, and `add` throws on a clock that is not fixed.
 `ControlledRandom.value` is a `kotlin.random.Random` with a fixed seed, so that each run draws the same values.
+`exception.rootCause()` is the deepest cause of an exception, such as the one behind a failed application start.
 
 ## Limits
 

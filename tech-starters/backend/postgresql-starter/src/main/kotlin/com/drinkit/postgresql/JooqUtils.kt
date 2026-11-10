@@ -8,6 +8,10 @@ import org.jooq.Table
 import org.jooq.impl.DSL.row
 import org.postgresql.util.PSQLException
 import org.springframework.dao.DataAccessException
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
 import kotlin.streams.asSequence
 
 const val DEFAULT_FETCH_SIZE = 1000
@@ -32,3 +36,8 @@ fun DataAccessException.violates(constraint: String): Boolean {
     val mostSpecificCause = this.mostSpecificCause
     return mostSpecificCause is PSQLException && mostSpecificCause.serverErrorMessage?.constraint == constraint
 }
+
+// PostgreSQL keeps microseconds and rounds the nanoseconds, which could store a later instant than the real one and
+// push an expiry past it. Truncating never stores a later instant.
+@TechStarterTool
+fun Instant.toStoredTime(): OffsetDateTime = truncatedTo(ChronoUnit.MICROS).atOffset(ZoneOffset.UTC)

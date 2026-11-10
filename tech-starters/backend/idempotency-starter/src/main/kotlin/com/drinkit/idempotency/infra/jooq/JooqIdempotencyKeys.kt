@@ -2,6 +2,7 @@ package com.drinkit.idempotency.infra.jooq
 
 import com.drinkit.idempotency.generated.jooq.tables.records.IdempotencyKeyRecord
 import com.drinkit.idempotency.generated.jooq.tables.references.IDEMPOTENCY_KEY
+import com.drinkit.postgresql.toStoredTime
 import org.jooq.Condition
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.row
@@ -9,8 +10,6 @@ import org.jooq.impl.DSL.select
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
-import java.time.OffsetDateTime
-import java.time.ZoneOffset.UTC
 
 private const val FORGOTTEN_PER_TAKE = 100
 
@@ -26,21 +25,21 @@ internal class JooqIdempotencyKeys(private val dsl: DSLContext) : IdempotencyKey
             .set(IDEMPOTENCY_KEY.KEY_HASH, key.hash)
             .set(IDEMPOTENCY_KEY.OWNER, key.owner)
             .set(IDEMPOTENCY_KEY.FINGERPRINT, key.fingerprint)
-            .set(IDEMPOTENCY_KEY.TAKEN_AT, key.takenAt.atUtc())
-            .set(IDEMPOTENCY_KEY.LEASE_UNTIL, key.leaseUntil.atUtc())
+            .set(IDEMPOTENCY_KEY.TAKEN_AT, key.takenAt.toStoredTime())
+            .set(IDEMPOTENCY_KEY.LEASE_UNTIL, key.leaseUntil.toStoredTime())
             .onConflict(IDEMPOTENCY_KEY.SCOPE, IDEMPOTENCY_KEY.KEY_HASH)
             .doUpdate()
             .set(IDEMPOTENCY_KEY.OWNER, key.owner)
             .set(IDEMPOTENCY_KEY.FINGERPRINT, key.fingerprint)
-            .set(IDEMPOTENCY_KEY.TAKEN_AT, key.takenAt.atUtc())
-            .set(IDEMPOTENCY_KEY.LEASE_UNTIL, key.leaseUntil.atUtc())
+            .set(IDEMPOTENCY_KEY.TAKEN_AT, key.takenAt.toStoredTime())
+            .set(IDEMPOTENCY_KEY.LEASE_UNTIL, key.leaseUntil.toStoredTime())
             .setNull(IDEMPOTENCY_KEY.COMPLETED_AT)
             .setNull(IDEMPOTENCY_KEY.OUTCOME)
             .where(
-                IDEMPOTENCY_KEY.TAKEN_AT.lt(forgetBefore.atUtc())
+                IDEMPOTENCY_KEY.TAKEN_AT.lt(forgetBefore.toStoredTime())
                     .or(
                         IDEMPOTENCY_KEY.COMPLETED_AT.isNull
-                            .and(IDEMPOTENCY_KEY.LEASE_UNTIL.lt(key.takenAt.atUtc()))
+                            .and(IDEMPOTENCY_KEY.LEASE_UNTIL.lt(key.takenAt.toStoredTime()))
                             .and(IDEMPOTENCY_KEY.FINGERPRINT.eq(key.fingerprint)),
                     ),
             )
@@ -53,7 +52,7 @@ internal class JooqIdempotencyKeys(private val dsl: DSLContext) : IdempotencyKey
     @Transactional(propagation = Propagation.REQUIRED)
     override fun complete(key: HeldKey, outcome: ByteArray?, at: Instant) {
         val completed = dsl.update(IDEMPOTENCY_KEY)
-            .set(IDEMPOTENCY_KEY.COMPLETED_AT, at.atUtc())
+            .set(IDEMPOTENCY_KEY.COMPLETED_AT, at.toStoredTime())
             .set(IDEMPOTENCY_KEY.OUTCOME, outcome)
             .where(sameKey(key).and(IDEMPOTENCY_KEY.OWNER.eq(key.owner)))
             .execute()
@@ -74,7 +73,7 @@ internal class JooqIdempotencyKeys(private val dsl: DSLContext) : IdempotencyKey
                 row(IDEMPOTENCY_KEY.SCOPE, IDEMPOTENCY_KEY.KEY_HASH).`in`(
                     select(IDEMPOTENCY_KEY.SCOPE, IDEMPOTENCY_KEY.KEY_HASH)
                         .from(IDEMPOTENCY_KEY)
-                        .where(IDEMPOTENCY_KEY.TAKEN_AT.lt(before.atUtc()))
+                        .where(IDEMPOTENCY_KEY.TAKEN_AT.lt(before.toStoredTime()))
                         .limit(FORGOTTEN_PER_TAKE),
                 ),
             )
@@ -94,6 +93,4 @@ internal class JooqIdempotencyKeys(private val dsl: DSLContext) : IdempotencyKey
         completedAt = completedAt?.toInstant(),
         outcome = outcome,
     )
-
-    private fun Instant.atUtc(): OffsetDateTime = atOffset(UTC)
 }

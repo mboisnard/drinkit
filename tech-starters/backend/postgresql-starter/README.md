@@ -66,7 +66,9 @@ internal class JooqCellars(private val dslContext: DSLContext) : Cellars {
   `store()`, `update()` and `delete()` of a record, and throws `OptimisticLockingFailureException`.
 - **Helpers**: `JSONBToJacksonConverter` maps a JSONB column to a Kotlin type, `multiset(...).mapping(::Bottle)` reads
   a nested collection in one query, `fetchSequence` streams a large read inside the transaction, and
-  `exception.violates("cellar_pkey")` tells whether PostgreSQL refused a statement on that constraint.
+  `exception.violates("cellar_pkey")` tells whether PostgreSQL refused a statement on that constraint, and
+  `instant.toStoredTime()` turns an `Instant` into the UTC time PostgreSQL stores, truncated to the microsecond so
+  that it never stores a later instant than the real one.
 - **PostgreSQL only**: the application refuses to start on another database.
 
 ## Configuration
