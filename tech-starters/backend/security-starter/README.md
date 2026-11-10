@@ -124,6 +124,8 @@ currentUser.get()                   // the connected user, or a 401 for an anony
 currentUser.signIn(userId)          // a user proven another way, with a new session id
 currentUser.refresh()               // after the user's roles changed
 currentVisitor.id()                 // the browser behind the request, signed in or not
+currentVisitor.ipAddress()          // its IpAddress, read through the proxies of server.forward-headers-strategy
+currentVisitor.ipAddress().host()   // what one host holds: the IPv4 address, or its whole IPv6 /64 network
 sessions.revokeAll(userId)          // signs another user out everywhere
 sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // computed once per session
 ```
@@ -146,9 +148,14 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 - **Logs**: each log of a signed-in user's request carries `user.id`, and each refusal its `traceId`, as the
   [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/logging.md)
   says.
+- **Limits**: past a limit of the code requests per email or per IP address, or of the code tries per IP address,
+  the endpoints answer 429 with `Retry-After`, and a limited code request sends no email. The
+  [rate limit starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/rate-limit-starter/README.md)
+  counts them, and an IPv6 address counts by its network of 64 bits. Without its `RateLimiter`, as with
+  `starters.rate-limit.enabled=false`, nothing limits the codes but their wrong tries per email.
 - **Tables**: the [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md) creates
   the `drinkit_session` tables of the sessions, the remember-me tokens and the sign-in codes. The sign-in by code needs
-  PostgreSQL through jOOQ.
+  PostgreSQL through jOOQ, for its codes and for the counts of its limits.
 - **Choices**: ADRs [0011](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0011-sign-in-without-a-password.md),
   [0012](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0012-keep-sessions-in-postgresql.md),
   [0013](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0013-remember-me-with-a-rotating-hashed-token.md)
@@ -181,9 +188,13 @@ From `testFixtures(project(":security-starter"))`:
   `refuseRegistrationOf`.
 - `InMemoryCurrentUser(accounts)` is the double of `CurrentUser`, for a test outside a request: nobody is signed in
   until `signIn(userId)` signs in an account of `accounts`.
+- `InMemoryCurrentVisitor(visitorId, ipAddress)` is the double of `CurrentVisitor`, for a test outside a request, and
+  `CurrentVisitorTestContract` the contract both run.
 - `SpySignInCodeSender` keeps the last code sent to each login, for the test to sign in with, and `failFor(login)`
   makes the sending throw, as an unreachable mail server would. `SignInCodeSenderTestContract` is the contract the
   application's sender runs.
+- A test that needs the limits without PostgreSQL gives the starter a `RateLimiter`, such as
+  `inMemoryRateLimiter(clock)` from `testFixtures(project(":rate-limit-starter"))`.
 - `EndpointRulesCoverage(rules, apiPackage).unruledEndpoints()` lists the operations of the API contract that no rule
   matches, without starting the application. It applies the rules that the other tech starters of the classpath bring,
   such as the stream of `sse-starter`. Rules given by bean name replace the starter's rule of that name, and

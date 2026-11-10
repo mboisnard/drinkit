@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActionsDsl
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicInteger
 
 const val XSRF_COOKIE = "__Host-XSRF-TOKEN"
 
@@ -48,16 +49,25 @@ internal class InMemoryCodes {
 
 /**
  * A browser of the test application: it keeps its session, sends the XSRF cookie back in its header, and reads the
- * sign-in codes its user gets from [codes].
+ * sign-in codes its user gets from [codes]. Each one calls from an IP address of its own, as the sign-in limits count.
  */
-internal class Browser(private val mockMvc: MockMvc, private val codes: SpySignInCodeSender = SpySignInCodeSender()) {
+internal class Browser(
+    private val mockMvc: MockMvc,
+    private val codes: SpySignInCodeSender = SpySignInCodeSender(),
+    val address: String = nextAddress(),
+) {
 
     var session = MockHttpSession()
 
     // As a browser sends its session cookie: without it, the session id is not the requested one, and stays
     private fun MockHttpServletRequestDsl.withSession() {
         session = this@Browser.session
-        with { it.apply { requestedSessionId = this@Browser.session.id } }
+        with {
+            it.apply {
+                requestedSessionId = this@Browser.session.id
+                remoteAddr = address
+            }
+        }
     }
 
     fun fetchXsrfCookie(): Cookie = requireNotNull(
@@ -96,6 +106,13 @@ internal class Browser(private val mockMvc: MockMvc, private val codes: SpySignI
         header("X-XSRF-TOKEN", xsrf.value)
         dsl()
     }
+}
+
+private val addresses = AtomicInteger()
+
+/** An IP address no other browser of the test JVM calls from. */
+internal fun nextAddress() = addresses.incrementAndGet().let {
+    "10.${it shr 16 and 255}.${it shr 8 and 255}.${it and 255}"
 }
 
 /** A code of six digits other than this one. */

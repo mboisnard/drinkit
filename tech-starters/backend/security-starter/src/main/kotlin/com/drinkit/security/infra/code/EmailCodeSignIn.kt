@@ -1,6 +1,12 @@
 package com.drinkit.security.infra.code
 
+import com.drinkit.rate.limit.RateLimitDecision
+import com.drinkit.security.CurrentVisitor
+import com.drinkit.security.infra.SecurityErrorResponses
 import com.drinkit.security.infra.rememberme.requestRememberMe
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpMethod
@@ -13,8 +19,30 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import tools.jackson.databind.json.JsonMapper
 
 /** Extends the form login filter to take its place in the chain, which `HttpSecurity.addFilter` finds by class. */
-internal class EmailCodeSignInFilter(private val jsonMapper: JsonMapper, private val maxEmailLength: Int) :
-    UsernamePasswordAuthenticationFilter() {
+internal class EmailCodeSignInFilter(
+    private val jsonMapper: JsonMapper,
+    private val maxEmailLength: Int,
+    private val limits: SignInCodeLimits,
+    private val visitor: CurrentVisitor,
+    private val errorResponses: SecurityErrorResponses,
+) : UsernamePasswordAuthenticationFilter() {
+
+    // Before the sign-in, whose every refusal is a 401, and before the code is checked, so that a limited try costs
+    // its email none of its tries
+    override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
+        val httpRequest = request as HttpServletRequest
+        val httpResponse = response as HttpServletResponse
+
+        if (requiresAuthentication(httpRequest, httpResponse)) {
+            val fromIp = limits.tryFrom(visitor.ipAddress())
+            if (fromIp is RateLimitDecision.Refused) {
+                errorResponses.tooManyRequests(httpRequest, httpResponse, fromIp)
+                return
+            }
+        }
+
+        super.doFilter(request, response, chain)
+    }
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
         val body = request.readSignInBody(jsonMapper)

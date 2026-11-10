@@ -5,6 +5,7 @@ import com.drinkit.idempotency.inMemoryIdempotency
 import com.drinkit.security.CurrentUser
 import com.drinkit.security.CurrentVisitor
 import com.drinkit.security.InMemoryCurrentUser
+import com.drinkit.security.InMemoryCurrentVisitor
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import org.junit.jupiter.api.Test
@@ -23,7 +24,9 @@ internal class IdempotencyWebAutoConfigurationTest {
         .withBean(PlatformTransactionManager::class.java, { DataSourceTransactionManager(DriverManagerDataSource()) })
         .withBean("requestMappingHandlerMapping", RequestMappingHandlerMapping::class.java)
         .withBean(CurrentUser::class.java, { InMemoryCurrentUser() })
-        .withBean(CurrentVisitor::class.java, { CurrentVisitor { "visitor" } })
+        .withBean(CurrentVisitor::class.java, {
+            InMemoryCurrentVisitor("visitor")
+        })
 
     private val withIdempotency = runner.withBean(Idempotency::class.java, { inMemoryIdempotency() })
 

@@ -95,6 +95,11 @@ components:
         A request with an Idempotency-Key carries a body of at most 64 KB. The body is a problem detail of RFC 9457, as
         application/problem+json.
 
+    TooManyRequests:
+      description: |
+        Too many calls for this email or from this IP address: retry after the seconds of the Retry-After header. The
+        body is a problem detail of RFC 9457, as application/problem+json, the same for any email.
+
     Unauthorized:
       description: |
         No user is signed in. The body is a problem detail of RFC 9457, as application/problem+json, with the traceId of

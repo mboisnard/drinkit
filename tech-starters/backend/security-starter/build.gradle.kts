@@ -9,13 +9,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-session-jdbc")
     api("org.springframework.boot:spring-boot-starter-security")
+    implementation(project(":rate-limit-starter"))
 
     compileOnly("org.springframework.boot:spring-boot-starter-actuator")
 
     testFixturesApi("org.springframework.security:spring-security-test")
     testFixturesImplementation("org.springframework.boot:spring-boot-starter-webmvc")
+    testFixturesImplementation(project(":rate-limit-starter"))
 
     testImplementation("org.springframework.boot:spring-boot-starter-actuator")
+    testImplementation(testFixtures(project(":rate-limit-starter")))
     testImplementation("org.springframework.boot:spring-boot-webmvc-test")
     testImplementation("tools.jackson.module:jackson-module-kotlin")
 }

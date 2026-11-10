@@ -1,6 +1,7 @@
 package com.drinkit.user
 
 import com.drinkit.common.Constants.DELETED_ACCOUNT_RETENTION
+import com.drinkit.security.InMemoryCurrentVisitor
 import com.drinkit.security.UserAccount
 import com.drinkit.security.UserAccounts
 import com.drinkit.security.UserAccountsTestContract
@@ -11,7 +12,6 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.util.Locale
-import java.util.UUID
 
 internal class DomainUserAccountsTest : UserAccountsTestContract() {
 
@@ -22,7 +22,7 @@ internal class DomainUserAccountsTest : UserAccountsTestContract() {
         users = userFixtures.users,
         createNewUser = userFixtures.createNewUser,
         reactivateUser = userFixtures.reactivateUser,
-        currentVisitor = { UUID.randomUUID().toString() },
+        currentVisitor = InMemoryCurrentVisitor(),
     )
 
     override fun givenAnAccount(login: String): UserAccount {

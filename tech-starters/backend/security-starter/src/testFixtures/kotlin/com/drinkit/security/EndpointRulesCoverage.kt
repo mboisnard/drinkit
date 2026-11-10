@@ -4,6 +4,7 @@ import com.drinkit.security.infra.chain.SecurityAutoConfiguration
 import com.drinkit.security.infra.chain.UnruledEndpoint
 import com.drinkit.security.infra.code.EmailCodeAuthenticationProvider
 import com.drinkit.security.infra.code.SignInCode
+import com.drinkit.security.infra.code.SignInCodeLimits
 import com.drinkit.security.infra.code.SignInCodes
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -67,7 +68,8 @@ class EndpointRulesCoverage(
             .withBean(JsonMapper::class.java, { JsonMapper() })
             .withBean(EmailCodeAuthenticationProvider::class.java, {
                 EmailCodeAuthenticationProvider(NoSignInCodes, InMemoryUserAccounts(), Clock.systemUTC())
-            }),
+            })
+            .withBean(SignInCodeLimits::class.java, { SignInCodeLimits(null) }),
     ) { runner, starter -> runner.withConfiguration(AutoConfigurations.of(starter)) }
 
     private fun isUnruled(context: WebApplicationContext, method: String, path: String): Boolean {
