@@ -55,13 +55,9 @@ internal class SignInCodeAutoConfiguration {
         issuer: SignInCodeIssuer,
         jsonMapper: JsonMapper,
         properties: SecurityStarterProperties,
-    ): RouterFunction<ServerResponse> = RouterFunctions.route()
-        .POST(CODE_REQUEST_PATH) { request ->
-            val servletRequest = request.servletRequest()
-            when (val login = servletRequest.readSignInBody(jsonMapper)?.login(properties.code.maxEmailLength)) {
-                null -> ServerResponse.badRequest().build()
-                else -> ServerResponse.noContent().build().also { issuer.issue(login, servletRequest.locale) }
-            }
-        }
-        .build()
+    ): RouterFunction<ServerResponse> {
+        val endpoint = SignInCodeEndpoint(issuer, jsonMapper, properties.code.maxEmailLength)
+
+        return RouterFunctions.route().POST(CODE_REQUEST_PATH, endpoint::requestCode).build()
+    }
 }

@@ -2,6 +2,7 @@ package com.drinkit.security.infra.chain
 
 import com.drinkit.security.CurrentVisitor
 import com.drinkit.security.EndpointRules
+import com.drinkit.security.infra.SecurityErrorResponses
 import com.drinkit.security.infra.SecurityStarterProperties
 import com.drinkit.security.infra.SecurityStarterProperties.Cookie.Companion.SAME_SITE
 import com.drinkit.security.infra.code.CODE_REQUEST_PATH

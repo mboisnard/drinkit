@@ -1,4 +1,4 @@
-package com.drinkit.security.infra.chain
+package com.drinkit.security.infra
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -44,16 +44,15 @@ internal class SecurityErrorResponses(private val jsonMapper: JsonMapper) :
         response.status = status.value()
         response.contentType = MediaType.APPLICATION_PROBLEM_JSON_VALUE
 
-        jsonMapper.writeValue(
-            response.outputStream,
-            buildMap {
-                put("type", "about:blank")
-                put("title", status.reasonPhrase)
-                put("status", status.value())
-                put("instance", request.requestURI)
-                // Put there by Micrometer Tracing, when the application has it: the logs of the request share it
-                MDC.get("traceId")?.let { put("traceId", it) }
-            },
-        )
+        jsonMapper.writeValue(response.outputStream, problem(request, status))
+    }
+
+    private fun problem(request: HttpServletRequest, status: HttpStatus) = buildMap {
+        put("type", "about:blank")
+        put("title", status.reasonPhrase)
+        put("status", status.value())
+        put("instance", request.requestURI)
+        // Put there by Micrometer Tracing, when the application has it: the logs of the request share it
+        MDC.get("traceId")?.let { put("traceId", it) }
     }
 }

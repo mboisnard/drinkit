@@ -6,6 +6,7 @@ import com.drinkit.security.SecuredApplicationTest
 import com.drinkit.security.SpySignInCodeSender
 import com.drinkit.security.TestAccounts
 import com.drinkit.security.keptXsrfCookie
+import com.drinkit.security.wrongCode
 import io.kotest.matchers.collections.shouldNotBeIn
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -124,7 +125,7 @@ internal class SignInCodeTest(
         val account = testAccounts.user()
         browser.requestCode(account.login)
         val code = codes.lastCodeOf(account.login)
-        repeat(MAX_ATTEMPTS - 1) { browser.signInWithCode(account.login, code.wrong()) }
+        repeat(MAX_ATTEMPTS - 1) { browser.signInWithCode(account.login, code.wrongCode()) }
 
         // When
         val signIn = browser.signInWithCode(account.login, code)
@@ -139,7 +140,7 @@ internal class SignInCodeTest(
         val account = testAccounts.user()
         browser.requestCode(account.login)
         val code = codes.lastCodeOf(account.login)
-        repeat(MAX_ATTEMPTS) { browser.signInWithCode(account.login, code.wrong()) }
+        repeat(MAX_ATTEMPTS) { browser.signInWithCode(account.login, code.wrongCode()) }
 
         // When
         val signIn = browser.signInWithCode(account.login, code)
@@ -179,7 +180,7 @@ internal class SignInCodeTest(
         browser.requestCode(account.login)
 
         // When
-        val wrongCode = browser.signInWithCode(account.login, codes.lastCodeOf(account.login).wrong())
+        val wrongCode = browser.signInWithCode(account.login, codes.lastCodeOf(account.login).wrongCode())
             .andExpect { status { isUnauthorized() } }.andReturn().response.contentAsString
         val unknownEmail = browser.signInWithCode(anUnknownEmail(), "123456")
             .andExpect { status { isUnauthorized() } }.andReturn().response.contentAsString
@@ -250,7 +251,7 @@ internal class SignInCodeTest(
         // Given
         val account = testAccounts.user()
         browser.requestCode(account.login)
-        val wrong = codes.lastCodeOf(account.login).wrong()
+        val wrong = codes.lastCodeOf(account.login).wrongCode()
 
         // When
         browser.signInWithCode(account.login, wrong)
@@ -271,6 +272,4 @@ internal class SignInCodeTest(
     }
 
     private fun anUnknownEmail() = "${UUID.randomUUID()}@drinkit.test"
-
-    private fun String.wrong() = ((toInt() + 1) % 1_000_000).toString().padStart(6, '0')
 }
