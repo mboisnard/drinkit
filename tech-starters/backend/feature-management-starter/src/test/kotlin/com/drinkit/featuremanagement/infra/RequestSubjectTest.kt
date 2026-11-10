@@ -3,6 +3,7 @@ package com.drinkit.featuremanagement.infra
 import com.drinkit.featuremanagement.FlagSubject
 import com.drinkit.featuremanagement.infra.openfeature.OpenFeatureFeatureFlags
 import com.drinkit.security.InMemoryCurrentUser
+import com.drinkit.security.InMemoryCurrentVisitor
 import com.drinkit.security.InMemoryUserAccounts
 import com.drinkit.security.UserAccount
 import dev.openfeature.sdk.EvaluationContext
@@ -16,7 +17,7 @@ internal class RequestSubjectTest {
 
     private val accounts = InMemoryUserAccounts()
     private val currentUser = InMemoryCurrentUser(accounts)
-    private val subject = RequestSubject(currentUser, { "visitor-1" }, { mapOf("plan" to "vip") })
+    private val subject = RequestSubject(currentUser, InMemoryCurrentVisitor("visitor-1"), { mapOf("plan" to "vip") })
 
     @Test
     fun `opens a flag to admins and to a plan, from the roles and the attributes of the signed-in user`() {

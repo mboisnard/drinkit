@@ -10,6 +10,7 @@ import com.drinkit.security.infra.code.CODE_SIGN_IN_PATH
 import com.drinkit.security.infra.code.EmailCodeAuthenticationProvider
 import com.drinkit.security.infra.code.EmailCodeSignInConfigurer
 import com.drinkit.security.infra.code.EmailCodeSignInFilter
+import com.drinkit.security.infra.code.SignInCodeLimits
 import com.drinkit.security.infra.events.SecurityEventLogger
 import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.ObjectProvider
@@ -97,6 +98,8 @@ internal class SecurityAutoConfiguration {
         endpointRules: ObjectProvider<EndpointRules>,
         rememberMeServices: ObjectProvider<RememberMeServices>,
         emailCodeAuthenticationProvider: EmailCodeAuthenticationProvider,
+        signInCodeLimits: SignInCodeLimits,
+        visitor: CurrentVisitor,
         csrfTokenRepository: CsrfTokenRepository,
         sessionAuthenticationStrategy: SessionAuthenticationStrategy,
         securityContextRepository: SecurityContextRepository,
@@ -104,6 +107,8 @@ internal class SecurityAutoConfiguration {
         properties: SecurityStarterProperties,
     ): SecurityFilterChain {
         val errorResponses = SecurityErrorResponses(jsonMapper)
+        val signInFilter =
+            EmailCodeSignInFilter(jsonMapper, properties.code.maxEmailLength, signInCodeLimits, visitor, errorResponses)
 
         protectAgainstCsrf(http, csrfTokenRepository, endpointRules)
         rememberMeServices.ifAvailable { services -> http.rememberMe { it.rememberMeServices(services) } }
@@ -120,12 +125,7 @@ internal class SecurityAutoConfiguration {
             }
             // An API never replays a refused request, and saving one would open a session for each anonymous caller
             requestCache { requestCache = NullRequestCache() }
-            with(
-                EmailCodeSignInConfigurer(
-                    EmailCodeSignInFilter(jsonMapper, properties.code.maxEmailLength),
-                    errorResponses,
-                ),
-            )
+            with(EmailCodeSignInConfigurer(signInFilter, errorResponses))
             logout {
                 logoutUrl = LOGOUT_PATH
                 logoutSuccessHandler = HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)

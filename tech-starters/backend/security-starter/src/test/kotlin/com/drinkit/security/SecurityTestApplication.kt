@@ -1,5 +1,6 @@
 package com.drinkit.security
 
+import com.drinkit.rate.limit.inMemoryRateLimiter
 import com.drinkit.test.ControlledClock
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
@@ -14,12 +15,16 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import java.time.Clock
 
 @SpringBootApplication
 internal class SecurityTestApplication {
 
     @Bean
     fun clock() = ControlledClock()
+
+    @Bean
+    fun rateLimiter(clock: Clock) = inMemoryRateLimiter(clock)
 
     @Bean
     fun userAccounts() = InMemoryUserAccounts()
@@ -55,6 +60,9 @@ internal class TestController(private val currentUser: CurrentUser, private val 
 
     @GetMapping("/api/public/visitor")
     fun visitor() = currentVisitor.id()
+
+    @GetMapping("/api/public/visitor/ip-address")
+    fun visitorIpAddress() = currentVisitor.ipAddress().value
 
     @GetMapping("/api/public/me")
     fun publicMe() = currentUser.get()

@@ -122,7 +122,8 @@ paths:
         Served by the security starter, not by a controller. Sends a code of six digits to the email, valid for ten
         minutes, in place of any earlier code of that email. The email gets three wrong tries per hour, whatever code
         it holds. Answers the same, as fast, whether the email has an account or not: nothing is created until the
-        code is entered.
+        code is entered. The requests are limited per email and per IP address: a limited one sends no email and
+        keeps the live code.
       requestBody:
         required: true
         content:
@@ -136,6 +137,8 @@ paths:
           description: No email in the body
         '403':
           $ref: 'common.yaml#/components/responses/Forbidden'
+        '429':
+          $ref: 'common.yaml#/components/responses/TooManyRequests'
         '204':
           description: Code sent, when the email can receive it
 
@@ -149,7 +152,8 @@ paths:
         Served by the security starter, not by a controller. Signs in the account of the email, creates it when the
         email has none, or brings back an account deleted less than 30 days ago. Sets the session cookie, and the
         remember-me cookie when asked. Replaces the XSRF-TOKEN cookie in the same response, for the next unsafe
-        request to send.
+        request to send. The tries are limited per IP address, right ones included: past the limit, even a right code
+        is refused.
       requestBody:
         required: true
         content:
@@ -165,6 +169,8 @@ paths:
             detail of RFC 9457, as application/problem+json.
         '403':
           $ref: 'common.yaml#/components/responses/Forbidden'
+        '429':
+          $ref: 'common.yaml#/components/responses/TooManyRequests'
         '204':
           description: User signed in
 

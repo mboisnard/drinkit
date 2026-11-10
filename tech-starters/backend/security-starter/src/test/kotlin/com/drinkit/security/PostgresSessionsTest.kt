@@ -31,8 +31,13 @@ const val REMEMBER_ME_COOKIE = "__Host-remember-me"
 @ExtendWith(OutputCaptureExtension::class)
 internal annotation class PostgresSessionsTest
 
-/** A browser of the test application: it keeps the cookies it is given, and sends the XSRF cookie in its header. */
+/**
+ * A browser of the test application: it keeps the cookies it is given, and sends the XSRF cookie in its header, from
+ * an IP address of its own, as the sign-in limits count.
+ */
 internal class CookieBrowser(private val mockMvc: MockMvc, private val contextPath: String = "") {
+
+    private val address = nextAddress()
 
     private val cookies = mutableMapOf<String, Cookie>()
 
@@ -86,6 +91,7 @@ internal class CookieBrowser(private val mockMvc: MockMvc, private val contextPa
     private fun send(method: HttpMethod, path: String, dsl: MockHttpServletRequestDsl.() -> Unit): ResultActionsDsl {
         val result = mockMvc.request(method, contextPath + path) {
             contextPath = this@CookieBrowser.contextPath
+            with { it.apply { remoteAddr = address } }
             if (this@CookieBrowser.cookies.isNotEmpty()) cookie(*this@CookieBrowser.cookies.values.toTypedArray())
             dsl()
         }

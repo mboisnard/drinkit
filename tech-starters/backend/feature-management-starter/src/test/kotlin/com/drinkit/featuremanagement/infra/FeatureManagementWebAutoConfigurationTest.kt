@@ -3,6 +3,7 @@ package com.drinkit.featuremanagement.infra
 import com.drinkit.security.CurrentUser
 import com.drinkit.security.CurrentVisitor
 import com.drinkit.security.InMemoryCurrentUser
+import com.drinkit.security.InMemoryCurrentVisitor
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.boot.autoconfigure.AutoConfigurations
@@ -24,7 +25,9 @@ internal class FeatureManagementWebAutoConfigurationTest {
         .withPropertyValues("starters.feature-management.enabled=false")
         .withBean(JsonMapper::class.java, { JsonMapper() })
         .withBean(CurrentUser::class.java, { InMemoryCurrentUser() })
-        .withBean(CurrentVisitor::class.java, { CurrentVisitor { "visitor-1" } })
+        .withBean(CurrentVisitor::class.java, {
+            InMemoryCurrentVisitor("visitor-1")
+        })
 
     @Test
     fun `serves the endpoints of flags and experiments even switched off, so that the frontend reads the defaults`() {

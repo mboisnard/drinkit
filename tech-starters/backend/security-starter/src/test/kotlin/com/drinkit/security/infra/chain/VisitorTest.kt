@@ -51,4 +51,15 @@ internal class VisitorTest(private val mockMvc: MockMvc) {
         response.contentAsString shouldNotBe "<script>"
         UUID.fromString(response.contentAsString)
     }
+
+    @Test
+    fun `gives the address of the client behind the request`() {
+        // When
+        val response = mockMvc.get("/api/public/visitor/ip-address") {
+            with { request -> request.apply { remoteAddr = "203.0.113.7" } }
+        }.andReturn().response
+
+        // Then
+        response.contentAsString shouldBe "203.0.113.7"
+    }
 }
