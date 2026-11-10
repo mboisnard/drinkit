@@ -169,6 +169,7 @@ export default withMermaid(
                   { text: '0017. Feature flags through OpenFeature', link: '0017-feature-flags-through-openfeature' },
                   { text: '0018. A/B tests behind a flag, with PostHog', link: '0018-ab-tests-behind-a-flag-with-posthog' },
                   { text: '0019. Run requests and events once per idempotency key', link: '0019-run-requests-and-events-once-per-idempotency-key' },
+                  { text: '0020. Rate limit in the application with GCRA', link: '0020-rate-limit-in-the-application-with-gcra-on-postgresql' },
                 ],
               },
 

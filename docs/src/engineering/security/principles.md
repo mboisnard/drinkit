@@ -88,7 +88,7 @@ flowchart LR
     rotation["Token rotated at each use,<br/>replay detected, hashes only"]
     codeLimits["Code used once, 10 min,<br/>3 wrong tries per email and hour,<br/>SHA-256 hash only"]
     sameAnswer["Same 204 for any email,<br/>one 401 for every failure"]
-    rateLimit["Rate limiting per email and IP,<br/>not built yet"]
+    rateLimit["Rate limiting per email and IP,<br/>starter built, not applied yet"]
     deny["Refused by default,<br/>coverage test in the build"]
     preAuthorize["@PreAuthorize on the method"]
     vocabulary["OWASP event names, user ids only"]
@@ -111,7 +111,9 @@ flowchart LR
 ```
 
 Most threats meet more than one defense, so that one gap leaves another standing. A dashed line is a defense that
-does not exist yet.
+does not exist yet. The [rate limit starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/rate-limit-starter/README.md)
+counts the calls of a key, as [ADR 0020](../adr/0020-rate-limit-in-the-application-with-gcra-on-postgresql.md)
+records, and the sign-in endpoints do not apply it yet.
 
 ## 🛣️ The path of a request
 
