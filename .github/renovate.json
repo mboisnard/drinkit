@@ -20,8 +20,11 @@
     "labels": ["dependencies", "area:security"]
   },
   "lockFileMaintenance": {
-    "description": "A refresh pulls transitive versions without the 7-day delay, so it waits for approval",
-    "dependencyDashboardApproval": true
+    "description": "Once a month, every lock is refreshed so that the transitive versions do not age, without the 7-day delay of the other updates. It merges itself once CI gate is green, and is rebased behind master: the ruleset merges only an up-to-date branch",
+    "enabled": true,
+    "schedule": ["* 0-3 1 * *"],
+    "automerge": true,
+    "rebaseWhen": "behind-base-branch"
   },
   "customManagers": [
     {
