@@ -50,6 +50,7 @@ the other. The status says where a decision stands:
 | [0017](0017-feature-flags-through-openfeature.md) | Feature flags through OpenFeature, with Flipt as provider | Accepted | 2026-11-08 |
 | [0018](0018-ab-tests-behind-a-flag-with-posthog.md) | A/B tests behind a flag, with PostHog choosing the variant | Accepted | 2026-11-08 |
 | [0019](0019-run-requests-and-events-once-per-idempotency-key.md) | Run requests and events once per idempotency key, kept in PostgreSQL | Accepted | 2026-11-08 |
+| [0020](0020-rate-limit-in-the-application-with-gcra-on-postgresql.md) | Rate limit in the application with GCRA on PostgreSQL | Accepted | 2026-11-09 |
 
 ## How to write one
 
