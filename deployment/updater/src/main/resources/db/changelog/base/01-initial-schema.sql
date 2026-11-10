@@ -107,3 +107,17 @@ CREATE TABLE IF NOT EXISTS drinkit_application.idempotency_key
 
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idempotency_key_taken_at_idx
     ON drinkit_application.idempotency_key (taken_at);
+
+-- Rate limits, one row per rule, key and limit of rate-limit-starter, forgotten once its theoretical arrival passed
+
+CREATE TABLE IF NOT EXISTS drinkit_application.rate_limit
+(
+    rule                 TEXT                     NOT NULL,
+    key_hash             TEXT                     NOT NULL,
+    period               TEXT                     NOT NULL,
+    theoretical_arrival  TIMESTAMP WITH TIME ZONE NOT NULL,
+    PRIMARY KEY (rule, key_hash, period)
+);
+
+CREATE INDEX CONCURRENTLY IF NOT EXISTS rate_limit_theoretical_arrival_idx
+    ON drinkit_application.rate_limit (theoretical_arrival);
