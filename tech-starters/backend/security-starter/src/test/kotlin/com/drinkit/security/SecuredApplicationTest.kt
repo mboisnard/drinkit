@@ -98,6 +98,9 @@ internal class Browser(private val mockMvc: MockMvc, private val codes: SpySignI
     }
 }
 
+/** A code of six digits other than this one. */
+internal fun String.wrongCode() = ((toInt() + 1) % 1_000_000).toString().padStart(6, '0')
+
 /** The XSRF cookie a browser keeps from this response: the last one it sets, after any that expires the previous. */
 internal fun MockHttpServletResponse.keptXsrfCookie(): Cookie? = cookies.lastOrNull { it.name == XSRF_COOKIE }
 

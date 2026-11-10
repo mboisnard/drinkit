@@ -25,23 +25,27 @@ sealed interface RateLimitDecision {
     }
 
     data class Refused(val rule: String, val retryAfter: Duration) : RateLimitDecision {
+
+        /** The value of `Retry-After`, rounded up so that a client retrying on time is let through. */
+        val retryAfterSeconds: Long get() = retryAfter.plusNanos(NANOS_PER_SECOND - 1).seconds.coerceAtLeast(1)
+
         override fun orThrow(): Nothing = throw RateLimitExceededException(rule, retryAfter)
+
+        private companion object {
+            const val NANOS_PER_SECOND = 1_000_000_000L
+        }
     }
 }
 
-/** Answers 429 with `Retry-After` in whole seconds, rounded up so that a client retrying on time is let through. */
+/** Answers 429 with `Retry-After` in whole seconds. */
 @TechStarterTool
 class RateLimitExceededException(val rule: String, val retryAfter: Duration) :
     ErrorResponseException(TOO_MANY_REQUESTS) {
 
     init {
-        val seconds = retryAfter.plusNanos(NANOS_PER_SECOND - 1).seconds.coerceAtLeast(1)
+        val seconds = RateLimitDecision.Refused(rule, retryAfter).retryAfterSeconds
 
         headers.set(RETRY_AFTER, seconds.toString())
         setDetail("Too many calls, retry in $seconds s")
-    }
-
-    private companion object {
-        const val NANOS_PER_SECOND = 1_000_000_000L
     }
 }
