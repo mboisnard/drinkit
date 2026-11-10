@@ -1,13 +1,13 @@
 [versions]
 
 detekt = "2.0.0-alpha.6"
-graalvm-buildtools-native = "1.1.17"
+graalvm-buildtools-native = "1.1.18"
 gradle-git-properties = "4.0.1"
 jooq = "3.21.9"
-konture = "1.0.2"
+konture = "1.0.4"
 kotlin = "2.4.21"
-ksp = "2.3.12"
-openapi-generator = "7.26.0"
+ksp = "2.3.13"
+openapi-generator = "7.27.0"
 spring-boot = "4.1.2"
 
 [libraries]
