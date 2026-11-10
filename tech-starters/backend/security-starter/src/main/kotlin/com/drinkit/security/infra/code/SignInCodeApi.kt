@@ -4,7 +4,7 @@ import org.springframework.web.servlet.function.ServerRequest
 import org.springframework.web.servlet.function.ServerResponse
 import tools.jackson.databind.json.JsonMapper
 
-internal class SignInCodeEndpoint(
+internal class SignInCodeApi(
     private val issuer: SignInCodeIssuer,
     private val jsonMapper: JsonMapper,
     private val maxEmailLength: Int,

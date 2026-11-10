@@ -56,8 +56,8 @@ internal class SignInCodeAutoConfiguration {
         jsonMapper: JsonMapper,
         properties: SecurityStarterProperties,
     ): RouterFunction<ServerResponse> {
-        val endpoint = SignInCodeEndpoint(issuer, jsonMapper, properties.code.maxEmailLength)
+        val api = SignInCodeApi(issuer, jsonMapper, properties.code.maxEmailLength)
 
-        return RouterFunctions.route().POST(CODE_REQUEST_PATH, endpoint::requestCode).build()
+        return RouterFunctions.route().POST(CODE_REQUEST_PATH, api::requestCode).build()
     }
 }
