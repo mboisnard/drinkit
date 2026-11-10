@@ -88,7 +88,7 @@ flowchart LR
     rotation["Token rotated at each use,<br/>replay detected, hashes only"]
     codeLimits["Code used once, 10 min,<br/>3 wrong tries per email and hour,<br/>SHA-256 hash only"]
     sameAnswer["Same 204 for any email,<br/>one 401 for every failure"]
-    rateLimit["Rate limiting per email and IP,<br/>starter built, not applied yet"]
+    rateLimit["Code requests and tries<br/>limited per email and IP address"]
     deny["Refused by default,<br/>coverage test in the build"]
     preAuthorize["@PreAuthorize on the method"]
     vocabulary["OWASP event names, user ids only"]
@@ -99,10 +99,10 @@ flowchart LR
   stolenSession --> transport & lifetime
   stolenRemember --> httponly & rotation
   guessed --> codeLimits
-  guessed -.-> rateLimit
+  guessed --> rateLimit
   dumped --> codeLimits
   enumerated --> sameAnswer
-  flooded -.-> rateLimit
+  flooded --> rateLimit
   framed --> origin
   sniffed --> nosniff & csp
   unruled --> deny
@@ -110,10 +110,8 @@ flowchart LR
   logs --> vocabulary
 ```
 
-Most threats meet more than one defense, so that one gap leaves another standing. A dashed line is a defense that
-does not exist yet. The [rate limit starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/rate-limit-starter/README.md)
-counts the calls of a key, as [ADR 0020](../adr/0020-rate-limit-in-the-application-with-gcra-on-postgresql.md)
-records, and the sign-in endpoints do not apply it yet.
+Most threats meet more than one defense, so that one gap leaves another standing.
+[Limits on the requests and the tries](#limits-on-the-requests-and-the-tries) gives those of the sign-in by code.
 
 ## 🛣️ The path of a request
 
@@ -179,11 +177,17 @@ sequenceDiagram
   Nuxt->>Starter: GET /api/auth/csrf
   Starter-->>Nuxt: 204, Set-Cookie __Host-XSRF-TOKEN
   Nuxt->>Starter: POST /api/auth/code, X-XSRF-TOKEN<br/>{email}
-  Starter->>DB: replace the code hash of the email in sign_in_code
-  Starter->>Sender: send(email, code, locale)
-  Starter-->>Nuxt: 204, whatever the email
+  Starter->>DB: count the request against its IP address, then against its email, in rate_limit
+  alt past one of the limits
+    Starter-->>Nuxt: 429, Retry-After, no email sent
+  else within them
+    Starter->>DB: replace the code hash of the email in sign_in_code
+    Starter->>Sender: send(email, code, locale)
+    Starter-->>Nuxt: 204, whatever the email
+  end
   Note over Nuxt: the user reads the code in their mailbox
   Nuxt->>Starter: POST /api/auth/code/sign-in, X-XSRF-TOKEN<br/>{email, code, rememberMe}
+  Starter->>DB: count a try against the IP address in rate_limit, 429 past its limit
   Starter->>DB: try the code, deleted once accepted
   Starter->>Accounts: findByLogin(email), or register(email, locale) when none
   Accounts-->>Starter: UserAccount: found, reactivated or created
@@ -207,14 +211,42 @@ token in its own response. It also grants the factor of a one-time token, with i
 recent sign-in. The application changes the session id the same way through `CurrentUser`, when it signs in a user
 proven another way or reloads their roles.
 
-A code of six digits can be found back from its hash, which is why it lives minutes. Nothing limits the requests per
-email or per address yet: a caller can ask for code after code, and so send emails to any address.
+A code of six digits can be found back from its hash, which is why it lives minutes.
+
+### Limits on the requests and the tries
+
+Limits stop a caller who guesses codes or floods mailboxes with them. Each one counts the calls of a key with the
+[rate limit starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/rate-limit-starter/README.md),
+where a limit of `N` per period gives back one call every `period / N`, as
+[ADR 0020](../adr/0020-rate-limit-in-the-application-with-gcra-on-postgresql.md) records. A call past a limit
+answers 429 with `Retry-After`, the same for any email, and does nothing else: a limited code request sends no email,
+and the code already sent to its email still signs in until it expires.
+
+| Counted | Key | Limits | Stops |
+|---|---|---|---|
+| Code requests | The email | 5 an hour | A mailbox flooded with codes |
+| Code requests | The IP address | 50 a day | A script that sends codes to any email |
+| Code tries | The IP address | 50 a day | Guesses across emails, and a user locked out by wrong codes sent in their name |
+
+The IP address counts first, so that a caller past its limit spends neither the requests nor the tries of the email it
+names. A try counts before its code is checked, so that guesses sent at the same time all count, and a right code counts
+too: a user signs in with one request and one try, which the requests of their IP address already bound. An IPv6 address
+counts by its network of 64 bits, which one host often gets whole, so that a host cannot pass a limit by taking a new
+address of its network for each call. The IP address is the client's: behind a proxy of a private network,
+`drinkit-backend` reads it in `X-Forwarded-For`, through `server.forward-headers-strategy`. The limits live in the code
+of `security-starter`, as ADR 0020 wants of every rule, and `starters.rate-limit.enabled=false` turns them off.
+
+> [!WARNING]
+> **Accepted: anyone can spend the requests of an email.** The owner of that email then waits up to the `Retry-After` of
+> the refusal for a new code, while the code already sent still signs in. Counting per email is what keeps one mailbox
+> from being flooded from many IP addresses.
 
 ### Where each piece lives
 
 | Piece | Kind | Where |
 |---|---|---|
 | The code: its draw, hash, expiry and tries | Authentication | `security-starter`, in `drinkit_session.sign_in_code` |
+| The limits on the requests and the tries | Authentication | `security-starter`, counted by `rate-limit-starter` in `drinkit_application.rate_limit` |
 | The sending of the code | A channel the application picks | `SignInCodeSender`: `drinkit-backend` publishes a [platform event](../architecture/platform-events.md), whose handler emails the code after the answer |
 | The account: its creation, reactivation and roles | Business | The `user` [event stream](../architecture/event-sourcing.md), which the starter reaches through `UserAccounts` |
 
