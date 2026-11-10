@@ -6,6 +6,7 @@ import com.drinkit.security.ConnectedUser
 import com.drinkit.security.connectedAs
 import com.drinkit.security.generated.jooq.DrinkitSession
 import com.drinkit.test.ControlledClock
+import com.drinkit.test.rootCause
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
@@ -274,6 +275,4 @@ internal class ReplayingAnHttpRequestTest(
         content = """{"name": "$name"}"""
         key?.let { header("Idempotency-Key", it) }
     }
-
-    private fun Throwable.rootCause(): Throwable = generateSequence(this) { it.cause }.last()
 }

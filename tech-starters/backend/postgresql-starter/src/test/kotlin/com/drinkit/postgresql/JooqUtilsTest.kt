@@ -7,12 +7,14 @@ import org.jooq.DSLContext
 import org.jooq.TableField
 import org.jooq.impl.DSL.constraint
 import org.jooq.impl.DSL.name
+import org.jooq.impl.DSL.value
 import org.jooq.impl.SQLDataType.VARCHAR
 import org.jooq.impl.TableImpl
 import org.jooq.impl.TableRecordImpl
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.dao.DataAccessException
+import java.time.Instant
 
 @JooqIntegrationTest
 internal class JooqUtilsTest {
@@ -68,6 +70,18 @@ internal class JooqUtilsTest {
 
         // Then
         refusal.violates("author_pkey") shouldBe false
+    }
+
+    @Test
+    fun `stores an instant at the microsecond, never later than itself`(dsl: DSLContext) {
+        // Given
+        val instant = Instant.parse("2026-11-03T10:15:30.123456999Z")
+
+        // When
+        val stored = dsl.select(value(instant.toStoredTime())).fetchSingle().value1().toInstant()
+
+        // Then
+        stored shouldBe Instant.parse("2026-11-03T10:15:30.123456Z")
     }
 
     // A table and its record, as jOOQ generates them

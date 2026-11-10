@@ -1,7 +1,7 @@
 package com.drinkit.security.infra.code
 
+import com.drinkit.postgresql.toStoredTime
 import com.drinkit.security.generated.jooq.tables.references.SIGN_IN_CODE
-import com.drinkit.security.infra.toStoredTime
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.excluded
 import org.jooq.impl.DSL.`when`

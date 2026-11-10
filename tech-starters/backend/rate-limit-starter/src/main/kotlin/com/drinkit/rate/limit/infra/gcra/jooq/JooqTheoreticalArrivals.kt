@@ -1,5 +1,6 @@
 package com.drinkit.rate.limit.infra.gcra.jooq
 
+import com.drinkit.postgresql.toStoredTime
 import com.drinkit.rate.limit.generated.jooq.tables.references.RATE_LIMIT
 import com.drinkit.rate.limit.infra.gcra.Outcome
 import com.drinkit.rate.limit.infra.gcra.TheoreticalArrivals
@@ -11,8 +12,6 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import java.time.Instant
-import java.time.OffsetDateTime
-import java.time.ZoneOffset.UTC
 
 private const val FORGOTTEN_PER_UPDATE = 100
 
@@ -40,7 +39,7 @@ internal class JooqTheoreticalArrivals(private val dsl: DSLContext) : Theoretica
     }
 
     private fun save(rule: String, keyHash: String, arrivals: Map<Duration, Instant>) {
-        val rows = arrivals.map { (period, arrival) -> row(rule, keyHash, period.toString(), arrival.atUtc()) }
+        val rows = arrivals.map { (period, arrival) -> row(rule, keyHash, period.toString(), arrival.toStoredTime()) }
 
         dsl.insertInto(
             RATE_LIMIT,
@@ -64,7 +63,7 @@ internal class JooqTheoreticalArrivals(private val dsl: DSLContext) : Theoretica
                 row(RATE_LIMIT.RULE, RATE_LIMIT.KEY_HASH, RATE_LIMIT.PERIOD).`in`(
                     select(RATE_LIMIT.RULE, RATE_LIMIT.KEY_HASH, RATE_LIMIT.PERIOD)
                         .from(RATE_LIMIT)
-                        .where(RATE_LIMIT.THEORETICAL_ARRIVAL.lt(before.atUtc()))
+                        .where(RATE_LIMIT.THEORETICAL_ARRIVAL.lt(before.toStoredTime()))
                         .limit(FORGOTTEN_PER_UPDATE)
                         .forUpdate()
                         .skipLocked(),
@@ -72,6 +71,4 @@ internal class JooqTheoreticalArrivals(private val dsl: DSLContext) : Theoretica
             )
             .execute()
     }
-
-    private fun Instant.atUtc(): OffsetDateTime = atOffset(UTC)
 }

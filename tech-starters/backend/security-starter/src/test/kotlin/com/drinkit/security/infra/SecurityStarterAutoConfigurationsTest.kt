@@ -30,6 +30,7 @@ import com.drinkit.security.infra.session.JdbcSessionCustomizer
 import com.drinkit.security.infra.session.JsonSessionConverter
 import com.drinkit.security.infra.session.SessionsAutoConfiguration
 import com.drinkit.security.infra.session.SpringSessions
+import com.drinkit.test.rootCause
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
@@ -265,6 +266,4 @@ internal class SecurityStarterAutoConfigurationsTest {
         .withBean(FindByIndexNameSessionRepository::class.java, { InMemoryIndexedSessions() })
         .withBean(DataSource::class.java, { dataSource })
         .withBean(PlatformTransactionManager::class.java, { DataSourceTransactionManager(dataSource) })
-
-    private fun Throwable.rootCause(): Throwable = cause?.rootCause() ?: this
 }

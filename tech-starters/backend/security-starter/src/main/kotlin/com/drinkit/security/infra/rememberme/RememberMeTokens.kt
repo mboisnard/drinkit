@@ -1,8 +1,8 @@
 package com.drinkit.security.infra.rememberme
 
+import com.drinkit.postgresql.toStoredTime
 import com.drinkit.security.generated.jooq.tables.records.RememberMeTokenRecord
 import com.drinkit.security.generated.jooq.tables.references.REMEMBER_ME_TOKEN
-import com.drinkit.security.infra.toStoredTime
 import org.jooq.DSLContext
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
