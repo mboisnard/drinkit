@@ -12,7 +12,7 @@ import org.testcontainers.utility.DockerImageName
 import org.testcontainers.utility.TestcontainersConfiguration
 
 // Not the community module ch.martinelli.oss:testcontainers-mailpit: it brings Jackson 2 and an auto-configuration
-private const val MAILPIT_IMAGE_NAME = "axllent/mailpit:v1.32.0"
+private const val MAILPIT_IMAGE_NAME = "axllent/mailpit:v1.33.0"
 private const val SMTP_PORT = 1025
 private const val API_PORT = 8025
 
