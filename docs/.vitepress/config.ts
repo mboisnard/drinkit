@@ -170,6 +170,7 @@ export default withMermaid(
                   { text: '0018. A/B tests behind a flag, with PostHog', link: '0018-ab-tests-behind-a-flag-with-posthog' },
                   { text: '0019. Run requests and events once per idempotency key', link: '0019-run-requests-and-events-once-per-idempotency-key' },
                   { text: '0020. Rate limit in the application with GCRA', link: '0020-rate-limit-in-the-application-with-gcra-on-postgresql' },
+                  { text: '0021. Serve AI models outside the application', link: '0021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter' },
                 ],
               },
 

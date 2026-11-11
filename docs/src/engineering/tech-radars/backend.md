@@ -302,11 +302,11 @@
     },
     {
       "quadrant": "Techniques",
-      "ring": "TRIAL",
-      "label": "OCR",
-      "description": "Reads bottle labels with Tesseract, behind a tech starter",
-      "link": "https://github.com/tesseract-ocr/tesseract",
-      "moved": 1
+      "ring": "HOLD",
+      "label": "Tesseract OCR",
+      "description": "Replaced by vision language models served outside the application",
+      "link": "/drinkit/engineering/adr/0021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.html",
+      "moved": -1
     },
     {
       "quadrant": "Techniques",
@@ -319,8 +319,8 @@
       "quadrant": "Techniques",
       "ring": "ASSESS",
       "label": "LLM Integration",
-      "description": "Language models for AI features, to be tried in this project",
-      "link": "https://docs.spring.io/spring-ai/reference/api/chatclient.html"
+      "description": "Language and vision models through Spring AI, served by a frontier API or LocalAI, not used by a feature yet",
+      "link": "/drinkit/engineering/adr/0021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.html"
     },
     ]'
 />

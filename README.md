@@ -20,8 +20,8 @@ A cellar manager comes first. Its users keep track of what they own, what they d
   date and price, quantity, photos and tasting notes. My Wines and My Bar show the wines and the spirits apart.
 - **Moments.** Record when and at which event a bottle was drunk, plan one for a date with an email reminder,
   or offer it to someone, a member or not.
-- **Search and import.** Find a bottle by name or origin, or from a photo through OCR and vision language
-  models. Import bottles from Vivino and other sources, and keep their prices up to date.
+- **Search and import.** Find a bottle by name or origin, or from a photo of its label read by a vision language
+  model. Import bottles from Vivino and other sources, and keep their prices up to date.
 - **Cocktails.** Write recipes whose ingredients link to your bottles, find a cocktail from a picture of
   bottles, and keep your favorites.
 - **Recommendations and sharing.** Bottles similar to the ones in your cellar, cocktails to your taste, and
