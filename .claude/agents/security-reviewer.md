@@ -102,8 +102,8 @@ not", beyond what an existing operation already tells.
 **Secrets.** No key, token, password or certificate in code, configuration, tests, fixtures or logs, in any
 commit of the branch. The values of `application-dev.yml` and `deployment/local/compose.yml` are local container
 defaults, like the other local values that `docs/src/engineering/writing-code/best-practices/dev-exp.md` lists;
-anything else comes from an environment variable with a placeholder, as the OCR starter's
-`application-ocr.yml` does. GitHub push protection only knows the common formats: you catch the rest.
+anything else comes from an environment variable, read through its property or a `${...}` placeholder. GitHub
+push protection only knows the common formats: you catch the rest.
 
 **Personal data in logs.** An email, a name, a birth date, a password, a token or a session id is never logged at
 info or above, and a password or a token at no level. An existing debug line that logs a username is no

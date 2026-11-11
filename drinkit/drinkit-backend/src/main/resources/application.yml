@@ -1,7 +1,5 @@
 spring:
   application.name: drinkit
-  profiles:
-    include: ocr
   threads.virtual.enabled: true
 
   http:

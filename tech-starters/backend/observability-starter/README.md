@@ -60,12 +60,12 @@ Spring Boot samples 10 % of the traces by default. A metric or a span of your ow
 of Micrometer, never through the OpenTelemetry API: one observation gives a timer and a span.
 
 ```kotlin
-Observation.createNotStarted("ocr.analyze", observationRegistry)
-    .lowCardinalityKeyValue("analyzer", "tesseract")
-    .observe { analyzer.analyze(image) }
+Observation.createNotStarted("rates.refresh", observationRegistry)
+    .lowCardinalityKeyValue("provider", "exchangerate-api")
+    .observe { provider.refresh() }
 ```
 
-A low-cardinality value, such as an analyzer, tags the metric and the span. An id goes in a
+A low-cardinality value, such as a provider, tags the metric and the span. An id goes in a
 `highCardinalityKeyValue`, which tags the span alone.
 
 [ADR 0016](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)

@@ -49,9 +49,6 @@ internal class TechStartersArchitectureTest {
             description = "A tech starter documents its public API with @TechStarterTool and keeps the rest " +
                 "internal: mark the class, or make it internal. A data or value class is a value that a tool " +
                 "takes, and needs no mark"
-            suppress {
-                classFqName("com.drinkit.ocr.OCRResponse", OPS_STARTERS)
-            }
             classes {
                 that().inModule(STARTERS)
                 that().areTopLevel()
@@ -75,10 +72,6 @@ internal class TechStartersArchitectureTest {
                 "@Component, a @RestController or a nested @Configuration of a starter on its own: that bean ignores " +
                 "starters.<name>.enabled and @ConditionalOnMissingBean, and is gone in an application of another " +
                 "root package. Declare the bean in the starter's @AutoConfiguration"
-            suppress {
-                classFqName("com.drinkit.ocr.InternalOCRAnalysis", OPS_STARTERS)
-                classFqName("com.drinkit.ocr.OCRConfiguration", OPS_STARTERS)
-            }
             val stereotypes = setOf(
                 "Component",
                 "Service",
@@ -106,9 +99,6 @@ internal class TechStartersArchitectureTest {
         rule("starters.beans-back-off") {
             description = "The application's own bean wins over a starter's: annotate the @Bean " +
                 "@ConditionalOnMissingBean"
-            suppress {
-                function("com.drinkit.ocr.OCRConfiguration.createOCRAnalyzers", OPS_STARTERS)
-            }
             functions {
                 that().resideInModules(STARTERS)
                 that().haveAnnotationOf("Bean")
@@ -145,9 +135,6 @@ internal class TechStartersArchitectureTest {
                     rule("starters.no-cycle-between-packages") {
                         description = "The packages of a tech starter depend on each other one way only: move the " +
                             "type that closes the cycle into the package the others use"
-                        suppress {
-                            slice("ocr.analyzers", OPS_STARTERS)
-                        }
                         slices(sourceSetsOf(starter)) {
                             matching("${rootPackageOf(classesOf(starter).first().packageName)}.(**)")
                             not().haveKey { "generated" in it.split('.') }

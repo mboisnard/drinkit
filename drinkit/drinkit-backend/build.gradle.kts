@@ -9,7 +9,6 @@ dependencies {
 
     implementation(project(":idempotency-starter"))
     implementation(project(":messaging-starter"))
-    implementation(project(":ocr-starter"))
     implementation(project(":security-starter"))
     implementation(project(":sse-starter"))
     implementation(project(":feature-management-starter"))

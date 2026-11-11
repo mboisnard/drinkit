@@ -105,7 +105,6 @@ internal class TestConventionsArchitectureTest {
     fun `no test is disabled`() {
         rule("tests.no-disabled-test") {
             description = "A disabled test looks covered but checks nothing: fix it, or delete it"
-            suppress { file("*/com/drinkit/ocr/analyzers/TesseractDocumentAnalyserTest.kt", OPS_STARTERS) }
             files(SourceSets.tests()) {
                 that().inModules(ALL)
                 should().notHaveImportOf("org.junit.jupiter.api.Disabled")
