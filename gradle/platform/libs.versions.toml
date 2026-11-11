@@ -10,7 +10,6 @@ cucumber-dependencies = "8.0.4"
 opentelemetry-dependencies = "1.68.0"
 spring-ai-dependencies = "2.0.2"
 spring-boot-dependencies = "4.1.2"
-spring-cloud-gcp-dependencies = "8.3.1"
 
 # Runtime Versions
 bouncycastle = "1.86"
@@ -22,7 +21,6 @@ meilisearch = "0.22.1"
 openfeature-sdk = "1.23.0"
 openfeature-flipt-provider = "0.1.4"
 springdoc-openapi = "3.2.0"
-tess4j = "5.21.0"
 
 # Test Versions
 approvaltests = "31.0.0"
@@ -39,7 +37,6 @@ cucumber-dependencies-bom = { module = "io.cucumber:cucumber-bom", version.ref =
 opentelemetry-dependencies-bom = { module = "io.opentelemetry:opentelemetry-bom", version.ref = "opentelemetry-dependencies" }
 spring-ai-dependencies-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai-dependencies" }
 spring-boot-dependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-dependencies" }
-spring-cloud-gcp-dependencies-bom = { module = "com.google.cloud:spring-cloud-gcp-dependencies", version.ref = "spring-cloud-gcp-dependencies" }
 
 # Tool Binaries, one artifact per platform
 squawk = { module = "sbdchd:squawk", version.ref = "squawk" }
@@ -57,7 +54,6 @@ meilisearch-java-client = { module = "com.meilisearch.sdk:meilisearch-java", ver
 openfeature-sdk = { module = "dev.openfeature:sdk", version.ref = "openfeature-sdk" }
 openfeature-flipt-provider = { module = "dev.openfeature.contrib.providers:flipt", version.ref = "openfeature-flipt-provider" }
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
-tess4j = { module = "net.sourceforge.tess4j:tess4j", version.ref = "tess4j" }
 
 # Test Dependencies
 approvaltests = { module = "com.approvaltests:approvaltests", version.ref = "approvaltests" }

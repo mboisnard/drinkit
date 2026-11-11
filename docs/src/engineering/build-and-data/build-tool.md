@@ -113,7 +113,7 @@ Three files of `gradle/platform/` hold every version:
 - **`pluginLibs.versions.toml`** is the catalog of the Gradle plugins the conventions apply. Only `build-logic`
   reads it.
 - **`build.gradle.kts`** is the internal BOM. A BOM, bill of materials, is a list of versions meant to be used
-  together. Ours is a Gradle platform. It imports the BOMs of Spring Boot, Spring AI, Spring Cloud GCP and Cucumber,
+  together. Ours is a Gradle platform. It imports the BOMs of Spring Boot, Spring AI, OpenTelemetry and Cucumber,
   whose modules ask each other for version ranges, then sets the catalog version of each library listed in its
   `constraints` block. Squawk has no constraint there, since no
   library depends on a binary.

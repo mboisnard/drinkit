@@ -23,10 +23,6 @@ internal class SpringArchitectureTest {
         rule("spring.no-value-or-environment-lookup") {
             description = "A setting read with @Value or from the Environment escapes validation and documentation: " +
                 "bind it to a @ConfigurationProperties class"
-            suppress {
-                file("*/com/drinkit/ocr/analyzers/OCRAnalyzer.kt", OPS_STARTERS)
-                file("*/com/drinkit/ocr/OCRConfiguration.kt", OPS_STARTERS)
-            }
             files {
                 that().inModules(ALL)
                 should().notReferenceClass("org.springframework.beans.factory.annotation.Value")

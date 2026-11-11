@@ -3,7 +3,7 @@ plugins {
 }
 
 // This platform defines the internal BOM for the project
-// It imports third-party BOMs (Spring Boot, Spring Cloud GCP) and overrides
+// It imports third-party BOMs and overrides
 // specific dependency versions using our version catalog
 // https://docs.gradle.org/current/userguide/java_platform_plugin.html
 javaPlatform {
@@ -17,7 +17,6 @@ dependencies {
     api(platform(libs.opentelemetry.dependencies.bom))
     api(platform(libs.spring.ai.dependencies.bom))
     api(platform(libs.spring.boot.dependencies.bom))
-    api(platform(libs.spring.cloud.gcp.dependencies.bom))
 
     constraints {
         // Runtime Dependencies
@@ -31,7 +30,6 @@ dependencies {
         api(libs.kotlin.logging.jvm)
         api(libs.meilisearch.java.client)
         api(libs.springdoc.openapi.starter.webmvc.ui)
-        api(libs.tess4j)
 
         // Test Dependencies
         api(libs.approvaltests)

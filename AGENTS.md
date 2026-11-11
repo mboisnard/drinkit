@@ -48,8 +48,6 @@ directory: never in the tree, never elsewhere on the machine.
 
 - Jackson 3: core, databind and the format modules are `tools.jackson.*`, but the generic annotations
   (`@JsonProperty`, `@JsonTypeInfo`…) stay in `com.fasterxml.jackson.annotation`.
-- A tech starter without an `AutoConfiguration.imports` file is wired by component scan, often with a profile of
-  `spring.profiles.include`. Copy its tests, never its wiring: a new or migrated one follows `new-backend-tech-starter`.
 - The backend never applies the changelogs: the updater that compose runs at each `bootRun` does, or earlier the
   commands of `database-change`. Every checkout shares that database: a worktree stops `local`, gives each compose
   command and `bootRun` `COMPOSE_PROJECT_NAME=<branch>`, and stops that project when its work ends.

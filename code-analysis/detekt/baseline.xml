@@ -48,11 +48,9 @@
     <ID>UnsafeCallOnNullableType:CompleteProfileInformation.kt:CompleteProfileInformation$users.findEnabledBy(userId)!!</ID>
     <ID>UnsafeCallOnNullableType:ConfigurationKey.kt:ConfigurationKey$this::class.simpleName!!</ID>
     <ID>UnsafeCallOnNullableType:DocumentationSymbolProcessor.kt:DocumentationSymbolProcessor$A::class.qualifiedName!!</ID>
-    <ID>UnsafeCallOnNullableType:GCPCloudVisionAnalyzer.kt:GCPCloudVisionAnalyzer$ex.message!!</ID>
     <ID>UnsafeCallOnNullableType:GenerateObjectId.kt:GenerateObjectId$idType.primaryConstructor!!</ID>
     <ID>UnsafeCallOnNullableType:KSClassDeclarationTools.kt:T::class.qualifiedName!!</ID>
     <ID>UnsafeCallOnNullableType:PromoteAsAdmin.kt:PromoteAsAdmin$users.findEnabledBy(userId)!!</ID>
-    <ID>UnsafeCallOnNullableType:TesseractAnalyzer.kt:TesseractAnalyzer$ex.message!!</ID>
     <ID>UnusedPrivateProperty:CellarsTestContract.kt:CellarsTestContract$private val repository: Cellars by lazy { fetchRepository() }</ID>
     <ID>VarCouldBeVal:CreateCoreDomainDocumentationTest.kt:CreateCoreDomainDocumentationTest$@TempDir private lateinit var tempDir: File</ID>
   </CurrentIssues>

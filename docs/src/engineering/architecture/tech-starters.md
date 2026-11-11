@@ -41,8 +41,7 @@ graph LR
   double faithful, however simple it is.
 
 A starter with no bean, such as `kotlin-starter`, `test-starter` or `event-sourcing-starter`, is a plain library:
-no auto-configuration and no switch. `ocr-starter` still predates these rules: the component scan of the application
-wires it, with a Spring profile. Copy its tests, not its wiring. The
+no auto-configuration and no switch. The
 [architecture tests](../writing-code/testing/architecture-tests.md) check the rules that show in the code.
 
 ## 🔧 Using or creating a starter
