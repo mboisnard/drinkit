@@ -24,7 +24,7 @@ Three levers follow, in the order of what they save:
 
 | Setting | In | What it does |
 |---|---|---|
-| `CLAUDE_CODE_AUTO_COMPACT_WINDOW` | `env` of `.claude/settings.json` | Claude Code summarizes the session once its context reaches 300 K tokens, about the average context per call of the measured sessions, rather than near the 1M window |
+| `CLAUDE_CODE_AUTO_COMPACT_WINDOW` | `env` of `.claude/settings.json` | Claude Code summarizes the session once its context reaches 450 K tokens, so that a long task, such as an issue taken to its pull request, is summarized less often, while its context stays under half the 1M window |
 | `CLAUDE_CODE_SUBAGENT_MODEL` | `env` of `.claude/settings.json` | Sonnet for an agent that declares no model, such as the general-purpose agent built into Claude Code |
 | `model` and `effort` | the frontmatter of each [subagent](sub-agents.md), a file of `.claude/agents/` | Opus only for `issue-judge`, which decides whether a pull request opens, Sonnet for the others |
 | `omitClaudeMd` | the frontmatter of `code-explorer` | Starts the explorer without `AGENTS.md`, which Claude Code loads as the instructions of every session, which a search does not need. The built-in Explore inherits the model of the session, hence an explorer of DrinkIt's own |
