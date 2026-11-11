@@ -41,3 +41,15 @@ starters:
     flipt:
       url: http://localhost:8082
       environment: development
+  # The LocalAI of the compose file, which asks for no key. A small model on a CPU answers in tens of seconds
+  ai:
+    endpoints:
+      localai:
+        base-url: http://localhost:8083/v1
+        api-key-required: false
+        timeout: 120s
+        max-retries: 0
+    models:
+      qwen3-vl-4b:
+        endpoint: localai
+        name: qwen3-vl-4b-instruct

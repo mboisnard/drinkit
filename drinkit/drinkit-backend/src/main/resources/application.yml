@@ -13,6 +13,14 @@ starters:
   security:
     code:
       max-email-length: 100 # MAX_EMAIL_LENGTH of the domain
+  ai:
+    endpoints:
+      anthropic:
+        provider: anthropic
+        max-retries: 1
+    models:
+      claude-sonnet-5-5:
+        endpoint: anthropic
 
 server:
   port: ${PORT:8080}

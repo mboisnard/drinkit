@@ -7,6 +7,7 @@ dependencies {
     implementation(project(":drinkit-domain"))
     implementation(project(":drinkit-infra"))
 
+    implementation(project(":ai-starter"))
     implementation(project(":idempotency-starter"))
     implementation(project(":messaging-starter"))
     implementation(project(":security-starter"))

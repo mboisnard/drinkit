@@ -22,6 +22,12 @@ frontend the app on `localhost:3000`.
   environment sends its emails.
   [ADR 0003](../../adr/0003-apply-the-schema-through-the-updater.md) records why the demo data never reaches a
   deployed database.
+- **A vision model answers without a key.** [LocalAI](https://localai.io/) serves the vision model of
+  [`ai-starter`](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/ai-starter/README.md) on
+  `http://localhost:8083`. Its first start downloads a few gigabytes before it listens: until then, a call moves on
+  to the next model it lists, Claude when `STARTERS_AI_ENDPOINTS_ANTHROPIC_APIKEY` holds a key.
+  [ADR 0021](../../adr/0021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.md) records why
+  the models run outside the application.
 
 Every checkout of the repository, a worktree too, starts the same compose project, `local`, named after the folder
 of `deployment/local/compose.yml`. The checkouts share its database: by default, a worktree's start applies the
