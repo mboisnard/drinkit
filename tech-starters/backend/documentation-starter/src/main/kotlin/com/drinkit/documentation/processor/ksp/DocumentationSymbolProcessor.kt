@@ -89,7 +89,7 @@ internal class DocumentationSymbolProcessor(
         noinline mapper: (D, KSAnnotation) -> T,
     ): List<T> = resolver.getSymbolsWithAnnotation(A::class.qualifiedName!!)
         .filterIsInstance<D>()
-        .filter { it.validate() }
+        .filter { it.validate(enableNewFeatures = false) }
         // A member is documented with its class: only a top-level function or property is a tool of its own
         .filter { it !is KSDeclaration || it is KSClassDeclaration || it.parentDeclaration == null }
         .map { declaration -> mapper(declaration, declaration.findAnnotation<A>()) }

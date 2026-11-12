@@ -79,7 +79,7 @@ fun bottlesIndex(indexes: SearchIndexes, documents: BottleDocuments): SearchInde
 
 The index reads its settings from `search/bottles.json` on the classpath, in
 [Meilisearch's format](https://www.meilisearch.com/docs/reference/api/settings), and its id from the `id` field.
-Then write, search and rebuild:
+The starter adds the id to the filterable attributes: a deletion filters on it. Then write, search and rebuild:
 
 ```kotlin
 bottlesIndex.save(document)   // waits for the engine, throws SearchIndexingFailed when it refuses

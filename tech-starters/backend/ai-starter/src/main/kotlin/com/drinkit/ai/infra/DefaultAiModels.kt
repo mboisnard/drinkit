@@ -6,13 +6,13 @@ import com.drinkit.ai.infra.AiProperties.Provider
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.observation.ObservationRegistry
 import org.springframework.ai.chat.client.ChatClient
-import org.springframework.ai.chat.client.ChatClientCustomizer
+import org.springframework.ai.chat.client.ChatClientBuilderCustomizer
 
 /** Builds at startup the chat client of each model of the catalog whose endpoint has its key. */
 internal class DefaultAiModels(
     properties: AiProperties,
     private val observationRegistry: ObservationRegistry,
-    private val customizers: List<ChatClientCustomizer> = emptyList(),
+    private val customizers: List<ChatClientBuilderCustomizer> = emptyList(),
 ) : AiModels {
 
     private val logger = KotlinLogging.logger {}

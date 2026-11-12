@@ -8,6 +8,9 @@ import com.drinkit.search.engine.infra.rebuild.Rebuilds
 import com.drinkit.search.engine.infra.rebuild.SearchIndexBatchRequested
 import com.meilisearch.sdk.Client
 import com.meilisearch.sdk.json.GsonJsonHandler
+import com.meilisearch.sdk.model.FilterableAttributesConfig
+import com.meilisearch.sdk.model.FilterableAttributesFeatures
+import com.meilisearch.sdk.model.FilterableAttributesFilter
 import com.meilisearch.sdk.model.Settings
 import org.springframework.core.io.ClassPathResource
 import tools.jackson.databind.json.JsonMapper
@@ -36,7 +39,7 @@ internal class MeilisearchIndexes(
         val definition = IndexDefinition(
             name,
             primaryKey,
-            settingsOf(settings),
+            settingsOf(settings, primaryKey),
             jsonMapper.constructType(type.javaType),
             source,
         )
@@ -51,10 +54,17 @@ internal class MeilisearchIndexes(
         rebuilds.process(requireNotNull(index) { "Index ${event.index} is not declared on this instance" }, event)
     }
 
-    // The SDK reads its own Settings with Gson, which drops a key that this version of the SDK does not know
-    private fun settingsOf(path: String): Settings {
+    // The SDK reads its own Settings with Gson, which drops a key that this version of the SDK does not know.
+    // Deleting documents by id filters on the primary key, so each index can filter on it
+    private fun settingsOf(path: String, primaryKey: String): Settings {
         val file = ClassPathResource(path)
         require(file.exists()) { "No settings file $path on the classpath" }
-        return GsonJsonHandler().decode(file.getContentAsString(Charsets.UTF_8), Settings::class.java)
+
+        val settings = GsonJsonHandler().decode(file.getContentAsString(Charsets.UTF_8), Settings::class.java)
+        val filterable = settings.filterableAttributesConfig ?: emptyArray()
+        val byEquality = FilterableAttributesFeatures(false, FilterableAttributesFilter(true, false))
+        return settings.setFilterableAttributesConfig(
+            filterable + FilterableAttributesConfig(arrayOf(primaryKey), byEquality),
+        )
     }
 }

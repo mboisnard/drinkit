@@ -234,7 +234,7 @@ internal class ReplayingAnHttpRequestTest(
         val creation = createCellar("a".repeat(64 * 1024), key)
 
         // Then
-        creation.andExpect { status { isPayloadTooLarge() } }
+        creation.andExpect { status { isContentTooLarge() } }
         cellars.created shouldBe emptyList()
     }
 

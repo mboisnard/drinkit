@@ -7,7 +7,7 @@ import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.web.server.context.WebServerGracefulShutdownLifecycle
+import org.springframework.boot.web.server.context.WebServerApplicationContext
 import java.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -64,6 +64,6 @@ internal class ServerEventsLifecycleTest {
     @Test
     fun `stops before the web server waits for the requests in progress`() {
         // When & Then
-        lifecycle.phase shouldBeGreaterThan WebServerGracefulShutdownLifecycle.SMART_LIFECYCLE_PHASE
+        lifecycle.phase shouldBeGreaterThan WebServerApplicationContext.GRACEFUL_SHUTDOWN_PHASE
     }
 }
