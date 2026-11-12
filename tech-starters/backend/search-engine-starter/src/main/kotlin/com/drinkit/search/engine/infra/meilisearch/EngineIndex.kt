@@ -25,12 +25,16 @@ internal class EngineIndex(
         await(client.index(uid).addDocuments(jsonMapper.writeValueAsString(documents), definition.primaryKey).taskUid)
     }
 
-    // An index gone holds no document: the next index of a rebuild is dropped a moment before its rebuild ends
+    // An index gone holds no document: the next index of a rebuild is dropped a moment before its rebuild ends.
+    // An id is escaped: a quote in it would end the string and widen the filter to other documents
     fun delete(ids: Collection<String>) {
         if (ids.isNotEmpty()) {
-            ignoring("index_not_found") { await(client.index(uid).deleteDocuments(ids.toList()).taskUid) }
+            val filter = ids.joinToString(prefix = "${definition.primaryKey} IN [", postfix = "]") { quoted(it) }
+            ignoring("index_not_found") { await(client.index(uid).deleteDocumentsByFilter(filter).taskUid) }
         }
     }
+
+    private fun quoted(id: String) = "\"" + id.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
     fun idsOf(documents: Collection<*>): Set<String> =
         documents.map { jsonMapper.valueToTree<JsonNode>(it).required(definition.primaryKey).asString() }.toSet()

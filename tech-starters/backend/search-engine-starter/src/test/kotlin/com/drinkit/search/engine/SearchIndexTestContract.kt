@@ -83,6 +83,18 @@ internal abstract class SearchIndexTestContract {
     }
 
     @Test
+    fun `deletes only the id given, even one written like a filter`() {
+        // Given
+        wines.save(listOf(Wine("1", "Margaux"), Wine("2", "Pomerol")))
+
+        // When
+        wines.delete("1\"] OR id EXISTS OR id IN [\"2")
+
+        // Then
+        listOf("1", "2").map(wines::find) shouldBe listOf(Wine("1", "Margaux"), Wine("2", "Pomerol"))
+    }
+
+    @Test
     fun `deletes an id never saved without failing`() {
         // When
         wines.delete("unknown")

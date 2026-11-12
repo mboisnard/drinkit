@@ -307,7 +307,7 @@ internal class MeilisearchRebuildTest {
         // Then
         val settings = client.getIndex(name).settings
         settings.searchableAttributes shouldBe arrayOf("name")
-        settings.filterableAttributes.shouldBeEmpty()
+        settings.filterableAttributesConfig.flatMap { it.attributePatterns.toList() } shouldBe listOf("id")
     }
 
     @Test

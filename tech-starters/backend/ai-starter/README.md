@@ -66,7 +66,7 @@ val text = compatibleModels.call(listOf("claude-sonnet-5-5")) { it.prompt().user
 - **A typed answer** is checked against the JSON schema of its type and asked again with the error, three times at
   most. Still invalid, the model fails with `InvalidAnswerException`, which names the field, and the next model is
   asked.
-- **A `ChatClientCustomizer` bean** of the application customizes the client of every model, such as to put an
+- **A `ChatClientBuilderCustomizer` bean** of the application customizes the client of every model, such as to put an
   advisor around each call.
 - **Each call is observed** as `gen_ai.client.operation`, with the model, the duration and the tokens, never with the
   text of the prompt or of the answer.

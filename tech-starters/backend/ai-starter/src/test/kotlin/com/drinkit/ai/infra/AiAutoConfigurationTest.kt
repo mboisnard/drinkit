@@ -8,7 +8,7 @@ import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 import org.springframework.ai.chat.client.ChatClient
-import org.springframework.ai.chat.client.ChatClientCustomizer
+import org.springframework.ai.chat.client.ChatClientBuilderCustomizer
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.autoconfigure.AutoConfigurations
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
@@ -66,8 +66,8 @@ internal class AiAutoConfigurationTest {
         // Given
         val customized = mutableListOf<ChatClient.Builder>()
         val withCustomizer = runner.withBean(
-            ChatClientCustomizer::class.java,
-            { ChatClientCustomizer { customized += it } },
+            ChatClientBuilderCustomizer::class.java,
+            { ChatClientBuilderCustomizer { customized += it } },
         )
 
         withCustomizer.run { context ->

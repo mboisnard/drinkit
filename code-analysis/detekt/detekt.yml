@@ -17,6 +17,11 @@ performance:
   CouldBeSequence:
     active: true
 
+potential-bugs:
+  # A deprecated API, often marked for removal, breaks the next upgrade: the compiler only warns about it
+  Deprecation:
+    active: true
+
 style:
   # The same underscore convention
   UnusedParameter:
