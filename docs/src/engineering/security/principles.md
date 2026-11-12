@@ -8,7 +8,8 @@ cookie, a header or the way users sign in.
 
 The [tech starter](../architecture/tech-starters.md) `security-starter` builds all of this from Spring Security and
 Spring Session. The backend application that uses it gives it its users and its rules, and
-[calling the API](calling-the-api.md) shows what a client sends in return.
+[calling the API](calling-the-api.md) shows what a client sends in return. A call to a language model goes through
+the [LLM guardrails](llm-guardrails.md).
 
 ## 🗺️ The whole picture
 

@@ -193,6 +193,7 @@ export default withMermaid(
                 items: [
                   { text: 'Principles', link: 'principles' },
                   { text: 'Calling the API', link: 'calling-the-api' },
+                  { text: 'LLM guardrails', link: 'llm-guardrails' },
                 ],
               },
 

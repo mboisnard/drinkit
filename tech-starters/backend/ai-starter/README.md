@@ -52,6 +52,7 @@ val answer = compatibleModels.entity(listOf("claude-sonnet-5-5", "qwen3-vl-4b"),
 }
 answer.model // the id of the model that answered
 answer.value // a LabelFields
+answer.findings // what the guardrails found without blocking the call
 
 val text = compatibleModels.call(listOf("claude-sonnet-5-5")) { it.prompt().user(question).call().content() }
 ```
@@ -61,7 +62,7 @@ val text = compatibleModels.call(listOf("claude-sonnet-5-5")) { it.prompt().user
   any other use.
 - **The list is tried in order.** An unavailable model is skipped. A model that fails, whatever the error, hands over
   to the next one, with a warning in the logs: an exception thrown by the code given to `call` counts as a failure of
-  the model too. When none answers, `AllModelsFailedException` holds the cause of each model, and its message names
+  the model too. A refusal of the guardrails, an `AiRefusedException`, stops the call at once. When none answers, `AllModelsFailedException` holds the cause of each model, and its message names
   only the models.
 - **A typed answer** is checked against the JSON schema of its type and asked again with the error, three times at
   most. Still invalid, the model fails with `InvalidAnswerException`, which names the field, and the next model is
@@ -71,6 +72,53 @@ val text = compatibleModels.call(listOf("claude-sonnet-5-5")) { it.prompt().user
 - **Each call is observed** as `gen_ai.client.operation`, with the model, the duration and the tokens, never with the
   text of the prompt or of the answer.
 - **Switched off**, the starter makes every model unavailable, so `CompatibleModels` fails at once.
+
+## Guardrails
+
+An advisor checks each call of every model in the catalog against groups of rules drawn from the
+[OWASP Top 10 for LLM applications](https://genai.owasp.org/llm-top-10/). Before the call, it masks the personal data
+of the user message, the kinds the `pii` group looks for, then runs the groups that read the prompt. After it, the
+groups that read the answer. Each finding is logged, and traced under `gen_ai.ai_starter.guardrails.*`, with its
+group, rule and threat level, never with the text. A group that finds a threat at its `block-at` level throws
+`GuardrailBlockedException`: the model is not called, or its answer is dropped, and no other model is asked.
+
+| Group | Reads | Finds | By default |
+|---|---|---|---|
+| `injection` | user message | an order to ignore the instructions, a fake system message, a request for the system prompt, a jailbreak, a role play | blocks at `HIGH` |
+| `obfuscation` | user message | base64, hex, unicode escapes, HTML entities, invisible characters, a closing delimiter, rot13, a markdown image | blocks at `HIGH` |
+| `secret` | system prompt | an API key, a bearer token, a password | blocks at `HIGH` |
+| `output` | answer | a script, SQL, a shell command, a markdown image, a URL that carries a secret | observes |
+| `pii` | answer | an IBAN, a card number that passes its checksum, a French social security number, an email, a phone number | observes |
+| `leak` | answer | an answer close to the system prompt | blocks at `HIGH` |
+| `finish` | answer | a content filter or a refusal of the provider, an answer cut short | observes |
+
+Text from a user, a label or a web page enters a prompt through `UntrustedText.of(text)`, which normalizes it and
+wraps it in `<untrusted_input>` tags. The advisor then tells the model, in the system prompt, that this text is data.
+
+```kotlin
+client.prompt()
+    .system("Read the fields of this wine label.")
+    .user("The label reads ${UntrustedText.of(labelText)}")
+```
+
+- **A group of the application** is a `BeforeCallGuardrail` or `AfterCallGuardrail` bean. It runs with the others
+  and takes its settings by its `name`. `GuardrailRules` builds one from a table of rules.
+- **A bean named after a group**, such as `injectionGuardrail`, replaces the group of the starter.
+- **An advisor of the application** goes through a `ChatClientBuilderCustomizer`, and `AiAdvisorOrder` places it
+  around those of the starter.
+- **A group or a rule** is switched off by configuration. The class of each group lists its rules, and a finding
+  names its rule in the logs.
+- **A finding that did not block** reaches the code in `ModelAnswer.findings`, so that a feature decides what to do
+  with an observed threat. A call made outside `CompatibleModels` collects them by passing a `GuardrailFindings`:
+  `prompt().advisors { it.param(GuardrailFindings.KEY, findings) }`.
+
+## Token budget
+
+With `rate-limit-starter` and `security-starter` in the application, each call of a signed-in user counts against
+a budget of tokens per hour. The call reserves an estimate first: a quarter of the prompt's characters, plus its
+`maxTokens`, or 1 024. Once answered, it pays the tokens it used beyond the estimate. A user over budget gets
+`TokenBudgetExceededException`, whose `retryAfter` gives the `Retry-After` of a 429. A call made outside a request,
+such as by a job, has no budget.
 
 ## Configuration
 
@@ -85,6 +133,12 @@ val text = compatibleModels.call(listOf("claude-sonnet-5-5")) { it.prompt().user
 | `starters.ai.endpoints.<endpoint>.max-retries` | `2`, the attempts the provider's SDK adds before the next model is asked | `STARTERS_AI_ENDPOINTS_<ENDPOINT>_MAXRETRIES` |
 | `starters.ai.models.<model>.endpoint` | None, required: an endpoint of `starters.ai.endpoints`, or the application does not start | `STARTERS_AI_MODELS_<MODEL>_ENDPOINT` |
 | `starters.ai.models.<model>.name` | The id of the model | `STARTERS_AI_MODELS_<MODEL>_NAME` |
+| `starters.ai.guardrails.enabled` | `true`, `false` checks nothing | `STARTERS_AI_GUARDRAILS_ENABLED` |
+| `starters.ai.guardrails.groups.<group>.enabled` | `true` | `STARTERS_AI_GUARDRAILS_GROUPS_<GROUP>_ENABLED` |
+| `starters.ai.guardrails.groups.<group>.block-at` | `HIGH` for `injection`, `obfuscation`, `secret` and `leak`, `NONE` for the others, which only observes | `STARTERS_AI_GUARDRAILS_GROUPS_<GROUP>_BLOCKAT` |
+| `starters.ai.guardrails.groups.<group>.disabled-rules` | None, the names of the rules to skip | `STARTERS_AI_GUARDRAILS_GROUPS_<GROUP>_DISABLEDRULES` |
+| `starters.ai.guardrails.token-budget.enabled` | `true` | `STARTERS_AI_GUARDRAILS_TOKENBUDGET_ENABLED` |
+| `starters.ai.guardrails.token-budget.tokens-per-hour` | `100000`, for each user | `STARTERS_AI_GUARDRAILS_TOKENBUDGET_TOKENSPERHOUR` |
 
 The `application.yml` of `drinkit-backend` declares Claude on the Anthropic API, whose key comes from
 `STARTERS_AI_ENDPOINTS_ANTHROPIC_APIKEY`. Its `application-dev.yml` adds the LocalAI of the local compose file and its
@@ -103,9 +157,24 @@ aiModels.model("claude-sonnet-5-5").fails(IllegalStateException("Overloaded"))
 aiModels.model("qwen3-vl-4b").answers("""{"producer": "Château Les Trois Chênes", "vintage": 2019}""")
 ```
 
+`FakeAiModels` runs no guardrail: a test scripts a refusal with
+`fails(GuardrailBlockedException(listOf(Finding("injection", "instruction-override", HIGH))))`, or an answer that
+used many tokens with `answers(answer, tokens = 2_000)`. `LocalModelEvaluationTest` sends the attacks of the
+evaluation set to a real model, and logs how many leak a canary of the system prompt. It runs when
+`AI_EVALUATION_BASE_URL` is set, such as `http://localhost:8083/v1` for the LocalAI of compose.
+
 ## Limits
 
 - An environment variable drops the hyphens of a model id, so the catalog lives in a YAML file, where an id holds
   lowercase letters, digits and hyphens. An id with a dot goes between brackets: `"[qwen3-embedding-0.6b]"`.
 - A typed answer is never streamed: its validation needs the whole answer.
 - No embedding model yet.
+- The guardrails match known patterns: a reworded attack goes through. They lower the risk, and the code still
+  treats an answer as untrusted.
+- A streamed call, and the result of a tool the model calls, go through no guardrail.
+- A group that throws is skipped, with an error in the logs: a broken rule never stops a feature.
+- Only the last user message is masked: a system message, or an earlier turn of a conversation, leaves as written.
+  The masking runs whatever the settings of the `pii` group.
+- The estimate a call reserves is never given back when the answer used less, so short answers spend the budget
+  faster than the tokens they used. The tokens an answer used beyond its estimate go uncharged when they exceed what
+  the budget has left.
