@@ -73,6 +73,7 @@ flowchart LR
   unruled["Endpoint added without a rule"]
   broad["URL rule too broad for one method"]
   logs["Secrets read in the logs"]
+  uploaded["Script uploaded as a photo"]
   subgraph browserSide["Enforced by the browser"]
     samesite["SameSite=Lax"]
     httponly["HttpOnly"]
@@ -93,6 +94,7 @@ flowchart LR
     deny["Refused by default,<br/>coverage test in the build"]
     preAuthorize["@PreAuthorize on the method"]
     vocabulary["OWASP event names, user ids only"]
+    uploadChecks["Upload checked by its bytes,<br/>limited per user, served sandboxed"]
   end
   forged --> samesite & token & fetch
   xss --> httponly & csp
@@ -109,6 +111,7 @@ flowchart LR
   unruled --> deny
   broad --> preAuthorize
   logs --> vocabulary
+  uploaded --> uploadChecks & nosniff
 ```
 
 Most threats meet more than one defense, so that one gap leaves another standing.
@@ -359,6 +362,26 @@ carries these headers, which cost nothing to a JSON API:
 `Clear-Site-Data` leaves out `"cookies"`, which Chrome applies to every subdomain. The logout expires DrinkIt's
 cookies one by one instead.
 
+## 📎 Uploaded files
+
+A file uploaded by a user is the classic way to store an attack, such as a script disguised as an image. The
+[file storage starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/file-storage-starter/README.md)
+takes uploads on one route only, and refuses a file before anything is stored when:
+
+- its user passed 20 uploads in 10 minutes or 200 in a day, answered 429
+- its usage is not one the application declares, or it is larger than its usage allows, answered 400 or 413
+- the type read from its bytes is not one of its usage's, or its extension or declared type does not match its
+  bytes, answered 415.
+
+A usage cannot allow a type able to carry a script, such as SVG or HTML: the application refuses to start. A private
+file is read only by its uploader, an admin, or whom the business allows on the object it is kept on, and deleted
+only by its uploader or whom that object allows, else 404. It is served through a signed URL that expires within 5 minutes, with the type read from its bytes, a `Content-Disposition`
+that names a sanitized file, `X-Content-Type-Options: nosniff` and
+`Content-Security-Policy: default-src 'none'; sandbox`. Images are not decoded yet, so a pixel bomb or a payload
+hidden in the metadata is not caught.
+[ADR 0022](../adr/0022-store-uploaded-files-as-temporary-until-a-use-case-keeps-them.md) records why files go
+through the application rather than straight to a bucket.
+
 ## 📝 Security events in the logs
 
 The starter logs each security event under a name of OWASP's
@@ -393,6 +416,7 @@ shows how an application plugs it in.
 ## 📚 Sources
 
 - [Application Security Verification Standard 5.0](https://github.com/OWASP/ASVS/tree/v5.0.0), OWASP
+- [File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html), OWASP
 - [Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), OWASP
 - [HTTP Security Response Headers Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html), OWASP
 - [Spring Security reference](https://docs.spring.io/spring-security/reference/), Spring
