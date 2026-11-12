@@ -32,8 +32,10 @@ logs behind one property. Its OTLP export of metrics is on by default, towards `
 - **Logs.** Plain text on a developer's machine, one JSON line per event in the Logstash format elsewhere. Each line
   carries `traceId`, `spanId` and, once signed in, `user.id`. Logs go to the console, never over OTLP.
 - **Errors.** Every error of the API, 4xx or 5xx, answers a problem detail of RFC 9457 that carries the `traceId` of
-  the request, so that a client reads every error the same way and support finds its logs. One exception handler of the starter
-  answers them all: a filter hands its refusal to Spring MVC rather than writing a body.
+  the request, so that a client reads every error the same way and support finds its logs. An unexpected failure
+  answers a 500 without its message, which only the logs hold, as OWASP's Error Handling Cheat Sheet advises. One
+  exception handler of the starter answers them all: a filter hands its refusal to Spring MVC rather than writing a
+  body.
 
 The [logging page](../build-and-data/logging.md) and the README of the starter give the settings.
 

@@ -34,7 +34,8 @@ dependencies {
   `application` field. The [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/logging.md)
   says when.
 - **Errors**: every error that Spring MVC answers is a problem detail of RFC 9457 with the `traceId` of the request.
-  `IllegalArgumentException` is a 400. A servlet filter refuses the same way: it hands an `ErrorResponseException` to the `handlerExceptionResolver` bean
+  `IllegalArgumentException` is a 400, and any other unexpected exception a 500 that keeps its message in the logs.
+  A servlet filter refuses the same way: it hands an `ErrorResponseException` to the `handlerExceptionResolver` bean
   rather than writing a body. An advice of the application comes first, so one that catches `Exception` also takes
   these refusals.
 
