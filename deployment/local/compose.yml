@@ -111,8 +111,8 @@ services:
       start_interval: 1s
 
   # Serves the vision and the embedding models of ai-starter. Its first start downloads them, about 3.9 GB, and its
-  # llama.cpp backend before it listens, longer than compose waits: until it answers, ai-starter moves on to the next
-  # model
+  # llama.cpp backend before it listens. Neither compose nor the readiness check of Spring Boot waits for it, so the
+  # application starts meanwhile: until it answers, ai-starter moves on to the next model
   localai:
     image: localai/localai:v4.12.1@sha256:c8556c4f7b6dd9b76e915d515ab5cfe5a765d8ea8fd3f0cf563f9c690b48a7f4
     command: ["qwen3-vl-4b-instruct", "qwen3-embedding-0.6b"]
@@ -123,6 +123,8 @@ services:
       - localai-backends:/backends
     healthcheck:
       disable: true
+    labels:
+      org.springframework.boot.readiness-check.tcp.disable: true
     cap_drop:
       - ALL
     security_opt:
