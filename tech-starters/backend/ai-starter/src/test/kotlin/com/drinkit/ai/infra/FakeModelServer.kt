@@ -35,11 +35,14 @@ internal class FakeModelServer : AutoCloseable {
         } else {
             OK to answer(model, text)
         }
+        send(it, status, body)
+    }
 
+    private fun send(exchange: HttpExchange, status: Int, body: Map<String, Any?>) {
         val bytes = json.writeValueAsBytes(body)
-        it.responseHeaders.add("Content-Type", "application/json")
-        it.sendResponseHeaders(status, bytes.size.toLong())
-        it.responseBody.write(bytes)
+        exchange.responseHeaders.add("Content-Type", "application/json")
+        exchange.sendResponseHeaders(status, bytes.size.toLong())
+        exchange.responseBody.write(bytes)
     }
 
     private fun openAiAnswer(model: String, text: String) = mapOf(
