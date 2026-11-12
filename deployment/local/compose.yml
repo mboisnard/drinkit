@@ -110,11 +110,12 @@ services:
       start_period: 30s
       start_interval: 1s
 
-  # Serves the vision model of ai-starter. Its first start downloads the model, about 3.3 GB, and its llama.cpp backend
-  # before it listens, longer than compose waits: until it answers, ai-starter moves on to the next model
+  # Serves the vision and the embedding models of ai-starter. Its first start downloads them, about 3.9 GB, and its
+  # llama.cpp backend before it listens, longer than compose waits: until it answers, ai-starter moves on to the next
+  # model
   localai:
     image: localai/localai:v4.12.1@sha256:c8556c4f7b6dd9b76e915d515ab5cfe5a765d8ea8fd3f0cf563f9c690b48a7f4
-    command: qwen3-vl-4b-instruct
+    command: ["qwen3-vl-4b-instruct", "qwen3-embedding-0.6b"]
     ports:
       - "8083:8080"
     volumes:

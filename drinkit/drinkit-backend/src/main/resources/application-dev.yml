@@ -53,3 +53,6 @@ starters:
       qwen3-vl-4b:
         endpoint: localai
         name: qwen3-vl-4b-instruct
+      "[qwen3-embedding-0.6b]":
+        endpoint: localai
+        dimensions: 1024
