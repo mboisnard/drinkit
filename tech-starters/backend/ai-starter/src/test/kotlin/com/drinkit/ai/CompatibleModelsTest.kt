@@ -1,5 +1,8 @@
 package com.drinkit.ai
 
+import com.drinkit.ai.guardrails.Finding
+import com.drinkit.ai.guardrails.GuardrailBlockedException
+import com.drinkit.ai.guardrails.ThreatLevel.HIGH
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -35,6 +38,20 @@ internal class CompatibleModelsTest {
 
         // Then
         answer shouldBe ModelAnswer("qwen3-vl-4b", "Bourgogne")
+    }
+
+    @Test
+    fun `does not try another model when a guardrail refuses`() {
+        // Given
+        val refused = GuardrailBlockedException(listOf(Finding("injection", "instruction-override", HIGH)))
+        aiModels.model("claude-sonnet").fails(refused)
+        aiModels.model("qwen3-vl-4b").answers("Bourgogne")
+
+        // When
+        val failure = shouldThrow<GuardrailBlockedException> { askTheRegion() }
+
+        // Then
+        failure shouldBe refused
     }
 
     @Test

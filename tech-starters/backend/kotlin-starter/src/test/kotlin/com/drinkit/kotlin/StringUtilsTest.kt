@@ -1,8 +1,10 @@
 package com.drinkit.kotlin
 
 import io.kotest.inspectors.forAll
+import io.kotest.matchers.concurrent.shouldCompleteWithin
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import java.util.concurrent.TimeUnit
 
 internal class StringUtilsTest {
 
@@ -60,6 +62,15 @@ internal class StringUtilsTest {
             "jane doe@example.com",
             "jane@example.com and more",
         ).forAll { it.isEmail() shouldBe false }
+    }
+
+    @Test
+    fun `looks for an email in a long text in linear time`() {
+        // Given
+        val text = "a".repeat(40_000) + " and " + "a.".repeat(20_000)
+
+        // When & Then
+        shouldCompleteWithin(1, TimeUnit.SECONDS) { VALID_EMAIL_REGEX.containsMatchIn(text) shouldBe false }
     }
 
     @Test
