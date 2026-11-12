@@ -1,6 +1,7 @@
 package com.drinkit.ai
 
 import com.drinkit.ai.guardrails.AiRefusedException
+import com.drinkit.ai.guardrails.Finding
 import com.drinkit.ai.guardrails.GuardrailFindings
 import com.drinkit.documentation.tech.starter.TechStarterTool
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -14,6 +15,10 @@ class CompatibleModels(private val aiModels: AiModels) {
 
     private val logger = KotlinLogging.logger {}
 
+    /**
+     * Runs [request] on the client of each model in turn, skipping an unavailable one. A model that fails hands over to
+     * the next, an [AiRefusedException] stops at once, and [AllModelsFailedException] holds why none answered.
+     */
     @Suppress("TooGenericExceptionCaught") // The SDKs throw their own unchecked exceptions, which no common type covers
     fun <T : Any> call(models: List<String>, request: (ChatClient) -> T?): ModelAnswer<T> {
         val causes = linkedMapOf<String, Throwable>()
@@ -70,3 +75,16 @@ class CompatibleModels(private val aiModels: AiModels) {
         .replace(".[", "[")
         .ifEmpty { "$" }
 }
+
+/** The answer of [model], and what the guardrails found on its call without blocking it. */
+@TechStarterTool
+data class ModelAnswer<T>(val model: String, val value: T, val findings: List<Finding> = emptyList())
+
+@TechStarterTool
+class InvalidAnswerException(val field: String, cause: Throwable) :
+    RuntimeException("The answer of the model is invalid at $field", cause)
+
+/** The message names the models only: the errors of the providers stay in [causes], out of any response. */
+@TechStarterTool
+class AllModelsFailedException(val causes: Map<String, Throwable>) :
+    RuntimeException("No model answered among ${causes.keys.joinToString()}")

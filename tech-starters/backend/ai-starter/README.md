@@ -92,13 +92,20 @@ group, rule and threat level, never with the text. A group that finds a threat a
 | `leak` | answer | an answer close to the system prompt | blocks at `HIGH` |
 | `finish` | answer | a content filter or a refusal of the provider, an answer cut short | observes |
 
-Text from a user, a label or a web page enters a prompt through `UntrustedText.of(text)`, which normalizes it and
-wraps it in `<untrusted_input>` tags. The advisor then tells the model, in the system prompt, that this text is data.
+Text from a user, a label or a web page enters a prompt through `UntrustedText.of(text)`, in three steps:
+
+1. **Normalize** to NFKC, so that a fullwidth `＜` or a ligature reads as the rules and the escaping expect.
+2. **Remove the invisible characters**, such as a zero-width space that splits an instruction, keeping line breaks
+   and tabs.
+3. **Escape** `&`, `<` and `>`, so that the text cannot close its tags.
+
+`delimited()` then wraps it in `<untrusted_input>` tags, and the advisor tells the model, in the system prompt, that
+this text is data.
 
 ```kotlin
 client.prompt()
     .system("Read the fields of this wine label.")
-    .user("The label reads ${UntrustedText.of(labelText)}")
+    .user("The label reads ${UntrustedText.of(labelText).delimited()}")
 ```
 
 - **A group of the application** is a `BeforeCallGuardrail` or `AfterCallGuardrail` bean. It runs with the others
@@ -133,7 +140,7 @@ such as by a job, has no budget.
 | `starters.ai.endpoints.<endpoint>.max-retries` | `2`, the attempts the provider's SDK adds before the next model is asked | `STARTERS_AI_ENDPOINTS_<ENDPOINT>_MAXRETRIES` |
 | `starters.ai.models.<model>.endpoint` | None, required: an endpoint of `starters.ai.endpoints`, or the application does not start | `STARTERS_AI_MODELS_<MODEL>_ENDPOINT` |
 | `starters.ai.models.<model>.name` | The id of the model | `STARTERS_AI_MODELS_<MODEL>_NAME` |
-| `starters.ai.guardrails.enabled` | `true`, `false` checks nothing | `STARTERS_AI_GUARDRAILS_ENABLED` |
+| `starters.ai.guardrails.enabled` | `true`, `false` checks nothing, and leaves the token budget on | `STARTERS_AI_GUARDRAILS_ENABLED` |
 | `starters.ai.guardrails.groups.<group>.enabled` | `true` | `STARTERS_AI_GUARDRAILS_GROUPS_<GROUP>_ENABLED` |
 | `starters.ai.guardrails.groups.<group>.block-at` | `HIGH` for `injection`, `obfuscation`, `secret` and `leak`, `NONE` for the others, which only observes | `STARTERS_AI_GUARDRAILS_GROUPS_<GROUP>_BLOCKAT` |
 | `starters.ai.guardrails.groups.<group>.disabled-rules` | None, the names of the rules to skip | `STARTERS_AI_GUARDRAILS_GROUPS_<GROUP>_DISABLEDRULES` |

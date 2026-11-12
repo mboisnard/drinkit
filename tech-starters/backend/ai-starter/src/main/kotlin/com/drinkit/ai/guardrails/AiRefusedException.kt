@@ -3,7 +3,10 @@ package com.drinkit.ai.guardrails
 import com.drinkit.documentation.tech.starter.TechStarterTool
 import java.time.Duration
 
-/** A call the guardrails refused: no other model is asked. Its message never holds the text of the prompt. */
+/**
+ * A call that a guardrail or the token budget refused: no other model is asked. Its message never holds the text of
+ * the prompt.
+ */
 @TechStarterTool
 sealed class AiRefusedException(message: String) : RuntimeException(message)
 
