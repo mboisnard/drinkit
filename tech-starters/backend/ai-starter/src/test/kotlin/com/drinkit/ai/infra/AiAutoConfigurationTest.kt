@@ -67,22 +67,21 @@ internal class AiAutoConfigurationTest {
     fun `applies the chat client customizers of the application to each available model`() {
         // Given
         val customized = mutableListOf<ChatClient.Builder>()
-        val withCustomizer = runner.withBean(
-            ChatClientBuilderCustomizer::class.java,
-            { ChatClientBuilderCustomizer { customized += it } },
-        )
+        val withCustomizer = runner
+            .withPropertyValues("starters.ai.endpoints.anthropic.api-key=sk-ant-test")
+            .withBean(ChatClientBuilderCustomizer::class.java, { ChatClientBuilderCustomizer { customized += it } })
 
         withCustomizer.run { context ->
             // When
             context.getBean<AiModels>()
 
             // Then
-            customized shouldHaveSize 1
+            customized shouldHaveSize 2
         }
     }
 
     @Test
-    fun `counts the tokens of each call when the application has metrics`() {
+    fun `registers the token metrics when the application has a meter registry`() {
         // Given
         val withMetrics = runner
             .withConfiguration(AutoConfigurations.of(AiMetricsAutoConfiguration::class.java))

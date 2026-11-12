@@ -23,7 +23,7 @@ internal class ObfuscationGuardrail : BeforeCallGuardrail {
         regex("hex", HIGH, Regex("""(\\x[0-9a-fA-F]{2}){4,}""")),
         regex("unicode-escape", HIGH, Regex("""(\\u[0-9a-fA-F]{4}){4,}""")),
         regex("html-entities", MEDIUM, Regex("""(&(amp;)?#x?[0-9a-fA-F]+;){4,}""")),
-        regex("invisible-characters", HIGH, Regex("""[​-‏ - ⁠﻿­]{2,}""")),
+        regex("invisible-characters", HIGH, Regex("""[\u200B-\u200F\u2028-\u202F\u2060\uFEFF\u00AD]{2,}""")),
         GuardrailRule("tag-escape", CRITICAL) { text -> FAKE_TAG.containsMatchIn(text.replace(OWN_TAGS, "")) },
         regex("rot13", HIGH, Regex("""(?i)\brot-?13\b|caesar\s*cipher""")),
         regex("markdown-image", HIGH, MARKDOWN_IMAGE),
@@ -34,7 +34,7 @@ internal class ObfuscationGuardrail : BeforeCallGuardrail {
     // A long word is valid Base64 by chance: only a candidate that decodes to readable text hides an instruction
     private fun hidesText(candidate: String): Boolean {
         val decoded = runCatching { Base64.getDecoder().decode(candidate) }.getOrNull() ?: return false
-        return decoded.toString(Charsets.UTF_8).none { it == '�' || (it.isISOControl() && it !in "\t\n\r") }
+        return decoded.toString(Charsets.UTF_8).none { it == '\uFFFD' || (it.isISOControl() && it !in "\t\n\r") }
     }
 
     private companion object {
