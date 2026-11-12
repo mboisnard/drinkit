@@ -55,28 +55,38 @@ feature.
 - The observations follow [ADR 0016](0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
   and record the model, the tokens and the duration, never the content of a prompt or an answer, which can hold
   personal data.
-- Prompt security goes through Spring AI advisors, hooks the starter puts around each call: one checks the prompt
-  for injection before the call, another validates the answer after it, such as a structured answer against its
-  type.
+- Prompt security goes through Spring AI advisors, hooks the starter puts around each call. The guardrails advisor
+  runs groups of rules, mostly patterns, on the prompt before the call and on the answer after it, and masks the
+  personal data of the prompt. Each group blocks from a threat level of its own, or only observes, so that a rule
+  proves itself on real questions before it refuses one. The code receives what was only observed, to act on it. An
+  application adds or replaces a group with a bean. The [LLM guardrails](../security/llm-guardrails.md) page explains
+  them.
+- OpenTelemetry defines no attribute for guardrails, and advises against custom ones under `gen_ai`. The traces put
+  them under `gen_ai.ai_starter.guardrails` all the same, beside the other attributes of the call, where the tools
+  that read the GenAI conventions show them.
 - A photo leaves the infrastructure only when a frontier endpoint is configured. LocalAI listens on the internal
   network alone, since only the application calls it.
-- Every call has a timeout, so that a hung model hands over to the next one, and the calls of a user are limited
-  in tokens, as [ADR 0020](0020-rate-limit-in-the-application-with-gcra-on-postgresql.md) plans.
+- Every call has a timeout, so that a hung model hands over to the next one, and the calls of a signed-in user are
+  limited in tokens per hour by `rate-limit-starter`, as
+  [ADR 0020](0020-rate-limit-in-the-application-with-gcra-on-postgresql.md) plans. `ai-starter` depends on that
+  starter and on `security-starter` at compile time only: an application without them gets no budget.
 
-**A gateway later.** When several services call models, or the keys, quotas and costs need one place, the catalog,
-the fallbacks and the keys move into a dedicated agent gateway, such as agentgateway. The starter then keeps one
-OpenAI endpoint, the gateway's, and the ids the code names do not change.
+**A gateway later.** The guardrails live in the application because nothing stands between it and the models. When
+several services call models, or the keys, quotas and costs need one place, the catalog, the fallbacks, the keys and
+the guardrails move into a dedicated agent gateway, such as agentgateway, run by operations. It applies the pattern
+rules itself and asks a detection service, such as Model Armor, about injections. The starter then keeps one OpenAI
+endpoint, the gateway's, and the ids the code names do not change.
 
 ```mermaid
 flowchart LR
     subgraph now["Now"]
-        A1["drinkit-backend"] --> S1["ai-starter<br/>catalog, fallbacks, keys"]
+        A1["drinkit-backend"] --> S1["ai-starter<br/>catalog, fallbacks, keys, guardrails"]
         S1 --> F1["Frontier API"]
         S1 --> L1["LocalAI"]
     end
     subgraph later["With a larger infrastructure"]
         A2["drinkit-backend"] --> S2["ai-starter<br/>one endpoint"]
-        S2 --> G["Agent gateway<br/>catalog, fallbacks, keys"]
+        S2 --> G["Agent gateway<br/>catalog, fallbacks, keys, guardrails"]
         G --> F2["Frontier API"]
         G --> L2["LocalAI"]
     end
@@ -94,7 +104,8 @@ flowchart LR
 - A small VLM on a CPU answers in seconds, not in the tenth of a second of a frontier model, and reads a worn label
   less well.
 - A photo sent to a frontier provider leaves our infrastructure: its terms of use become ours to check.
-- The catalog and the fallbacks are ours to maintain until a gateway takes them.
+- The catalog, the fallbacks and the guardrails are ours to maintain until a gateway takes them. A pattern misses a
+  reworded attack, so the code still treats every answer as untrusted.
 
 ## Alternatives
 
@@ -104,7 +115,8 @@ flowchart LR
   and the Java runtimes, such as Jlama or the bindings of llama.cpp, run fewer vision models than LocalAI. It
   offered a single process to deploy.
 - **An agent gateway now.** Deferred: one application and two endpoints do not pay for a service more to run and
-  configure. It offers failover with health checks, keys in one place and observations of every call.
+  configure. It offers failover with health checks, keys and guardrails in one place, observations of every call,
+  and injection detection by a dedicated service.
 - **Ollama in place of LocalAI.** Not chosen because LocalAI also serves embeddings and audio from one image. Ollama
   offered the simplest model management, and stays one URL away, since both speak the OpenAI API.
 
@@ -113,4 +125,6 @@ flowchart LR
 - [Spring AI chat client](https://docs.spring.io/spring-ai/reference/api/chatclient.html), Spring
 - [LocalAI](https://localai.io/), LocalAI
 - [agentgateway](https://agentgateway.dev/), Linux Foundation
+- [OWASP Top 10 for LLM Applications 2025](https://genai.owasp.org/llm-top-10/), OWASP
+- [Model Armor](https://cloud.google.com/security/products/model-armor), Google Cloud
 - [Jlama](https://github.com/tjake/Jlama), Jake Luciani, the case for a model in the JVM
