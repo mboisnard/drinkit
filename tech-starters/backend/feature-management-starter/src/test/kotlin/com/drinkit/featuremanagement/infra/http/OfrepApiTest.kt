@@ -65,6 +65,7 @@ internal class OfrepApiTest {
         val responses = listOf(
             evaluate("""{"context": {"flags": "New Checkout"}}"""),
             evaluate("""{"context": {"flags": "${(1..51).joinToString(",") { "flag-$it" }}"}}"""),
+            reportExposure("Checkout_Test", "B"),
             reportExposure("checkout-test", "B".repeat(65)),
         )
 

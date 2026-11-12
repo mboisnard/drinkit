@@ -4,7 +4,6 @@ import com.drinkit.rate.limit.RateLimiter
 import com.drinkit.security.CurrentVisitor
 import com.drinkit.security.SignInCodeSender
 import com.drinkit.security.UserAccounts
-import com.drinkit.security.infra.SecurityErrorResponses
 import com.drinkit.security.infra.SecurityStarterProperties
 import org.jooq.DSLContext
 import org.springframework.beans.factory.ObjectProvider
@@ -70,7 +69,6 @@ internal class SignInCodeAutoConfiguration {
             issuer,
             limits,
             visitor,
-            SecurityErrorResponses(jsonMapper),
             jsonMapper,
             properties.code.maxEmailLength,
         )

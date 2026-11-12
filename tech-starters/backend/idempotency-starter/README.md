@@ -96,6 +96,8 @@ override fun createCellar(createCellarRequest: CreateCellarRequest, idempotencyK
 - `409` while the first request runs, `422` for a key sent with another method, path or body.
 - `400` for a blank key or one over 255 characters, `413` for a body over 64 KB: the fingerprint, of the method,
   path, query string and body, reads at most that much.
+- Each refusal goes to Spring MVC's `handlerExceptionResolver`: with the observability starter, it answers a problem
+  detail of RFC 9457 carrying the `traceId` of the request.
 - An endpoint answers a body under 64 KB: a larger answer fails, and rolls its writes back.
 
 **A handler** of the messaging starter is idempotent with one attribute:

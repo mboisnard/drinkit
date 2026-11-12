@@ -8,6 +8,7 @@ import org.springframework.http.CacheControl
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.servlet.function.ServerRequest
 import org.springframework.web.servlet.function.ServerResponse
 import org.springframework.web.servlet.function.body
@@ -55,7 +56,7 @@ internal class OfrepApi(
     // The variant is assigned again, so that a forged or outdated report counts nothing
     fun reportExposure(request: ServerRequest): ServerResponse {
         val experiment = request.pathVariable("key").takeIf(KEY::matches)
-            ?: return ServerResponse.badRequest().build()
+            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
         val reported = request.body<ExposureReport>()
 
         val assignment = experiments.assign(experiment)

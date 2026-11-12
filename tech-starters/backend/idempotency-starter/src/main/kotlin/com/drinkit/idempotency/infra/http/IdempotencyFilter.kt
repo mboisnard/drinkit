@@ -12,10 +12,11 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.transaction.support.TransactionTemplate
+import org.springframework.web.ErrorResponseException
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.method.HandlerMethod
+import org.springframework.web.servlet.HandlerExceptionResolver
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 import org.springframework.web.util.ContentCachingResponseWrapper
 
@@ -35,6 +36,7 @@ internal class IdempotencyFilter(
     private val handlerMapping: RequestMappingHandlerMapping,
     private val currentUser: CurrentUser,
     private val currentVisitor: CurrentVisitor,
+    private val resolver: HandlerExceptionResolver,
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
@@ -48,8 +50,15 @@ internal class IdempotencyFilter(
 
         val replayable = ReplayableBodyRequest(request)
         when {
-            key.isBlank() || key.length > MAX_KEY_LENGTH -> problem(response, HttpStatus.BAD_REQUEST, KEY_INVALID)
-            replayable.isTooLarge -> problem(response, HttpStatus.CONTENT_TOO_LARGE, BODY_TOO_LARGE)
+            key.isBlank() || key.length > MAX_KEY_LENGTH -> refuse(
+                request,
+                response,
+                HttpStatus.BAD_REQUEST,
+                KEY_INVALID,
+            )
+
+            replayable.isTooLarge -> refuse(request, response, HttpStatus.CONTENT_TOO_LARGE, BODY_TOO_LARGE)
+
             else -> runOnce(key, endpoint, replayable, response, chain)
         }
     }
@@ -88,12 +97,9 @@ internal class IdempotencyFilter(
             is IdempotentResult.AlreadyDone -> RecordedResponse.from(checkNotNull(result.recorded)).replayOn(response)
 
             // Not the end of the lease: most requests end in a second
-            is IdempotentResult.InFlight -> {
-                response.setHeader(HttpHeaders.RETRY_AFTER, "1")
-                problem(response, HttpStatus.CONFLICT, KEY_IN_USE)
-            }
+            is IdempotentResult.InFlight -> refuse(request, response, HttpStatus.CONFLICT, KEY_IN_USE, retryAfter = "1")
 
-            IdempotentResult.Mismatch -> problem(response, HttpStatus.UNPROCESSABLE_CONTENT, KEY_REUSED)
+            IdempotentResult.Mismatch -> refuse(request, response, HttpStatus.UNPROCESSABLE_CONTENT, KEY_REUSED)
         }
     }
 
@@ -110,10 +116,18 @@ internal class IdempotencyFilter(
 
     private fun caller() = currentUser.orNull()?.let { "user:${it.id}" } ?: "visitor:${currentVisitor.id()}"
 
-    private fun problem(response: HttpServletResponse, status: HttpStatus, detail: String) {
-        response.status = status.value()
-        response.contentType = MediaType.APPLICATION_PROBLEM_JSON_VALUE
-        response.writer.write("""{"title":"${status.reasonPhrase}","status":${status.value()},"detail":"$detail"}""")
+    private fun refuse(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        status: HttpStatus,
+        detail: String,
+        retryAfter: String? = null,
+    ) {
+        val refusal = ErrorResponseException(status).apply {
+            setDetail(detail)
+            retryAfter?.let { headers.set(HttpHeaders.RETRY_AFTER, it) }
+        }
+        resolver.resolveException(request, response, null, refusal)
     }
 
     /**
