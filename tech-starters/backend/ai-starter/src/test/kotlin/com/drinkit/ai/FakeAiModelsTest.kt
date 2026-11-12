@@ -9,4 +9,8 @@ internal class FakeAiModelsTest : AiModelsTestContract() {
     override fun givenModel(model: String, answer: String) {
         aiModels.model(model).answers(answer)
     }
+
+    override fun givenEmbeddingModel(model: String) {
+        aiModels.embeddingModel(model)
+    }
 }

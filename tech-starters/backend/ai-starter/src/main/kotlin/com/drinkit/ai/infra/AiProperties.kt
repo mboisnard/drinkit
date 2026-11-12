@@ -15,8 +15,15 @@ internal data class AiProperties(
 
     init {
         models.forEach { (id, model) ->
-            require(model.endpoint in endpoints) {
+            val endpoint = requireNotNull(endpoints[model.endpoint]) {
                 "Model $id names the endpoint ${model.endpoint}, which starters.ai.endpoints does not declare"
+            }
+            require(model.dimensions == null || endpoint.provider == Provider.OPENAI) {
+                "Model $id is an embedding model, but endpoint ${model.endpoint} speaks the Anthropic protocol, " +
+                    "which serves none"
+            }
+            require(model.dimensions == null || model.dimensions > 0) {
+                "Model $id declares ${model.dimensions} dimensions, an embedding model needs at least one"
             }
         }
     }
@@ -33,7 +40,8 @@ internal data class AiProperties(
         fun hasCredentials(): Boolean = apiKey.isNotBlank() || !apiKeyRequired
     }
 
-    data class Model(val endpoint: String, val name: String? = null)
+    /** A model with [dimensions] is an embedding model. */
+    data class Model(val endpoint: String, val name: String? = null, val dimensions: Int? = null)
 
     enum class Provider { OPENAI, ANTHROPIC }
 }

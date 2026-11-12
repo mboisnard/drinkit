@@ -11,6 +11,12 @@ interface AiModels {
 
     /** @throws ModelUnavailableException when the model is unknown, its key is missing or the starter is off */
     fun chatClient(model: String): ChatClient
+
+    /**
+     * @throws ModelUnavailableException when the model is unknown, is no embedding model, its key is missing or the
+     * starter is off
+     */
+    fun embeddings(model: String): Embeddings
 }
 
 @TechStarterTool

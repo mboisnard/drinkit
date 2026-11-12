@@ -26,6 +26,10 @@ internal class DefaultAiModelsTest : AiModelsTestContract() {
         server.answers(model, answer)
     }
 
+    override fun givenEmbeddingModel(model: String) {
+        catalog[model] = Model(endpoint = "localai", dimensions = 3)
+    }
+
     @AfterEach
     fun stopServer() = server.close()
 
@@ -61,6 +65,24 @@ internal class DefaultAiModelsTest : AiModelsTestContract() {
         call.keys shouldContain ("gen_ai.request.model" to "qwen3-vl-4b")
         call.keys shouldContain ("gen_ai.usage.input_tokens" to "${FakeModelServer.PROMPT_TOKENS}")
         call.keys shouldContain ("gen_ai.usage.output_tokens" to "${FakeModelServer.ANSWER_TOKENS}")
+        observations.stopped.flatMap { it.keys }.forEach { (_, value) -> value shouldNotContain "Pommard" }
+    }
+
+    @Test
+    fun `observes an embedding with its model and its tokens, never with its text`() {
+        // Given
+        givenEmbeddingModel("qwen3-embedding-0.6b")
+        server.embeds("qwen3-embedding-0.6b", "Pommard 2019", floatArrayOf(0.1f, 0.2f, 0.3f))
+        val observations = RecordedObservations()
+        val registry = ObservationRegistry.create().apply { observationConfig().observationHandler(observations) }
+
+        // When
+        DefaultAiModels(properties(), registry).embeddings("qwen3-embedding-0.6b").embed("Pommard 2019")
+
+        // Then
+        val call = observations.stopped.single { it.name == "gen_ai.client.operation" }
+        call.keys shouldContain ("gen_ai.request.model" to "qwen3-embedding-0.6b")
+        call.keys shouldContain ("gen_ai.usage.input_tokens" to "${FakeModelServer.PROMPT_TOKENS}")
         observations.stopped.flatMap { it.keys }.forEach { (_, value) -> value shouldNotContain "Pommard" }
     }
 
