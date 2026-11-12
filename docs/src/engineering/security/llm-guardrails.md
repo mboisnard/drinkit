@@ -85,15 +85,15 @@ by a job, has no user and no budget. An endpoint answers `TokenBudgetExceededExc
 | Risk | Covered by |
 |---|---|
 | [LLM01 Prompt injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) | the `injection` and `obfuscation` groups, `UntrustedText` |
-| [LLM02 Sensitive information disclosure](https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/) | the masking of the prompt, the `pii` group |
+| [LLM02 Sensitive information disclosure](https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/) | the masking of a prompt or an embedded text, the `pii` group |
 | [LLM03 Supply chain](https://genai.owasp.org/llmrisk/llm032025-supply-chain/) | the LocalAI image of compose, pinned by its digest |
 | [LLM04 Data and model poisoning](https://genai.owasp.org/llmrisk/llm042025-data-and-model-poisoning/) | nothing to cover: DrinkIt trains no model |
 | [LLM05 Improper output handling](https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/) | the `output` and `finish` groups, the schema of a typed answer |
 | [LLM06 Excessive agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/) | not yet: no model calls a tool |
 | [LLM07 System prompt leakage](https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/) | the `secret` and `leak` groups |
-| [LLM08 Vector and embedding weaknesses](https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/) | not yet: no embedding model |
+| [LLM08 Vector and embedding weaknesses](https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/) | not yet: no feature stores vectors |
 | [LLM09 Misinformation](https://genai.owasp.org/llmrisk/llm092025-misinformation/) | the feature that shows an answer, which lets the user check it |
-| [LLM10 Unbounded consumption](https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/) | the token budget, the timeout of each endpoint |
+| [LLM10 Unbounded consumption](https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/) | the token budget of a chat call, the timeout of each endpoint |
 
 The rules match known patterns: a reworded attack escapes them, and they never see a streamed call or the result of
 a tool.

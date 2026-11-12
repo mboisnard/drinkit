@@ -49,6 +49,13 @@ a committed file. A model whose key is missing is unavailable, so that a develop
 application, and `starters.ai.enabled=false` makes every model unavailable, for a deployment that offers no AI
 feature.
 
+**Embeddings.** A model of the catalog that declares its dimensions is an embedding model. The code reaches it
+through an interface of the starter rather than Spring AI's, which masks each text and checks each vector against
+that dimension. The instruction a model expects before a text, such as Qwen3's before a query, belongs to each use
+case, which passes it with the call. A model change means computing every stored vector again. The application
+computes the vectors and hands them to its search engine, whatever that engine computes itself. Development serves
+`qwen3-embedding-0.6b`, 1024 dimensions, beside the vision model on the same LocalAI.
+
 **Security, carried by the starter.**
 
 - A key never reaches a log, an observation or an error message.
@@ -64,6 +71,8 @@ feature.
 - OpenTelemetry defines no attribute for guardrails, and advises against custom ones under `gen_ai`. The traces put
   them under `gen_ai.ai_starter.guardrails` all the same, beside the other attributes of the call, where the tools
   that read the GenAI conventions show them.
+- An embedded text goes through no advisor: the starter masks its personal data as it does a prompt's, and it counts
+  against no token budget.
 - A photo leaves the infrastructure only when a frontier endpoint is configured. LocalAI listens on the internal
   network alone, since only the application calls it.
 - Every call has a timeout, so that a hung model hands over to the next one, and the calls of a signed-in user are
