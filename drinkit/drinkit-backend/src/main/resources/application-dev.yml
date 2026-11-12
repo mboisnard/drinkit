@@ -37,6 +37,10 @@ starters:
   search-engine:
     meilisearch:
       api-key: masterKey
+  # Git-ignored, at the root of the checkout
+  file-storage:
+    filesystem:
+      directory: ${ROOT_FOLDER:}.files
   feature-management:
     flipt:
       url: http://localhost:8082

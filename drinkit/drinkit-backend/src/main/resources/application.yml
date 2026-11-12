@@ -21,6 +21,11 @@ starters:
     models:
       claude-sonnet-5-5:
         endpoint: anthropic
+  file-storage:
+    usages:
+      bottle-photo:
+        types: [image/jpeg, image/png, image/webp]
+        max-size: 5MB
 
 server:
   port: ${PORT:8080}
