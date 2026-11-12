@@ -31,7 +31,9 @@ logs behind one property. Its OTLP export of metrics is on by default, towards `
   caller sends is ignored, so that no one on the internet chooses a `traceId` or forces a trace into the samples.
 - **Logs.** Plain text on a developer's machine, one JSON line per event in the Logstash format elsewhere. Each line
   carries `traceId`, `spanId` and, once signed in, `user.id`. Logs go to the console, never over OTLP.
-- **Errors.** Every problem detail that Spring or the security starter writes carries the `traceId` of the request.
+- **Errors.** Every error of the API, 4xx or 5xx, answers a problem detail of RFC 9457 that carries the `traceId` of
+  the request, so that a client reads every error the same way and support finds its logs. One exception handler of the starter
+  answers them all: a filter hands its refusal to Spring MVC rather than writing a body.
 
 The [logging page](../build-and-data/logging.md) and the README of the starter give the settings.
 
@@ -63,3 +65,5 @@ The [logging page](../build-and-data/logging.md) and the README of the starter g
 - [OpenTelemetry with Spring Boot](https://spring.io/blog/2025/11/18/opentelemetry-with-spring-boot/), Spring
 - [Observability](https://docs.spring.io/spring-boot/reference/actuator/observability.html), Spring Boot reference
 - [Kubernetes probes](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes), Spring Boot reference, on keeping external checks out of liveness
+- [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457.html), IETF
+- [Error Handling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Error_Handling_Cheat_Sheet.html), OWASP, on a generic message for an unexpected error

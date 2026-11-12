@@ -2,7 +2,8 @@
 
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
 that sets up Spring Boot Actuator for the application: which endpoints an admin reads, what readiness waits for, and
-what the info endpoint shows. It writes no observability code of its own: each starter contributes what it knows.
+what the info endpoint shows, and how every error answers. It instruments nothing itself: each starter contributes
+what it knows.
 
 ```mermaid
 flowchart LR
@@ -32,6 +33,10 @@ dependencies {
 - **Logs**: plain text, and one JSON line per event with `LOGGING_STRUCTURED_FORMAT_CONSOLE=logstash`, each with an
   `application` field. The [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/logging.md)
   says when.
+- **Errors**: every error that Spring MVC answers is a problem detail of RFC 9457 with the `traceId` of the request.
+  `IllegalArgumentException` is a 400. A servlet filter refuses the same way: it hands an `ErrorResponseException` to the `handlerExceptionResolver` bean
+  rather than writing a body. An advice of the application comes first, so one that catches `Exception` also takes
+  these refusals.
 
 ### OpenTelemetry
 
