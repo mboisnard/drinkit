@@ -1,0 +1,2 @@
+com.drinkit.file.storage.infra.FileStorageAutoConfiguration
+com.drinkit.file.storage.infra.FileStorageWebAutoConfiguration
