@@ -29,6 +29,21 @@ worktree_with_commit() {
     git -C "$work/$1" commit -q -m "$1"
 }
 
+# Commits lines.txt, nine numbered lines, on master.
+commit_lines() {
+    printf '%s\n' 1 2 3 4 5 6 7 8 9 >"$repo/lines.txt"
+    git -C "$repo" add lines.txt
+    git -C "$repo" commit -q -m lines
+}
+
+# Adds a worktree on a new branch <name> whose one commit writes <name> on line <line> of lines.txt.
+worktree_editing_line() {
+    git -C "$repo" worktree add -q -b "$1" "$work/$1" master
+    sed "$2s/.*/$1/" "$work/$1/lines.txt" >"$work/$1/lines.new"
+    mv "$work/$1/lines.new" "$work/$1/lines.txt"
+    git -C "$work/$1" commit -q -am "$1"
+}
+
 @test "master points to the issue workflow" {
     starts
     assert_output --partial "Not on an issue branch"
@@ -99,6 +114,31 @@ worktree_with_commit() {
     git -C "$repo" update-ref refs/remotes/origin/master master
     starts
     assert_output --partial "  $work/101-merged (101-merged)"
+}
+
+@test "a worktree merged by rebase after a neighbouring change waits for a cleanup" {
+    commit_lines
+    worktree_editing_line 104-first 4
+    worktree_editing_line 105-second 6
+    git -C "$repo" cherry-pick 104-first >/dev/null
+    git -C "$repo" cherry-pick 105-second >/dev/null
+    git -C "$repo" update-ref refs/remotes/origin/master master
+    starts
+    assert_output --partial "  $work/105-second (105-second)"
+}
+
+@test "a worktree rebased on GitHub after a neighbouring change, then merged, waits for a cleanup" {
+    commit_lines
+    worktree_editing_line 106-behind 3
+    worktree_editing_line 107-ahead 5
+    git -C "$repo" cherry-pick 107-ahead >/dev/null
+    git -C "$repo" branch github-106 106-behind
+    git -C "$repo" rebase -q master github-106
+    git -C "$repo" switch -q master
+    git -C "$repo" merge -q --ff-only github-106
+    git -C "$repo" update-ref refs/remotes/origin/master master
+    starts
+    assert_output --partial "  $work/106-behind (106-behind)"
 }
 
 @test "the cleanup is sent to /implement-issue" {

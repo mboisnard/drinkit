@@ -132,14 +132,15 @@ gh api 'repos/{owner}/{repo}/pulls/<pr>/comments'
 
 ## Cleanup
 
-`<worktree>` is the path `git worktree list` gives for the branch. A line printed by `status` or a line
-starting with `+` printed by `cherry` means work is left: stop there.
+`<worktree>` is the path `git worktree list` gives for the branch. A line printed by `status`, a failing
+`merge-tree` or two different trees mean work is left: stop there.
 
 ```
 main=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
 git -C "$main" fetch origin master
 git -C "<worktree>" status --porcelain
-git -C "$main" cherry origin/master <branch>
+git -C "$main" merge-tree --write-tree origin/master <branch>
+git -C "$main" rev-parse 'origin/master^{tree}'
 git -C "$main" worktree remove "<worktree>"
 git -C "$main" branch -D <branch>
 ```
