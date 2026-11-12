@@ -13,7 +13,5 @@ interface AiModels {
     fun chatClient(model: String): ChatClient
 }
 
-/** The message names the models only: the errors of the providers stay in [causes], out of any response. */
 @TechStarterTool
-class AllModelsFailedException(val causes: Map<String, Throwable>) :
-    RuntimeException("No model answered among ${causes.keys.joinToString()}")
+class ModelUnavailableException(val model: String) : RuntimeException("Model $model is unavailable")

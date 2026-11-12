@@ -65,10 +65,10 @@ observation.
 ## 🔤 Untrusted text
 
 The code wraps each text it did not write, such as a user's question or the text of a label, in `UntrustedText`. It
-normalizes the text, so that a rule sees what the model reads, escapes its tags, and puts it between
-`<untrusted_input>` tags. The advisor then tells the model, in the system prompt, that what lies between them is data.
-This is the [spotlighting](https://arxiv.org/abs/2403.14720) defense: it makes an injection less likely to work, and the escaping keeps a text from
-closing its tags early.
+normalizes the text, so that a rule sees what the model reads, removes its invisible characters, escapes its tags,
+and puts it between `<untrusted_input>` tags. The advisor then tells the model, in the system prompt, that what lies
+between them is data. This is the [spotlighting](https://arxiv.org/abs/2403.14720) defense: it makes an injection
+less likely to work, and the escaping keeps a text from closing its tags early.
 
 ## 🪙 Token budget
 
