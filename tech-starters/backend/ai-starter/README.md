@@ -1,16 +1,16 @@
 # AI Starter
 
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
-through which the code asks a language or vision model for an answer, naming the model by its id in a catalog, such
-as `qwen3-vl-4b`. Built on [Spring AI](https://docs.spring.io/spring-ai/reference/), it reaches a provider that
-speaks the Anthropic or the OpenAI protocol, a frontier API or a [LocalAI](https://localai.io/) server, and moves on
-from one model to the next when a call fails.
+through which the code asks a language or vision model for an answer, or an embedding model for vectors, naming the
+model by its id in a catalog, such as `qwen3-vl-4b`. Built on [Spring AI](https://docs.spring.io/spring-ai/reference/),
+it reaches a provider that speaks the Anthropic or the OpenAI protocol, a frontier API or a
+[LocalAI](https://localai.io/) server, and moves on from one chat model to the next when a call fails.
 [ADR 0021](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.md)
 records why no model runs inside the application.
 
 ```mermaid
 flowchart LR
-    Code[Backend code] --> Api[CompatibleModels, AiModels]
+    Code[Backend code] --> Api[CompatibleModels, AiModels, Embeddings]
     Api --> Catalog[Catalog of model ids]
     Catalog --> Anthropic[Anthropic API]
     Catalog --> LocalAI[LocalAI]
@@ -72,6 +72,37 @@ val text = compatibleModels.call(listOf("claude-sonnet-5-5")) { it.prompt().user
 - **Each call is observed** as `gen_ai.client.operation`, with the model, the duration and the tokens, never with the
   text of the prompt or of the answer.
 - **Switched off**, the starter makes every model unavailable, so `CompatibleModels` fails at once.
+
+## Embeddings
+
+An embedding model turns a text into a vector, so that a search finds what is close in meaning to a query or to
+another document. A model of the catalog that declares its `dimensions` is an embedding model, and the code reaches it
+by its id. What text stands for a document, which fields in which order, is the caller's choice.
+
+```kotlin
+private const val BOTTLE_SEARCH =
+    "Instruct: Given a question about wines, spirits or cocktails, retrieve the matching bottles\nQuery: "
+
+val embeddings = aiModels.embeddings("qwen3-embedding-0.6b")
+val vectors = embeddings.embed(bottles.map { it.searchText }) // one request for the whole list
+val query = embeddings.embed("un rouge léger pour accompagner un poisson", instruction = BOTTLE_SEARCH)
+```
+
+```yaml
+starters.ai.models:
+  "[qwen3-embedding-0.6b]":
+    endpoint: localai
+    dimensions: 1024
+```
+
+- **No fallback.** The vectors of two models never compare, so a call names one model, and a model change means
+  computing every stored vector again.
+- **The instruction belongs to the use case**: it goes as is before each text, in the format of the model. Qwen3
+  wants `Instruct: <task>\nQuery: ` before a query and nothing before a document.
+- **The personal data of each text is masked** before it leaves, as in a prompt, never the instruction. An answer
+  whose vectors are not one per text, each of `dimensions` floats, fails.
+- **An endpoint of the Anthropic protocol serves no embedding**: an embedding model declared on one stops the
+  application at startup.
 
 ## Guardrails
 
@@ -140,6 +171,7 @@ such as by a job, has no budget.
 | `starters.ai.endpoints.<endpoint>.max-retries` | `2`, the attempts the provider's SDK adds before the next model is asked | `STARTERS_AI_ENDPOINTS_<ENDPOINT>_MAXRETRIES` |
 | `starters.ai.models.<model>.endpoint` | None, required: an endpoint of `starters.ai.endpoints`, or the application does not start | `STARTERS_AI_MODELS_<MODEL>_ENDPOINT` |
 | `starters.ai.models.<model>.name` | The id of the model | `STARTERS_AI_MODELS_<MODEL>_NAME` |
+| `starters.ai.models.<model>.dimensions` | None: a chat model. The size of the vectors of an embedding model | `STARTERS_AI_MODELS_<MODEL>_DIMENSIONS` |
 | `starters.ai.guardrails.enabled` | `true`, `false` checks nothing, and leaves the token budget on | `STARTERS_AI_GUARDRAILS_ENABLED` |
 | `starters.ai.guardrails.groups.<group>.enabled` | `true` | `STARTERS_AI_GUARDRAILS_GROUPS_<GROUP>_ENABLED` |
 | `starters.ai.guardrails.groups.<group>.block-at` | `HIGH` for `injection`, `obfuscation`, `secret` and `leak`, `NONE` for the others, which only observes | `STARTERS_AI_GUARDRAILS_GROUPS_<GROUP>_BLOCKAT` |
@@ -164,18 +196,29 @@ aiModels.model("claude-sonnet-5-5").fails(IllegalStateException("Overloaded"))
 aiModels.model("qwen3-vl-4b").answers("""{"producer": "Château Les Trois Chênes", "vintage": 2019}""")
 ```
 
+An embedding model gives the vector a test scripts for each text as the model receives it, after its instruction,
+and records those texts in `texts`:
+
+```kotlin
+aiModels.embeddingModel("qwen3-embedding-0.6b").embeds("Pommard 2019", floatArrayOf(0.1f, 0.2f, 0.3f))
+```
+
 `FakeAiModels` runs no guardrail: a test scripts a refusal with
 `fails(GuardrailBlockedException(listOf(Finding("injection", "instruction-override", HIGH))))`, or an answer that
 used many tokens with `answers(answer, tokens = 2_000)`. `LocalModelEvaluationTest` sends the attacks of the
 evaluation set to a real model, and logs how many leak a canary of the system prompt. It runs when
-`AI_EVALUATION_BASE_URL` is set, such as `http://localhost:8083/v1` for the LocalAI of compose.
+`AI_EVALUATION_BASE_URL` is set, such as `http://localhost:8083/v1` for the LocalAI of compose, as does
+`LocalEmbeddingsEvaluationTest`, which logs how close a query lands to two bottles.
 
 ## Limits
 
 - An environment variable drops the hyphens of a model id, so the catalog lives in a YAML file, where an id holds
   lowercase letters, digits and hyphens. An id with a dot goes between brackets: `"[qwen3-embedding-0.6b]"`.
 - A typed answer is never streamed: its validation needs the whole answer.
-- No embedding model yet.
+- An embedding goes through no guardrail group and no token budget: only its personal data is masked.
+- LocalAI reports no token usage for an embedding, which the OpenAI SDK requires, so the starter adds an empty one
+  and its trace counts none. To find out, the starter reads each embedding answer of an OpenAI-protocol endpoint
+  whole and writes it again, whatever the provider.
 - The guardrails match known patterns: a reworded attack goes through. They lower the risk, and the code still
   treats an answer as untrusted.
 - A streamed call, and the result of a tool the model calls, go through no guardrail.

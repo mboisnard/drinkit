@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.client.ChatClientBuilderCustomizer
 import org.springframework.ai.chat.observation.ChatModelMeterObservationHandler
+import org.springframework.ai.embedding.observation.EmbeddingModelMeterObservationHandler
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.autoconfigure.AutoConfigurations
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
@@ -90,6 +91,7 @@ internal class AiAutoConfigurationTest {
         withMetrics.run { context ->
             // When & Then
             context.getBeansOfType(ChatModelMeterObservationHandler::class.java).values shouldHaveSize 1
+            context.getBeansOfType(EmbeddingModelMeterObservationHandler::class.java).values shouldHaveSize 1
         }
     }
 
@@ -124,6 +126,36 @@ internal class AiAutoConfigurationTest {
             // When & Then
             generateSequence(context.startupFailure) { it.cause }.last().message.orEmpty() shouldContain
                 "Model gpt-5 names the endpoint openai, which starters.ai.endpoints does not declare"
+        }
+    }
+
+    @Test
+    fun `refuses to start when an embedding model names an Anthropic endpoint, even without its key`() {
+        // Given
+        val withAnthropicEmbeddings = runner.withPropertyValues(
+            "starters.ai.models.voyage-3.endpoint=anthropic",
+            "starters.ai.models.voyage-3.dimensions=1024",
+        )
+
+        withAnthropicEmbeddings.run { context ->
+            // When & Then
+            generateSequence(context.startupFailure) { it.cause }.last().message.orEmpty() shouldContain
+                "Model voyage-3 is an embedding model, but endpoint anthropic speaks the Anthropic protocol"
+        }
+    }
+
+    @Test
+    fun `refuses to start when an embedding model declares no dimension`() {
+        // Given
+        val withNoDimension = runner.withPropertyValues(
+            "starters.ai.models.nomic-embed.endpoint=localai",
+            "starters.ai.models.nomic-embed.dimensions=0",
+        )
+
+        withNoDimension.run { context ->
+            // When & Then
+            generateSequence(context.startupFailure) { it.cause }.last().message.orEmpty() shouldContain
+                "Model nomic-embed declares 0 dimensions, an embedding model needs at least one"
         }
     }
 }

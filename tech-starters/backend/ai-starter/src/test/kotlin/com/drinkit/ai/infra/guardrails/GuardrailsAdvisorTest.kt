@@ -3,6 +3,7 @@ package com.drinkit.ai.infra.guardrails
 import com.drinkit.ai.AiModels
 import com.drinkit.ai.CompatibleModels
 import com.drinkit.ai.FakeChatModel
+import com.drinkit.ai.ModelUnavailableException
 import com.drinkit.ai.guardrails.BeforeCallGuardrail
 import com.drinkit.ai.guardrails.Finding
 import com.drinkit.ai.guardrails.GuardrailBlockedException
@@ -192,6 +193,8 @@ internal class GuardrailsAdvisorTest {
             override fun isAvailable(model: String) = true
 
             override fun chatClient(model: String) = client
+
+            override fun embeddings(model: String) = throw ModelUnavailableException(model)
         }
 
         // When
