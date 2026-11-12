@@ -8,6 +8,7 @@ dependencies {
     implementation(project(":drinkit-infra"))
 
     implementation(project(":ai-starter"))
+    implementation(project(":file-storage-starter"))
     implementation(project(":idempotency-starter"))
     implementation(project(":messaging-starter"))
     implementation(project(":security-starter"))

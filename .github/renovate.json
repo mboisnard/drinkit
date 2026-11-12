@@ -30,7 +30,7 @@
     {
       "customType": "regex",
       "description": "Testcontainers images, updated along with compose",
-      "managerFilePatterns": ["/src/testFixtures/kotlin/.+\\.kt$/"],
+      "managerFilePatterns": ["/src/test(Fixtures)?/kotlin/.+\\.kt$/"],
       "matchStrings": ["IMAGE_NAME = \"(?<depName>[^:\"]+):(?<currentValue>[^\"]+)\""],
       "datasourceTemplate": "docker"
     },
