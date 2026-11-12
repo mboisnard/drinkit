@@ -8,4 +8,7 @@ import org.springframework.core.Ordered
 object AiAdvisorOrder {
 
     const val GUARDRAILS = Ordered.HIGHEST_PRECEDENCE + 100
+
+    /** Inside the guardrails: a call they block costs no token. */
+    const val TOKEN_BUDGET = GUARDRAILS + 50
 }
