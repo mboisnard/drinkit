@@ -136,8 +136,8 @@ gets a new round before it is pushed, and the verdict line of the description fo
 
 Leave the worktree and work from the main checkout. Fetch master, then look at what is left of the branch.
 
-- Uncommitted changes in the worktree, or a commit that `git cherry` marks `+`, not on master: remove nothing,
-  report what is left, and stop there.
+- Uncommitted changes in the worktree, or a change of the branch that master lacks, so that merging the branch into
+  master would change the tree of master: remove nothing, report what is left, and stop there.
 - Otherwise remove the worktree, then delete the branch with `-D`: a rebase merge rewrites the commits, so `-d`
   refuses a branch that is merged. Remove too the `pr-<pr>` worktree and branch that a review agent left.
 

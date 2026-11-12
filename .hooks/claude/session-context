@@ -27,16 +27,18 @@ ahead=$(git -C "$root" rev-list --count origin/master..HEAD 2>/dev/null)
 changes=$(git -C "$root" status --short | head -n 15)
 [ -n "$changes" ] && printf 'Uncommitted changes:\n%s\n' "$changes"
 
-# A rebase merge rewrites the commits, so a merged branch is one whose changes git cherry finds on master
+# A rebase merge rewrites the commits and their diff context: a merged branch is one whose merge into master
+# leaves the tree of master unchanged
 merged_worktrees() {
+    master_tree=$(git -C "$root" rev-parse 'origin/master^{tree}' 2>/dev/null) || return
     git -C "$root" worktree list --porcelain | while read -r key value; do
         case $key in
             worktree) path=$value ;;
             branch)
                 branch=${value#refs/heads/}
                 [ -n "$(git -C "$root" rev-list -n 1 "origin/master..$branch" 2>/dev/null)" ] || continue
-                cherry=$(git -C "$root" cherry origin/master "$branch" 2>/dev/null) || continue
-                case $cherry in *+*) continue ;; esac
+                merged_tree=$(git -C "$root" merge-tree --write-tree origin/master "$branch" 2>/dev/null) || continue
+                [ "$merged_tree" = "$master_tree" ] || continue
                 echo "  $path ($branch)"
                 ;;
         esac
