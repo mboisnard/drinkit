@@ -8,8 +8,6 @@ import com.drinkit.ai.infra.AiProperties.Provider
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldNotContain
-import io.micrometer.observation.Observation
-import io.micrometer.observation.ObservationHandler
 import io.micrometer.observation.ObservationRegistry
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -71,23 +69,4 @@ internal class DefaultAiModelsTest : AiModelsTestContract() {
 
     private fun AiModels.ask(model: String, question: String = "Which region?") =
         chatClient(model).prompt().user(question).call().content()
-
-    private class RecordedObservations : ObservationHandler<Observation.Context> {
-
-        private val started = mutableSetOf<Observation.Context>()
-        val stopped = mutableListOf<Stopped>()
-
-        override fun supportsContext(context: Observation.Context) = true
-
-        override fun onStart(context: Observation.Context) {
-            started += context
-        }
-
-        override fun onStop(context: Observation.Context) {
-            val keys = (context.lowCardinalityKeyValues + context.highCardinalityKeyValues).map { it.key to it.value }
-            stopped += Stopped(context.name.orEmpty(), context in started, keys)
-        }
-    }
-
-    private data class Stopped(val name: String, val started: Boolean, val keys: List<Pair<String, String>>)
 }
