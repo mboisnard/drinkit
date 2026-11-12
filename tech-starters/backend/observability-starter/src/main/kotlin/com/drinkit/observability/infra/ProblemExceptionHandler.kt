@@ -1,4 +1,4 @@
-package com.drinkit.config
+package com.drinkit.observability.infra
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.slf4j.MDC
@@ -12,8 +12,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
+/**
+ * Answers every error of Spring MVC with a problem detail carrying the traceId of the request. Abstract, so that
+ * the component scan of an application never registers it a second time.
+ */
 @ControllerAdvice
-internal class CustomResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
+@Suppress("AbstractClassCanBeConcreteClass")
+internal abstract class ProblemExceptionHandler : ResponseEntityExceptionHandler() {
 
     // Hides the commons-logging logger of ResponseEntityExceptionHandler, which keeps using its own
     @Suppress("PROPERTY_HIDES_JAVA_FIELD")
@@ -23,24 +28,22 @@ internal class CustomResponseEntityExceptionHandler : ResponseEntityExceptionHan
     fun handleIllegalArgumentException(ex: Exception, request: WebRequest): ResponseEntity<Any>? {
         logger.warn { ex.message }
 
-        return handleExceptionInternal(
-            ex,
-            ProblemDetail.forStatus(HttpStatus.BAD_REQUEST),
-            HttpHeaders(),
-            HttpStatus.BAD_REQUEST,
-            request,
-        )
+        return problem(ex, HttpStatus.BAD_REQUEST, request)
     }
 
-    override fun handleExceptionInternal(
-        ex: Exception,
+    // The body is final here, including the problem Spring builds from an ErrorResponse
+    override fun createResponseEntity(
         body: Any?,
         headers: HttpHeaders,
         statusCode: HttpStatusCode,
         request: WebRequest,
-    ): ResponseEntity<Any>? {
+    ): ResponseEntity<Any> {
         // Put there by Micrometer Tracing: the logs of the request share it
         MDC.get("traceId")?.let { traceId -> (body as? ProblemDetail)?.setProperty("traceId", traceId) }
-        return super.handleExceptionInternal(ex, body, headers, statusCode, request)
+
+        return super.createResponseEntity(body, headers, statusCode, request)
     }
+
+    private fun problem(ex: Exception, status: HttpStatus, request: WebRequest) =
+        handleExceptionInternal(ex, ProblemDetail.forStatus(status), HttpHeaders(), status, request)
 }

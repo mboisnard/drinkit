@@ -41,8 +41,8 @@ Read them at the head commit, before the diff. The files are named, not located:
   `git -C <worktree> grep -n endpointRules -- '*.kt'`: the URL rules.
 - The security starter's `README.md` and `SecurityAutoConfiguration.kt`: the filter chain, CSRF, session, cookies,
   remember-me and logout.
-- `application.yml` and `application-dev.yml` of each `-backend` module the diff touches, and
-  `CustomResponseEntityExceptionHandler.kt`.
+- `application.yml` and `application-dev.yml` of each `-backend` module the diff touches, and the observability
+  starter's `ProblemExceptionHandler`, which answers every error of Spring MVC.
 - `gradle/verification-metadata.xml`, the `gradle.lockfile` of each module that applies `api-convention` or
   `job-convention`, and `.github/workflows/config/ci-lanes.yml`: the dependencies.
 
@@ -94,7 +94,7 @@ Validation on the generated interfaces, enforced at runtime. Each new string has
 `maxItems`, each identifier a `pattern` or a custom `format`. The domain value types validate themselves too. An
 upload checks its size and type before use.
 
-**Error responses.** Read how `CustomResponseEntityExceptionHandler`, and any handler the diff adds, answers each
+**Error responses.** Read how `ProblemExceptionHandler`, and any handler the diff adds, answers each
 exception. A response does not carry an exception message, a stack trace, a SQL error or an internal identifier,
 and `server.error.include-*` stays unset. A new response does not tell apart "this account exists" from "it does
 not", beyond what an existing operation already tells.

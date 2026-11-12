@@ -34,9 +34,10 @@ line. These keys are set for each request:
 - `visitor.id`, by the `security-starter`: the browser behind the request, signed in or not, kept by a cookie for
   30 days after its last visit.
 
-A problem detail, the body of a 400, 401 or 403 that Spring or the `security-starter` writes, carries the same
-`traceId`. A user who reports an error gives it, and the logs of that request come up in one search. The MDC lives
-on its thread: work handed to another thread, such as a platform event, starts without these keys.
+Every error answers a problem detail with the same `traceId`: the `observability-starter` adds it to whatever Spring MVC
+answers, and the other starters hand their refusals to Spring MVC. A user who reports an error gives the `traceId`, and the logs of
+that request come up in one search. The MDC lives on its thread: work handed to another thread, such as a platform
+event, starts without these keys.
 
 ## 🙈 What never reaches a log
 
