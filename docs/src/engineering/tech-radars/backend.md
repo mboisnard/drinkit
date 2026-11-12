@@ -319,7 +319,7 @@
       "quadrant": "Techniques",
       "ring": "ASSESS",
       "label": "LLM Integration",
-      "description": "Language and vision models through Spring AI, served by a frontier API or LocalAI, not used by a feature yet",
+      "description": "Language, vision and embedding models through Spring AI, served by a frontier API or LocalAI, not used by a feature yet",
       "link": "/drinkit/engineering/adr/0021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.html"
     },
     ]'
