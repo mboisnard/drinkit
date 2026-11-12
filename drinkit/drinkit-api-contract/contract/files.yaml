@@ -1,0 +1,33 @@
+openapi: 3.0.3
+info:
+  title: common components for file api
+  version: 1.0.0
+  x-fragment: true
+paths: {}
+components:
+  schemas:
+    UploadFileRequest:
+      type: object
+      required:
+        - usage
+        - file
+      properties:
+        usage:
+          type: string
+          maxLength: 50
+          pattern: '^[a-z0-9-]+$'
+          description: A usage the backend declares, such as bottle-photo, which sets the accepted types and size
+        file:
+          type: string
+          format: binary
+
+    UploadedFile:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: |
+            The id to send to the business route that keeps the file. A file not kept within 24 hours is deleted.
