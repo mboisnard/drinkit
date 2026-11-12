@@ -14,6 +14,7 @@ import com.drinkit.security.infra.code.SignInCodeLimits
 import com.drinkit.security.infra.events.SecurityEventLogger
 import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.ObjectProvider
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -22,6 +23,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Lazy
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.security.authorization.AuthorizationEventPublisher
@@ -59,6 +61,8 @@ import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWrite
 import org.springframework.security.web.savedrequest.NullRequestCache
 import org.springframework.security.web.util.matcher.AnyRequestMatcher
 import org.springframework.security.web.util.matcher.DispatcherTypeRequestMatcher
+import org.springframework.web.servlet.DispatcherServlet
+import org.springframework.web.servlet.HandlerExceptionResolver
 import org.springframework.web.servlet.function.RouterFunction
 import org.springframework.web.servlet.function.RouterFunctions
 import org.springframework.web.servlet.function.ServerResponse
@@ -105,8 +109,10 @@ internal class SecurityAutoConfiguration {
         securityContextRepository: SecurityContextRepository,
         jsonMapper: JsonMapper,
         properties: SecurityStarterProperties,
+        // Lazy: the chain is built before Spring MVC, and the tests of the rules build it without Spring MVC
+        @Lazy @Qualifier(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME) resolver: HandlerExceptionResolver,
     ): SecurityFilterChain {
-        val errorResponses = SecurityErrorResponses(jsonMapper)
+        val errorResponses = SecurityErrorResponses(resolver)
         val signInFilter =
             EmailCodeSignInFilter(jsonMapper, properties.code.maxEmailLength, signInCodeLimits, visitor, errorResponses)
 

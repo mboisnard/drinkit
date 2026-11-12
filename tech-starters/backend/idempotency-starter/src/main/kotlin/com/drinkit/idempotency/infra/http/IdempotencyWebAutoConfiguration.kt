@@ -12,8 +12,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Lazy
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
+import org.springframework.web.servlet.DispatcherServlet
+import org.springframework.web.servlet.HandlerExceptionResolver
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 
 // After the filter chain of Spring Security, at -100, which tells the user or the visitor the key belongs to
@@ -27,12 +30,15 @@ internal class IdempotencyWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = ["idempotencyFilter"])
+    @Suppress("LongParameterList") // Each one is a bean the filter needs, none of them is configuration
     fun idempotencyFilter(
         idempotency: Idempotency,
         transactions: PlatformTransactionManager,
         @Qualifier("requestMappingHandlerMapping") handlerMapping: RequestMappingHandlerMapping,
         currentUser: CurrentUser,
         currentVisitor: CurrentVisitor,
+        // Lazy: the filters are created before Spring MVC
+        @Lazy @Qualifier(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME) resolver: HandlerExceptionResolver,
     ): FilterRegistrationBean<IdempotencyFilter> {
         val filter = IdempotencyFilter(
             idempotency,
@@ -40,6 +46,7 @@ internal class IdempotencyWebAutoConfiguration {
             handlerMapping,
             currentUser,
             currentVisitor,
+            resolver,
         )
 
         return FilterRegistrationBean(filter).apply { order = AFTER_SECURITY }

@@ -4,7 +4,6 @@ import com.drinkit.security.ConnectedUser
 import com.drinkit.security.SecuredApplicationTest
 import com.drinkit.security.connectedAs
 import org.junit.jupiter.api.Test
-import org.slf4j.MDC
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
@@ -83,19 +82,6 @@ internal class AccessTest(private val mockMvc: MockMvc) {
         response.andExpect {
             status { isUnauthorized() }
             jsonPath("$.status") { value(401) }
-        }
-    }
-
-    @Test
-    fun `gives the trace id of the request in its problem, so that its logs can be found`() {
-        MDC.putCloseable("traceId", "4bf92f3577b34da6a3ce929d0e0e4736").use {
-            // When
-            val response = mockMvc.get("/api/cellars/42")
-
-            // Then
-            response.andExpect {
-                jsonPath("$.traceId") { value("4bf92f3577b34da6a3ce929d0e0e4736") }
-            }
         }
     }
 

@@ -9,12 +9,14 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher
+import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import java.time.Clock
 
 @SpringBootApplication
@@ -103,6 +105,11 @@ internal class TestController(private val currentUser: CurrentUser, private val 
     @GetMapping("/api/unruled")
     fun unruled() = ResponseEntity.noContent().build<Unit>()
 }
+
+// What the observability starter gives an application: the refusals of the chain become problem details
+@ControllerAdvice
+@Order(0)
+internal class ProblemDetailsAdvice : ResponseEntityExceptionHandler()
 
 @RestControllerAdvice
 internal class CatchAllAdvice {
