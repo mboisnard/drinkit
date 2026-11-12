@@ -14,6 +14,7 @@ import com.drinkit.user.userId
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 internal class RegistrationController(
@@ -38,17 +39,19 @@ internal class RegistrationController(
 
         val result = completeProfileInformation.invoke(connectedUser.userId, command)
 
-        return when (result) {
+        val refusal = when (result) {
             is CompleteProfileInformation.Result.Success -> {
                 currentUser.refresh()
-                ResponseEntity.ok().build()
+                return ResponseEntity.ok().build()
             }
 
-            CompleteProfileInformation.Result.Forbidden -> ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+            CompleteProfileInformation.Result.Forbidden -> HttpStatus.FORBIDDEN
 
-            CompleteProfileInformation.Result.InvalidProfile -> ResponseEntity.badRequest().build()
+            CompleteProfileInformation.Result.InvalidProfile -> HttpStatus.BAD_REQUEST
 
-            CompleteProfileInformation.Result.UserNotFound -> ResponseEntity.notFound().build()
+            CompleteProfileInformation.Result.UserNotFound -> HttpStatus.NOT_FOUND
         }
+
+        throw ResponseStatusException(refusal)
     }
 }
