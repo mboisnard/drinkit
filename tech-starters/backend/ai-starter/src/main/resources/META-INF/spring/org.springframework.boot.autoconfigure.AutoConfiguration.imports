@@ -1,3 +1,4 @@
 com.drinkit.ai.infra.AiAutoConfiguration
 com.drinkit.ai.infra.guardrails.GuardrailsAutoConfiguration
 com.drinkit.ai.infra.AiMetricsAutoConfiguration
+com.drinkit.ai.infra.budget.TokenBudgetAutoConfiguration
