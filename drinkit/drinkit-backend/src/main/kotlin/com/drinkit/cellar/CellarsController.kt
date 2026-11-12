@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @PreAuthorize("isAuthenticated()")
@@ -46,7 +47,7 @@ internal class CellarsController(
     override fun deleteCellar(cellarId: CellarId, idempotencyKey: String?): ResponseEntity<Unit> =
         when (deleteCellar.invoke(cellarId, currentUser.get().author)) {
             DeleteCellar.Result.CellarDeleted -> ResponseEntity.noContent().build()
-            DeleteCellar.Result.CellarNotFound -> ResponseEntity.notFound().build()
+            DeleteCellar.Result.CellarNotFound -> throw ResponseStatusException(HttpStatus.NOT_FOUND)
         }
 
     @Transactional(readOnly = true)

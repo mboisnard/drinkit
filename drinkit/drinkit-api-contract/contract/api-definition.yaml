@@ -68,7 +68,7 @@ paths:
         '403':
           $ref: 'common.yaml#/components/responses/Forbidden'
         '400':
-          description: Bad Request (maybe wrong object validation)
+          $ref: 'common.yaml#/components/responses/BadRequest'
         '409':
           $ref: 'common.yaml#/components/responses/IdempotencyKeyInUse'
         '422':
@@ -102,7 +102,7 @@ paths:
         '403':
           $ref: 'common.yaml#/components/responses/Forbidden'
         '404':
-          description: No cellar of the connected user has this id
+          $ref: 'common.yaml#/components/responses/NotFound'
         '409':
           $ref: 'common.yaml#/components/responses/IdempotencyKeyInUse'
         '422':
@@ -134,7 +134,7 @@ paths:
         - xsrfToken: []
       responses:
         '400':
-          description: No email in the body
+          $ref: 'common.yaml#/components/responses/BadRequest'
         '403':
           $ref: 'common.yaml#/components/responses/Forbidden'
         '429':
@@ -166,7 +166,7 @@ paths:
         '401':
           description: |
             Wrong, used or expired code, or an account that cannot sign in, with the same body for each: a problem
-            detail of RFC 9457, as application/problem+json.
+            detail of RFC 9457, as application/problem+json, with the traceId of the request.
         '403':
           $ref: 'common.yaml#/components/responses/Forbidden'
         '429':
@@ -267,7 +267,7 @@ paths:
         '304':
           description: Nothing changed since the ETag of If-None-Match
         '400':
-          description: A key that is not in kebab case, or more than 50 keys
+          $ref: 'common.yaml#/components/responses/BadRequest'
         '403':
           $ref: 'common.yaml#/components/responses/Forbidden'
 
@@ -297,7 +297,7 @@ paths:
         '204':
           description: Recorded, or dropped when the variant differs from the assigned one
         '400':
-          description: No variant in the body, or a key that is not in kebab case
+          $ref: 'common.yaml#/components/responses/BadRequest'
         '403':
           $ref: 'common.yaml#/components/responses/Forbidden'
 
@@ -324,7 +324,9 @@ paths:
         '403':
           $ref: 'common.yaml#/components/responses/Forbidden'
         '400':
-          description: Bad request
+          $ref: 'common.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: 'common.yaml#/components/responses/NotFound'
         '200':
           description: User information completed
 
@@ -340,7 +342,7 @@ paths:
         '401':
           $ref: 'common.yaml#/components/responses/Unauthorized'
         '404':
-          description: The connected user was deleted since signing in
+          $ref: 'common.yaml#/components/responses/NotFound'
         '200':
           description: Success
           content:
