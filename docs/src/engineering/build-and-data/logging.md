@@ -35,7 +35,8 @@ line. These keys are set for each request:
   30 days after its last visit.
 
 Every error answers a problem detail with the same `traceId`: the `observability-starter` adds it to whatever Spring MVC
-answers, and the other starters hand their refusals to Spring MVC. A user who reports an error gives the `traceId`, and the logs of
+answers, and the other starters hand their refusals to Spring MVC. An unexpected failure answers a 500 problem that
+keeps its message out, logged with its stack trace. A user who reports an error gives the `traceId`, and the logs of
 that request come up in one search. The MDC lives on its thread: work handed to another thread, such as a platform
 event, starts without these keys.
 

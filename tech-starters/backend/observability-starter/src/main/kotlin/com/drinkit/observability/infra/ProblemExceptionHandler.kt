@@ -13,8 +13,9 @@ import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
 /**
- * Answers every error of Spring MVC with a problem detail carrying the traceId of the request. Abstract, so that
- * the component scan of an application never registers it a second time.
+ * Answers every error of Spring MVC with a problem detail carrying the traceId of the request, and an unexpected
+ * failure with a 500 that keeps its message in the logs. Abstract, so that the component scan of an application
+ * never registers it a second time.
  */
 @ControllerAdvice
 @Suppress("AbstractClassCanBeConcreteClass")
@@ -29,6 +30,13 @@ internal abstract class ProblemExceptionHandler : ResponseEntityExceptionHandler
         logger.warn { ex.message }
 
         return problem(ex, HttpStatus.BAD_REQUEST, request)
+    }
+
+    @ExceptionHandler(Exception::class)
+    fun handleUnexpectedException(ex: Exception, request: WebRequest): ResponseEntity<Any>? {
+        logger.error(ex) { "Unexpected failure" }
+
+        return problem(ex, HttpStatus.INTERNAL_SERVER_ERROR, request)
     }
 
     // The body is final here, including the problem Spring builds from an ErrorResponse

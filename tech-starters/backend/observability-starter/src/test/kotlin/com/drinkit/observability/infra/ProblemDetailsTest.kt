@@ -2,6 +2,7 @@ package com.drinkit.observability.infra
 
 import com.jayway.jsonpath.JsonPath
 import io.kotest.matchers.string.shouldMatch
+import io.kotest.matchers.string.shouldNotContain
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -47,6 +48,19 @@ internal class ProblemDetailsTest(private val mockMvc: MockMvc) {
     }
 
     @Test
+    fun `answers an unexpected failure with a 500 problem that keeps the error message out`() {
+        // When
+        val response = mockMvc.get("/failing")
+
+        // Then
+        response.andExpect {
+            status { isInternalServerError() }
+        }
+        traceIdOf(response) shouldMatch TRACE_ID_FORMAT
+        response.andReturn().response.contentAsString shouldNotContain SECRET
+    }
+
+    @Test
     fun `answers the refusal a servlet filter hands to Spring MVC with the same problem`() {
         // When
         val response = mockMvc.get("/filtered") { accept = MediaType.APPLICATION_JSON }
@@ -78,6 +92,9 @@ internal class ProblemDetailsTest(private val mockMvc: MockMvc) {
 
         @GetMapping("/refused")
         fun refused(): String = throw ErrorResponseException(HttpStatus.CONFLICT)
+
+        @GetMapping("/failing")
+        fun failing(): String = error(SECRET)
     }
 
     class RefusingFilter(private val resolver: HandlerExceptionResolver) : OncePerRequestFilter() {
@@ -93,5 +110,6 @@ internal class ProblemDetailsTest(private val mockMvc: MockMvc) {
 
     private companion object {
         val TRACE_ID_FORMAT = Regex("[0-9a-f]{32}")
+        const val SECRET = "connection string with a password"
     }
 }
