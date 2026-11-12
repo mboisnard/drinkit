@@ -1,5 +1,7 @@
 package com.drinkit.ai
 
+import com.drinkit.ai.guardrails.AiRefusedException
+import com.drinkit.ai.guardrails.GuardrailFindings
 import com.drinkit.documentation.tech.starter.TechStarterTool
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.ai.chat.client.ChatClient
@@ -23,9 +25,15 @@ class CompatibleModels(private val aiModels: AiModels) {
             }
 
             try {
-                val value = request(aiModels.chatClient(model)) ?: error("Model $model answered nothing")
-                return ModelAnswer(model, value)
+                val findings = GuardrailFindings()
+                val client = aiModels.chatClient(model).mutate()
+                    .defaultAdvisors { it.param(GuardrailFindings.KEY, findings) }
+                    .build()
+
+                val value = request(client) ?: error("Model $model answered nothing")
+                return ModelAnswer(model, value, findings.all)
             } catch (failure: RuntimeException) {
+                stopOnRefusal(failure)
                 logger.warn {
                     "Model $model failed, trying the next one: ${failure.javaClass.name}: ${failure.message}"
                 }
@@ -34,6 +42,11 @@ class CompatibleModels(private val aiModels: AiModels) {
         }
 
         throw AllModelsFailedException(causes)
+    }
+
+    // A refusal of the guardrails stands for every model: asking the next one would only repeat it
+    private fun stopOnRefusal(failure: RuntimeException) {
+        if (failure is AiRefusedException) throw failure
     }
 
     /**

@@ -6,9 +6,11 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import org.junit.jupiter.api.Test
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.client.ChatClientBuilderCustomizer
+import org.springframework.ai.chat.observation.ChatModelMeterObservationHandler
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.autoconfigure.AutoConfigurations
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
@@ -76,6 +78,19 @@ internal class AiAutoConfigurationTest {
 
             // Then
             customized shouldHaveSize 1
+        }
+    }
+
+    @Test
+    fun `counts the tokens of each call when the application has metrics`() {
+        // Given
+        val withMetrics = runner
+            .withConfiguration(AutoConfigurations.of(AiMetricsAutoConfiguration::class.java))
+            .withBean(SimpleMeterRegistry::class.java, { SimpleMeterRegistry() })
+
+        withMetrics.run { context ->
+            // When & Then
+            context.getBeansOfType(ChatModelMeterObservationHandler::class.java).values shouldHaveSize 1
         }
     }
 

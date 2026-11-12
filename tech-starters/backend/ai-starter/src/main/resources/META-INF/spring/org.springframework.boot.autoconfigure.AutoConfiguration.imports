@@ -1,1 +1,3 @@
 com.drinkit.ai.infra.AiAutoConfiguration
+com.drinkit.ai.infra.guardrails.GuardrailsAutoConfiguration
+com.drinkit.ai.infra.AiMetricsAutoConfiguration
