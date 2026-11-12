@@ -1,10 +1,10 @@
 # File Storage Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 that stores the files users upload, such as bottle photos, or the backend fetches, such as catalog images, on a local
 directory or in any S3-compatible bucket. It checks each file, keeps it only when a business use case succeeds, and
 lets read it whoever may read the business object it is kept on.
-[ADR 0022](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0022-store-uploaded-files-as-temporary-until-a-use-case-keeps-them.md)
+[ADR 022](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/022-store-uploaded-files-as-temporary-until-a-use-case-keeps-them.md)
 explains its design.
 
 ```mermaid
