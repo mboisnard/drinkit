@@ -52,6 +52,7 @@ the other. The status says where a decision stands:
 | [0019](0019-run-requests-and-events-once-per-idempotency-key.md) | Run requests and events once per idempotency key, kept in PostgreSQL | Accepted | 2026-11-08 |
 | [0020](0020-rate-limit-in-the-application-with-gcra-on-postgresql.md) | Rate limit in the application with GCRA on PostgreSQL | Accepted | 2026-11-09 |
 | [0021](0021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.md) | Serve AI models outside the application, and reach them through ai-starter | Accepted | 2026-11-11 |
+| [0022](0022-store-uploaded-files-as-temporary-until-a-use-case-keeps-them.md) | Store uploaded files as temporary until a use case keeps them | Accepted | 2026-11-13 |
 
 ## How to write one
 

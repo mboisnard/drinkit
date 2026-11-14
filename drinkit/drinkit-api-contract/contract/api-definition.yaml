@@ -21,6 +21,8 @@ tags:
     description: Search operations
   - name: sse
     description: Server-sent events
+  - name: files
+    description: Files uploaded by users, such as bottle photos
   - name: feature-management
     description: Feature flags and A/B test variants for clients, after ADR 0017 and ADR 0018
 
@@ -205,6 +207,50 @@ paths:
       responses:
         '204':
           description: XSRF-TOKEN cookie set
+
+  /api/files:
+    post:
+      operationId: uploadFile
+      tags:
+        - files
+      summary: Upload a file for a usage, to keep it through a business route
+      description: |
+        Served by the file storage starter, not by a controller. Checks the file against its usage: its size, the type
+        read from its bytes, its extension and its declared type. Stores it as temporary and answers its id, which a
+        business route then keeps. A file not kept within 24 hours is deleted. The uploads are limited per user.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: 'files.yaml#/components/schemas/UploadFileRequest'
+      security:
+        - session: []
+          xsrfToken: []
+      responses:
+        '400':
+          $ref: 'common.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
+        '413':
+          description: |
+            A file larger than its usage allows. The body is a problem detail of RFC 9457, as application/problem+json.
+        '415':
+          description: |
+            A file whose bytes are not a type of its usage, or whose extension or declared type does not match its
+            bytes. The body is a problem detail of RFC 9457, as application/problem+json.
+        '429':
+          description: |
+            Too many uploads by this user: retry after the seconds of the Retry-After header. The body is a problem
+            detail of RFC 9457, as application/problem+json.
+        '201':
+          description: File stored, temporary until a business route keeps it
+          content:
+            application/json:
+              schema:
+                $ref: 'files.yaml#/components/schemas/UploadedFile'
 
   /sse/event-stream:
     get:

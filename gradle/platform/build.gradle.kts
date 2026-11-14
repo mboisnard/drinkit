@@ -13,6 +13,8 @@ javaPlatform {
 dependencies {
     // Import third-party BOMs, our constraints below will override their versions
     // Cucumber's modules ask each other for version ranges: its BOM pins them to the ones it was released with
+    // The AWS SDK modules move together: its BOM keeps s3, its HTTP client and their transitive modules aligned
+    api(platform(libs.aws.sdk.dependencies.bom))
     api(platform(libs.cucumber.dependencies.bom))
     api(platform(libs.opentelemetry.dependencies.bom))
     api(platform(libs.spring.ai.dependencies.bom))
@@ -30,6 +32,7 @@ dependencies {
         api(libs.kotlin.logging.jvm)
         api(libs.meilisearch.java.client)
         api(libs.springdoc.openapi.starter.webmvc.ui)
+        api(libs.tika.core)
 
         // Test Dependencies
         api(libs.approvaltests)

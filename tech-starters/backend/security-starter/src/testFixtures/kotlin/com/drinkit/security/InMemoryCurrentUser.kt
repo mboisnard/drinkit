@@ -16,6 +16,10 @@ class InMemoryCurrentUser(private val accounts: UserAccounts = InMemoryUserAccou
         return ConnectedUser(account.id, account.roles).also { user = it }
     }
 
+    fun signOut() {
+        user = null
+    }
+
     override fun refresh(): ConnectedUser? {
         val current = user ?: return null
 

@@ -121,3 +121,22 @@ CREATE TABLE IF NOT EXISTS drinkit_application.rate_limit
 
 CREATE INDEX CONCURRENTLY IF NOT EXISTS rate_limit_theoretical_arrival_idx
     ON drinkit_application.rate_limit (theoretical_arrival);
+
+-- Stored files, one row per file uploaded through file-storage-starter: its object lives in the configured storage
+
+CREATE TABLE IF NOT EXISTS drinkit_application.stored_file
+(
+    id            UUID                     PRIMARY KEY,
+    usage         TEXT                     NOT NULL,
+    owner_id      TEXT                     NOT NULL,
+    status        TEXT                     NOT NULL,
+    content_type  TEXT                     NOT NULL,
+    size          BIGINT                   NOT NULL,
+    name          TEXT                     NOT NULL,
+    uploaded_at   TIMESTAMP WITH TIME ZONE NOT NULL,
+    resource_type TEXT,
+    resource_id   TEXT
+);
+
+CREATE INDEX CONCURRENTLY IF NOT EXISTS stored_file_uploaded_at_idx
+    ON drinkit_application.stored_file (uploaded_at) WHERE status <> 'KEPT';

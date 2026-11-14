@@ -6,6 +6,7 @@ jdk = "25"
 squawk = "2.71.0"
 
 # BOM Versions
+aws-sdk-dependencies = "2.57.5"
 cucumber-dependencies = "8.0.4"
 opentelemetry-dependencies = "1.68.0"
 spring-ai-dependencies = "2.0.2"
@@ -21,6 +22,7 @@ meilisearch = "0.22.1"
 openfeature-sdk = "1.23.0"
 openfeature-flipt-provider = "0.1.4"
 springdoc-openapi = "3.2.0"
+tika = "4.2.0"
 
 # Test Versions
 approvaltests = "31.0.0"
@@ -33,6 +35,7 @@ testcontainers-meilisearch = "2.0.0"
 
 [libraries]
 # BOM Dependencies
+aws-sdk-dependencies-bom = { module = "software.amazon.awssdk:bom", version.ref = "aws-sdk-dependencies" }
 cucumber-dependencies-bom = { module = "io.cucumber:cucumber-bom", version.ref = "cucumber-dependencies" }
 opentelemetry-dependencies-bom = { module = "io.opentelemetry:opentelemetry-bom", version.ref = "opentelemetry-dependencies" }
 spring-ai-dependencies-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai-dependencies" }
@@ -54,6 +57,7 @@ meilisearch-java-client = { module = "com.meilisearch.sdk:meilisearch-java", ver
 openfeature-sdk = { module = "dev.openfeature:sdk", version.ref = "openfeature-sdk" }
 openfeature-flipt-provider = { module = "dev.openfeature.contrib.providers:flipt", version.ref = "openfeature-flipt-provider" }
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
+tika-core = { module = "org.apache.tika:tika-core", version.ref = "tika" }
 
 # Test Dependencies
 approvaltests = { module = "com.approvaltests:approvaltests", version.ref = "approvaltests" }
