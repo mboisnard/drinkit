@@ -1,11 +1,11 @@
 # Messaging Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
-that carries [platform events](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/platform-events.md),
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
+that carries [platform events](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/8.platform-events.md),
 facts such as "a sign-in code was requested", from the code that publishes them to the handlers that react. A
 handler runs after the commit, on a thread of its own, and again after a growing wait when it fails. The events
 travel as Spring application events today, and a broker can replace them without changing a handler, as
-[ADR 0006](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0006-carry-platform-events-through-an-abstraction.md)
+[ADR 0006](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0006-carry-platform-events-through-an-abstraction.md)
 records.
 
 ```mermaid
@@ -67,7 +67,7 @@ internal class SignInCodeEmails(private val notificationSender: NotificationSend
   and **`idempotencyKey`** reads that key from the event instead, as `#event.orderId`. An event carries a key derived
   from the one of the request or the event that published it, so a replay of either publishes it under the same key.
 - **`exchange` and `oneQueuePerInstance`** are read by a broker implementation and ignored by Spring events, as
-  [platform events](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/platform-events.md)
+  [platform events](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/8.platform-events.md)
   explains.
 - **The application refuses to start** on a handler that takes anything but one platform event, or reuses a `name`,
   or sets `maxAttempts` below 1 or a negative `delay`, or combines `oneQueuePerInstance` with a `delay` or with

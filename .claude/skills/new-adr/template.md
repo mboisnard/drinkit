@@ -1,10 +1,13 @@
 # Template of an ADR
 
-Copy the block below into `docs/src/engineering/adr/<number>-<title>.md`. Every line in angle brackets is replaced.
+Copy the block below into `docs/content/en/engineering/6.adr/<number>-<title>.md`. Every line in angle brackets is replaced.
 A section never stays empty: "Sources" goes when there are none.
 
 ```markdown
-# <number>. <The decision, as a title>
+---
+title: "<number>. <The decision, as a title>"
+description: "<The summary below, in one sentence.>"
+---
 
 - Status: <accepted, proposed, rejected, deprecated, or superseded by a link to the new ADR>
 - Date: <YYYY-MM-DD, the day it was decided>

@@ -18,8 +18,7 @@ internal class CreateCoreDomainDocumentation(private val outputFolderPath: Strin
     }
 
     private fun generateMarkdown(domain: CoreDomainInfo, useCases: List<UseCaseInfo>) = buildString {
-        appendLine("# ${domain.displayName}")
-        appendLine()
+        appendFrontmatter(domain.displayName)
 
         domain.description?.let {
             appendLine(it)

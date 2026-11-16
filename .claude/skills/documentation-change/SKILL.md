@@ -1,14 +1,14 @@
 ---
 name: documentation-change
-description: Writes or rewrites a page of DrinkIt's documentation site, or a README, so that a person reads it once and understands what the project does and why. Use it before adding or changing a page under docs/src or a README, and when asked to clean up, rewrite or review a page.
+description: Writes or rewrites a page of DrinkIt's documentation site, or a README, so that a person reads it once and understands what the project does and why. Use it before adding or changing a page under docs/content/en or a README, and when asked to clean up, rewrite or review a page.
 paths:
-  - "docs/src/**/*.md"
+  - "docs/content/en/**/*.md"
   - "**/README.md"
 ---
 
 # Writing a documentation page
 
-The site under `docs/src` tells people how DrinkIt is built and why: the architecture, the database, the
+The site under `docs/content/en` tells people how DrinkIt is built and why: the architecture, the database, the
 harness, the security measures, the technologies chosen. This skill gives the order to write a page in and what
 proves that it reads well. [style.md](style.md) holds the style rules, each tic with a before and an after, and
 [examples.md](examples.md) the commands and a rewritten page.
@@ -30,11 +30,11 @@ those files rather than copying their commands.
 - Find the source of truth for each thing the page mentions and link it instead of repeating it: `AGENTS.md`
   or the skill of its kind of change for a command, an ADR for why a choice was made, the file that implements a
   rule, another page for a subject it already covers.
-- Read [the ADR index](../../../docs/src/engineering/adr/index.md) for the decisions behind the subject.
+- Read [the ADR index](../../../docs/content/en/engineering/6.adr/index.md) for the decisions behind the subject.
   Where the page states a choice an ADR records, it links that ADR in one sentence, such as "ADR 0003 records why
   the changelogs are organized as below" in `database.md`: the page keeps how DrinkIt works, the ADR why. An ADR
   that does not help understand the page stays out of it.
-- Before renaming a page or a heading, find what links to it: `git grep -n '<page name>' -- docs/src '*.md'`.
+- Before renaming a page or a heading, find what links to it: `git grep -n '<page name>' -- docs/content/en '*.md'`.
   The same search lists `AGENTS.md` and the skills that send agents to the page. When detail leaves the page,
   update their pointer so that it still leads to that detail.
 - When the subject has an official audit or linter, run it: Squawk, or the `gradle-best-practices` skill of
@@ -57,7 +57,9 @@ and steps go in a numbered list under a heading that names the task.
 
 ## 4. Shape the page
 
-1. The title names the subject. The first paragraph says what the page covers and the one idea to keep: a
+1. The title names the subject, in the `title` of the frontmatter: the site shows it above the page, so the page
+   has no `#` heading. The `description` of the frontmatter is one sentence, shown under the title and listed in
+   `llms.txt`. The first paragraph says what the page covers and the one idea to keep: a
    reader who stops there knows what matters. On a page about a pattern or a practice, its first sentences present
    the pattern itself, in general terms and without DrinkIt: what it is, why it helps, what it asks of the code,
    without its history. How DrinkIt applies it comes next, in sections of its own, as in `clean-architecture.md`:
@@ -79,7 +81,7 @@ and steps go in a numbered list under a heading that names the task.
    roadmap lives on GitHub, not in the pages.
 6. Every concept that has a page on the site links to that page at its first mention in a section, with text
    that names it, even when the page is still short or empty: the link already leads to the right place, and it
-   holds when the page grows. `git ls-files 'docs/src/**/*.md'` lists the pages. A file outside `docs/src` is
+   holds when the page grows. `git ls-files 'docs/content/en/**/*.md'` lists the pages. A file outside `docs/content/en` is
    linked by its GitHub URL on master, as `harness.md` does.
 7. "Sources" is the last section of a page that uses outside material, an article, a book or a specification,
    after every other section. The concept comes first, then its implementation in a tool or framework: the
@@ -113,12 +115,13 @@ each only in a reference table, where each one carries a rule of its own.
 [style.md](style.md) holds the rules of sentences, words, headings, links, lists and punctuation, and the tics of
 generated text, each with what it protects the reader from. Read it before writing and again before review.
 
-Keep the markdown portable, since the framework may change: plain markdown with frontmatter, never a
-VitePress `:::` container. A callout uses the GitHub alert form, `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]` or
-`> [!CAUTION]`, which GitHub and VitePress both render in the same style, and a collapsible block is an HTML
-`<details>`. Keep callouts for what must stand out, such as an exception the project accepts on purpose: a bold
+Keep the markdown portable, since the framework may change: plain markdown with frontmatter, never an MDC
+`::` block, which GitHub shows as text. A callout uses the GitHub alert form, `> [!NOTE]`, `> [!TIP]`,
+`> [!IMPORTANT]`, `> [!WARNING]` or `> [!CAUTION]`, which GitHub and the site both render as a callout, and a
+collapsible block is an HTML `<details>`. Only the landing page and the call of a Vue component, such as the tech
+radars' `::tech-radar`, use MDC. Keep callouts for what must stand out, such as an exception the project accepts on purpose: a bold
 label that names it as accepted, then its reason, in two or three sentences, as "Accepted: Spring in the domain"
-in `hexagonal-architecture.md`. A diagram is a Mermaid block, which GitHub and VitePress both render and a diff
+in `hexagonal-architecture.md`. A diagram is a Mermaid block, which GitHub and the site both render and a diff
 shows, never an image.
 
 ## 6. Rewrite an existing page
@@ -129,20 +132,20 @@ shows, never an image.
   class the code does not have takes a real one, and a command copied from `AGENTS.md` or a skill becomes a link to it.
 - A heading's anchor comes from its text. Before you change a heading, find the links to it with
   `git grep -n '<page name>.*#'`, and update them in the same change. Never add a `{#anchor}` to a heading:
-  VitePress reads it, but GitHub and editor previews show it as text.
+  GitHub and editor previews show it as text.
 - The pull request lists what was cut and why.
 
 ## 7. Leave the generated pages alone
 
-`./gradlew kspKotlin` writes `docs/src/engineering/resources` from the `documentation-starter` annotations and
+`./gradlew kspKotlin` writes `docs/content/en/engineering/9.resources` from the `documentation-starter` annotations and
 the starters' READMEs. Change the annotation or the README instead: a Claude Code hook refuses a hand edit of a
 generated page.
 
 ## Before you finish
 
 - [ ] The tics command of [examples.md](examples.md#tics) prints nothing for the page.
-- [ ] `./gradlew kspKotlin --rerun`, then `npm run docs:build` from `docs/`, passes. VitePress fails on a dead
-  link.
+- [ ] `./gradlew kspKotlin --rerun`, then `npm run generate` from `docs/`, passes. The build fails on a dead
+  link between pages.
 - [ ] A fresh agent given only the page and the [fresh reader prompt](examples.md#fresh-reader) reports no DrinkIt
   term used before its definition, no rule without its reason, no passage that teaches what it already knows and
   none it could skip without losing a reason.
@@ -154,10 +157,10 @@ generated page.
 - [ ] Each flow, exchange between parts or before and after that the page explains is a diagram, and the words it
   replaced are gone.
 - [ ] The maintainer saw the tables and diagrams as intended, or the pull request says nobody has yet. Start
-  [`npm run docs:dev`](examples.md#build-the-site) in the background for them: it never returns.
+  [`npm run dev`](examples.md#build-the-site) in the background for them: it never returns.
 - [ ] Each concept of the page that has a page of its own links to it.
 - [ ] Each choice of the page that an ADR records links to that ADR.
-- [ ] A new page is in the sidebar of `docs/.vitepress/config.ts`, and the pages on nearby subjects link to it.
+- [ ] A new page has a number prefix that places it in the sidebar, and the pages on nearby subjects link to it.
 
 ## Sources
 

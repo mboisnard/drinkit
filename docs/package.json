@@ -1,23 +1,16 @@
 {
-  "name": "drinkit",
-  "version": "0.0.1",
-  "description": "Drink It Manage your cellar",
-  "license": "Apache-2.0",
+  "name": "drinkit-docs",
+  "description": "How Drink It, a cellar manager for wines and spirits, is built and why.",
   "private": true,
   "type": "module",
   "scripts": {
-    "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "npx serve .output/public"
   },
-  "devDependencies": {
-    "mermaid": "12.3.0",
-    "vitepress": "1.6.4",
-    "vitepress-plugin-mermaid": "2.0.17"
-  },
-  "overrides": {
-    "vitepress-plugin-mermaid": {
-      "mermaid": "$mermaid"
-    }
+  "dependencies": {
+    "@barzhsieh/nuxt-content-mermaid": "4.0.1",
+    "docus": "5.15.0",
+    "nuxt": "4.6.4"
   }
 }

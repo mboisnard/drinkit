@@ -101,7 +101,7 @@ not", beyond what an existing operation already tells.
 
 **Secrets.** No key, token, password or certificate in code, configuration, tests, fixtures or logs, in any
 commit of the branch. The values of `application-dev.yml` and `deployment/local/compose.yml` are local container
-defaults, like the other local values that `docs/src/engineering/writing-code/best-practices/dev-exp.md` lists;
+defaults, like the other local values that `docs/content/en/engineering/3.writing-code/1.best-practices/6.dev-exp.md` lists;
 anything else comes from an environment variable, read through its property or a `${...}` placeholder. GitHub
 push protection only knows the common formats: you catch the rest.
 

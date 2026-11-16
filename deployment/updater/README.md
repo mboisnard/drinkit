@@ -14,7 +14,7 @@ Liquibase records each file it runs in `DRINKIT_DATABASECHANGELOG`, and skips it
 
 Beside them, `demo/` holds the demo data that only a local start applies: `db.changelog-demo.yml`, beside the master, runs the master changelog, then the `.sql` files of `demo/`. No deployment runs it, and an image built for a deployment leaves it out. Squawk and the convention tests check it like the other folders.
 
-The `Dockerfile` of this folder builds it into an image, which master publishes as `ghcr.io/mboisnard/drinkit-updater`. The image holds no changelog: it reads them from the classpath under `/workspace`, so `db/` mounted at `/workspace/db` gives it the changelogs of your checkout. [Container images](../../docs/src/engineering/delivery/container-images.md) explains how master publishes it.
+The `Dockerfile` of this folder builds it into an image, which master publishes as `ghcr.io/mboisnard/drinkit-updater`. The image holds no changelog: it reads them from the classpath under `/workspace`, so `db/` mounted at `/workspace/db` gives it the changelogs of your checkout. [Container images](../../docs/content/en/engineering/5.delivery/2.container-images.md) explains how master publishes it.
 
 ## Run It
 
@@ -24,4 +24,4 @@ The `Dockerfile` of this folder builds it into an image, which master publishes 
 
 ## Read Next
 
-[`database.md`](../../docs/src/engineering/build-and-data/database.md) explains what goes in each folder, how to write a change that never blocks the users, how to rebaseline `base/`, and why each checked rule exists. [ADR 0003](../../docs/src/engineering/adr/0003-apply-the-schema-through-the-updater.md) records why the changelogs are organized this way, and why one image runs them in every environment.
+[`database.md`](../../docs/content/en/engineering/2.build-and-data/2.database.md) explains what goes in each folder, how to write a change that never blocks the users, how to rebaseline `base/`, and why each checked rule exists. [ADR 0003](../../docs/content/en/engineering/6.adr/0003-apply-the-schema-through-the-updater.md) records why the changelogs are organized this way, and why one image runs them in every environment.

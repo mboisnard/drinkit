@@ -8,7 +8,7 @@ paths:
 
 # Changing the database schema
 
-The safe statements are in `docs/src/engineering/build-and-data/database.md`. This skill gives the order, the
+The safe statements are in `docs/content/en/engineering/2.build-and-data/2.database.md`. This skill gives the order, the
 commands and what proves each step.
 
 ## 1. Write the change

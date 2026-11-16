@@ -3,6 +3,7 @@ package com.drinkit.documentation.processor.ksp.documentation
 import com.drinkit.documentation.processor.ksp.NoOpKSPLogger
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldStartWith
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -34,7 +35,7 @@ internal class CreateCoreDomainDocumentationTest {
         generatedFile.exists() shouldBe true
 
         val content = generatedFile.readText()
-        content shouldContain "# User Management"
+        content shouldStartWith "---\ntitle: \"User Management\"\n---\n"
         content shouldContain "This is a user management domain"
         content shouldContain "*No use cases found for this core domain.*"
     }
@@ -55,7 +56,7 @@ internal class CreateCoreDomainDocumentationTest {
         // Then
         val generatedFile = File(tempDir, "user.md")
         val content = generatedFile.readText()
-        content shouldContain "# User"
+        content shouldStartWith "---\ntitle: \"User\"\n---\n"
         content shouldContain "*No use cases found for this core domain.*"
     }
 
@@ -97,7 +98,7 @@ internal class CreateCoreDomainDocumentationTest {
         val generatedFile = File(tempDir, "user.md")
         val content = generatedFile.readText()
 
-        content shouldContain "# User"
+        content shouldStartWith "---\ntitle: \"User\"\n---\n"
         content shouldContain "User domain"
 
         content shouldContain "### Create User"
@@ -191,6 +192,6 @@ internal class CreateCoreDomainDocumentationTest {
         generatedFile.exists() shouldBe true
 
         val content = generatedFile.readText()
-        content shouldContain "# Custom User Domain"
+        content shouldStartWith "---\ntitle: \"Custom User Domain\"\n---\n"
     }
 }

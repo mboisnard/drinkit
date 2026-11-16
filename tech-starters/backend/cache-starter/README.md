@@ -1,10 +1,10 @@
 # Cache Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
 that turns on Spring's `@Cacheable` and `@CacheEvict` and keeps the entries in memory with
 [Caffeine](https://github.com/ben-manes/caffeine), each cache with a time to live. Spring's default cache never
 expires an entry.
-[ADR 0007](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0007-cache-through-spring-on-caffeine.md)
+[ADR 0007](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0007-cache-through-spring-on-caffeine.md)
 says why.
 
 ```mermaid
@@ -58,7 +58,7 @@ caches forward so that a test never waits for an entry to expire.
 - Each instance keeps its own entries, and an eviction reaches only the instance that made it. Only cache what may
   be stale for one time to live.
 - A call from the same object skips the proxy, so the annotations do nothing. The
-  [architecture tests](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/writing-code/testing/architecture-tests.md)
+  [architecture tests](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/3.writing-code/2.testing/4.architecture-tests.md)
   forbid it.
 - `STARTERS_CACHE_TTL_<CACHE>` only works for a cache name without a hyphen or a dot. Set the others through
   `SPRING_APPLICATION_JSON`, as in `{"starters.cache.ttl.exchange-rates": "1h"}`.

@@ -1,6 +1,6 @@
 # Mail Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
 that sends the application's emails, such as a sign-in code. An adapter injects
 `EmailSender`, and the starter queues each email for an SMTP server or, when none is set, drops it with a warning.
 
@@ -73,7 +73,7 @@ emailSender.send(
 
 The `dev` profile of the backend sends to the [Mailpit](https://mailpit.axllent.org/) of the local compose file, whose
 web interface on `http://localhost:8025` shows each email.
-[ADR 0010](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0010-send-emails-over-smtp-to-a-server-chosen-per-environment.md)
+[ADR 0010](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0010-send-emails-over-smtp-to-a-server-chosen-per-environment.md)
 records the SMTP server of each environment.
 
 ## Configuration

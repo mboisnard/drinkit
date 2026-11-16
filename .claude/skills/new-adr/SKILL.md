@@ -2,14 +2,14 @@
 name: new-adr
 description: Records a structuring choice of DrinkIt as a short ADR that someone who was not there understands, and supersedes the ADR it replaces. Use it when asked for an ADR or a decision record, as soon as the maintainer settles a structuring choice in a session or an issue (a module, a dependency, a tool, the API contract, the schema layout, a security rule, a convention every contributor follows), and when a decision replaces an earlier one.
 paths:
-  - "docs/src/engineering/adr/**"
+  - "docs/content/en/engineering/6.adr/**"
 ---
 
 # Recording a decision
 
 An ADR, architecture decision record, tells a future reader which choice the project made, why, and what it
 costs. The guideline pages say how DrinkIt works, an ADR says why it works that way rather than another. ADRs live
-in `docs/src/engineering/adr/`, and [its index](../../../docs/src/engineering/adr/index.md) lists them all. The
+in `docs/content/en/engineering/6.adr/`, and [its index](../../../docs/content/en/engineering/6.adr/index.md) lists them all. The
 sections are in [template.md](template.md), and the prose follows the
 [documentation-change](../documentation-change/SKILL.md) skill.
 
@@ -46,7 +46,7 @@ that the dates of the index follow its numbers.
 
 ## 4. Create the file
 
-Take the next free number in `docs/src/engineering/adr/`, on four digits, never reused. Numbers and dates follow the
+Take the next free number in `docs/content/en/engineering/6.adr/`, on four digits, never reused. Numbers and dates follow the
 order of writing. The file name is the number and the title in
 kebab case. The title states the decision, such as "Architecture tests with Konture", not the question it
 answered.
@@ -103,9 +103,8 @@ scratch.
 
 ## 8. Wire it
 
-- Add its row to the table of the index, in the order of the numbers, and the page to the "Decision Records"
-  group of the sidebar in `docs/.vitepress/config.ts`, as `<number>. <title>`, the title shortened when it runs
-  long.
+- Add its row to the table of the index, in the order of the numbers. The sidebar lists the ADR by its file
+  name, so nothing else registers it.
 - Link it from the guideline page closest to the decision, with a sentence such as "ADR 0003 records why the
   changelogs are organized as below", as `database.md` does. That sentence follows the `documentation-change`
   skill, but it does not commit you to rewriting the rest of the page.
@@ -116,7 +115,7 @@ scratch.
 - [ ] The summary gives the decision and its main reason.
 - [ ] Each alternative is real, and the consequences include at least one cost.
 - [ ] The "Before you finish" list of the `documentation-change` skill passes for the ADR.
-- [ ] The index, the sidebar and the guideline page link the ADR.
+- [ ] The index and the guideline page link the ADR.
 
 ## Sources
 

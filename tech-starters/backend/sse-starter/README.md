@@ -1,6 +1,6 @@
 # SSE Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
 that pushes events from the server to the browser with
 [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events). Each tab opens one stream,
 and the application sends an event to a user, or to the session of a visitor who is not signed in, who gets it in
@@ -63,7 +63,7 @@ sequenceDiagram
     end
 ```
 
-[ADR 0015](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0015-push-server-events-over-sse-to-a-user-or-a-session.md)
+[ADR 0015](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0015-push-server-events-over-sse-to-a-user-or-a-session.md)
 records why a stream belongs to a user or a session, carries signals, follows the visibility of its tab, and comes with
 its access rule.
 
@@ -148,7 +148,7 @@ serverEvents.sentTo("ada-id").single().eventName shouldBe "cellar-updated"
 ## Limits
 
 - An event reaches only the streams of the instance that published it, since the
-  [platform events](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/platform-events.md)
+  [platform events](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/8.platform-events.md)
   travel inside the process. A broker would deliver it to every instance.
 - A visible tab left alone keeps its session alive until its absolute timeout, as each opening of the stream counts
   as activity.

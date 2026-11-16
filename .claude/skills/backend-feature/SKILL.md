@@ -28,9 +28,9 @@ A broken rule fails the build with its id, its reason and its fix, and keeps the
 
 The tests do not check everything: a business value as a type rather than a primitive, a name in the words of the
 domain, or a decision returned as a `Result` case. These follow
-`docs/src/engineering/writing-code/best-practices/coding-rules.md` and
-`docs/src/engineering/architecture/clean-architecture.md`, which the `issue-judge` agent and the reviewer apply. Other
-pages of `docs/src/engineering/` explain a rule when it fails: `hexagonal-architecture.md`, `event-sourcing.md` before
+`docs/content/en/engineering/3.writing-code/1.best-practices/3.coding-rules.md` and
+`docs/content/en/engineering/1.architecture/4.clean-architecture.md`, which the `issue-judge` agent and the reviewer apply. Other
+pages of `docs/content/en/engineering/` explain a rule when it fails: `hexagonal-architecture.md`, `event-sourcing.md` before
 touching the `User` aggregate, and `living-documentation.md` for the annotations each new kind of class carries.
 
 ## Order of work

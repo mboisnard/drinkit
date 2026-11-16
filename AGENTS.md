@@ -36,7 +36,7 @@ whatever the agent, even when no tool loaded it for you.
 - A convention plugin of `build-logic`: `build-convention-change`
 - A workflow, a Dockerfile, the compose file or the Renovate configuration: `ci-workflow-change`
 - A hook, a setting, a skill or an agent: `harness-change`
-- A page under `docs/src` or a README: `documentation-change`
+- A page under `docs/content/en` or a README: `documentation-change`
 - The Nuxt app: `frontend-feature`. A tech starter: `new-backend-tech-starter` or `new-frontend-tech-starter`
 - An issue: `new-issue`. A decision record: `new-adr`. An issue taken to a pull request: `implement-issue`
 
@@ -55,7 +55,7 @@ directory: never in the tree, never elsewhere on the machine.
   `code-analysis/detekt/baseline.xml`.
 - The architecture tests fail the build on any broken rule. Fix the code, or tolerate the violation in the rule's
   `suppress` block with the issue that removes it, or the maintainer's reason to keep it, never loosen the rule:
-  `docs/src/engineering/writing-code/testing/architecture-tests.md` gives each rule's fix.
+  `docs/content/en/engineering/3.writing-code/2.testing/4.architecture-tests.md` gives each rule's fix.
 - "Dependency verification failed" on a branch that touched no dependency means an upstream release landed in a
   version range: the command of `dependency-change` fixes it.
 
