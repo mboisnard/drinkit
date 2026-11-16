@@ -29,7 +29,7 @@ its bottom.
    [architecture tests](./3.writing-code/2.testing/4.architecture-tests.md) keep the rules of the steps above true on every
    build.
 5. **With a coding assistant.** The [harness](./4.coding-assistants/1.harness.md) steers the coding agents and checks
-   their work, through [hooks](./4.coding-assistants/2.hooks.md), [skills](./4.coding-assistants/3.skills.md) and
+   their work, through [hooks](./4.coding-assistants/2.hooks.md), [skills](./4.coding-assistants/3.skills/index.md) and
    [subagents](./4.coding-assistants/4.sub-agents.md).
 6. **From a change to master.** The [CI](./5.delivery/1.ci-cd.md) runs what a change touches, and the master ruleset
    lets the maintainer merge a pull request only once its gate is green.

@@ -24,6 +24,11 @@ export default defineNuxtConfig({
       },
     },
   },
+  agentDiscovery: {
+    skills: {
+      dir: '../.claude/skills',
+    },
+  },
   robots: {
     robotsTxt: false,
   },

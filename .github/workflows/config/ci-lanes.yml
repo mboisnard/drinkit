@@ -46,6 +46,7 @@ docs: &docs
   - '.nvmrc'
   - 'docs/**'
   - 'tech-starters/backend/*/README.md' # copied into the tech starter pages
+  - '.claude/skills/**' # published by the site
 
 hooks: &hooks
   - *workflows
