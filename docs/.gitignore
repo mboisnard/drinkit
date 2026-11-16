@@ -8,3 +8,6 @@ dist
 
 # Written by ./gradlew kspKotlin
 content/en/engineering/9.resources/
+
+# Written by modules/skill-pages.ts from .claude/skills
+content/en/engineering/4.coding-assistants/3.skills/*/

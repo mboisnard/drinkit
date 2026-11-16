@@ -138,8 +138,8 @@ shows, never an image.
 ## 7. Leave the generated pages alone
 
 `./gradlew kspKotlin` writes `docs/content/en/engineering/9.resources` from the `documentation-starter` annotations and
-the starters' READMEs. Change the annotation or the README instead: a Claude Code hook refuses a hand edit of a
-generated page.
+the starters' READMEs, and the site copies each skill of `.claude/skills` under the Skills page when it builds.
+Change the annotation, the README or the skill instead: a Claude Code hook refuses a hand edit of a generated page.
 
 ## Before you finish
 

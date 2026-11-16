@@ -89,7 +89,7 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
 - A skill with side effects that the maintainer starts sets `disable-model-invocation: true`.
 - Working files go under `git rev-parse --git-path claude`, run from the worktree, or in the session's scratch
   directory.
-- The skills table of `docs/content/en/engineering/4.coding-assistants/3.skills.md` lists every skill, and the table of
+- The skills table of `docs/content/en/engineering/4.coding-assistants/3.skills/index.md` lists every skill, and the table of
   `sub-agents.md` beside it every agent.
 
 ## Before you finish

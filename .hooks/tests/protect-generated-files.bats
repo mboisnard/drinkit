@@ -39,6 +39,7 @@ allowed() {
 @test "an npm lock file is refused" { refused "$repo/drinkit/drinkit-frontend/package-lock.json"; }
 @test "an npm lock file at the root is refused" { refused "$repo/package-lock.json"; }
 @test "a generated documentation page is refused" { refused "$repo/docs/content/en/engineering/9.resources/domains/cellar.md"; }
+@test "a page copied from a skill is refused" { refused "$repo/docs/content/en/engineering/4.coding-assistants/3.skills/caveman/index.md"; }
 @test "a .env file is refused" { refused "$repo/deployment/local/.env"; }
 @test "a .env file in a new folder is refused" { refused "$repo/deployment/staging/.env" Write; }
 @test "a .env variant is refused" { refused "$repo/deployment/local/.env.local"; }
@@ -53,6 +54,7 @@ allowed() {
 @test "a version catalog is allowed" { allowed "$repo/gradle/libs.versions.toml"; }
 @test "the verification metadata is allowed" { allowed "$repo/gradle/verification-metadata.xml"; }
 @test "a hand-written documentation page is allowed" { allowed "$repo/docs/content/en/engineering/4.coding-assistants/1.harness.md"; }
+@test "the hand-written skills page is allowed" { allowed "$repo/docs/content/en/engineering/4.coding-assistants/3.skills/index.md"; }
 @test "a .env template is allowed" { allowed "$repo/deployment/local/.env.example" Write; }
 @test "a .env sample is allowed" { allowed "$repo/deployment/local/.env.sample"; }
 @test "a file outside any repository is allowed" { allowed "$work/outside/notes.md" Write; }

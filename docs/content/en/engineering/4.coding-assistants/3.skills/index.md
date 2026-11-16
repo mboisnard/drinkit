@@ -7,7 +7,7 @@ A skill is a folder whose `SKILL.md` tells an agent how to carry out one kind of
 beside it when they help. `AGENTS.md` sits in the context of every session. Of a skill, Claude Code sees only the name
 and description, and reads its body when a task calls for it. A procedure in a skill therefore costs no room
 in the context window until it is needed. DrinkIt keeps a skill per kind of change. A skill stays advisory: what
-enforces a rule is a [hook](./2.hooks.md) or a test. Before you add or change a skill, read this page, then follow the
+enforces a rule is a [hook](../2.hooks.md) or a test. Before you add or change a skill, read this page, then follow the
 [`harness-change` skill][skill-harness].
 
 ## 📁 Where the skills live
@@ -49,16 +49,16 @@ the code changes.
 | [`api-contract-change`][skill-contract] | Changing the OpenAPI contract, then the code generated from it | Editing an `-api-contract` module or the client generator settings |
 | [`database-change`][skill-database] | Changing the schema or the data, then the jOOQ classes | Editing the changelogs or the generated jOOQ code |
 | [`frontend-feature`][skill-frontend] | Shaping a feature of a Nuxt app around the generated client | Editing the sources or the Nuxt configuration of a `-frontend` module |
-| [`new-backend-tech-starter`][skill-starter] | Creating or aligning a backend [tech starter](../1.architecture/6.tech-starters.md) | Editing a backend tech starter |
+| [`new-backend-tech-starter`][skill-starter] | Creating or aligning a backend [tech starter](../../1.architecture/6.tech-starters.md) | Editing a backend tech starter |
 | [`new-frontend-tech-starter`][skill-frontend-starter] | Creating the first frontend tech starter, a Nuxt layer | Its description |
 | [`pentest`][skill-pentest] | Scanning the running application with OWASP ZAP, then triaging the findings | The maintainer, `/pentest` |
 | [`threat-model`][skill-threat-model] | A STRIDE threat model of one feature or flow | The maintainer, `/threat-model` |
-| [`ci-workflow-change`][skill-ci-workflow] | Changing a workflow, a [CI](../5.delivery/1.ci-cd.md) lane, a Dockerfile, the compose file or Renovate | Editing any of them |
+| [`ci-workflow-change`][skill-ci-workflow] | Changing a workflow, a [CI](../../5.delivery/1.ci-cd.md) lane, a Dockerfile, the compose file or Renovate | Editing any of them |
 | [`harness-change`][skill-harness] | Changing a hook, its test, the Claude Code settings, a skill or a subagent | Editing any of them |
 | [`dependency-change`][skill-dependency] | Adding or bumping a dependency, then the verification metadata and the lock | Editing `gradle/platform`, a build script or a `package.json` |
 | [`build-convention-change`][skill-build-convention] | Changing a convention plugin of `build-logic` | Editing `build-logic` |
 | [`documentation-change`][skill-documentation] | Writing or rewriting a page of the site or a README | Editing a page under `docs/content` or a README |
-| [`new-adr`][skill-adr] | Recording a structuring choice the maintainer settled as an [ADR](../6.adr/index.md) | Editing an ADR, or a settled structuring choice |
+| [`new-adr`][skill-adr] | Recording a structuring choice the maintainer settled as an [ADR](../../6.adr/index.md) | Editing an ADR, or a settled structuring choice |
 | [`caveman`][skill-caveman] | Terse replies to the maintainer in the terminal | `AGENTS.md`, in every session, or `/caveman lite`, `full` or `ultra` |
 
 ## 📚 Sources
@@ -70,23 +70,23 @@ the code changes.
 [skills-folder]: https://github.com/mboisnard/drinkit/tree/master/.claude/skills
 [harness-bats]: https://github.com/mboisnard/drinkit/blob/master/.hooks/tests/harness.bats
 [agents-md]: https://github.com/mboisnard/drinkit/blob/master/AGENTS.md
-[skill-issue]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/implement-issue/SKILL.md
-[skill-new-issue]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-issue/SKILL.md
-[skill-review-pr]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/review-pr/SKILL.md
-[skill-tdd]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/test-driven-development/SKILL.md
-[skill-test-existing]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/test-existing-code/SKILL.md
-[skill-backend]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/backend-feature/SKILL.md
-[skill-contract]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/api-contract-change/SKILL.md
-[skill-database]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/database-change/SKILL.md
-[skill-frontend]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/frontend-feature/SKILL.md
-[skill-starter]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-backend-tech-starter/SKILL.md
-[skill-frontend-starter]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-frontend-tech-starter/SKILL.md
-[skill-pentest]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/pentest/SKILL.md
-[skill-threat-model]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/threat-model/SKILL.md
-[skill-ci-workflow]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/ci-workflow-change/SKILL.md
-[skill-harness]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/harness-change/SKILL.md
-[skill-dependency]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/dependency-change/SKILL.md
-[skill-build-convention]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/build-convention-change/SKILL.md
-[skill-documentation]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/documentation-change/SKILL.md
-[skill-adr]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/new-adr/SKILL.md
-[skill-caveman]: https://github.com/mboisnard/drinkit/blob/master/.claude/skills/caveman/SKILL.md
+[skill-issue]: ./implement-issue/index.md
+[skill-new-issue]: ./new-issue/index.md
+[skill-review-pr]: ./review-pr/index.md
+[skill-tdd]: ./test-driven-development/index.md
+[skill-test-existing]: ./test-existing-code/index.md
+[skill-backend]: ./backend-feature/index.md
+[skill-contract]: ./api-contract-change/index.md
+[skill-database]: ./database-change/index.md
+[skill-frontend]: ./frontend-feature/index.md
+[skill-starter]: ./new-backend-tech-starter/index.md
+[skill-frontend-starter]: ./new-frontend-tech-starter/index.md
+[skill-pentest]: ./pentest/index.md
+[skill-threat-model]: ./threat-model/index.md
+[skill-ci-workflow]: ./ci-workflow-change/index.md
+[skill-harness]: ./harness-change/index.md
+[skill-dependency]: ./dependency-change/index.md
+[skill-build-convention]: ./build-convention-change/index.md
+[skill-documentation]: ./documentation-change/index.md
+[skill-adr]: ./new-adr/index.md
+[skill-caveman]: ./caveman/index.md
