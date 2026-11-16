@@ -1,6 +1,6 @@
 # Test Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
 that puts DrinkIt's test libraries on a module's test classpath, with a clock and a random generator that a test
 controls. It has no Spring bean.
 
@@ -27,7 +27,7 @@ dependencies {
 - **Libraries**: JUnit Jupiter, Spring Boot test, Kotest assertions, kotlin-test, Testcontainers, Kotlin Faker,
   REST Assured, Cucumber and ApprovalTests.
 - **What the build refuses**: the
-  [architecture tests](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/writing-code/testing/architecture-tests.md)
+  [architecture tests](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/3.writing-code/2.testing/4.architecture-tests.md)
   refuse Mockito and the AssertJ and kotlin-test assertions. A test asserts with Kotest and uses hand-written
   doubles.
 

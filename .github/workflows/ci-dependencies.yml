@@ -43,8 +43,11 @@ jobs:
       - name: Review the added dependencies
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
-          # Nuxt, Vue and the docs site are devDependencies, yet they end up in what is served
+          # The frontend's Nuxt and Vue are devDependencies, yet they end up in what is served
           fail-on-scopes: runtime, development
+          # Advisories with no fix in the build tools of the documentation site, which ships static files only.
+          # Remove each one once Docus or Nuxt Content moves past it
+          allow-ghsas: GHSA-mrhx-c7xc-m3w5, GHSA-g3hv-75wg-m249, GHSA-3g3m-2fjr-6pw4, GHSA-g7r4-m6w7-qqqr
           # The base commit's snapshot comes from its own master run, which may still be going
           retry-on-snapshot-warnings: true
           retry-on-snapshot-warnings-timeout: 300

@@ -1,6 +1,6 @@
 # Feature Management Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
 that turns a feature on or off, for everyone or for some users, and assigns the variants of A/B tests. The code asks
 `FeatureFlags` and `Experiments`, which evaluate through [OpenFeature](https://openfeature.dev/), with
 [Flipt](https://flipt.io/) as provider. Clients read their flags from the backend over
@@ -100,8 +100,8 @@ experiments.exposuresOf("checkout-test").single().variant shouldBe "B"
 
 ## Limits
 
-- [ADR 0017](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0017-feature-flags-through-openfeature.md)
-  and [ADR 0018](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0018-ab-tests-behind-a-flag-with-posthog.md)
+- [ADR 0017](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0017-feature-flags-through-openfeature.md)
+  and [ADR 0018](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0018-ab-tests-behind-a-flag-with-posthog.md)
   record the choices behind the starter.
 - No provider draws variants yet: PostHog waits for DrinkIt's consent management.
 - Flipt detects no dead flag.

@@ -27,7 +27,7 @@ internal class CreateTechStartersOverviewDocumentationTest {
         }.also { start.countDown() }.forEach { it.join() }
 
         // Then
-        File(tempDir, "tech-starters.md").readLines() shouldContainAll
+        File(tempDir, "index.md").readLines() shouldContainAll
             modules.map { "- [$it](./$it.md) (1 tool)" }
     }
 }

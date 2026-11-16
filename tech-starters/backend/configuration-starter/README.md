@@ -1,6 +1,6 @@
 # Configuration Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
 that keeps in PostgreSQL the settings an operator changes without a restart, such as a limit or a switch. A setting
 fixed at startup stays a `@ConfigurationProperties` class, and a release to some users goes through the
 [feature management starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/feature-management-starter/README.md).
@@ -65,5 +65,5 @@ unit test.
 
 - Never store a secret: whoever reads the database reads the table in clear.
 - The key's name identifies its row. A renamed key loses its stored value, and a renamed field needs a changelog, as
-  the [database page](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/database.md)
+  the [database page](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/2.build-and-data/2.database.md)
   says.

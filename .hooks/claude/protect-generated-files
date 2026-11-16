@@ -17,7 +17,7 @@ case /$file in
         how="written by Gradle. Run the command of the dependency-change skill" ;;
     */package-lock.json)
         how="written by npm. Change package.json, then run npm install" ;;
-    */docs/src/engineering/resources/*)
+    */docs/content/en/engineering/9.resources/*)
         how="generated from the code annotations. Change the annotations, then run ./gradlew kspKotlin --rerun" ;;
     */.env.example | */.env.sample)
         exit 0 ;;

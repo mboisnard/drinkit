@@ -7,7 +7,7 @@ paths:
 
 # Changing a build convention
 
-Read `docs/src/engineering/build-and-data/build-tool.md` first: it gives the role of each convention and what fails
+Read `docs/content/en/engineering/2.build-and-data/1.build-tool.md` first: it gives the role of each convention and what fails
 the build, and each convention file explains its own choices in its comments. This skill gives the rules and what
 proves them.
 
@@ -40,7 +40,7 @@ detekt also checks every `*.gradle.kts`, `build-logic`'s included, through the r
 
 When the `gradle-best-practices` skill of Gradle's gradle-skills plugin is installed, an audit with it checks the
 change against the official Gradle best practices:
-[Auditing the build](../../../docs/src/engineering/build-and-data/build-tool.md#auditing-the-build) says how to run it.
+[Auditing the build](../../../docs/content/en/engineering/2.build-and-data/1.build-tool.md#auditing-the-build) says how to run it.
 
 ## Before you finish
 

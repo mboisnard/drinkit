@@ -321,7 +321,7 @@ internal class ChangelogConventionsTest {
     }
 
     private fun rule(id: String, why: String, fix: String) =
-        "Rule $id: $why. Fix: $fix. See \"Checked rules\" in docs/src/engineering/build-and-data/database.md."
+        "Rule $id: $why. Fix: $fix. See \"Checked rules\" in docs/content/en/engineering/2.build-and-data/2.database.md."
 
     // Lists every file that breaks the rule, where shouldBeEmpty would name only the first one
     private infix fun List<Migration>.shouldBreak(rule: String) = withClue(

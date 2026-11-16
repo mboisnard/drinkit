@@ -7,7 +7,7 @@ internal class CreateTechStartersOverviewDocumentation(
     private val outputFolderPath: String,
     private val logger: KSPLogger,
 ) {
-    private val outputFile: File by lazy { File(outputFolderPath, "tech-starters.md") }
+    private val outputFile: File by lazy { File(outputFolderPath, "index.md") }
 
     fun invoke(moduleName: String, toolsCount: Int) {
         logger.warn("  Updating tech starters overview...")
@@ -39,10 +39,10 @@ internal class CreateTechStartersOverviewDocumentation(
     }
 
     private fun generateMarkdown(entries: List<ModuleEntry>) = buildString {
-        appendLine("# Tech Starters")
-        appendLine()
-        appendLine("This section documents all available tech starters and their associated tools.")
-        appendLine()
+        appendFrontmatter(
+            title = "Tech Starters",
+            description = "This section documents all available tech starters and their associated tools.",
+        )
         appendLine("## Available Modules")
         appendLine()
 

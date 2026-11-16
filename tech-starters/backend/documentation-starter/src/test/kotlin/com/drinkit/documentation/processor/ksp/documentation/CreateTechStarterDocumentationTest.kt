@@ -2,6 +2,7 @@ package com.drinkit.documentation.processor.ksp.documentation
 
 import com.drinkit.documentation.processor.ksp.NoOpKSPLogger
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldStartWith
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -69,5 +70,38 @@ internal class CreateTechStarterDocumentationTest {
             |val VALID_EMAIL_REGEX: Regex
             |```
         """.trimMargin()
+    }
+
+    @Test
+    fun `titles the page after the heading of the starter's README`(
+        @TempDir tempDir: File,
+    ) {
+        // Given
+        File(tempDir, "README.md").writeText("# Cache Starter\n\nCaches through Spring.\n")
+
+        // When
+        CreateTechStarterDocumentation(tempDir.absolutePath, tempDir.absolutePath, NoOpKSPLogger())
+            .invoke("cache-starter", emptyList(), emptyList())
+
+        // Then
+        File(tempDir, "cache-starter.md").readText() shouldStartWith """
+            |---
+            |title: "Cache Starter"
+            |---
+            |
+            |Caches through Spring.
+        """.trimMargin()
+    }
+
+    @Test
+    fun `titles the page after the module when the starter has no README`(
+        @TempDir tempDir: File,
+    ) {
+        // When
+        CreateTechStarterDocumentation(tempDir.absolutePath, tempDir.absolutePath, NoOpKSPLogger())
+            .invoke("kotlin-starter", emptyList(), emptyList())
+
+        // Then
+        File(tempDir, "kotlin-starter.md").readText() shouldStartWith "---\ntitle: \"kotlin-starter\"\n---\n"
     }
 }

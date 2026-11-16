@@ -40,8 +40,11 @@ internal class CreateTechStarterDocumentation(
         topLevelTools: List<TechStarterTopLevelInfo>,
         readmeContent: String?,
     ) = buildString {
+        val readmeTitle = readmeContent?.lineSequence()?.firstOrNull()?.takeIf { it.startsWith("# ") }
+        appendFrontmatter(readmeTitle?.removePrefix("# ")?.trim() ?: moduleName)
+
         if (readmeContent != null) {
-            appendLine(readmeContent)
+            appendLine(readmeContent.removePrefix(readmeTitle.orEmpty()).trimStart())
             appendLine()
 
             if (tools.isNotEmpty() || topLevelTools.isNotEmpty()) {
@@ -50,9 +53,6 @@ internal class CreateTechStarterDocumentation(
                 appendLine("## API Reference")
                 appendLine()
             }
-        } else {
-            appendLine("# $moduleName")
-            appendLine()
         }
 
         tools.sortedBy { it.displayName }.forEach { tool ->

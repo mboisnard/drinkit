@@ -48,8 +48,8 @@ disagree, the code is the truth: say so in the result.
 
 ## 5. Write it down
 
-Ask the maintainer where the result goes: a section in the page of `docs/src/engineering/security/` whose topic
-matches, or a new page in that folder with its entry in the Security block of `docs/.vitepress/config.ts`. A
+Ask the maintainer where the result goes: a section in the page of `docs/content/en/engineering/8.security/` whose topic
+matches, or a new page in that folder, whose number prefix places it in the sidebar. A
 mitigation the maintainer chooses among options gets its ADR through the `new-adr` skill.
 
 The docs site is public. A gap that can be exploited today is described by the control that is missing, never as

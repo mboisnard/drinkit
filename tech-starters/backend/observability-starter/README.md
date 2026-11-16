@@ -1,6 +1,6 @@
 # Observability Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/architecture/tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
 that sets up Spring Boot Actuator for the application: which endpoints an admin reads, what readiness waits for, and
 what the info endpoint shows, and how every error answers. It instruments nothing itself: each starter contributes
 what it knows.
@@ -31,7 +31,7 @@ dependencies {
 - **Info**: git, build, Java, OS and process.
 - **Observations**: the spans of the Spring Security filters are off.
 - **Logs**: plain text, and one JSON line per event with `LOGGING_STRUCTURED_FORMAT_CONSOLE=logstash`, each with an
-  `application` field. The [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/build-and-data/logging.md)
+  `application` field. The [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/2.build-and-data/3.logging.md)
   says when.
 - **Errors**: every error that Spring MVC answers is a problem detail of RFC 9457 with the `traceId` of the request.
   `IllegalArgumentException` is a 400, and any other unexpected exception a 500 that keeps its message in the logs.
@@ -74,7 +74,7 @@ Observation.createNotStarted("rates.refresh", observationRegistry)
 A low-cardinality value, such as a provider, tags the metric and the span. An id goes in a
 `highCardinalityKeyValue`, which tags the span alone.
 
-[ADR 0016](https://github.com/mboisnard/drinkit/blob/master/docs/src/engineering/adr/0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
+[ADR 0016](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
 records why Micrometer, and why the export waits for a switch.
 
 ### Monitoring a third party

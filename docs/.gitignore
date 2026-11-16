@@ -1,6 +1,10 @@
 node_modules
-**/cache
-**/.cache
-**/.temp
-**/dist
-src/engineering/resources/**
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Written by ./gradlew kspKotlin
+content/en/engineering/9.resources/

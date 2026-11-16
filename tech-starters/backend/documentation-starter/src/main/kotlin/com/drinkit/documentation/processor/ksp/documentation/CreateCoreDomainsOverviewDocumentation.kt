@@ -7,7 +7,7 @@ internal class CreateCoreDomainsOverviewDocumentation(
     private val outputFolderPath: String,
     private val logger: KSPLogger,
 ) {
-    private val outputFile: File by lazy { File(outputFolderPath, "domains.md") }
+    private val outputFile: File by lazy { File(outputFolderPath, "index.md") }
 
     fun invoke(domains: List<CoreDomainInfo>, useCasesByPackage: Map<String, List<UseCaseInfo>>) {
         logger.warn("  Updating core domains overview...")
@@ -49,10 +49,10 @@ internal class CreateCoreDomainsOverviewDocumentation(
     }
 
     private fun generateMarkdown(entries: List<DomainEntry>) = buildString {
-        appendLine("# Domains")
-        appendLine()
-        appendLine("This section documents all core business domains and their associated use cases.")
-        appendLine()
+        appendFrontmatter(
+            title = "Domains",
+            description = "This section documents all core business domains and their associated use cases.",
+        )
         appendLine("## Available Domains")
         appendLine()
 
