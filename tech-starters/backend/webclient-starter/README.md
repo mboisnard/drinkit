@@ -1,6 +1,6 @@
 # Web Client Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 for the HTTP clients that Spring Boot builds from an `@HttpExchange` interface. It gives every client default
 timeouts, and sends a safe request again when it fails on a network error, which Spring Boot does not do.
 

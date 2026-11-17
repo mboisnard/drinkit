@@ -1,9 +1,9 @@
 # PostgreSQL Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 that gives the adapters of the application a jOOQ `DSLContext` and a connection pool on PostgreSQL, guarded against
 the mistakes that lose or leak data.
-[ADR 0002](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0002-store-data-in-postgresql-and-query-it-with-jooq.md)
+[ADR 0002](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0002-store-data-in-postgresql-and-query-it-with-jooq.md)
 says why PostgreSQL and jOOQ. The schema belongs to the
 [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md), never to the application.
 
@@ -37,7 +37,7 @@ sequenceDiagram
 
 ## Usage
 
-The [`jooq-codegen-convention`](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/2.build-and-data/1.build-tool.md)
+The [`jooq-codegen-convention`](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/4.build-and-data/1.build-tool.md)
 plugin adds the starter and its test fixtures to a module that generates jOOQ classes. Any other module declares it
 in its build file:
 
@@ -87,7 +87,7 @@ The timeouts live in `spring.datasource.hikari.data-source-properties.options`: 
 
 `@JooqIntegrationTest(schemas = [DrinkitApplication::class])` gives a test a `DSLContext` on a database of its own,
 in a PostgreSQL container, with the tables of the schemas it names. Each test is rolled back. The
-[Testcontainers page](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/3.writing-code/2.testing/2.testcontainers.md)
+[Testcontainers page](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/5.writing-code/2.testing/2.testcontainers.md)
 says how the container is shared.
 
 ## Limits

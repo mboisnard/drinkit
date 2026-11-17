@@ -9,8 +9,11 @@ paths:
 # Writing a documentation page
 
 The site under `docs/content/en` tells people how DrinkIt is built and why: the architecture, the database, the
-harness, the security measures, the technologies chosen. This skill gives the order to write a page in and what
-proves that it reads well. [style.md](style.md) holds the style rules, each tic with a before and an after, and
+harness, the security measures, the technologies chosen. Its three top folders are the tabs of the site:
+`1.engineering` holds the path through the documentation, one folder per step in reading order, `2.decisions` the
+ADR, and `3.reference` what a reader looks up, such as the tech radars, security and the generated pages. A
+folder's `.navigation.yml` gives its title and icon. This skill gives the order to write a page in and what proves
+that it reads well. [style.md](style.md) holds the style rules, each tic with a before and an after, and
 [examples.md](examples.md) the commands and a rewritten page.
 
 ## 1. Know the reader
@@ -30,7 +33,7 @@ those files rather than copying their commands.
 - Find the source of truth for each thing the page mentions and link it instead of repeating it: `AGENTS.md`
   or the skill of its kind of change for a command, an ADR for why a choice was made, the file that implements a
   rule, another page for a subject it already covers.
-- Read [the ADR index](../../../docs/content/en/engineering/6.adr/index.md) for the decisions behind the subject.
+- Read [the ADR index](../../../docs/content/en/2.decisions/index.md) for the decisions behind the subject.
   Where the page states a choice an ADR records, it links that ADR in one sentence, such as "ADR 0003 records why
   the changelogs are organized as below" in `database.md`: the page keeps how DrinkIt works, the ADR why. An ADR
   that does not help understand the page stays out of it.
@@ -137,7 +140,7 @@ shows, never an image.
 
 ## 7. Leave the generated pages alone
 
-`./gradlew kspKotlin` writes `docs/content/en/engineering/9.resources` from the `documentation-starter` annotations and
+`./gradlew kspKotlin` writes `docs/content/en/3.reference/3.resources` from the `documentation-starter` annotations and
 the starters' READMEs, and the site copies each skill of `.claude/skills` under the Skills page when it builds.
 Change the annotation, the README or the skill instead: a Claude Code hook refuses a hand edit of a generated page.
 
@@ -160,7 +163,8 @@ Change the annotation, the README or the skill instead: a Claude Code hook refus
   [`npm run dev`](examples.md#build-the-site) in the background for them: it never returns.
 - [ ] Each concept of the page that has a page of its own links to it.
 - [ ] Each choice of the page that an ADR records links to that ADR.
-- [ ] A new page has a number prefix that places it in the sidebar, and the pages on nearby subjects link to it.
+- [ ] A new page has a number prefix that places it in the sidebar, distinct from its siblings', and the pages on
+  nearby subjects link to it.
 
 ## Sources
 

@@ -1,6 +1,6 @@
 # Kotlin Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 of plain Kotlin extension functions for the values of the domain: checks of a string, such as its length, its
 characters or the format of an email address, and decimal arithmetic. It also gives its modules kotlin-logging,
 kotlin-reflect and kotlinx-coroutines. It has no Spring bean.

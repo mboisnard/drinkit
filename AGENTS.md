@@ -55,7 +55,7 @@ directory: never in the tree, never elsewhere on the machine.
   `code-analysis/detekt/baseline.xml`.
 - The architecture tests fail the build on any broken rule. Fix the code, or tolerate the violation in the rule's
   `suppress` block with the issue that removes it, or the maintainer's reason to keep it, never loosen the rule:
-  `docs/content/en/engineering/3.writing-code/2.testing/4.architecture-tests.md` gives each rule's fix.
+  `docs/content/en/1.engineering/5.writing-code/2.testing/4.architecture-tests.md` gives each rule's fix.
 - "Dependency verification failed" on a branch that touched no dependency means an upstream release landed in a
   version range: the command of `dependency-change` fixes it.
 

@@ -14,7 +14,7 @@ perl -CSD -ne '
   print "$ARGV:$.: $_" if $prose =~ /[\x{2013}\x{2014};\x{20E3}\x{FE0F}\x{2600}-\x{27BF}\x{1F300}-\x{1FAFF}]/
     || $prose =~ /\b(crucial|essential|seamless|robust|leverage|powerful|elegant|key benefits|in summary|worth noting|not just)\b/i
     || $prose =~ /\b(two|three|four|five|six|seven|eight|nine|ten) (reasons|rules|steps|cases|points|lists|things|ways|kinds|parts)\b/i;
-} continue { close ARGV if eof' docs/content/en/engineering/<section>/<page>.md
+} continue { close ARGV if eof' docs/content/en/1.engineering/<section>/<page>.md
 ```
 
 A line it prints is a tic until proven otherwise, such as a semicolon inside a quoted command. The command does
@@ -62,7 +62,7 @@ Page: <absolute path>
 
 ## A rewritten page
 
-The start of `docs/content/en/engineering/1.architecture/1.monorepo.md`, before:
+The start of `docs/content/en/1.engineering/2.architecture/1.monorepo.md`, before:
 
 ```markdown
 ## 🚀 Why we choose a **Monorepo**?

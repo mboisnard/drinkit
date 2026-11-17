@@ -48,7 +48,7 @@ disagree, the code is the truth: say so in the result.
 
 ## 5. Write it down
 
-Ask the maintainer where the result goes: a section in the page of `docs/content/en/engineering/8.security/` whose topic
+Ask the maintainer where the result goes: a section in the page of `docs/content/en/3.reference/2.security/` whose topic
 matches, or a new page in that folder, whose number prefix places it in the sidebar. A
 mitigation the maintainer chooses among options gets its ADR through the `new-adr` skill.
 

@@ -71,8 +71,8 @@ Read these fresh, then apply them to the diff (`git -C <worktree> diff <base>..<
   the diff touches;
 - for a backend change, the result of `./gradlew :architecture-tests:test`, then what those tests cannot check, as
   "Prove it with the architecture tests" of `.claude/skills/backend-feature/SKILL.md` says:
-  `docs/content/en/engineering/3.writing-code/1.best-practices/3.coding-rules.md` and
-  `docs/content/en/engineering/1.architecture/4.clean-architecture.md`;
+  `docs/content/en/1.engineering/5.writing-code/1.best-practices/3.coding-rules.md` and
+  `docs/content/en/1.engineering/2.architecture/4.clean-architecture.md`;
 - `AGENTS.md` again, from the worktree, only when the diff changes it.
 
 The rules of `AGENTS.md` hold for the whole diff, and for the commits too, read with

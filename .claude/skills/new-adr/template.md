@@ -1,6 +1,6 @@
 # Template of an ADR
 
-Copy the block below into `docs/content/en/engineering/6.adr/<number>-<title>.md`. Every line in angle brackets is replaced.
+Copy the block below into `docs/content/en/2.decisions/<number>-<title>.md`. Every line in angle brackets is replaced.
 A section never stays empty: "Sources" goes when there are none.
 
 ```markdown

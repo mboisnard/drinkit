@@ -23,7 +23,7 @@ dependencies {
 }
 
 ksp {
-    arg("docsOutputDir", project.rootProject.file("docs/content/en/engineering/9.resources").absolutePath)
+    arg("docsOutputDir", project.rootProject.file("docs/content/en/3.reference/3.resources").absolutePath)
     arg("moduleName", project.name)
     arg("moduleSourceDir", project.projectDir.absolutePath)
 }

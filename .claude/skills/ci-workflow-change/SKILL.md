@@ -12,7 +12,7 @@ paths:
 
 # Changing a workflow
 
-The reasons behind each rule are in `docs/content/en/engineering/5.delivery/1.ci-cd.md`, and those of a Dockerfile or a
+The reasons behind each rule are in `docs/content/en/1.engineering/7.delivery/1.ci-cd.md`, and those of a Dockerfile or a
 published image in `container-images.md` beside it. This skill gives the order and what proves each step.
 
 ## 1. Shape the job

@@ -1,11 +1,11 @@
 # AI Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 through which the code asks a language or vision model for an answer, or an embedding model for vectors, naming the
 model by its id in a catalog, such as `qwen3-vl-4b`. Built on [Spring AI](https://docs.spring.io/spring-ai/reference/),
 it reaches a provider that speaks the Anthropic or the OpenAI protocol, a frontier API or a
 [LocalAI](https://localai.io/) server, and moves on from one chat model to the next when a call fails.
-[ADR 0021](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.md)
+[ADR 0021](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.md)
 records why no model runs inside the application.
 
 ```mermaid

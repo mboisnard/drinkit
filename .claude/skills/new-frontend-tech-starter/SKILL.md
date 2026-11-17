@@ -7,7 +7,7 @@ description: Creates a frontend tech starter for DrinkIt, one technical concern 
 
 A frontend tech starter does for a Nuxt app what a backend one does for a Spring application: it owns one
 technical concern, knows no business word, and the app can take it or drop it (`tech-starters.md` under
-`docs/content/en/engineering/1.architecture/`). It is a Nuxt layer in `tech-starters/frontend/<name>/`, listed in the
+`docs/content/en/1.engineering/2.architecture/`). It is a Nuxt layer in `tech-starters/frontend/<name>/`, listed in the
 `extends` of the app's `nuxt.config.ts` by a relative path: nothing to publish, and the app wins over it.
 
 ## 1. Settle the layout

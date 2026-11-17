@@ -8,7 +8,7 @@ paths:
 # New backend tech starter
 
 A tech starter solves one technical concern under `tech-starters/backend/<name>-starter/` and knows no business
-word (`docs/content/en/engineering/1.architecture/6.tech-starters.md`). The module layout, the build file and the
+word (`docs/content/en/1.engineering/2.architecture/6.tech-starters.md`). The module layout, the build file and the
 code shapes are in [examples.md](examples.md). Any other change to an existing starter keeps its wiring: bringing
 the starter up to convention, as step 7 does, is an issue of its own.
 
