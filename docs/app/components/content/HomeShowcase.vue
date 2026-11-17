@@ -23,6 +23,7 @@
         :key="active"
         class="showcase-progress absolute inset-x-0 top-0 h-0.5 origin-left bg-primary"
         :class="{ paused }"
+        :style="{ animationDuration: `${seconds}s` }"
         @animationend="next"
       />
 
@@ -43,7 +44,7 @@
             <HomeShowcaseScan v-else-if="active === 'scan'" />
             <HomeShowcaseMoments v-else-if="active === 'moments'" />
             <HomeShowcaseCocktails v-else-if="active === 'cocktails'" />
-            <HomeShowcaseAssistant v-else />
+            <HomeShowcaseAssistant v-else :autoplay="playing" />
           </Transition>
         </UTheme>
       </div>
@@ -61,7 +62,7 @@
     { label: 'Scan', icon: 'i-lucide-scan-line', value: 'scan' },
     { label: 'Moments', icon: 'i-lucide-calendar-heart', value: 'moments' },
     { label: 'Cocktails', icon: 'i-lucide-martini', value: 'cocktails' },
-    { label: 'Assistant', icon: 'i-lucide-sparkles', value: 'assistant' },
+    { label: 'Assistant', icon: 'i-lucide-sparkles', value: 'assistant', seconds: 9 },
   ]
 
   const favicon = `${useRuntimeConfig().app.baseURL}favicon.svg`
@@ -69,6 +70,9 @@
   const active = ref('cellar')
   const paused = ref(false)
   const playing = ref(true)
+
+  // The assistant answers its first question a few seconds in, and needs the time to be read
+  const seconds = computed(() => features.find(feature => feature.value === active.value)?.seconds ?? 6)
 
   // The tour moves on when the progress bar fills, which the style keeps still under reduced motion and on touch
   function next() {
@@ -83,7 +87,7 @@
 
 <style scoped>
   .showcase-progress {
-    animation: fill 6s linear forwards;
+    animation: fill linear forwards;
   }
 
   .showcase-progress.paused {
