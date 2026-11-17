@@ -12,7 +12,7 @@ everything, keep only what the starter needs, and check every import against the
 
 ## Module layout
 
-```
+```text
 tech-starters/backend/<name>-starter/
 ├── build.gradle.kts
 ├── README.md                                   ← source of the generated documentation page
@@ -101,7 +101,7 @@ internal class SmsAutoConfiguration {
 
 `src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`:
 
-```
+```text
 com.drinkit.sms.infra.SmsAutoConfiguration
 com.drinkit.sms.infra.SmsHealthAutoConfiguration
 ```
@@ -176,7 +176,7 @@ internal class SmsDefaultsEnvironmentPostProcessor : EnvironmentPostProcessor {
 
 `src/main/resources/META-INF/spring.factories`:
 
-```
+```properties
 org.springframework.boot.EnvironmentPostProcessor=\
 com.drinkit.sms.infra.SmsDefaultsEnvironmentPostProcessor
 ```

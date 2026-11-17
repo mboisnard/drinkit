@@ -28,7 +28,7 @@ Modules declare the dependency without a version, and no project declares a repo
 After adding or bumping a dependency, and after adding a starter to an application, since the starter brings
 its own dependencies into the `-backend` module of the application. From the root:
 
-```
+```bash
 ./gradlew --write-verification-metadata sha256 --refresh-dependencies --write-locks dependencies
 ```
 
@@ -37,7 +37,7 @@ fails. To move a single dependency in the lock, use `--update-locks group:name` 
 
 ## 3. Review both diffs
 
-```
+```bash
 git diff -- gradle/verification-metadata.xml ':(glob)**/gradle.lockfile'
 ```
 

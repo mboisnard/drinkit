@@ -5,7 +5,7 @@ in `.github/ISSUE_TEMPLATE/`, read as `<owner>/<number>`.
 
 ## Mode
 
-```
+```bash
 main=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
 gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName | startswith("<issue>-"))'
 git -C "$main" worktree list
@@ -14,20 +14,20 @@ git -C "$main" branch --list "<issue>-*"
 
 For each local branch found, by its name, since a plain merged listing stops at the last 30:
 
-```
+```bash
 gh pr list --state merged --head <branch> --json number,url
 ```
 
 A branch without a worktree gets one: `git -C "$main" fetch origin <branch>`, then
 `git -C "$main" worktree add "$main/../drinkit-worktrees/<branch>" <branch>`. Resume and follow-up work from it:
 
-```
+```bash
 cd "$main/../drinkit-worktrees/<branch>"
 ```
 
 ## Issue
 
-```
+```bash
 gh issue view <issue> --json state,projectItems --jq '[.state, .projectItems[].status.name]'
 gh api 'repos/{owner}/{repo}/issues/<issue>/dependencies/blocked_by' --jq '[.[] | select(.state == "open") | .number]'
 gh issue view <issue> --comments
@@ -36,7 +36,7 @@ gh api 'repos/{owner}/{repo}/issues/<issue>/parent' --jq .number
 
 ## Worktree and board
 
-```
+```bash
 main=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
 git -C "$main" fetch origin master
 git -C "$main" worktree add --no-track -b <branch> "$main/../drinkit-worktrees/<branch>" origin/master
@@ -48,7 +48,7 @@ gh issue view <issue> --json projectItems --jq '.projectItems[].status.name'
 
 ## Lanes
 
-```
+```bash
 git diff --name-only origin/master...HEAD
 ```
 
@@ -58,7 +58,7 @@ Match the files against `.github/workflows/config/ci-lanes.yml`.
 
 A fix commits as a fixup of the commit it belongs to, and the rebase folds it in:
 
-```
+```bash
 git commit --fixup=<commit>
 GIT_SEQUENCE_EDITOR=true git rebase --interactive --autosquash origin/master
 git log --oneline origin/master..HEAD
@@ -66,7 +66,7 @@ git log --oneline origin/master..HEAD
 
 To merge commits that are already there, mark them `fixup` behind the one they join, then reword that one:
 
-```
+```bash
 GIT_SEQUENCE_EDITOR="sed -i.bak -e '<line>s/^pick/fixup/'" git rebase --interactive origin/master
 git commit --amend
 ```
@@ -75,7 +75,7 @@ git commit --amend
 
 ## Judge prompt
 
-```
+```text
 Issue: <issue>
 Worktree: <absolute path>
 Base: <git merge-base origin/master HEAD>
@@ -94,7 +94,7 @@ The `security-reviewer` prompt holds the worktree, the base and the head, nothin
 For the `pr-reviewer` agent, whose definition holds the rules of the review: another agent given this prompt would
 not know them.
 
-```
+```text
 Pull request: <pr>
 Main checkout: <absolute path>
 ```
@@ -104,14 +104,14 @@ Main checkout: <absolute path>
 Sent to the judge still running past the time budget of its definition, or to resume one that stopped without a
 verdict line:
 
-```
+```text
 Time limit reached: stop checking now and return your verdict at once, in your usual output format, with the
 evidence you already have. Mark every check you did not finish as "cannot verify".
 ```
 
 ## Pull request and CI
 
-```
+```bash
 git push -u origin HEAD
 gh pr create --base master --title "$(git log --reverse --format=%s origin/master..HEAD | head -n 1)" --body-file "$(git rev-parse --path-format=absolute --git-path claude/pr-body.md)"
 gh project item-edit <number> --owner <owner> --url "$url" --field Status --value "In review"
@@ -124,7 +124,7 @@ Run `--watch` in the background, then read the outcome with the plain `gh pr che
 
 ## Follow-up
 
-```
+```bash
 gh pr checks <pr>
 gh pr view <pr> --comments
 gh api 'repos/{owner}/{repo}/pulls/<pr>/comments'
@@ -135,7 +135,7 @@ gh api 'repos/{owner}/{repo}/pulls/<pr>/comments'
 `<worktree>` is the path `git worktree list` gives for the branch. A line printed by `status`, a failing
 `merge-tree` or two different trees mean work is left: stop there.
 
-```
+```bash
 main=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
 git -C "$main" fetch origin master
 git -C "<worktree>" status --porcelain
@@ -147,7 +147,7 @@ git -C "$main" branch -D <branch>
 
 Then the main checkout, when this `status` prints nothing, and the board, when the issue is closed:
 
-```
+```bash
 git -C "$main" status --porcelain --untracked-files=no
 git -C "$main" switch master
 git -C "$main" pull --ff-only

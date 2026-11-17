@@ -126,7 +126,8 @@ collapsible block is an HTML `<details>`. Only the landing page and the call of 
 radars' `::tech-radar`, use MDC. Keep callouts for what must stand out, such as an exception the project accepts on purpose: a bold
 label that names it as accepted, then its reason, in two or three sentences, as "Accepted: Spring in the domain"
 in `hexagonal-architecture.md`. A diagram is a Mermaid block, which GitHub and the site both render and a diff
-shows, never an image.
+shows, never an image. A code block names its language, `text` for an output, a prompt or a file tree: the site
+highlights a language only once `docs/nuxt.config.ts` loads it into Shiki.
 
 ## 6. Rewrite an existing page
 

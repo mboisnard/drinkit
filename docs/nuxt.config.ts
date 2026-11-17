@@ -18,6 +18,10 @@ export default defineNuxtConfig({
   content: {
     build: {
       markdown: {
+        // Added to the languages Docus loads into Shiki: a block in a language it does not load renders as plain text
+        highlight: {
+          langs: ['kotlin', 'sql', 'properties', 'markdown'],
+        },
         remarkPlugins: {
           'github-alerts': { instance: githubAlerts },
         },
