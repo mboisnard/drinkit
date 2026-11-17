@@ -15,7 +15,9 @@
   },
   "automergeStrategy": "rebase",
   "osvVulnerabilityAlerts": true,
-  "dependencyDashboardOSVVulnerabilitySummary": "unresolved",
+  "dependencyDashboard": {
+    "osvVulnerabilitySummary": "unresolved"
+  },
   "vulnerabilityAlerts": {
     "labels": ["dependencies", "area:security"]
   },
