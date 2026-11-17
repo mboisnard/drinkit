@@ -5,7 +5,7 @@
 Prints each line, outside code blocks and inline code, that holds an em or en dash, a semicolon, an inflated word,
 an emoji anywhere but at the start of a `##` heading, or a count that announces a list. Pass the pages to check:
 
-```
+```bash
 perl -CSD -ne '
   if (/^\s*```/) { $code = !$code; next }
   next if $code;
@@ -25,7 +25,7 @@ not see a sentence over 25 words, "not X but Y" or a group of three: read the pa
 
 From the root, then from `docs/`:
 
-```
+```bash
 ./gradlew kspKotlin --rerun
 npm ci
 npm run generate
@@ -39,7 +39,7 @@ browser only, so `curl` gets an empty shell and the look of the tables and diagr
 
 Start a fresh agent with this prompt and the page's path, nothing else:
 
-```
+```text
 You are an experienced backend engineer: you know Spring, Gradle, SQL, REST and the common architecture patterns,
 but you have never seen DrinkIt. Read the page below once, from top to bottom, as you would on the documentation
 site, and open no other file.

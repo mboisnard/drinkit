@@ -4,7 +4,7 @@
 
 ## Gather
 
-```
+```bash
 gh pr view <pr> --json title,body,author,headRefName,closingIssuesReferences,files
 gh pr view <pr> --json body --jq .body | grep -oiE '(closes|part of|follows up) #[0-9]+'
 gh pr diff <pr>
@@ -16,7 +16,7 @@ gh pr checks <pr>
 
 ## Worktree
 
-```
+```bash
 main=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
 git -C "$main" fetch origin master +pull/<pr>/head:pr-<pr>
 git -C "$main" worktree add "$main/../drinkit-worktrees/pr-<pr>" pr-<pr>
@@ -26,7 +26,7 @@ git -C "$main" rev-parse pr-<pr>
 
 Keep the `pr-` prefix: the project's hooks run no build in such a worktree. Remove it and its branch at the end:
 
-```
+```bash
 git -C "$main" worktree remove "$main/../drinkit-worktrees/pr-<pr>"
 git -C "$main" branch -D pr-<pr>
 ```
@@ -45,6 +45,6 @@ Write it to `$(git rev-parse --path-format=absolute --git-path claude/review.jso
 }
 ```
 
-```
+```bash
 gh api 'repos/{owner}/{repo}/pulls/<pr>/reviews' --input "$(git rev-parse --path-format=absolute --git-path claude/review.json)"
 ```

@@ -18,7 +18,7 @@ before writing code. Its test order follows the steps below.
 Where each piece goes and what it may depend on are rules that tests check, not rules to memorize. Run them as soon
 as the structure changes, a new class, package, port or module dependency, then again before you finish:
 
-```
+```bash
 ./gradlew :architecture-tests:test
 ./gradlew build
 ```

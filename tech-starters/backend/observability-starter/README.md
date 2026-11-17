@@ -49,7 +49,7 @@ on the console, which the log platform already reads.
 To see the traces on your machine, start [Grafana LGTM](https://github.com/grafana/docker-otel-lgtm), then the
 application with the export on, and open Grafana on `http://localhost:3000`:
 
-```
+```bash
 docker run --rm -p 3000:3000 -p 4318:4318 grafana/otel-lgtm
 STARTERS_OBSERVABILITY_OPENTELEMETRY_ENABLED=true \
 MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT=http://localhost:4318/v1/traces \

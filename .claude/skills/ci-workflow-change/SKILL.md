@@ -48,7 +48,7 @@ lane. The lists hold no `!` pattern: it would match every other file.
 From the root, with Docker. Both must print nothing to fix: zizmor fails its job in CI rather than uploading to
 code scanning. actionlint reads `.github/actionlint.yaml`.
 
-```
+```bash
 docker run --rm -v "$PWD:/repo:ro" -w /repo \
   "$(grep -o 'ghcr.io/[^ ]*actionlint[^ ]*' .github/workflows/ci-workflows.yml)"
 docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/zizmorcore/zizmor --offline .
@@ -57,7 +57,7 @@ docker run --rm -v "$PWD:/repo:ro" -w /repo ghcr.io/zizmorcore/zizmor --offline 
 A change to a Dockerfile, the compose file or the Renovate configuration has checks of its own, which CI runs too.
 A Dockerfile goes through hadolint, and an image that ships through Trivy before it is published:
 
-```
+```bash
 docker run --rm -v "$PWD:/repo:ro" -w /repo "$(grep -o 'hadolint/hadolint[^ ]*' .github/workflows/ci-updater.yml)" \
   hadolint $(git ls-files '*Dockerfile')
 docker compose -f deployment/local/compose.yml config --quiet

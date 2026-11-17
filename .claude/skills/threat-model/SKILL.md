@@ -55,7 +55,7 @@ mitigation the maintainer chooses among options gets its ADR through the `new-ad
 The docs site is public. A gap that can be exploited today is described by the control that is missing, never as
 steps to exploit it, and `SECURITY.md` applies: ask the maintainer before writing such a gap down at all.
 
-````
+````markdown
 ## Threat model: <flow>
 
 At <short sha>, <date>. <one sentence on the flow>

@@ -32,7 +32,7 @@ The configuration cache is on for every build. A convention reads values through
 
 ## 4. Prove it
 
-```
+```bash
 ./gradlew build detektAll --continue
 ```
 

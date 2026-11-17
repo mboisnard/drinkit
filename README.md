@@ -61,7 +61,7 @@ Links and tools to look at later are on the [ideas page](docs/content/en/3.refer
 [CONTRIBUTING.md](CONTRIBUTING.md#setup) lists what it needs. One command starts the containers, applies the
 database changelogs and the demo data, then starts the API:
 
-```
+```bash
 ./gradlew :drinkit-backend:bootRun     # starts deployment/local/compose.yml, then the API
 ```
 
@@ -74,7 +74,7 @@ and gives the account to log in with.
 
 The frontend needs `java` on the `PATH` to generate its API client:
 
-```
+```bash
 cd drinkit/drinkit-frontend
 npm ci
 npm run generate:client-api

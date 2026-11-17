@@ -49,7 +49,7 @@ and classes on both sides, in one pull request.
 
 ## Check it
 
-```
+```bash
 ./gradlew :<app>-backend:compileKotlin
 npm run generate:client-api && npm run build    # from the frontend app
 ```
