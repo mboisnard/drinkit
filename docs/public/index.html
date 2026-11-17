@@ -1,13 +1,13 @@
 <!doctype html>
-<!-- The pages live under a locale, and GitHub Pages has no server to redirect the root to it -->
+<!-- The pages live under a locale, and GitHub Pages has no server to redirect the root to it. The script leaves
+     before the browser paints anything, the meta refresh covers a browser without JavaScript -->
 <html lang="en">
 <head>
+  <script>location.replace('/drinkit/en' + location.search + location.hash)</script>
   <meta charset="utf-8">
-  <title>Drink It</title>
   <meta http-equiv="refresh" content="0; url=/drinkit/en">
-  <link rel="canonical" href="/drinkit/en">
+  <link rel="canonical" href="https://mboisnard.github.io/drinkit/en">
+  <title>DrinkIt</title>
 </head>
-<body>
-  <a href="/drinkit/en">Drink It documentation</a>
-</body>
+<body></body>
 </html>
