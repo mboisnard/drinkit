@@ -1,10 +1,14 @@
 ---
-title: "0004. Check the architecture with tests"
+title: "004. Check the architecture with tests"
 description: "Each structural rule of DrinkIt is a Konture test of the `architecture-tests` module that fails the build when broken."
+navigation:
+  title: "004 · Architecture tests"
+status: accepted
+date: 2026-10-25
+explainedIn:
+  title: Architecture tests
+  to: /en/engineering/writing-code/testing/architecture-tests
 ---
-
-- Status: accepted
-- Date: 2026-10-25
 
 The structure DrinkIt's code follows, its patterns and the rules that keep them, is checked by architecture tests
 written with Konture, which fail the build when a change breaks a rule. A rule that only a page states is soon broken

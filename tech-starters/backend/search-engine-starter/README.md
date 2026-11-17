@@ -4,7 +4,7 @@ A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/e
 that keeps a copy of the application's data, such as its bottles, in a [Meilisearch](https://www.meilisearch.com/)
 index built for search. The database stays the source of truth. The application writes documents through a
 `SearchIndex`, searches through the Meilisearch SDK, and rebuilds an index from its database without downtime.
-[ADR 0008](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0008-meilisearch-behind-an-abstraction-for-writes.md)
+[ADR 008](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/008-meilisearch-behind-an-abstraction-for-writes.md)
 says why writes go through the starter and searches through the SDK.
 
 ```mermaid
@@ -44,7 +44,7 @@ sequenceDiagram
 ```
 
 Today the platform events travel inside the process, so the instance that calls `rebuild()` loads every batch.
-[ADR 0009](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0009-rebuild-search-indices-in-batches-tracked-in-postgresql.md)
+[ADR 009](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/009-rebuild-search-indices-in-batches-tracked-in-postgresql.md)
 says why the batches are tracked in PostgreSQL.
 
 ## Usage

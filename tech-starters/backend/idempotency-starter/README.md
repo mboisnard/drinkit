@@ -9,7 +9,7 @@ that runs an action once per key, however many times it is sent:
   keys, so their handlers skip them, and so do the providers it calls.
 
 It keeps each key in PostgreSQL for 24 hours, with what the first run answered. It is built in-house, as
-[ADR 0019](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0019-run-requests-and-events-once-per-idempotency-key.md)
+[ADR 019](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/019-run-requests-and-events-once-per-idempotency-key.md)
 explains.
 
 ```mermaid

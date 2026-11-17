@@ -1,10 +1,14 @@
 ---
-title: "0008. Index through an abstraction, search with Meilisearch"
+title: "008. Index through an abstraction, search with Meilisearch"
 description: "DrinkIt searches with Meilisearch, and writes its indexes through a typed `SearchIndex` that another engine could implement."
+navigation:
+  title: "008 · Search with Meilisearch"
+status: accepted
+date: 2026-11-03
+explainedIn:
+  title: Search engine starter
+  to: /en/reference/resources/tech-starters/search-engine-starter
 ---
-
-- Status: accepted
-- Date: 2026-11-03
 
 DrinkIt searches its catalog with Meilisearch, behind an abstraction that lets it move to Elasticsearch or another
 engine if the need comes. The abstraction covers what every engine shares, writing, reading by id and rebuilding an
@@ -24,7 +28,7 @@ common to both would keep only what both can do.
 
 The application declares each index with the engine's own settings file, and gets a typed `SearchIndex` from
 `search-engine-starter`, which saves, deletes and finds a document by its id, and rebuilds the index as
-[ADR 0009](./0009-rebuild-search-indices-in-batches-tracked-in-postgresql.md) records. A write returns once the engine
+[ADR 009](./009-rebuild-search-indices-in-batches-tracked-in-postgresql.md) records. A write returns once the engine
 has applied it, so a read that follows sees it.
 
 ```mermaid

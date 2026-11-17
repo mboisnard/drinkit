@@ -1,10 +1,14 @@
 ---
-title: "0012. Keep sessions in PostgreSQL"
+title: "012. Keep sessions in PostgreSQL"
 description: "Sessions are rows in PostgreSQL through Spring Session JDBC, with attributes as JSON and a cookie that holds only the id."
+navigation:
+  title: "012 · Sessions in PostgreSQL"
+status: accepted
+date: 2026-11-06
+explainedIn:
+  title: Security principles
+  to: /en/reference/security/principles
 ---
-
-- Status: accepted
-- Date: 2026-11-06
 
 A signed-in browser holds a random session id in a cookie, and the session itself is a row in PostgreSQL, rather than
 in Redis or in a token. The application runs with no other server to start, and a session ends the moment its row is
@@ -40,7 +44,7 @@ cookie carries only its id, 256 random bits.
 | Absolute lifetime | 8 hours since the session opened | A stolen session id stops working the same day, even when kept busy |
 
 A session that ends can start again from the remember-me cookie of
-[ADR 0013](./0013-remember-me-with-a-rotating-hashed-token.md). A user may be signed in on any number of devices, and
+[ADR 013](./013-remember-me-with-a-rotating-hashed-token.md). A user may be signed in on any number of devices, and
 signing out everywhere deletes all their rows at once.
 
 ## Consequences

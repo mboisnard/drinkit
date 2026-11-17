@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "postinstall": "nuxt prepare",
     "preview": "npx serve .output/public"
   },
   "dependencies": {

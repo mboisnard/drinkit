@@ -1,10 +1,14 @@
 ---
-title: "0013. Remember me with a rotating, hashed token"
+title: "013. Remember me with a rotating, hashed token"
 description: "Remember me keeps a hashed token per random series, rotated at each remembered visit, and a reused old token ends every session."
+navigation:
+  title: "013 · Remember me, rotating token"
+status: accepted
+date: 2026-11-06
+explainedIn:
+  title: Security principles
+  to: /en/reference/security/principles
 ---
-
-- Status: accepted
-- Date: 2026-11-06
 
 A user who ticks "remember me" gets a cookie that opens a new session once the current one has ended. Its token
 changes at each use and is stored hashed, so that a database dump gives no usable cookie and a stolen copy shows
@@ -13,7 +17,7 @@ itself the first time both copies are used.
 ## Context
 
 Sessions are short, 30 minutes idle and 8 hours at most, as
-[ADR 0012](./0012-keep-sessions-in-postgresql.md) records. A user still expects to stay signed in on their own phone for
+[ADR 012](./012-keep-sessions-in-postgresql.md) records. A user still expects to stay signed in on their own phone for
 weeks, especially one who scans a bottle in a shop and does not want to sign in again first.
 
 The remember-me services that Spring ships do not fit as they are: one keeps the session itself alive for weeks, one

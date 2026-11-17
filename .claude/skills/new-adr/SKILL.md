@@ -9,7 +9,7 @@ paths:
 
 An ADR, architecture decision record, tells a future reader which choice the project made, why, and what it
 costs. The guideline pages say how DrinkIt works, an ADR says why it works that way rather than another. ADRs live
-in `docs/content/en/2.decisions/`, and [its index](../../../docs/content/en/2.decisions/index.md) lists them all. The
+in `docs/content/en/2.decisions/`, and the menu of the site lists them all. The
 sections are in [template.md](template.md), and the prose follows the
 [documentation-change](../documentation-change/SKILL.md) skill.
 
@@ -42,11 +42,11 @@ when the maintainer wants it written before deciding. An agent never records its
 - Keep the links of outside material for "Sources".
 
 A decision already in force but never recorded is backfilled the same way. Its date is the day it is written, so
-that the dates of the index follow its numbers.
+that the dates follow the numbers.
 
 ## 4. Create the file
 
-Take the next free number in `docs/content/en/2.decisions/`, on four digits, never reused. Numbers and dates follow the
+Take the next free number in `docs/content/en/2.decisions/`, on three digits, never reused. Numbers and dates follow the
 order of writing. The file name is the number and the title in kebab case, reworded where the title holds the word
 "index": the site takes a page whose name holds it for the page of a folder, and nests it in the menu. The title
 states the decision, such as "Architecture tests with Konture", not the question it answered.
@@ -90,12 +90,12 @@ Olaf Zimmermann names the ways an ADR fails its reader:
 
 ## 7. Supersede, never rewrite
 
-A merged ADR keeps its text: only its status line changes, along with a typo or a dead link. When a decision
+A merged ADR keeps its text: only its `status` changes, along with a typo or a dead link. The site shows the
+`status`, the `date` and `explainedIn` of the frontmatter in the header of the ADR. When a decision
 changes:
 
-1. Write a new ADR whose header has a `Supersedes` line linking the old one, and whose context says what changed.
-2. Set the status of the old one to `superseded by`, with a link to the new one.
-3. Update both rows of the index.
+1. Write a new ADR whose `supersedes` names the old one, and whose context says what changed.
+2. Set the `status` of the old one to `superseded`, and its `supersededBy` to the new one.
 
 A decision dropped with no replacement becomes `deprecated`, with the reason in the pull request. A `proposed`
 ADR the maintainer turns down becomes `rejected` and stays, so that the question does not start again from
@@ -103,9 +103,9 @@ scratch.
 
 ## 8. Wire it
 
-- Add its row to the table of the index, in the order of the numbers. The sidebar lists the ADR by its file
-  name, so nothing else registers it.
-- Link it from the guideline page closest to the decision, with a sentence such as "ADR 0003 records why the
+- The menu of the site lists the ADR by its `navigation.title`, in the order of the numbers, so nothing else
+  registers it.
+- Link it from the guideline page closest to the decision, with a sentence such as "ADR 003 records why the
   changelogs are organized as below", as `database.md` does. That sentence follows the `documentation-change`
   skill, but it does not commit you to rewriting the rest of the page.
 - The pull request that carries the decision carries its ADR.

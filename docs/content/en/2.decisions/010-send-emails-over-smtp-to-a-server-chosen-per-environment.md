@@ -1,10 +1,14 @@
 ---
-title: "0010. Send emails over SMTP to a server chosen per environment"
+title: "010. Send emails over SMTP to a server chosen per environment"
 description: "The mail starter speaks plain SMTP to Mailpit locally and in the tests, and to Brevo's free plan in production."
+navigation:
+  title: "010 · Emails over SMTP"
+status: accepted
+date: 2026-11-06
+explainedIn:
+  title: Mail starter
+  to: /en/reference/resources/tech-starters/mail-starter
 ---
-
-- Status: accepted
-- Date: 2026-11-06
 
 The application sends its emails over plain SMTP, to a server that each environment sets: Mailpit on a local start
 and in the tests, Brevo's free plan in production to begin with. Changing provider then means changing settings, not
@@ -64,7 +68,7 @@ decides which email to send and calls `send`, which returns once the email is qu
 - An email waiting for its delivery lives in memory, as every platform event until
   [#549](https://github.com/mboisnard/drinkit/issues/549): a restart loses it.
 - Each email is delivered once per event, by the idempotency of
-  [ADR 0019](./0019-run-requests-and-events-once-per-idempotency-key.md): an email held past the 5 minute lease may
+  [ADR 019](./019-run-requests-and-events-once-per-idempotency-key.md): an email held past the 5 minute lease may
   leave twice.
 - A broker would carry the content of each email, a sign-in code included.
 

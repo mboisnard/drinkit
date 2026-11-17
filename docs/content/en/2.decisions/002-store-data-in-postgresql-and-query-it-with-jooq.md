@@ -1,10 +1,14 @@
 ---
-title: "0002. Store data in PostgreSQL, and query it with jOOQ"
+title: "002. Store data in PostgreSQL, and query it with jOOQ"
 description: "DrinkIt stores its data in PostgreSQL, and its adapters query it with jOOQ classes generated from the schema."
+navigation:
+  title: "002 · PostgreSQL with jOOQ"
+status: accepted
+date: 2026-10-24
+explainedIn:
+  title: Database
+  to: /en/engineering/build-and-data/database
 ---
-
-- Status: accepted
-- Date: 2026-10-24
 
 DrinkIt stores its data in PostgreSQL, a relational database, and its adapters write their SQL with jOOQ rather than
 behind an ORM. The data is made of relations that a schema can enforce, and every query stays visible as the SQL that
@@ -25,7 +29,7 @@ them.
 DrinkIt keeps its data in PostgreSQL, as the [database page](../1.engineering/4.build-and-data/2.database.md) describes. The schema
 enforces the links with constraints, and a change runs in a transaction. PostgreSQL also covers needs that could have
 called for another system: the history of event-sourced aggregates, the
-[browser sessions](./0012-keep-sessions-in-postgresql.md), and JSON columns where a structure has to stay open.
+[browser sessions](./012-keep-sessions-in-postgresql.md), and JSON columns where a structure has to stay open.
 
 The adapters query it with jOOQ. Its classes are generated from the schema, so a query that names a missing column
 does not compile, and the code reads like the SQL it sends. An adapter that reads parents with their children, such

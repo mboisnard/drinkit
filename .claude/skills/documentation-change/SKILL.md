@@ -12,8 +12,8 @@ The site under `docs/content/en` tells people how DrinkIt is built and why: the 
 harness, the security measures, the technologies chosen. Its three top folders are the tabs of the site:
 `1.engineering` holds the path through the documentation, one folder per step in reading order, `2.decisions` the
 ADR, and `3.reference` what a reader looks up, such as the tech radars, security and the generated pages. A
-folder's `.navigation.yml` gives its title and icon. This skill gives the order to write a page in and what proves
-that it reads well. [style.md](style.md) holds the style rules, each tic with a before and an after, and
+folder's `.navigation.yml` gives its title, icon and `tile` color. This skill gives the order to write a page in and
+what proves that it reads well. [style.md](style.md) holds the style rules, each tic with a before and an after, and
 [examples.md](examples.md) the commands and a rewritten page.
 
 ## 1. Know the reader
@@ -33,8 +33,9 @@ those files rather than copying their commands.
 - Find the source of truth for each thing the page mentions and link it instead of repeating it: `AGENTS.md`
   or the skill of its kind of change for a command, an ADR for why a choice was made, the file that implements a
   rule, another page for a subject it already covers.
-- Read [the ADR index](../../../docs/content/en/2.decisions/index.md) for the decisions behind the subject.
-  Where the page states a choice an ADR records, it links that ADR in one sentence, such as "ADR 0003 records why
+- Read the titles of the ADRs, `git grep -h '^title:' docs/content/en/2.decisions`, for the decisions behind the
+  subject.
+  Where the page states a choice an ADR records, it links that ADR in one sentence, such as "ADR 003 records why
   the changelogs are organized as below" in `database.md`: the page keeps how DrinkIt works, the ADR why. An ADR
   that does not help understand the page stays out of it.
 - Before renaming a page or a heading, find what links to it: `git grep -n '<page name>' -- docs/content/en '*.md'`.

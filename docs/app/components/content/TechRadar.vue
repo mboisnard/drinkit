@@ -46,8 +46,8 @@
         preserveAspectRatio="xMidYMid meet"
       >
         <!-- Grid lines -->
-        <line x1="0" y1="-450" x2="0" y2="450" stroke="#e0e0e0" stroke-width="2"/>
-        <line x1="-450" y1="0" x2="450" y2="0" stroke="#e0e0e0" stroke-width="2"/>
+        <line x1="0" y1="-450" x2="0" y2="450" stroke="var(--ui-border)" stroke-width="2"/>
+        <line x1="-450" y1="0" x2="450" y2="0" stroke="var(--ui-border)" stroke-width="2"/>
 
         <!-- Rings -->
         <g v-for="(ring, index) in ringRadii" :key="index">
@@ -56,14 +56,14 @@
             cy="0"
             :r="ring.radius"
             fill="none"
-            stroke="#e0e0e0"
+            stroke="var(--ui-border)"
             stroke-width="1.5"
           />
           <text
             :y="-ring.radius + 40"
             text-anchor="middle"
             :fill="ring.color"
-            opacity="0.3"
+            class="opacity-30 dark:opacity-70"
             font-size="36"
             font-weight="bold"
           >
@@ -73,19 +73,19 @@
 
           <!-- Quadrant labels at edges within their quadrant -->
           <!-- Top-right quadrant -->
-          <text x="200" y="-420" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+          <text x="200" y="-420" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--ui-text-highlighted)">
               {{ quadrants[0] }}
           </text>
           <!-- Top-left quadrant -->
-          <text x="-200" y="-420" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+          <text x="-200" y="-420" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--ui-text-highlighted)">
               {{ quadrants[1] }}
           </text>
           <!-- Bottom-left quadrant -->
-          <text x="-200" y="435" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+          <text x="-200" y="435" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--ui-text-highlighted)">
               {{ quadrants[2] }}
           </text>
           <!-- Bottom-right quadrant -->
-          <text x="200" y="435" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+          <text x="200" y="435" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--ui-text-highlighted)">
               {{ quadrants[3] }}
           </text>
 
@@ -152,7 +152,7 @@
               y="-30"
               :width="hoveredEntry.label.length * 7"
               height="18"
-              fill="#333"
+              fill="var(--ui-text-highlighted)"
               rx="3"
               opacity="0.9"
             />
@@ -228,10 +228,10 @@
 import { ref, computed } from 'vue';
 
 const rings = {
-  ADOPT: { name: 'ADOPT', color: '#5ba300', index: 0, radius: 150 },
-  TRIAL: { name: 'TRIAL', color: '#009eb0', index: 1, radius: 250 },
-  ASSESS: { name: 'ASSESS', color: '#c7ba00', index: 2, radius: 350 },
-  HOLD: { name: 'HOLD', color: '#e09b96', index: 3, radius: 450 },
+  ADOPT: { name: 'ADOPT', color: '#4d7c0f', index: 0, radius: 150 },
+  TRIAL: { name: 'TRIAL', color: '#b4500f', index: 1, radius: 250 },
+  ASSESS: { name: 'ASSESS', color: '#1d4ed8', index: 2, radius: 350 },
+  HOLD: { name: 'HOLD', color: '#b91c47', index: 3, radius: 450 },
 };
 type Ring = keyof typeof rings;
 
@@ -374,7 +374,7 @@ function handleBlipClick(entry: any) {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid var(--ui-border);
 }
 
 .view-toggle button {
@@ -385,17 +385,17 @@ function handleBlipClick(entry: any) {
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
-  color: #666;
+  color: var(--ui-text-muted);
   transition: all 0.2s;
 }
 
 .view-toggle button:hover {
-  color: #333;
+  color: var(--ui-text-highlighted);
 }
 
 .view-toggle button.active {
-  color: #5ba300;
-  border-bottom-color: #5ba300;
+  color: var(--ui-primary);
+  border-bottom-color: var(--ui-primary);
 }
 
 .filters {
@@ -403,7 +403,7 @@ function handleBlipClick(entry: any) {
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background: #f5f5f5;
+  background: var(--ui-bg-elevated);
   border-radius: 8px;
 }
 
@@ -420,9 +420,9 @@ function handleBlipClick(entry: any) {
 
 .filter-group select {
   padding: 0.5rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--ui-border-accented);
   border-radius: 4px;
-  background: white;
+  background: var(--ui-bg);
   cursor: pointer;
 }
 
@@ -508,12 +508,12 @@ function handleBlipClick(entry: any) {
 }
 
 .legend-item:hover {
-  background: #f5f5f5;
+  background: var(--ui-bg-elevated);
 }
 
 .entry-number {
   font-weight: 600;
-  color: #666;
+  color: var(--ui-text-muted);
   min-width: 2rem;
 }
 
@@ -523,7 +523,7 @@ function handleBlipClick(entry: any) {
 
 .move-indicator {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--ui-text-muted);
 }
 
 .list-view {
@@ -537,7 +537,7 @@ function handleBlipClick(entry: any) {
 
 .entry-card {
   padding: 1.5rem;
-  background: white;
+  background: var(--ui-bg);
   border-left: 4px solid;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -576,7 +576,7 @@ function handleBlipClick(entry: any) {
   gap: 1rem;
   margin-bottom: 0.75rem;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--ui-text-muted);
 }
 
 .entry-quadrant {
@@ -588,22 +588,22 @@ function handleBlipClick(entry: any) {
 }
 
 .entry-moved.up {
-  color: #5ba300;
+  color: var(--ui-primary);
 }
 
 .entry-moved.down {
-  color: #e09b96;
+  color: #b91c47;
 }
 
 .entry-description {
   margin: 0.75rem 0;
-  color: #555;
+  color: var(--ui-text-muted);
   line-height: 1.5;
 }
 
 .entry-link {
   display: inline-block;
-  color: #5ba300;
+  color: var(--ui-primary);
   text-decoration: none;
   font-weight: 500;
   margin-top: 0.5rem;

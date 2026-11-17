@@ -1,10 +1,14 @@
 ---
-title: "0007. Cache through Spring's abstraction, on Caffeine"
+title: "007. Cache through Spring's abstraction, on Caffeine"
 description: "Modules cache with Spring's annotations, and `cache-starter` keeps the entries in Caffeine with a bounded size and a time to live."
+navigation:
+  title: "007 · Cache on Caffeine"
+status: accepted
+date: 2026-11-03
+explainedIn:
+  title: Cache starter
+  to: /en/reference/resources/tech-starters/cache-starter
 ---
-
-- Status: accepted
-- Date: 2026-11-03
 
 A module that caches uses Spring's `@Cacheable` and `@CacheEvict`, and `cache-starter` stores the entries in memory
 with Caffeine, with a time to live per cache. The code never names the cache library, so Redis can replace Caffeine,

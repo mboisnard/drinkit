@@ -1,10 +1,14 @@
 ---
-title: "0009. Rebuild search indexes in batches tracked in PostgreSQL"
+title: "009. Rebuild search indexes in batches tracked in PostgreSQL"
 description: "A rebuild loads batches into a second index through platform events, tracks them in a PostgreSQL row, then swaps the indexes."
+navigation:
+  title: "009 · Batched index rebuilds"
+status: accepted
+date: 2026-11-04
+explainedIn:
+  title: Search engine starter
+  to: /en/reference/resources/tech-starters/search-engine-starter
 ---
-
-- Status: accepted
-- Date: 2026-11-04
 
 A rebuild of a search index fills a second index from the database, then swaps it with the live one. Its work is
 split into batches that any instance can load, and one PostgreSQL row counts the batches done. A rebuild that never
@@ -13,7 +17,7 @@ reaches its end starts over from scratch: one rule that covers every failure.
 ## Context
 
 The search index follows the database document by document, from the handlers of the application's events, as
-[ADR 0008](./0008-meilisearch-behind-an-abstraction-for-writes.md) records. It still has to be rebuilt in full
+[ADR 008](./008-meilisearch-behind-an-abstraction-for-writes.md) records. It still has to be rebuilt in full
 when its settings change, and on a schedule, to catch a document that a lost event left behind. A document is built
 from several tables, and the catalog can hold many of them.
 

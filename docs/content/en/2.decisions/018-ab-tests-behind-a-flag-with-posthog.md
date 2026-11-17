@@ -1,10 +1,14 @@
 ---
-title: "0018. A/B tests behind a flag, with PostHog choosing the variant"
+title: "018. A/B tests behind a flag, with PostHog choosing the variant"
 description: "An A/B test is a feature flag gate plus a PostHog experiment of the same key, and the code reports each exposure once."
+navigation:
+  title: "018 · A/B tests with PostHog"
+status: accepted
+date: 2026-11-08
+explainedIn:
+  title: Feature management starter
+  to: /en/reference/resources/tech-starters/feature-management-starter
 ---
-
-- Status: accepted
-- Date: 2026-11-08
 
 An A/B test runs behind a flag, the gate a product manager switches like any other. Behind the gate, a PostHog
 experiment assigns each user a variant, since PostHog targets on what users did and measures the results. The code
@@ -18,7 +22,7 @@ variant is the current behavior, and the others carry free names, `B`, `C` or `n
 and exposure apart:
 
 - **Assignment** computes a user's variant. It can happen long before the user sees anything, as when the frontend
-  loads its flags ([ADR 0017](./0017-feature-flags-through-openfeature.md)).
+  loads its flags ([ADR 017](./017-feature-flags-through-openfeature.md)).
 - **Exposure** records that the variant reached the user. The results count a user from their first exposure only.
 
 A user counted in a group without having been assigned to it, or before being exposed, makes the groups unequal, a
@@ -28,7 +32,7 @@ works without it.
 
 ## Decision
 
-- **Two layers.** An experiment is a gate, the flag of [ADR 0017](./0017-feature-flags-through-openfeature.md) of the
+- **Two layers.** An experiment is a gate, the flag of [ADR 017](./017-feature-flags-through-openfeature.md) of the
   same key, then the PostHog experiment of that key, with a `control` variant. The gate decides whether the experiment
   runs at all. PostHog decides who enters it and in which variant.
 
@@ -52,7 +56,7 @@ works without it.
 - **In the backend.** A request assigns, then reports the exposure where the variant changes the answer. An event
   that leads to something the user sees, such as an email, carries the assignment made when it was published. Its
   handler uses that variant even after a retry, and reports the exposure when it sends the email.
-- **Visitors.** Visitors take part, under the visitor id of ADR 0017, which also authors what someone does before
+- **Visitors.** Visitors take part, under the visitor id of ADR 017, which also authors what someone does before
   signing in, such as creating an account. At sign-in, the backend links the visitor to the user in PostHog, so that
   what the visitor did counts for the user.
 - **Until PostHog.** Every user gets `control` and no exposure leaves DrinkIt.
@@ -94,7 +98,7 @@ sequenceDiagram
   targets on what users did and measures the results. It offered one tool and no call to a vendor.
 - **Exposures from an OpenFeature hook.** Rejected because a hook runs on every evaluation, so loading the flags of the
   frontend would expose users to variants they never see. It offered no exposure call to write.
-- **The PostHog SDK in the browser.** Rejected because clients talk to the backend only (ADR 0017). It offered
+- **The PostHog SDK in the browser.** Rejected because clients talk to the backend only (ADR 017). It offered
   exposures and product analytics without an endpoint of ours.
 - **Amplitude Experiment.** Rejected because it has no OpenFeature provider for Java and no self-hosted edition. It
   offered cohorts built from the events it receives.

@@ -3,7 +3,7 @@
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 that gives the adapters of the application a jOOQ `DSLContext` and a connection pool on PostgreSQL, guarded against
 the mistakes that lose or leak data.
-[ADR 0002](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0002-store-data-in-postgresql-and-query-it-with-jooq.md)
+[ADR 002](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/002-store-data-in-postgresql-and-query-it-with-jooq.md)
 says why PostgreSQL and jOOQ. The schema belongs to the
 [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md), never to the application.
 

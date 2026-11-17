@@ -1,10 +1,14 @@
 ---
-title: "0003. Apply the schema with Liquibase, through the updater"
+title: "003. Apply the schema with Liquibase, through the updater"
 description: "A dedicated updater application runs the Liquibase changelogs once, from an image that holds none of them."
+navigation:
+  title: "003 · Schema through the updater"
+status: accepted
+date: 2026-10-24
+explainedIn:
+  title: Database
+  to: /en/engineering/build-and-data/database
 ---
-
-- Status: accepted
-- Date: 2026-10-24
 
 The schema changes through Liquibase changelogs that a dedicated application, the updater, applies to PostgreSQL. The
 backend never changes the schema. The updater ships as one image that every environment runs with its own

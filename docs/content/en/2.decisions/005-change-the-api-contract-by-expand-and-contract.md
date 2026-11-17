@@ -1,10 +1,14 @@
 ---
-title: "0005. Change the API contract by expand and contract, frontend included"
+title: "005. Change the API contract by expand and contract, frontend included"
 description: "A compatible API change lands in one pull request, a breaking one in two, with the frontend getting no exception."
+navigation:
+  title: "005 · Expand and contract"
+status: accepted
+date: 2026-10-28
+explainedIn:
+  title: Contract first
+  to: /en/engineering/architecture/contract-first
 ---
-
-- Status: accepted
-- Date: 2026-10-28
 
 A change that breaks the API contract, such as a rename or a new required field, takes two pull requests, even when
 the frontend and the backend change together. The first adds the new form next to the old one, the second removes
@@ -14,7 +18,7 @@ the old one once the first is deployed, because a browser tab opened before a de
 
 The [contract-first page](../1.engineering/2.architecture/5.contract-first.md) describes the API contract: one OpenAPI file, from which
 the backend generates the interfaces it implements and the frontend the client it calls. Both live in one repository,
-as [ADR 0000](./0000-keep-every-project-in-one-repository.md) records, and are built from the same commit.
+as [ADR 000](./000-keep-every-project-in-one-repository.md) records, and are built from the same commit.
 
 Built together is not deployed together. The frontend and the backend run as two processes, and a page loaded before a
 deployment talks to the new backend until it reloads. A renamed field or a new required one then fails for that user,

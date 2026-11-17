@@ -1,10 +1,14 @@
 ---
-title: "0021. Serve AI models outside the application, and reach them through ai-starter"
+title: "021. Serve AI models outside the application, and reach them through ai-starter"
 description: "Models run behind HTTP, at a provider or in LocalAI, and `ai-starter` is the only code that calls them, through Spring AI."
+navigation:
+  title: "021 · AI models outside the app"
+status: accepted
+date: 2026-11-11
+explainedIn:
+  title: AI starter
+  to: /en/reference/resources/tech-starters/ai-starter
 ---
-
-- Status: accepted
-- Date: 2026-11-11
 
 DrinkIt embeds no model. Its language, vision and embedding models run behind an HTTP API, a frontier provider's
 such as Anthropic or OpenAI, or a LocalAI container, and the code reaches them through one
@@ -62,7 +66,7 @@ computes the vectors and hands them to its search engine, whatever that engine c
 **Security, carried by the starter.**
 
 - A key never reaches a log, an observation or an error message.
-- The observations follow [ADR 0016](./0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
+- The observations follow [ADR 016](./016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
   and record the model, the tokens and the duration, never the content of a prompt or an answer, which can hold
   personal data.
 - Prompt security goes through Spring AI advisors, hooks the starter puts around each call. The guardrails advisor
@@ -80,7 +84,7 @@ computes the vectors and hands them to its search engine, whatever that engine c
   network alone, since only the application calls it.
 - Every call has a timeout, so that a hung model hands over to the next one, and the calls of a signed-in user are
   limited in tokens per hour by `rate-limit-starter`, as
-  [ADR 0020](./0020-rate-limit-in-the-application-with-gcra-on-postgresql.md) plans. `ai-starter` depends on that
+  [ADR 020](./020-rate-limit-in-the-application-with-gcra-on-postgresql.md) plans. `ai-starter` depends on that
   starter and on `security-starter` at compile time only: an application without them gets no budget.
 
 **A gateway later.** The guardrails live in the application because nothing stands between it and the models. When

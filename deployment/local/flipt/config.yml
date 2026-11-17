@@ -1,5 +1,5 @@
 # One environment for a developer's machine, in a git repository of the volume, with no remote: production sets a
-# remote kept for flags, never the code's repository (ADR 0017)
+# remote kept for flags, never the code's repository (ADR 017)
 storage:
   local:
     backend:
