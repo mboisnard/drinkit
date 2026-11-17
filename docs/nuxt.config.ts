@@ -90,6 +90,11 @@ export default defineNuxtConfig({
   mcp: {
     enabled: false,
   },
+  // A deployment removes the chunks of the previous build: a page still on it reloads as soon as one fails, even
+  // a component chunk that loads after the navigation, which 'automatic' leaves broken
+  experimental: {
+    emitRouteChunkError: 'automatic-immediate',
+  },
   nitro: {
     prerender: {
       crawlLinks: true,
