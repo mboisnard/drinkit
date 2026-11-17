@@ -10,7 +10,7 @@ paths:
 
 # Changing the harness
 
-The pages of `docs/content/en/engineering/4.coding-assistants/` describe every part and why it exists. This skill gives the
+The pages of `docs/content/en/1.engineering/6.coding-assistants/` describe every part and why it exists. This skill gives the
 rules a hook, a skill or an agent has to follow, and what proves them.
 
 ## Hooks
@@ -67,7 +67,7 @@ docker run --rm -v "$PWD:/mnt:ro" -w /mnt --entrypoint sh "$(grep -o 'koalaman/s
 ### 5. Describe it
 
 The header comment of a hook holds two lines at most, as `AGENTS.md` asks of every comment. The hook's row in
-`docs/content/en/engineering/4.coding-assistants/2.hooks.md` says what it does and when it runs.
+`docs/content/en/1.engineering/6.coding-assistants/2.hooks.md` says what it does and when it runs.
 
 ## Skills and agents
 
@@ -89,7 +89,7 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
 - A skill with side effects that the maintainer starts sets `disable-model-invocation: true`.
 - Working files go under `git rev-parse --git-path claude`, run from the worktree, or in the session's scratch
   directory.
-- The skills table of `docs/content/en/engineering/4.coding-assistants/3.skills/index.md` lists every skill, and the table of
+- The skills table of `docs/content/en/1.engineering/6.coding-assistants/3.skills/index.md` lists every skill, and the table of
   `sub-agents.md` beside it every agent.
 
 ## Before you finish
@@ -98,7 +98,7 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
   before.
 - [ ] `npm cit --prefix .hooks` and ShellCheck pass.
 - [ ] Every `paths:` glob matches tracked files.
-- [ ] The page of `docs/content/en/engineering/4.coding-assistants/` that covers the changed part describes the change.
+- [ ] The page of `docs/content/en/1.engineering/6.coding-assistants/` that covers the changed part describes the change.
 
 [skill-practices]: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
 [claude-code-skills]: https://code.claude.com/docs/en/skills

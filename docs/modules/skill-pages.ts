@@ -11,7 +11,7 @@ export default defineNuxtModule({
   setup(_options, nuxt) {
     const root = resolve(nuxt.options.rootDir, '..')
     const skills = join(root, '.claude/skills')
-    const pages = join(nuxt.options.rootDir, 'content/en/engineering/4.coding-assistants/3.skills')
+    const pages = join(nuxt.options.rootDir, 'content/en/1.engineering/6.coding-assistants/3.skills')
 
     for (const skill of readdirSync(skills, { withFileTypes: true }).filter(entry => entry.isDirectory())) {
       const target = join(pages, skill.name)

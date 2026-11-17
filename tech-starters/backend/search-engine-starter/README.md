@@ -1,10 +1,10 @@
 # Search Engine Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 that keeps a copy of the application's data, such as its bottles, in a [Meilisearch](https://www.meilisearch.com/)
 index built for search. The database stays the source of truth. The application writes documents through a
 `SearchIndex`, searches through the Meilisearch SDK, and rebuilds an index from its database without downtime.
-[ADR 0008](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0008-index-through-an-abstraction-search-with-meilisearch.md)
+[ADR 0008](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0008-meilisearch-behind-an-abstraction-for-writes.md)
 says why writes go through the starter and searches through the SDK.
 
 ```mermaid
@@ -18,7 +18,7 @@ flowchart LR
 
 ## How it works
 
-A rebuild sends one [platform event](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/8.platform-events.md)
+A rebuild sends one [platform event](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/3.domain/2.platform-events.md)
 per batch of ids. With a broker, the batches spread over the instances, and the one that finishes the last batch swaps
 the indexes:
 
@@ -44,7 +44,7 @@ sequenceDiagram
 ```
 
 Today the platform events travel inside the process, so the instance that calls `rebuild()` loads every batch.
-[ADR 0009](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0009-rebuild-search-indexes-in-batches-tracked-in-postgresql.md)
+[ADR 0009](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0009-rebuild-search-indices-in-batches-tracked-in-postgresql.md)
 says why the batches are tracked in PostgreSQL.
 
 ## Usage

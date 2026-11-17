@@ -20,7 +20,7 @@ editor reports what the build reports.
 
 ## Running the applications
 
-[Developer experience](docs/content/en/engineering/3.writing-code/1.best-practices/6.dev-exp.md) describes the local start and
+[Developer experience](docs/content/en/1.engineering/1.dev-exp.md) describes the local start and
 gives the account to log in with.
 
 ### Backend

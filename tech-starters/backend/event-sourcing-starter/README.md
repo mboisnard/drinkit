@@ -1,9 +1,9 @@
 # Event Sourcing Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 with the building blocks of an event-sourced aggregate: the events, their history and the reducer that folds them
 into a state. The
-[event sourcing page](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/7.event-sourcing.md)
+[event sourcing page](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/3.domain/1.event-sourcing.md)
 explains how DrinkIt applies the pattern. The starter declares no Spring bean.
 
 ```mermaid
@@ -45,7 +45,7 @@ holds the whole example. What to know:
 
 - **`History.from`** refuses events whose sequence ids do not strictly increase.
 - **`SequenceId.next()`** adds 10, for the
-  [gaps between sequence ids](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/7.event-sourcing.md#gaps-between-sequence-ids).
+  [gaps between sequence ids](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/3.domain/1.event-sourcing.md#gaps-between-sequence-ids).
 - **`EventsReducer`** leaves the state as it is for an event type with no handler, unless you pass your own default
   handler. A type registered twice keeps the last handler.
 - **`@RetryableTransactional`**, on a use case class, runs it again on `DuplicateSequenceException`, three attempts

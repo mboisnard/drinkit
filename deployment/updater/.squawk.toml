@@ -1,5 +1,5 @@
 # Every rule of Squawk is listed below, on or off, so that nobody has to know its defaults. The section
-# "Checked rules" of docs/content/en/engineering/2.build-and-data/2.database.md says why each family matters.
+# "Checked rules" of docs/content/en/1.engineering/4.build-and-data/2.database.md says why each family matters.
 # On a Squawk upgrade, read its changelog and put each new rule in one of the two lists: a misspelled name fails.
 # Not listed: require-timeout-settings and prefer-timestamptz, aliases of rules below.
 

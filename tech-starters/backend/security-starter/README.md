@@ -1,10 +1,10 @@
 # Security Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 that secures a Spring MVC application serving a single-page front end: sign-in with a code sent by email, sign-out,
 remember-me, a session kept in PostgreSQL, CSRF, the security headers and the access rules of the endpoints. Every
 endpoint is refused until the application gives it a rule. The
-[security principles](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/8.security/1.principles.md)
+[security principles](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/3.reference/2.security/1.principles.md)
 explain the choices behind the defaults.
 
 ```mermaid
@@ -133,7 +133,7 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 - **Endpoints**: the starter serves `POST /api/auth/code`, which takes `{email}`, `POST /api/auth/code/sign-in`,
   which takes `{email, code, rememberMe}`, `POST /api/auth/logout` and `GET /api/auth/csrf`. The email is trimmed
   and lower-cased.
-  [Calling the API](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/8.security/2.calling-the-api.md)
+  [Calling the API](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/3.reference/2.security/2.calling-the-api.md)
   shows how a front end or Postman uses them.
 - **Health**: with Spring Boot Actuator, anyone reads `/actuator/health`, even under a rule of the application that
   keeps the actuator to admins. The rule comes first among the `EndpointRules`: one of the application ordered
@@ -146,7 +146,7 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 - **Requests without CSRF token**: `endpointRules(csrfFree = listOf(matcher)) { … }` frees from the token a request
   that changes no state on the server, next to its access rule. Fetch Metadata still refuses it cross-site.
 - **Logs**: each log of a signed-in user's request carries `user.id`, as the
-  [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/2.build-and-data/3.logging.md)
+  [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/4.build-and-data/3.logging.md)
   says. Each 401, 403 and 429 goes to Spring MVC's `handlerExceptionResolver`: with the observability starter, it
   answers a problem detail carrying the `traceId` of the request.
 - **Limits**: past a limit of the code requests per email or per IP address, or of the code tries per IP address,
@@ -157,10 +157,10 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 - **Tables**: the [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md) creates
   the `drinkit_session` tables of the sessions, the remember-me tokens and the sign-in codes. The sign-in by code needs
   PostgreSQL through jOOQ, for its codes and for the counts of its limits.
-- **Choices**: ADRs [0011](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0011-sign-in-without-a-password.md),
-  [0012](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0012-keep-sessions-in-postgresql.md),
-  [0013](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0013-remember-me-with-a-rotating-hashed-token.md)
-  and [0014](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/6.adr/0014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md)
+- **Choices**: ADRs [0011](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0011-sign-in-without-a-password.md),
+  [0012](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0012-keep-sessions-in-postgresql.md),
+  [0013](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0013-remember-me-with-a-rotating-hashed-token.md)
+  and [0014](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md)
   record the choices of the sign-in, the sessions, the remember-me and the CSRF protection.
 
 ## Configuration

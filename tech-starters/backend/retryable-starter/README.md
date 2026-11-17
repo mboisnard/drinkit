@@ -1,6 +1,6 @@
 # Retryable Starter
 
-A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/engineering/1.architecture/6.tech-starters.md)
+A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 that turns on the `@Retryable` of Spring Framework, so that a method runs again when it fails with an exception its
 policy names, and logs each failed attempt. DrinkIt needs it for concurrent writes on an event-sourced aggregate:
 `event-sourcing-starter` brings it to run the retries of `@RetryableTransactional`.

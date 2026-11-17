@@ -83,7 +83,7 @@ val squawk = tasks.register<Exec>("squawk") {
     isIgnoreExitValue = true
     val nextStep = "Squawk failed on the changelogs, as printed above. A finding names its rule, links to its page " +
         "and shows a fix, and a configuration error names its line in .squawk.toml. The section \"Checked rules\" " +
-        "of docs/content/en/engineering/2.build-and-data/2.database.md says why each rule matters. When a rule " +
+        "of docs/content/en/1.engineering/4.build-and-data/2.database.md says why each rule matters. When a rule " +
         "does not apply to a statement, write `-- squawk-ignore <rule>` on its own line, right below a " +
         "`-- <reason>` comment."
     doLast {

@@ -2,14 +2,14 @@
 name: new-adr
 description: Records a structuring choice of DrinkIt as a short ADR that someone who was not there understands, and supersedes the ADR it replaces. Use it when asked for an ADR or a decision record, as soon as the maintainer settles a structuring choice in a session or an issue (a module, a dependency, a tool, the API contract, the schema layout, a security rule, a convention every contributor follows), and when a decision replaces an earlier one.
 paths:
-  - "docs/content/en/engineering/6.adr/**"
+  - "docs/content/en/2.decisions/**"
 ---
 
 # Recording a decision
 
 An ADR, architecture decision record, tells a future reader which choice the project made, why, and what it
 costs. The guideline pages say how DrinkIt works, an ADR says why it works that way rather than another. ADRs live
-in `docs/content/en/engineering/6.adr/`, and [its index](../../../docs/content/en/engineering/6.adr/index.md) lists them all. The
+in `docs/content/en/2.decisions/`, and [its index](../../../docs/content/en/2.decisions/index.md) lists them all. The
 sections are in [template.md](template.md), and the prose follows the
 [documentation-change](../documentation-change/SKILL.md) skill.
 
@@ -46,10 +46,10 @@ that the dates of the index follow its numbers.
 
 ## 4. Create the file
 
-Take the next free number in `docs/content/en/engineering/6.adr/`, on four digits, never reused. Numbers and dates follow the
-order of writing. The file name is the number and the title in
-kebab case. The title states the decision, such as "Architecture tests with Konture", not the question it
-answered.
+Take the next free number in `docs/content/en/2.decisions/`, on four digits, never reused. Numbers and dates follow the
+order of writing. The file name is the number and the title in kebab case, reworded where the title holds the word
+"index": the site takes a page whose name holds it for the page of a folder, and nests it in the menu. The title
+states the decision, such as "Architecture tests with Konture", not the question it answered.
 
 An ADR names no issue: an issue number ages and sends the reader elsewhere. It links the ADRs and the pages that
 give its context.

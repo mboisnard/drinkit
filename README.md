@@ -43,7 +43,7 @@ DrinkIt is where practices get tried on a codebase that keeps growing, before th
 - **AI.** Language models in the product (Spring AI, Embabel, an AI gateway, Langfuse), and coding agents that
   work on the code through a harness: `AGENTS.md`, skills, hooks, and a CI that guards master.
 
-Links and tools to look at later are on the [ideas page](docs/content/en/engineering/10.ideas.md).
+Links and tools to look at later are on the [ideas page](docs/content/en/3.reference/4.ideas.md).
 
 ## What's inside
 
@@ -54,7 +54,7 @@ Links and tools to look at later are on the [ideas page](docs/content/en/enginee
 - `.hooks/`: the git hooks and the Claude Code hooks of the harness, with their bats suites, which
   `npm cit --prefix .hooks` runs.
 - The [documentation site](https://mboisnard.github.io/drinkit/): architecture, guidelines, the pages
-  generated from the code, and the [harness](docs/content/en/engineering/4.coding-assistants/1.harness.md) that guards master.
+  generated from the code, and the [harness](docs/content/en/1.engineering/6.coding-assistants/1.harness.md) that guards master.
 
 ## Quick start
 
@@ -65,7 +65,7 @@ database changelogs and the demo data, then starts the API:
 ./gradlew :drinkit-backend:bootRun     # starts deployment/local/compose.yml, then the API
 ```
 
-[Developer experience](docs/content/en/engineering/3.writing-code/1.best-practices/6.dev-exp.md) describes the local start
+[Developer experience](docs/content/en/1.engineering/1.dev-exp.md) describes the local start
 and gives the account to log in with.
 
 - API: `http://localhost:8080/drinkit/api/cellars`

@@ -24,6 +24,15 @@ export default defineNuxtConfig({
       },
     },
   },
+  // The icons of .navigation.yml escape the scan of the components, and would load from the Iconify API at runtime
+  icon: {
+    clientBundle: {
+      icons: [
+        'lucide:compass', 'lucide:hexagon', 'lucide:layers', 'lucide:database', 'lucide:code', 'lucide:bot',
+        'lucide:git-merge', 'lucide:book-open', 'lucide:library', 'lucide:radar', 'lucide:shield', 'lucide:cpu',
+      ],
+    },
+  },
   agentDiscovery: {
     skills: {
       dir: '../.claude/skills',
