@@ -172,8 +172,8 @@
       <div class="legend">
         <div v-for="qIndex in [3, 2, 1, 0]" :key="qIndex" class="legend-quadrant">
           <h3>{{ quadrants[qIndex] }}</h3>
-          <div v-for="ringName in Object.keys(rings)" :key="ringName" class="legend-ring">
-            <h4 :style="{ color: rings[ringName].color }">{{ ringName }}</h4>
+          <div v-for="(ring, ringName) in rings" :key="ringName" class="legend-ring">
+            <h4 :style="{ color: ring.color }">{{ ringName }}</h4>
             <ul>
               <li
                 v-for="(entry, eIndex) in getEntriesForQuadrantRing(qIndex, ringName)"
@@ -211,8 +211,8 @@
           </div>
           <div class="entry-meta">
             <span class="entry-quadrant">{{ entry.quadrant }}</span>
-            <span v-if="entry.moved > 0" class="entry-moved up">Moved up</span>
-            <span v-if="entry.moved < 0" class="entry-moved down">Moved down</span>
+            <span v-if="(entry.moved ?? 0) > 0" class="entry-moved up">Moved up</span>
+            <span v-if="(entry.moved ?? 0) < 0" class="entry-moved down">Moved down</span>
           </div>
           <p v-if="entry.description" class="entry-description">{{ entry.description }}</p>
           <a v-if="entry.link" :href="href(entry.link)" target="_blank" class="entry-link">
@@ -257,10 +257,10 @@ const selectedQuadrant = ref<string>('');
 const hoveredEntry = ref<any>(null);
 
 const ringRadii = computed(() =>
-  Object.keys(rings).map(key => ({
-    name: key,
-    radius: rings[key].radius,
-    color: rings[key].color
+  Object.entries(rings).map(([name, ring]) => ({
+    name,
+    radius: ring.radius,
+    color: ring.color
   }))
 );
 
