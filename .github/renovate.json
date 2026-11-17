@@ -77,6 +77,12 @@
       "groupName": "Konture"
     },
     {
+      "description": "The documentation site declares the i18n module that Docus loads, at the version Docus asks for: both move in one pull request",
+      "matchFileNames": ["docs/package.json"],
+      "matchPackageNames": ["docus", "@nuxtjs/i18n"],
+      "groupName": "Docus"
+    },
+    {
       "description": "Majors need code changes: open them from the Dependency Dashboard",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
