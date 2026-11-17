@@ -96,16 +96,16 @@ endpoint, the gateway's, and the ids the code names do not change.
 ```mermaid
 flowchart LR
     subgraph now["Now"]
-        A1["drinkit-backend"] --> S1["ai-starter<br/>catalog, fallbacks, keys, guardrails"]
-        S1 --> F1["Frontier API"]
+        S1["drinkit-backend, ai-starter<br/><small>catalog, fallbacks, keys, guardrails</small>"]
+        S1 --> F1["Frontier API"]:::external
         S1 --> L1["LocalAI"]
     end
     subgraph later["With a larger infrastructure"]
-        A2["drinkit-backend"] --> S2["ai-starter<br/>one endpoint"]
-        S2 --> G["Agent gateway<br/>catalog, fallbacks, keys, guardrails"]
-        G --> F2["Frontier API"]
+        S2["drinkit-backend, ai-starter<br/><small>one endpoint</small>"] --> G["Agent gateway<br/><small>catalog, fallbacks, keys, guardrails</small>"]
+        G --> F2["Frontier API"]:::external
         G --> L2["LocalAI"]
     end
+    classDef external stroke-dasharray:4 3
 ```
 
 ## Consequences
