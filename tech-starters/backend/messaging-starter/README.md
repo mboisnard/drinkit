@@ -5,7 +5,7 @@ that carries [platform events](https://github.com/mboisnard/drinkit/blob/master/
 facts such as "a sign-in code was requested", from the code that publishes them to the handlers that react. A
 handler runs after the commit, on a thread of its own, and again after a growing wait when it fails. The events
 travel as Spring application events today, and a broker can replace them without changing a handler, as
-[ADR 0006](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0006-carry-platform-events-through-an-abstraction.md)
+[ADR 006](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/006-carry-platform-events-through-an-abstraction.md)
 records.
 
 ```mermaid

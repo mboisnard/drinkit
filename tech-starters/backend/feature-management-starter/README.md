@@ -100,8 +100,8 @@ experiments.exposuresOf("checkout-test").single().variant shouldBe "B"
 
 ## Limits
 
-- [ADR 0017](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0017-feature-flags-through-openfeature.md)
-  and [ADR 0018](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0018-ab-tests-behind-a-flag-with-posthog.md)
+- [ADR 017](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/017-feature-flags-through-openfeature.md)
+  and [ADR 018](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/018-ab-tests-behind-a-flag-with-posthog.md)
   record the choices behind the starter.
 - No provider draws variants yet: PostHog waits for DrinkIt's consent management.
 - Flipt detects no dead flag.

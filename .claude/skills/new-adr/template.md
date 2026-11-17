@@ -7,11 +7,16 @@ A section never stays empty: "Sources" goes when there are none.
 ---
 title: "<number>. <The decision, as a title>"
 description: "<The summary below, in one sentence.>"
+navigation:
+  title: "<number> · <the title in four words at most, for the menu>"
+status: <accepted, proposed, rejected, deprecated or superseded>
+date: <YYYY-MM-DD, the day it was decided>
+explainedIn:
+  title: <the page that explains how DrinkIt applies the decision>
+  to: </en/… route of that page>
+supersedes: </en/decisions/… route of the ADR this one replaces, only when it replaces one>
+supersededBy: </en/decisions/… route of the ADR that replaces this one, only once it is superseded>
 ---
-
-- Status: <accepted, proposed, rejected, deprecated, or superseded by a link to the new ADR>
-- Date: <YYYY-MM-DD, the day it was decided>
-- Supersedes: <a link to the ADR this one replaces, only when it replaces one>
 
 <One or two sentences: what was decided, and the reason that weighed most.>
 

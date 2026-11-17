@@ -74,7 +74,7 @@ Observation.createNotStarted("rates.refresh", observationRegistry)
 A low-cardinality value, such as a provider, tags the metric and the span. An id goes in a
 `highCardinalityKeyValue`, which tags the span alone.
 
-[ADR 0016](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
+[ADR 016](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
 records why Micrometer, and why the export waits for a switch.
 
 ### Monitoring a third party

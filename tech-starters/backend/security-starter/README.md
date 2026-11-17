@@ -157,10 +157,10 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 - **Tables**: the [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md) creates
   the `drinkit_session` tables of the sessions, the remember-me tokens and the sign-in codes. The sign-in by code needs
   PostgreSQL through jOOQ, for its codes and for the counts of its limits.
-- **Choices**: ADRs [0011](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0011-sign-in-without-a-password.md),
-  [0012](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0012-keep-sessions-in-postgresql.md),
-  [0013](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0013-remember-me-with-a-rotating-hashed-token.md)
-  and [0014](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md)
+- **Choices**: ADRs [011](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/011-sign-in-without-a-password.md),
+  [012](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/012-keep-sessions-in-postgresql.md),
+  [013](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/013-remember-me-with-a-rotating-hashed-token.md)
+  and [014](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md)
   record the choices of the sign-in, the sessions, the remember-me and the CSRF protection.
 
 ## Configuration
@@ -211,7 +211,7 @@ val code = signInCodeSender.lastCodeOf("ada@drinkit.test")   // once POST /api/a
 
 ## Limits
 
-- The email code is the only sign-in yet: the passkeys, Google and Apple of ADR 0011 come later.
+- The email code is the only sign-in yet: the passkeys, Google and Apple of ADR 011 come later.
 - Nothing limits the requests for a code per email or per address yet.
 - The starter refuses to start with `cookie.secure` set to `false` and a prefix left: a browser drops a `__Host-`
   cookie that is not `Secure`.

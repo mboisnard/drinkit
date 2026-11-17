@@ -1,10 +1,14 @@
 ---
-title: "0017. Feature flags through OpenFeature, with Flipt as provider"
+title: "017. Feature flags through OpenFeature, with Flipt as provider"
 description: "The code reads feature flags by key through OpenFeature in a tech starter, with Flipt v2 as the provider behind it."
+navigation:
+  title: "017 · Feature flags, OpenFeature"
+status: accepted
+date: 2026-11-08
+explainedIn:
+  title: Feature management starter
+  to: /en/reference/resources/tech-starters/feature-management-starter
 ---
-
-- Status: accepted
-- Date: 2026-11-08
 
 DrinkIt reads its feature flags through OpenFeature, the vendor-neutral standard of the CNCF, and Flipt v2 is the
 provider behind it today. The code reads a flag by its key, and a flag the provider lacks gives the default of the
@@ -14,10 +18,10 @@ mobile client, server rendering included, reads them from one endpoint and never
 ## Context
 
 No feature reads a flag yet. DrinkIt needs to hide a feature until it is ready, open it to some users, and run A/B
-tests ([ADR 0018](./0018-ab-tests-behind-a-flag-with-posthog.md)). A product manager switches a flag from a web UI, in
+tests ([ADR 018](./018-ab-tests-behind-a-flag-with-posthog.md)). A product manager switches a flag from a web UI, in
 each environment, without a deployment. A developer works without an account at a vendor, and merges the code that
 reads a flag before anyone creates it. Flags are read in a request, in the handlers of platform events
-([ADR 0006](./0006-carry-platform-events-through-an-abstraction.md)), and by the Nuxt app, whose pages may render on the
+([ADR 006](./006-carry-platform-events-through-an-abstraction.md)), and by the Nuxt app, whose pages may render on the
 server.
 
 Flag tools come and go, and each one ships its own SDK. OpenFeature gives them one API: the code evaluates a flag for
@@ -44,7 +48,7 @@ OFREP lets any of them read flags over HTTP from a server that speaks it.
   the client names in the context of its request, and ignores the rest of that context, which anyone can forge. It
   evaluates for the subject of the request. The browser reads the answer with the OpenFeature web SDK and its OFREP
   provider. `/ofrep/**` sits outside `/api/**`, which only signed-in users reach, and asks for the CSRF token like any
-  POST ([ADR 0014](./0014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md)).
+  POST ([ADR 014](./014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md)).
 - **Flags in the server render.** When Nuxt renders a page on the server, it fetches the flags before rendering, so
   the HTML already holds the blocks they open and nothing flickers. The flags travel in the Nuxt payload, and the
   browser's provider starts from them without a request.
@@ -83,7 +87,7 @@ server calls the endpoint itself, and relays to the browser the cookies of a fir
 - A server render calls the backend for the flags before it fetches its data, and once more on a first visit, for the
   CSRF token.
 - OFREP is a 0.x specification. A breaking version goes through expand and contract
-  ([ADR 0005](./0005-change-the-api-contract-by-expand-and-contract.md)), with `/ofrep/v1` kept until clients move.
+  ([ADR 005](./005-change-the-api-contract-by-expand-and-contract.md)), with `/ofrep/v1` kept until clients move.
 - Neither Flipt nor the code lists the flags in use: finding a dead one takes a search of the code for its key.
 - A flag has to be created in each Flipt environment where it should be switched on.
 - The visitor cookie is set before DrinkIt manages consent.

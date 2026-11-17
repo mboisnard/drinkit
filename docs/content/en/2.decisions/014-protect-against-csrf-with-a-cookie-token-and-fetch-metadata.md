@@ -1,10 +1,14 @@
 ---
-title: "0014. Protect against CSRF with a token in a cookie and Fetch Metadata"
+title: "014. Protect against CSRF with a token in a cookie and Fetch Metadata"
 description: "Each state change carries a CSRF token copied from a `__Host-` cookie, and Fetch Metadata refuses cross-site requests."
+navigation:
+  title: "014 · Protect against CSRF"
+status: accepted
+date: 2026-11-06
+explainedIn:
+  title: Security principles
+  to: /en/reference/security/principles
 ---
-
-- Status: accepted
-- Date: 2026-11-06
 
 A request that changes state, the sign-in included, carries in a header the value of a token cookie that only
 DrinkIt's own pages can read, and the security starter also refuses it when the browser marks it as coming from

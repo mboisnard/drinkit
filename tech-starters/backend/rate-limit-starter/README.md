@@ -3,7 +3,7 @@
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 that limits how often a key can call a use case: a user, a visitor, an email or an IP address. Its counts live in
 PostgreSQL, so that every instance of the application shares them.
-[ADR 0020](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0020-rate-limit-in-the-application-with-gcra-on-postgresql.md)
+[ADR 020](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/020-rate-limit-in-the-application-with-gcra-on-postgresql.md)
 explains why it is built in-house.
 
 ```mermaid

@@ -1,10 +1,14 @@
 ---
-title: "0006. Carry platform events through an abstraction"
+title: "006. Carry platform events through an abstraction"
 description: "Platform events go through `PlatformEventPublisher` and `@PlatformEventHandler` of `messaging-starter`, which hide the transport."
+navigation:
+  title: "006 · Platform events abstraction"
+status: accepted
+date: 2026-10-30
+explainedIn:
+  title: Platform events
+  to: /en/engineering/domain/platform-events
 ---
-
-- Status: accepted
-- Date: 2026-10-30
 
 The asynchronous messages between the parts of DrinkIt, its platform events, go through an abstraction of
 `messaging-starter`: a publisher, and handlers that declare in an annotation what they need from a transport. Spring
@@ -42,7 +46,7 @@ flowchart LR
   published.
 
 The events are not yet described by a contract. Once a broker carries them, an AsyncAPI file would describe them,
-shared from the repository as [ADR 0000](./0000-keep-every-project-in-one-repository.md) records.
+shared from the repository as [ADR 000](./000-keep-every-project-in-one-repository.md) records.
 
 ## Consequences
 

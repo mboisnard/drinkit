@@ -73,7 +73,7 @@ emailSender.send(
 
 The `dev` profile of the backend sends to the [Mailpit](https://mailpit.axllent.org/) of the local compose file, whose
 web interface on `http://localhost:8025` shows each email.
-[ADR 0010](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0010-send-emails-over-smtp-to-a-server-chosen-per-environment.md)
+[ADR 010](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/010-send-emails-over-smtp-to-a-server-chosen-per-environment.md)
 records the SMTP server of each environment.
 
 ## Configuration

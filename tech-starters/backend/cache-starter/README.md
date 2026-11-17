@@ -4,7 +4,7 @@ A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/e
 that turns on Spring's `@Cacheable` and `@CacheEvict` and keeps the entries in memory with
 [Caffeine](https://github.com/ben-manes/caffeine), each cache with a time to live. Spring's default cache never
 expires an entry.
-[ADR 0007](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0007-cache-through-spring-on-caffeine.md)
+[ADR 007](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/007-cache-through-spring-on-caffeine.md)
 says why.
 
 ```mermaid

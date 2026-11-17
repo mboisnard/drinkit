@@ -1,10 +1,14 @@
 ---
-title: "0016. Observe through Micrometer, and export over OpenTelemetry on demand"
+title: "016. Observe through Micrometer, and export over OpenTelemetry on demand"
 description: "DrinkIt observes itself with Actuator and Micrometer, writes its logs to the console, and exports over OTLP only once enabled."
+navigation:
+  title: "016 · Observe with Micrometer"
+status: accepted
+date: 2026-11-07
+explainedIn:
+  title: Observability starter
+  to: /en/reference/resources/tech-starters/observability-starter
 ---
-
-- Status: accepted
-- Date: 2026-11-07
 
 DrinkIt observes itself with what Spring Boot already ships: Actuator for health, Micrometer for metrics and traces,
 its structured logging for JSON lines. An environment exports over OpenTelemetry when it switches it on, and

@@ -1,10 +1,14 @@
 ---
-title: "0015. Push server events over SSE, to a user or a session"
+title: "015. Push server events over SSE, to a user or a session"
 description: "`sse-starter` serves one SSE stream per tab and sends named events to a user id or a session id through `ServerEvents`."
+navigation:
+  title: "015 · Push events over SSE"
+status: accepted
+date: 2026-11-07
+explainedIn:
+  title: SSE starter
+  to: /en/reference/resources/tech-starters/sse-starter
 ---
-
-- Status: accepted
-- Date: 2026-11-07
 
 DrinkIt pushes events from the server to the browser over Server-Sent Events, through `sse-starter`. An event goes
 to a user, or to the session of a visitor who is not signed in, and reaches every tab of that recipient open on the
@@ -23,7 +27,7 @@ restart.
 A browser opens at most 6 connections per origin over HTTP/1.1, every stream counting as one. A stream closes after
 a few minutes, as the proxies in front of the application close idle ones, and the browser opens it again: an event
 sent in between reaches no one. Each opening is a request of the user, which keeps their session alive, as
-[ADR 0012](./0012-keep-sessions-in-postgresql.md) counts any request as activity: a tab left open would never let the
+[ADR 012](./012-keep-sessions-in-postgresql.md) counts any request as activity: a tab left open would never let the
 session end after its idle timeout.
 
 `security-starter` refuses every request that no `EndpointRules` bean matches, as the

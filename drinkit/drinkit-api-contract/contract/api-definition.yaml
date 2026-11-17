@@ -22,7 +22,7 @@ tags:
   - name: sse
     description: Server-sent events
   - name: feature-management
-    description: Feature flags and A/B test variants for clients, after ADR 0017 and ADR 0018
+    description: Feature flags and A/B test variants for clients, after ADR 017 and ADR 018
 
 paths:
   /api/cellars:

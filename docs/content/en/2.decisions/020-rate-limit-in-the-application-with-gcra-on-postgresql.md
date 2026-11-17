@@ -1,10 +1,14 @@
 ---
-title: "0020. Rate limit in the application with GCRA on PostgreSQL"
+title: "020. Rate limit in the application with GCRA on PostgreSQL"
 description: "A starter of our own limits calls per key with GCRA, keeps its state in PostgreSQL, and answers 429 with `Retry-After`."
+navigation:
+  title: "020 · Rate limit with GCRA"
+status: accepted
+date: 2026-11-09
+explainedIn:
+  title: Rate limit starter
+  to: /en/reference/resources/tech-starters/rate-limit-starter
 ---
-
-- Status: accepted
-- Date: 2026-11-09
 
 The application limits how often a key calls a use case, with a starter of our own that runs the generic cell rate
 algorithm, GCRA, and keeps one instant per key and limit in PostgreSQL. Only the code knows the use case, the user,

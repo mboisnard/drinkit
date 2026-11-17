@@ -1,0 +1,90 @@
+/* The A+ design of the site: Docus reads this file after Tailwind and Nuxt UI */
+@theme static {
+  --color-cognac-50: #fdf3ea;
+  --color-cognac-100: #fbe6d2;
+  --color-cognac-200: #f7d6b8;
+  --color-cognac-300: #f4bb88;
+  --color-cognac-400: #f0a060;
+  --color-cognac-500: #e0812c;
+  --color-cognac-600: #c9661a;
+  --color-cognac-700: #b4500f;
+  --color-cognac-800: #8a3d0b;
+  --color-cognac-900: #6f330d;
+  --color-cognac-950: #3d1906;
+
+  --font-sans: 'Inter', 'Inter Fallback', sans-serif;
+  --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', monospace;
+  --font-display: 'Bricolage Grotesque', 'Bricolage Grotesque Fallback', sans-serif;
+  --font-accent: 'Fraunces', 'Fraunces Fallback', serif;
+}
+
+/* A system font sized like each font, so that the text keeps its lines when the font arrives. @nuxt/fonts derives
+   its own fallback from the generic family the provider returns, which matches no local font: fontaine computed these */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  size-adjust: 107.1194%;
+  ascent-override: 90.4365%;
+  descent-override: 22.518%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Bricolage Grotesque Fallback';
+  src: local('Arial');
+  size-adjust: 105.4283%;
+  ascent-override: 88.2116%;
+  descent-override: 25.6098%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Fraunces Fallback';
+  src: local('Georgia');
+  size-adjust: 105.2039%;
+  ascent-override: 92.9623%;
+  descent-override: 24.2386%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Fallback';
+  src: local('Courier New');
+  size-adjust: 99.9837%;
+  ascent-override: 102.0166%;
+  descent-override: 30.0049%;
+  line-gap-override: 0%;
+}
+
+/* Cognac 500 fills the buttons, but as text on white it fails contrast: text and links take the darker shade */
+:root {
+  --ui-primary: var(--ui-color-primary-700);
+  --ui-radius: 0.5rem;
+}
+
+.dark {
+  --ui-primary: var(--ui-color-primary-400);
+  --ui-bg: var(--ui-color-neutral-950);
+  --ui-bg-muted: var(--ui-color-neutral-900);
+  --ui-bg-elevated: var(--ui-color-neutral-900);
+}
+
+/* The first paragraph of a decision record is its summary, set apart */
+.decision-record > p:first-child {
+  padding: 1rem 1.25rem;
+  border: 1px solid color-mix(in oklab, var(--color-cognac-500) 30%, transparent);
+  border-radius: calc(var(--ui-radius) * 2);
+  background: color-mix(in oklab, var(--color-cognac-500) 8%, transparent);
+  color: var(--ui-text-highlighted);
+  font-size: 1.125rem;
+}
+
+.decision-record > p:first-child::before {
+  content: 'The decision, in two sentences';
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--ui-primary);
+  font: 600 0.75rem/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

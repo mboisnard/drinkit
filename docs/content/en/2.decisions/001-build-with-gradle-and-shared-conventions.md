@@ -1,10 +1,14 @@
 ---
-title: "0001. Build with Gradle and shared conventions"
+title: "001. Build with Gradle and shared conventions"
 description: "The backend builds with Gradle in Kotlin, with shared settings in convention plugins and every version in one platform."
+navigation:
+  title: "001 · Gradle, shared conventions"
+status: accepted
+date: 2026-10-24
+explainedIn:
+  title: Build tool
+  to: /en/engineering/build-and-data/build-tool
 ---
-
-- Status: accepted
-- Date: 2026-10-24
 
 The backend builds with Gradle, its scripts written in Kotlin, and what its modules share lives in convention plugins
 that each module applies. A new tech starter or a new application then builds like the others from its first commit,

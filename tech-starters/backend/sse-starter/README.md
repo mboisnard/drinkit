@@ -63,7 +63,7 @@ sequenceDiagram
     end
 ```
 
-[ADR 0015](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0015-push-server-events-over-sse-to-a-user-or-a-session.md)
+[ADR 015](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/015-push-server-events-over-sse-to-a-user-or-a-session.md)
 records why a stream belongs to a user or a session, carries signals, follows the visibility of its tab, and comes with
 its access rule.
 

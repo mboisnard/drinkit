@@ -1,10 +1,14 @@
 ---
-title: "0011. Sign in without a password"
+title: "011. Sign in without a password"
 description: "Users sign in with a passkey, Google or Apple, or a six-digit code sent by email, on one screen that also signs them up."
+navigation:
+  title: "011 · Sign in without a password"
+status: accepted
+date: 2026-11-06
+explainedIn:
+  title: Security principles
+  to: /en/reference/security/principles
 ---
-
-- Status: accepted
-- Date: 2026-11-06
 
 A user signs in with a passkey, with Google or Apple, or with a one-time code sent to their email, and DrinkIt stores
 no password. A password reset already makes an account only as safe as its mailbox: a password adds a way in without
@@ -49,7 +53,7 @@ flowchart TB
 
 DrinkIt offers no SMS code, which SIM swapping and costs rule out, and no authenticator app code, which a phishing
 page relays like any code. The password sign-in built first goes away. The session that follows any method is the one
-of [ADR 0012](./0012-keep-sessions-in-postgresql.md).
+of [ADR 012](./012-keep-sessions-in-postgresql.md).
 
 ## Consequences
 

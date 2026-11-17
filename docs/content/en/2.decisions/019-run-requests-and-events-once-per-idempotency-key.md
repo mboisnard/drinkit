@@ -1,10 +1,14 @@
 ---
-title: "0019. Run requests and events once per idempotency key, kept in PostgreSQL"
+title: "019. Run requests and events once per idempotency key, kept in PostgreSQL"
 description: "`@Idempotent` endpoints and idempotent event handlers run once per key, through our own starter that keeps keys in PostgreSQL."
+navigation:
+  title: "019 · Idempotency keys"
+status: accepted
+date: 2026-11-08
+explainedIn:
+  title: Idempotency starter
+  to: /en/reference/resources/tech-starters/idempotency-starter
 ---
-
-- Status: accepted
-- Date: 2026-11-08
 
 An endpoint or an event handler that must not run twice declares it, and a starter of our own runs it once per
 idempotency key, kept in PostgreSQL. The key of a request follows into the events it publishes and the providers it

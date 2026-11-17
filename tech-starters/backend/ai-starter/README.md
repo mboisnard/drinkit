@@ -5,7 +5,7 @@ through which the code asks a language or vision model for an answer, or an embe
 model by its id in a catalog, such as `qwen3-vl-4b`. Built on [Spring AI](https://docs.spring.io/spring-ai/reference/),
 it reaches a provider that speaks the Anthropic or the OpenAI protocol, a frontier API or a
 [LocalAI](https://localai.io/) server, and moves on from one chat model to the next when a call fails.
-[ADR 0021](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/0021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.md)
+[ADR 021](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.md)
 records why no model runs inside the application.
 
 ```mermaid

@@ -1,10 +1,14 @@
 ---
-title: "0000. Keep every project in one repository"
+title: "000. Keep every project in one repository"
 description: "DrinkIt keeps its application, tech starters, build logic, changelogs, skills and documentation in one repository."
+navigation:
+  title: "000 · One repository"
+status: accepted
+date: 2026-10-24
+explainedIn:
+  title: Monorepo
+  to: /en/engineering/architecture/monorepo
 ---
-
-- Status: accepted
-- Date: 2026-10-24
 
 Everything DrinkIt is made of lives in one repository: the frontend, the Kotlin backend, the tech starters, the build
 logic, the database changelogs, the coding agents' skills, the documentation site, and later the machine learning code
@@ -34,7 +38,7 @@ DrinkIt keeps every project in one repository, laid out as the [monorepo page](.
   the frontend both generate code from. An asynchronous contract, such as an AsyncAPI file for the
   [platform events](../1.engineering/3.domain/2.platform-events.md), would be shared the same way, with no schema registry.
 - **Projects stay apart.** One repository is not one project: an application never uses the modules of another, and
-  a tech starter never uses an application, as the [architecture tests](./0004-check-the-architecture-with-tests.md)
+  a tech starter never uses an application, as the [architecture tests](./004-check-the-architecture-with-tests.md)
   check.
 
 ## Consequences
@@ -45,7 +49,7 @@ DrinkIt keeps every project in one repository, laid out as the [monorepo page](.
 - A change can reach everything, so the CI has to run only what a change touches, through lanes that watch paths,
   and caches, to stay fast.
 - Built together does not mean deployed together: the frontend and the backend still deploy apart, which is why the
-  API contract changes in two steps, as [ADR 0005](./0005-change-the-api-contract-by-expand-and-contract.md) records.
+  API contract changes in two steps, as [ADR 005](./005-change-the-api-contract-by-expand-and-contract.md) records.
 - With several teams, a change across projects would need their agreement before the merge. A repository far larger
   than DrinkIt's would need dedicated build and version control tools.
 
