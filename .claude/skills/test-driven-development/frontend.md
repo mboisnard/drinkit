@@ -19,9 +19,9 @@ Work from what the user sees and does. Where code goes in the Nuxt app is in the
 
 ## When package.json has no test script
 
-A frontend criterion is proven by check commands, run from the frontend app:
-`npm run generate:client-api && npm run build`. The build does not check types, so a type error can pass it. Run
-it before the change when it can fail, a build that breaks on an import not written yet for instance.
+A frontend criterion is proven by check commands, run from the root: `pnpm --filter <package> typecheck`, then
+`pnpm --filter <package> build`. Run them before the change when they can fail, a type check that breaks on an
+import not written yet for instance.
 
 What only a person can see, a dialog that opens, a row that disappears after a delete, becomes a numbered step for
 the maintainer in "Verification" of the pull request: what to start, what to do, what should appear. The test list

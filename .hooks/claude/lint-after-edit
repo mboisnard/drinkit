@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# Claude Code PostToolUse hook on Write and Edit: once a TypeScript, Vue or CSS file changes, runs lint-frontend on
+# it from its worktree and shows Claude the findings ESLint and Stylelint could not fix.
+
+command -v jq >/dev/null 2>&1 || exit 0
+
+file=$(jq -r '.tool_input.file_path // empty')
+case $file in
+    *.ts | *.vue | *.css) ;;
+    *) exit 0 ;;
+esac
+
+root=$(git -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null) || exit 0
+[ -x "$root/.hooks/git/lint-frontend" ] && [ -d "$root/node_modules" ] && command -v pnpm >/dev/null 2>&1 || exit 0
+case $(git -C "$root" branch --show-current) in
+    pr-*) exit 0 ;;
+esac
+
+output=$(cd "$root" && ./.hooks/git/lint-frontend "$file" 2>&1) && exit 0
+
+printf 'The lint failed after this edit. Fix these findings:\n%s\n' "$(printf '%s\n' "$output" | grep -v '^$' | head -n 30)" >&2
+exit 2

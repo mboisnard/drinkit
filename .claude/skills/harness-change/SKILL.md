@@ -56,9 +56,9 @@ hook with `run_hook`, under the shell of `$HOOK_SHELL`. Each test builds its own
 before. A new case fails before the change. `harness.bats` fails when a hook has no suite, or when a command of
 `.claude/settings.json` runs no hook of `.hooks/claude/` or has no timeout.
 
-From the root, `npm cit --prefix .hooks` installs bats and runs every suite. Before pushing, run the suite of
-each changed hook under dash too: `cd .hooks && HOOK_SHELL=dash npx bats tests/<hook>.bats`. ShellCheck runs with
-Docker, from the root:
+From the root, `pnpm install --frozen-lockfile --ignore-scripts --filter ./.hooks` installs bats, and `pnpm --dir .hooks test` runs
+every suite. Before pushing, run the suite of each changed hook under dash too:
+`cd .hooks && HOOK_SHELL=dash pnpm exec bats tests/<hook>.bats`. ShellCheck runs with Docker, from the root:
 
 ```bash
 docker run --rm -v "$PWD:/mnt:ro" -w /mnt --entrypoint sh "$(grep -o 'koalaman/shellcheck[^ ]*' .github/workflows/ci-hooks.yml)" -c 'shellcheck .hooks/git/* .hooks/claude/* .hooks/tools/* .hooks/lib/*.sh .hooks/tests/*.bats .hooks/tests/*.bash'
@@ -96,7 +96,7 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
 
 - [ ] Every changed hook parses and runs under `sh` on macOS and under dash, and its suite has a case that failed
   before.
-- [ ] `npm cit --prefix .hooks` and ShellCheck pass.
+- [ ] `pnpm --dir .hooks test` and ShellCheck pass.
 - [ ] Every `paths:` glob matches tracked files.
 - [ ] The page of `docs/content/en/1.engineering/6.coding-assistants/` that covers the changed part describes the change.
 

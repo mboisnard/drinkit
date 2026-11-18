@@ -1,5 +1,5 @@
 # compile-at-stop receives Claude Code's SessionStart and Stop inputs in a sample repository, with a fake gradlew and a
-# fake npm that record their runs.
+# fake pnpm that record their runs.
 
 setup() {
     # shellcheck source=helper.bash
@@ -45,9 +45,9 @@ if [ -f "$work/gradle-slow" ]; then
     exec sleep 30
 fi
 STUB
-    stub npm <<STUB
+    stub pnpm <<STUB
 cat >/dev/null
-echo "npm \$(basename "\$PWD") \$*" >>"$work/runs"
+echo "pnpm \$(basename "\$PWD") \$*" >>"$work/runs"
 if [ -f "$work/typescript-broken" ]; then
     echo "src/cellar.ts(1,14): error TS2322: Type 'string' is not assignable to type 'number'."
     exit 2
@@ -70,7 +70,7 @@ turn_ends() {
     if [ -f "$work/runs" ]; then runs=$(tr '\n' ',' <"$work/runs"); fi
 }
 
-# The fake gradlew and npm ran <runs>, comma-separated, and the end of the turn is blocked or not.
+# The fake gradlew and pnpm ran <runs>, comma-separated, and the end of the turn is blocked or not.
 checked() {
     assert_equal "$runs" "$1"
     if [ "$2" = blocked ]; then
@@ -93,7 +93,7 @@ typescript() {
     echo "$1" >"$repo/front/src/cellar.ts"
 }
 
-every_typecheck="npm admin run --silent typecheck,npm front run --silent typecheck,"
+every_typecheck="pnpm admin run --silent typecheck,pnpm front run --silent typecheck,"
 
 @test "a new session prints nothing, which would become context" {
     session_starts
@@ -214,17 +214,17 @@ every_typecheck="npm admin run --silent typecheck,npm front run --silent typeche
     rm -rf "$repo/front/node_modules"
     typescript "export const cellar: number = 'three'"
     turn_ends
-    checked "npm admin run --silent typecheck," passed
+    checked "pnpm admin run --silent typecheck," passed
 }
 
-@test "without npm installed, nothing is type checked" {
+@test "without pnpm installed, nothing is type checked" {
     only_tools "$work/tools" cat cksum dirname git grep head jq mkdir tail xargs
     typescript "export const cellar = 4"
     hook_path=$work/tools turn_ends
     checked "" passed
 }
 
-@test "once npm is installed, the change left unchecked is type checked" {
+@test "once pnpm is installed, the change left unchecked is type checked" {
     only_tools "$work/tools" cat cksum dirname git grep head jq mkdir tail xargs
     typescript "export const cellar = 4"
     hook_path=$work/tools turn_ends
