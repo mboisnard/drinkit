@@ -6,8 +6,11 @@
   "scripts": {
     "build": "nuxt generate",
     "dev": "nuxt dev",
+    "lint": "eslint --max-warnings 0 . && stylelint 'app/**/*.{css,vue}' --allow-empty-input",
+    "lint:fix": "eslint --fix --max-warnings 0 . && stylelint --fix 'app/**/*.{css,vue}' --allow-empty-input",
     "postinstall": "nuxt prepare",
-    "preview": "pnpm dlx serve .output/public"
+    "preview": "pnpm dlx serve .output/public",
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@barzhsieh/nuxt-content-mermaid": "catalog:",

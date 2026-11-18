@@ -32,6 +32,14 @@ jobs:
         with:
           filter: '{docs}...'
 
+      - name: Lint
+        working-directory: docs
+        run: pnpm lint
+
+      - name: Type check
+        working-directory: docs
+        run: pnpm typecheck
+
       - name: Build the site
         working-directory: docs
         run: pnpm build

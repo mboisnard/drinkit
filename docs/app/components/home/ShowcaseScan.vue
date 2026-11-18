@@ -17,18 +17,27 @@
     </div>
 
     <div class="flex items-center gap-3">
-      <HomeDrinkTile icon="i-lucide-wine" tile="rose" />
+      <HomeDrinkTile
+        icon="i-lucide-wine"
+        tile="rose"
+      />
       <span class="flex-1">
         <span class="block text-sm font-semibold">Château Musar 2016</span>
         <span class="block text-xs text-muted">Red · Bekaa Valley, Lebanon</span>
       </span>
-      <UBadge variant="soft" size="sm">
+      <UBadge
+        variant="soft"
+        size="sm"
+      >
         Read from the label
       </UBadge>
     </div>
 
     <p class="flex items-center gap-2 text-sm text-muted">
-      <UIcon name="i-lucide-trending-up" class="size-4 text-success" />
+      <UIcon
+        name="i-lucide-trending-up"
+        class="size-4 text-success"
+      />
       <span><span class="font-semibold text-highlighted">€42</span> today · bought €38 in 2021</span>
     </p>
 
@@ -40,10 +49,18 @@
       >
         {{ added ? 'Added · ×4 now' : 'Add to Living room cellar' }}
       </UButton>
-      <UButton color="neutral" variant="outline" icon="i-lucide-download">
+      <UButton
+        color="neutral"
+        variant="outline"
+        icon="i-lucide-download"
+      >
         Import from Vivino
       </UButton>
-      <UBadge v-if="!added" variant="soft" icon="i-lucide-pointer">
+      <UBadge
+        v-if="!added"
+        variant="soft"
+        icon="i-lucide-pointer"
+      >
         Click Add
       </UBadge>
     </div>
@@ -51,7 +68,10 @@
 </template>
 
 <script setup lang="ts">
-  const added = ref(false)
+  import { ref } from 'vue';
+  import { HomeDrinkTile, UBadge, UButton, UIcon } from '#components';
+
+  const added = ref(false);
 </script>
 
 <style scoped>
@@ -75,6 +95,9 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .scan-beam { animation: none; top: 50%; }
+    .scan-beam {
+      animation: none;
+      top: 50%;
+    }
   }
 </style>

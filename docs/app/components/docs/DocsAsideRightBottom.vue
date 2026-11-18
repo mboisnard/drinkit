@@ -7,3 +7,7 @@
     <DocsPageHeaderLinks />
   </div>
 </template>
+
+<script setup lang="ts">
+  import { DocsPageHeaderLinks, USeparator } from '#components';
+</script>
