@@ -7,12 +7,14 @@ for agents.
 
 ## Setup
 
-It needs Docker, the JDK of `gradle/gradle-daemon-jvm.properties`, and the Node version of `.nvmrc`. Once
-per clone:
+It needs Docker, the JDK of `gradle/gradle-daemon-jvm.properties`, the Node version of `.nvmrc`, and pnpm, installed
+once with `npm install --global pnpm`: whatever its version, it runs the one that `packageManager` of the root
+`package.json` pins. Once per clone:
 
 ```
 git config core.hooksPath .hooks/git
 git config blame.ignoreRevsFile .git-blame-ignore-revs     # skip the reformatting commit in git blame
+pnpm install --frozen-lockfile                             # the Nuxt app, the frontend starters, the site, bats
 ```
 
 In IntelliJ, install the detekt plugin: `.idea/detekt.xml` points it at the project's configuration, so the
@@ -35,12 +37,8 @@ from IntelliJ with the `dev` profile does the same.
 
 ### Frontend
 
-From `drinkit/drinkit-frontend`, with `java` on the `PATH` for the client generation:
-
 ```
-npm ci
-npm run generate:client-api     # the TypeScript client of the API contract
-npm run dev                     # http://localhost:3000
+pnpm --filter drinkit-frontend dev     # http://localhost:3000
 ```
 
 ## Proposing a change
