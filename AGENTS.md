@@ -2,7 +2,7 @@
 
 DrinkIt manages wine and spirit cellars: a Kotlin and Spring Boot 4 backend, a Nuxt frontend, PostgreSQL
 through jOOQ. Exact versions live in the catalogs of `gradle/platform`, `gradle/gradle-daemon-jvm.properties`,
-`.nvmrc` and `drinkit/drinkit-frontend/package.json`, not here.
+`.nvmrc` and `pnpm-workspace.yaml`, not here.
 
 ## Commands
 
@@ -12,11 +12,12 @@ through jOOQ. Exact versions live in the catalogs of `gradle/platform`, `gradle/
 ./gradlew :drinkit-infra:test --tests '*JooqUserEventsTest'
 ./gradlew detektAll -Pdetekt.autoCorrect=true  # fixes formatting and auto-correctable findings
 ./gradlew :drinkit-backend:bootRun             # dev profile: starts the compose services, emails land in Mailpit
-git config core.hooksPath .hooks/git           # once per clone: pre-commit formats Kotlin, pre-push refuses master
+git config core.hooksPath .hooks/git           # once per clone: pre-commit formats the code, pre-push refuses master
 ```
 
-Frontend, from `drinkit/drinkit-frontend`, with `java` on the `PATH` for the client generation: `npm ci`, then
-`npm run generate:client-api`, then `npm run dev` or `npm run build`.
+Frontend, documentation site and hooks' tests, one pnpm workspace, from the root: `pnpm install --frozen-lockfile`,
+then `pnpm -r lint` (`lint:fix` fixes), `pnpm -r typecheck` and `pnpm -r build`, or
+`pnpm --filter drinkit-frontend dev`.
 
 The JDK of `gradle/gradle-daemon-jvm.properties` must be installed: Gradle finds it whatever `java` is on the
 `PATH`, but never downloads it. Integration tests need Docker. The checks of the hooks, the workflows, the

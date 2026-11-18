@@ -43,14 +43,14 @@ the code changes.
 | [`implement-issue`][skill-issue] | Taking an open issue to a pull request, and cleaning up once it is merged | The maintainer, `/implement-issue <number>` |
 | [`new-issue`][skill-new-issue] | Turning an idea, a bug or discovered work into an issue that follows its form | Its description, or `implement-issue` |
 | [`review-pr`][skill-review-pr] | Reviewing a pull request with inline comments ranked by severity | The maintainer, `/review-pr <number>`, or an agent `implement-issue` starts |
-| [`test-driven-development`][skill-tdd] | Adding or changing behavior, backend or frontend, test first | Editing Kotlin or frontend sources, and `implement-issue` |
+| [`test-driven-development`][skill-tdd] | Adding or changing behavior, backend or frontend, test first | Editing Kotlin, frontend sources or a frontend tech starter, and `implement-issue` |
 | [`test-existing-code`][skill-test-existing] | Covering code that has no tests, each test proven able to fail | Its description, or `test-driven-development` |
 | [`backend-feature`][skill-backend] | Shaping a backend feature, from the API contract to the database | Editing production code of a `-domain`, `-infra` or `-backend` module |
-| [`api-contract-change`][skill-contract] | Changing the OpenAPI contract, then the code generated from it | Editing an `-api-contract` module or the client generator settings |
+| [`api-contract-change`][skill-contract] | Changing the OpenAPI contract, then the code generated from it | Editing an `-api-contract` module |
 | [`database-change`][skill-database] | Changing the schema or the data, then the jOOQ classes | Editing the changelogs or the generated jOOQ code |
-| [`frontend-feature`][skill-frontend] | Shaping a feature of a Nuxt app around the generated client | Editing the sources or the Nuxt configuration of a `-frontend` module |
+| [`frontend-feature`][skill-frontend] | Shaping a feature of a Nuxt app, rendered on the server with explicit imports | Editing the sources or the Nuxt configuration of a `-frontend` module, or a frontend tech starter |
 | [`new-backend-tech-starter`][skill-starter] | Creating or aligning a backend [tech starter](../../2.architecture/6.tech-starters.md) | Editing a backend tech starter |
-| [`new-frontend-tech-starter`][skill-frontend-starter] | Creating the first frontend tech starter, a Nuxt layer | Its description |
+| [`new-frontend-tech-starter`][skill-frontend-starter] | Creating a frontend tech starter, a Nuxt layer and a package of the pnpm workspace | Editing a frontend tech starter |
 | [`pentest`][skill-pentest] | Scanning the running application with OWASP ZAP, then triaging the findings | The maintainer, `/pentest` |
 | [`threat-model`][skill-threat-model] | A STRIDE threat model of one feature or flow | The maintainer, `/threat-model` |
 | [`ci-workflow-change`][skill-ci-workflow] | Changing a workflow, a [CI](../../7.delivery/1.ci-cd.md) lane, a Dockerfile, the compose file or Renovate | Editing any of them |

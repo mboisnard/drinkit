@@ -49,10 +49,11 @@ Links and tools to look at later are on the [ideas page](docs/content/en/3.refer
 
 - `drinkit/`: the application, a Kotlin and Spring Boot backend built along a hexagonal architecture, and a
   Nuxt frontend.
-- `tech-starters/backend/`: technical libraries, one concern each, with no business code.
+- `tech-starters/`: technical libraries, one concern each, with no business code, for the backend and as Nuxt
+  layers for the frontend.
 - `build-logic/`: the Gradle convention plugins the modules apply.
 - `.hooks/`: the git hooks and the Claude Code hooks of the harness, with their bats suites, which
-  `npm cit --prefix .hooks` runs.
+  `pnpm --dir .hooks test` runs.
 - The [documentation site](https://mboisnard.github.io/drinkit/): architecture, guidelines, the pages
   generated from the code, and the [harness](docs/content/en/1.engineering/6.coding-assistants/1.harness.md) that guards master.
 
@@ -72,13 +73,11 @@ and gives the account to log in with.
 - OpenAPI documentation: `http://localhost:8080/drinkit/openapi/ui` (admin role)
 - Actuator: `http://localhost:8080/drinkit/actuator` (admin role)
 
-The frontend needs `java` on the `PATH` to generate its API client:
+The frontend, the documentation site and the hooks' tests share one pnpm workspace:
 
 ```bash
-cd drinkit/drinkit-frontend
-npm ci
-npm run generate:client-api
-npm run dev                            # http://localhost:3000
+pnpm install --frozen-lockfile
+pnpm --filter drinkit-frontend dev     # http://localhost:3000
 ```
 
 ## Contributing
