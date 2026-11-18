@@ -10,5 +10,5 @@
     "erasableSyntaxOnly": true,
     "skipLibCheck": true
   },
-  "include": ["*.ts", "../app/problem-detail.ts"]
+  "include": ["*.ts", "../../app/problem-detail.ts"]
 }
