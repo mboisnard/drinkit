@@ -112,9 +112,10 @@ precedent for a new one.
 **Dependencies.** A new or bumped dependency appears in `gradle/verification-metadata.xml` and, for a program
 DrinkIt ships, in the `gradle.lockfile` of its module: `api-convention` and `job-convention` lock them. Check its
 group and artifact against the expected publisher, a new `trusted-artifacts` entry has a reason, and no repository
-is added. For npm, the `package-lock.json` entries resolve from the npm registry. Known vulnerabilities are checked
-in CI by the dependencies lane: you cannot run it, so check that `.github/workflows/config/ci-lanes.yml` maps the
-changed files to that lane, and otherwise report it.
+is added. For pnpm, the `pnpm-lock.yaml` entries resolve from the npm registry, and each version comes from the
+catalog of `pnpm-workspace.yaml`. Known vulnerabilities are checked in CI by the dependencies lane: you cannot run
+it, so check that `.github/workflows/config/ci-lanes.yml` maps the changed files to that lane, and otherwise report
+it.
 
 **Images.** A Dockerfile pins its base by digest and runs as a non-root user with no credentials baked in. A
 workflow that can write packages runs on master only, and its job that holds the token builds and checks nothing:

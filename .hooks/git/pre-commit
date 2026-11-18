@@ -15,33 +15,38 @@ changed --cached --no-renames --diff-filter=AM | while IFS= read -r f; do
         { echo "pre-commit: $f is over 5 MB, keep large files out of the repository" >&2; exit 1; }
 done
 
-changed --cached --diff-filter=AM -- '*package.json' | while IFS= read -r manifest; do
-    lock="$(dirname "$manifest")/package-lock.json"
-    [ -f "$lock" ] || continue
-    git diff --cached --quiet -- "$lock" || continue
-    git diff --cached -U0 -- "$manifest" |
-        grep -qE '^[+-][[:space:]]*"[^"]+": "([~^<>=*0-9]|latest|npm:|file:|git|https?:|workspace:)' || continue
-    echo "pre-commit: $manifest changes a dependency but $lock is not staged. Run npm install, then stage both" >&2
-    exit 1
-done
+if [ -f pnpm-lock.yaml ] && git diff --cached --quiet -- pnpm-lock.yaml; then
+    changed --cached --diff-filter=AM -- '*package.json' pnpm-workspace.yaml | while IFS= read -r manifest; do
+        git diff --cached -U0 -- "$manifest" |
+            grep -qE "^[+-][[:space:]]*(\"[^\"]+\"|'?[@a-z0-9./-]+'?): \"?([~^<>=*0-9]|latest|npm:|file:|git|https?:|workspace:|catalog:)" ||
+            continue
+        echo "pre-commit: $manifest changes a dependency but pnpm-lock.yaml is not staged. Run pnpm install, then stage both" >&2
+        exit 1
+    done
+fi
 
-kotlin=$(changed --cached --diff-filter=ACMR -- '*.kt' '*.kts')
-[ -n "$kotlin" ] || exit 0
+# Runs <linter> on <files>, one per line, then stages each file it reformatted. A file that had other unstaged changes
+# is reformatted on disk but left for you to stage: staging it would carry those changes into the commit too.
+format_staged() {
+    linter=$1 files=$2
+    [ -n "$files" ] || return 0
+    partly_staged=$(changed)
 
-# Recorded before formatting: staging one of these afterwards would carry its unstaged edits into
-# the commit too, so they are reformatted on disk but left for you to stage yourself.
-partly_staged=$(changed)
+    printf '%s\n' "$files" | tr '\n' '\0' | xargs -0 "$(dirname "$0")/$linter"
 
-"$(dirname "$0")/lint-kotlin"
+    # Listed before the loop: a git diff still running can hold the index lock that git add needs.
+    reformatted=$(changed)
+    printf '%s\n' "$reformatted" | while IFS= read -r f; do
+        printf '%s\n' "$files" | grep -qxF -- "$f" || continue
+        if printf '%s\n' "$partly_staged" | grep -qxF -- "$f"; then
+            echo "pre-commit: $f reformatted, left unstaged (it had other unstaged changes)"
+        else
+            git add -- "$f"
+            echo "pre-commit: $f reformatted and staged"
+        fi
+    done
+}
 
-# Listed before the loop: a git diff still running can hold the index lock that git add needs.
-reformatted=$(changed)
-printf '%s\n' "$reformatted" | while IFS= read -r f; do
-    printf '%s\n' "$kotlin" | grep -qxF -- "$f" || continue
-    if printf '%s\n' "$partly_staged" | grep -qxF -- "$f"; then
-        echo "pre-commit: $f reformatted, left unstaged (it had other unstaged changes)"
-    else
-        git add -- "$f"
-        echo "pre-commit: $f reformatted and staged"
-    fi
-done
+# lint-kotlin formats every module, whatever files it is given
+format_staged lint-kotlin "$(changed --cached --diff-filter=ACMR -- '*.kt' '*.kts')"
+format_staged lint-frontend "$(changed --cached --diff-filter=ACMR -- '*.ts' '*.vue' '*.css')"

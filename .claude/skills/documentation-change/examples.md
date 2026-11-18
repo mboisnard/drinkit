@@ -23,16 +23,16 @@ not see a sentence over 25 words, "not X but Y" or a group of three: read the pa
 
 ## Build the site
 
-From the root, then from `docs/`:
+From the root:
 
 ```bash
 ./gradlew kspKotlin --rerun
-npm ci
-npm run generate
-npm run dev
+pnpm install --frozen-lockfile
+pnpm --filter drinkit-docs build
+pnpm --filter drinkit-docs dev
 ```
 
-`npm run dev` serves the site under `/drinkit/` until it is stopped: start it in the background. It renders a page in the
+`dev` serves the site under `/drinkit/` until it is stopped: start it in the background. It renders a page in the
 browser only, so `curl` gets an empty shell and the look of the tables and diagrams is for a person to check.
 
 ## Fresh reader

@@ -149,7 +149,7 @@ Change the annotation, the README or the skill instead: a Claude Code hook refus
 ## Before you finish
 
 - [ ] The tics command of [examples.md](examples.md#tics) prints nothing for the page.
-- [ ] `./gradlew kspKotlin --rerun`, then `npm run generate` from `docs/`, passes. The build fails on a dead
+- [ ] `./gradlew kspKotlin --rerun`, then `pnpm --filter drinkit-docs build`, passes. The build fails on a dead
   link between pages.
 - [ ] A fresh agent given only the page and the [fresh reader prompt](examples.md#fresh-reader) reports no DrinkIt
   term used before its definition, no rule without its reason, no passage that teaches what it already knows and
@@ -162,7 +162,7 @@ Change the annotation, the README or the skill instead: a Claude Code hook refus
 - [ ] Each flow, exchange between parts or before and after that the page explains is a diagram, and the words it
   replaced are gone.
 - [ ] The maintainer saw the tables and diagrams as intended, or the pull request says nobody has yet. Start
-  [`npm run dev`](examples.md#build-the-site) in the background for them: it never returns.
+  [the site's `dev`](examples.md#build-the-site) in the background for them: it never returns.
 - [ ] Each concept of the page that has a page of its own links to it.
 - [ ] Each choice of the page that an ADR records links to that ADR.
 - [ ] A new page has a number prefix that places it in the sidebar, distinct from its siblings', and the pages on

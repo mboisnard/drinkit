@@ -1,53 +1,53 @@
 ---
 name: new-frontend-tech-starter
-description: Creates a frontend tech starter for DrinkIt, one technical concern with no business code, shipped as a Nuxt layer under tech-starters/frontend that a Nuxt app, a -frontend module, extends. The first one settles its layout with the maintainer before any file is written. Use it when asked for a frontend tech starter, or when a technical concern of a Nuxt app, such as the API client setup, should live apart from the features.
+description: Creates a frontend tech starter for DrinkIt, one technical concern with no business code, shipped as a Nuxt layer and a package of the pnpm workspace under tech-starters/frontend that a Nuxt app, a -frontend module, extends. Use it when asked for a frontend tech starter, or when a technical concern of a Nuxt app, such as the API client setup, should live apart from the features.
+paths:
+  - "tech-starters/frontend/**"
 ---
 
 # New frontend tech starter
 
 A frontend tech starter does for a Nuxt app what a backend one does for a Spring application: it owns one
 technical concern, knows no business word, and the app can take it or drop it (`tech-starters.md` under
-`docs/content/en/1.engineering/2.architecture/`). It is a Nuxt layer in `tech-starters/frontend/<name>/`, listed in the
-`extends` of the app's `nuxt.config.ts` by a relative path: nothing to publish, and the app wins over it.
+`docs/content/en/1.engineering/2.architecture/`). ADR 023 records the layout, and the `README.md` of `nuxt-starter`
+shows it on the first starter: follow both.
 
-## 1. Settle the layout
+## 1. Check the concern
 
-Look for an existing frontend starter first: `ls tech-starters/frontend`. When one exists, its `README.md`
-records the layout the maintainer chose: follow it, and go to step 2.
+Say it in one sentence. If it needs a word of the domain it belongs in the app; if it needs two sentences it is two
+starters. A new starter is a new module, a structuring choice: ask the maintainer first, as `AGENTS.md` says.
 
-When none exists, this one sets the precedent, and a new module is a structuring choice. Before writing any file,
-ask the maintainer, one question at a time:
+## 2. The layout
 
-1. The concern, in one sentence. If it needs a word of the domain it belongs in the app; if it needs two
-   sentences it is two starters.
-2. The folder name, and its sources at the root or under `src/` like the app.
-3. Where its dependencies are installed: the app's `node_modules` is not above `tech-starters/frontend/`, and npm
-   workspaces or a `package.json` of its own both change the install step of the frontend workflow.
-4. How the app imports what it exposes when auto-imports are off: a relative path or an alias the layer declares.
+- A Nuxt layer in `tech-starters/frontend/<name>/`, its sources under `app/` as in the app, and a package of the
+  pnpm workspace named `@drinkit/<name>`, whose dependencies come from the catalog through the `dependency-change`
+  skill.
+- The app lists it in its `dependencies` as `workspace:*` and in the `extends` of its `nuxt.config.ts` by that
+  name. The app wins over the layer.
+- What the app imports from it goes through the `exports` of its `package.json`, such as
+  `@drinkit/nuxt-starter/problem-detail`: auto-imports are off. The `exports` are its public API, the rest stays
+  internal.
+- It holds runtime code only. Lint rules it brings, such as a ban on bare strings for translations, go to
+  `code-analysis/eslint`, where `drinkitEslint()` lives.
+- Its `eslint.config.ts` calls `drinkitEslint()` of `@drinkit/eslint-config` and its `.stylelintrc.json` extends
+  `@drinkit/stylelint-config`, both dev dependencies, like the app's. Its `package.json` has the `lint` and
+  `typecheck` scripts of `nuxt-starter`, which CI runs on every package.
 
-The answers go in the starter's `README.md`, so that the next starter follows them, and in an ADR of the same pull
-request, through the `new-adr` skill, as `AGENTS.md` says of a structuring choice.
+## 3. The rules
 
-## 2. The rules
-
-- It never imports from the app, nor from its generated client `~/openapi`: the app depends on the starter,
-  never the reverse.
+- It never imports from the app, nor from the app's generated client: the app depends on the starter, never the
+  reverse.
 - Its configuration sits under one `runtimeConfig` key of its own, with defaults in the layer's `nuxt.config.ts`,
   so that an environment variable overrides it (`NUXT_PUBLIC_<KEY>_...` for the public part). Only what the
   browser may see goes in the public part.
 - What it renders follows the `frontend-feature` skill.
 
-## 3. What the first one also touches
+## 4. What it also touches
 
-- The frontend lane of `.github/workflows/config/ci-lanes.yml`: without its folder there, a change in the layer
-  matches no lane and CI runs every lane.
-- The install step of `.github/workflows/ci-frontend.yml`, as answer 3 decided.
-- The `paths:` of the skills that load on the app's frontend code, so that they load on the layer too:
-  `grep -l '^  - ".*-frontend/src' .claude/skills/*/SKILL.md` lists them.
-- The `paths:` of this skill, `tech-starters/frontend/**`, once the folder holds a tracked file: a glob that
-  matches nothing fails `harness.bats`.
 - A `README.md` for the developer who uses it: what it provides, how the app extends it, each configuration key
   with its environment variable.
+- The lanes of `.github/workflows/config/ci-lanes.yml` already cover `tech-starters/frontend/**`: nothing to add,
+  unless the starter brings a folder another lane reads.
 
-Its tests come first, through the `test-driven-development` skill. The app's `npm run build` builds the layer
-through `extends`: it passes before the starter is done.
+Its tests come first, through the `test-driven-development` skill. The app's build builds the layer through
+`extends`: it passes before the starter is done.

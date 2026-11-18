@@ -56,8 +56,7 @@ found=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' | GUARD_CWD=
         split("cat head tail grep egrep fgrep ls wc diff cmp file stat du realpath readlink basename dirname echo printf test [ jq shellcheck bats true false pwd nl cut tr column od hexdump shasum sha1sum sha256sum md5sum md5", readers, " ")
         for (k in readers) READS_WHEN[readers[k]] = ""
         READS_WHEN["sed"] = "^sed([[:space:]]+-n)?[[:space:]]+[0-9$,;p]+([[:space:]]+[^-[:space:]][^[:space:]]*)*[[:space:]]*$"
-        READS_WHEN["npm"] = "^npm([[:space:]]+--prefix([[:space:]]+|=)[^[:space:]]+)*[[:space:]]+(ci|cit|clean-install|clean-install-test|install-ci-test|test|t|run[[:space:]]+test|run-script[[:space:]]+test)([[:space:]]|$)"
-        READS_WHEN["npx"] = "^npx([[:space:]]+-[^[:space:]]+)*[[:space:]]+bats([[:space:]]|$)"
+        READS_WHEN["pnpm"] = "^pnpm([[:space:]]+(-C|--dir|-F|--filter)([[:space:]]+|=)[^[:space:]]+)*[[:space:]]+(install[[:space:]]+--frozen-lockfile[[:space:]]+--ignore-scripts|test|t|run[[:space:]]+test|exec[[:space:]]+bats)([[:space:]]|$)"
         READS_WHEN["gh"] = "^gh" REPO_FLAG "[[:space:]]+((pr|issue)" REPO_FLAG "[[:space:]]+(view|list|create|comment|edit|checks|diff|status)|api|search|ruleset|run[[:space:]]+(view|list|watch))([[:space:]]|$)"
         WRITES_WHEN["find"] = "[[:space:]]-(delete|exec|execdir|ok|okdir|fprint|fprint0|fprintf|fls)([[:space:]]|$)"
         WRITES_WHEN["sort"] = "[[:space:]](-[A-Za-z]*o|--output)"

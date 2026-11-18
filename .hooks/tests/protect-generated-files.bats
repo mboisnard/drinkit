@@ -34,10 +34,8 @@ allowed() {
 }
 @test "a jOOQ class written whole is refused" { refused "$repo/drinkit/drinkit-infra/src/generated/jooq/kotlin/tables/Cellar.kt" Write; }
 @test "a jOOQ class in a package not generated yet is refused" { refused "$repo/drinkit/drinkit-infra/src/generated/jooq/kotlin/bottles/Bottle.kt" Write; }
-@test "the generated API client, never generated in this clone, is refused" { refused "$repo/drinkit/drinkit-frontend/src/openapi/apis/CellarsApi.ts" Write; }
 @test "a Gradle lock file is refused" { refused "$repo/drinkit/drinkit-backend/gradle.lockfile"; }
-@test "an npm lock file is refused" { refused "$repo/drinkit/drinkit-frontend/package-lock.json"; }
-@test "an npm lock file at the root is refused" { refused "$repo/package-lock.json"; }
+@test "the pnpm lock file is refused" { refused "$repo/pnpm-lock.yaml"; }
 @test "a generated documentation page is refused" { refused "$repo/docs/content/en/3.reference/3.resources/domains/cellar.md"; }
 @test "a page copied from a skill is refused" { refused "$repo/docs/content/en/1.engineering/6.coding-assistants/3.skills/caveman/index.md"; }
 @test "a .env file is refused" { refused "$repo/deployment/local/.env"; }
@@ -49,8 +47,9 @@ allowed() {
 @test "a .env outside any repository is refused" { refused "$work/outside/.env"; }
 
 @test "a Kotlin source is allowed" { allowed "$repo/drinkit/drinkit-infra/src/main/kotlin/JooqCellars.kt"; }
-@test "a Vue page is allowed" { allowed "$repo/drinkit/drinkit-frontend/src/pages/index.vue"; }
+@test "a Vue page is allowed" { allowed "$repo/drinkit/drinkit-frontend/app/pages/index.vue"; }
 @test "package.json is allowed" { allowed "$repo/drinkit/drinkit-frontend/package.json"; }
+@test "the pnpm workspace and its catalog are allowed" { allowed "$repo/pnpm-workspace.yaml"; }
 @test "a version catalog is allowed" { allowed "$repo/gradle/libs.versions.toml"; }
 @test "the verification metadata is allowed" { allowed "$repo/gradle/verification-metadata.xml"; }
 @test "a hand-written documentation page is allowed" { allowed "$repo/docs/content/en/1.engineering/6.coding-assistants/1.harness.md"; }

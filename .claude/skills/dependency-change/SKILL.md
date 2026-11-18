@@ -1,10 +1,11 @@
 ---
 name: dependency-change
-description: Adds or bumps a dependency of DrinkIt, Gradle or npm, so that the version lives in one place, the verification metadata and the lock follow, and the application really resolves the new version. Use it before adding, bumping or removing a library, a plugin or a package, and before adding a starter to an application.
+description: Adds or bumps a dependency of DrinkIt, Gradle or pnpm, so that the version lives in one place, the verification metadata and the lock follow, and the application really resolves the new version. Use it before adding, bumping or removing a library, a plugin or a package, and before adding a starter to an application.
 paths:
   - "gradle/platform/**"
   - "**/*.gradle.kts"
   - "**/package.json"
+  - "pnpm-workspace.yaml"
 ---
 
 # Changing a dependency
@@ -51,10 +52,16 @@ that touched no dependency means an upstream release landed in a version range, 
 `./gradlew build` resolves exactly what the lock lists, and fails with "Dependency verification failed" or "not
 part of the dependency lock state" when step 2 was skipped.
 
-## npm
+## pnpm
 
-A change to a `package.json` comes with its `package-lock.json`, from `npm install` in that folder: `pre-commit`
-refuses a dependency change in a `package.json` whose lock is not staged, and CI installs with `npm ci`.
+The frontend packages share one pnpm workspace, declared in `pnpm-workspace.yaml` at the root. A package's version
+lives once in its `catalog`, and each `package.json` names it `catalog:`; a package of the workspace is
+`workspace:*`. A dependency whose install script must run is listed `true` under `allowBuilds`, with the reason.
+
+After a change, `pnpm install` at the root writes the one lock, `pnpm-lock.yaml`: `pre-commit` refuses a dependency
+change in a `package.json` or the catalog whose lock is not staged, and CI installs with
+`pnpm install --frozen-lockfile`. A release younger than `minimumReleaseAge` cannot be installed yet: wait for it,
+as Renovate does.
 
 ## Before you finish
 
@@ -62,4 +69,4 @@ refuses a dependency change in a `package.json` whose lock is not staged, and CI
 - [ ] `verification-metadata.xml` and each `gradle.lockfile` were regenerated with `--refresh-dependencies`, and their
   diff holds only the expected artifacts.
 - [ ] `./gradlew build` passes.
-- [ ] Every changed `package.json` has its `package-lock.json` in the same commit.
+- [ ] Every npm version lives in the catalog of `pnpm-workspace.yaml`, and `pnpm-lock.yaml` is in the same commit.

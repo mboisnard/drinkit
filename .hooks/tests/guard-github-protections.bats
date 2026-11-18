@@ -391,7 +391,8 @@ decides ask 'ls .hooks/git | xargs rm'
 decides ask 'f=.hooks/git/pre-push; rm $f'
 decides ask 'find .hooks -name pre-push -delete'
 decides ask "find .hooks -name '*.bats' -exec sed -i '' s/a/b/ {} +"
-decides ask 'npm install --prefix .hooks left-pad'
+decides ask 'pnpm --dir .hooks add left-pad'
+decides ask 'pnpm install --frozen-lockfile --filter ./.hooks'
 # shellcheck disable=SC2016
 decides ask 'docker run --rm -v "$PWD:/repo" alpine rm /repo/.hooks/git/pre-push'
 decides ask 'git status && rm .hooks/git/pre-push'
@@ -454,9 +455,10 @@ decides allow 'git log --oneline -5 -- .hooks'
 decides allow 'git show HEAD:.hooks/git/pre-push'
 decides allow 'git ls-files .hooks'
 decides allow 'git add .hooks/claude/guard-github-protections && git commit -m "Ask before a write under .hooks/"'
-decides allow 'npm cit --prefix .hooks'
-decides allow 'npm cit --prefix .hooks 2>&1 | tail -n 30'
-decides allow 'cd .hooks && HOOK_SHELL=dash npx bats tests/guard-github-protections.bats'
+decides allow 'pnpm --dir .hooks test'
+decides allow 'pnpm -C .hooks test 2>&1 | tail -n 30'
+decides allow 'pnpm install --frozen-lockfile --ignore-scripts --filter ./.hooks'
+decides allow 'cd .hooks && HOOK_SHELL=dash pnpm exec bats tests/guard-github-protections.bats'
 decides allow "docker run --rm -v \"\$PWD:/mnt:ro\" -w /mnt --entrypoint sh \"\$(grep -o 'koalaman/shellcheck[^ ]*' .github/workflows/ci-hooks.yml)\" -c 'shellcheck .hooks/git/* .hooks/claude/* .hooks/lib/*.sh .hooks/tests/*.bats .hooks/tests/*.bash'"
 decides allow 'sh -n .hooks/claude/guard-github-protections'
 decides allow '.hooks/claude/session-context < input.json'
@@ -472,12 +474,12 @@ Ask before a Bash command writes under .hooks/
 EOF"
 decides allow 'cat .github/workflows/ci-hooks.yml'
 decides allow 'cat pre-push' hooks
-decides allow 'npx bats ../tests/pre-push.bats' hooks
+decides allow 'pnpm exec bats ../tests/pre-push.bats' hooks
 decides allow "cat > notes.md <<'EOF'
 rm .hooks/git/pre-push now waits for the maintainer
 EOF"
 decides allow 'wc -l .hooks/claude/* | sort -n'
-decides allow 'npm run test --prefix .hooks'
+decides allow 'pnpm --dir=.hooks run test'
 decides allow 'git -C .hooks log --oneline -3'
 decides allow 'echo x 2>&1'
 decides allow 'cat .hooks/git/pre-push 2>&1'

@@ -59,7 +59,7 @@ type_check_frontend() {
     git -C "$root" ls-files -- '*package.json' | while IFS= read -r manifest; do
         app=$(dirname "$root/$manifest")
         jq -e '.scripts.typecheck' "$root/$manifest" >/dev/null 2>&1 && [ -d "$app/node_modules" ] || continue
-        output=$(cd "$app" && npm run --silent typecheck 2>&1 </dev/null) ||
+        output=$(cd "$app" && pnpm run --silent typecheck 2>&1 </dev/null) ||
             printf 'The type check of %s fails:\n%s\n' "$manifest" "$(printf '%s\n' "$output" | tail -n 30)"
     done
 }
@@ -70,7 +70,7 @@ if needs_check kotlin '*.kt' '*.kts' && [ -x "$root/gradlew" ]; then
     record kotlin
 fi
 typescript_errors=
-if needs_check typescript '*.vue' '*.ts' && command -v npm >/dev/null 2>&1; then
+if needs_check typescript '*.vue' '*.ts' && command -v pnpm >/dev/null 2>&1; then
     typescript_errors=$(type_check_frontend)
     record typescript
 fi

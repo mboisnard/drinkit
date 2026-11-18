@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# Fixes the given TypeScript and Vue files with ESLint, the Vue and CSS files with Stylelint, and fails on what they
+# cannot fix. Run from the root: a file outside every package that configures the linter is left alone, since the
+# linter would fail on it.
+
+# Whether <file> sits in a folder that holds <config>, or under one
+configured() {
+    dir=$(dirname "$1")
+    while :; do
+        [ -f "$dir/$2" ] && return 0
+        [ "$dir" = . ] || [ "$dir" = / ] && return 1
+        dir=$(dirname "$dir")
+    done
+}
+
+eslint_fix() {
+    for file; do
+        shift
+        case $file in
+            *.ts | *.vue) configured "$file" eslint.config.ts && set -- "$@" "$file" ;;
+        esac
+    done
+    [ $# -eq 0 ] || pnpm exec eslint --fix --max-warnings 0 -- "$@"
+}
+
+# Stylelint reads no --: ./ keeps a file named with a leading dash from reading as an option
+stylelint_fix() {
+    for file; do
+        shift
+        case $file in
+            /*.vue | /*.css) configured "$file" .stylelintrc.json && set -- "$@" "$file" ;;
+            *.vue | *.css) configured "$file" .stylelintrc.json && set -- "$@" "./$file" ;;
+        esac
+    done
+    [ $# -eq 0 ] || pnpm exec stylelint --fix "$@"
+}
+
+status=0
+eslint_fix "$@" || status=1
+stylelint_fix "$@" || status=1
+exit $status

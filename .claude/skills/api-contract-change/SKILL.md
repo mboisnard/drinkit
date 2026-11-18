@@ -3,7 +3,6 @@ name: api-contract-change
 description: Changes DrinkIt's OpenAPI contract first, then the backend controllers and the frontend client generated from it, and, once DrinkIt is deployed, takes a breaking change through the expand and contract steps of the contract-first page. Use it before adding or changing an operation, a parameter, a schema or a response of the API contract, or the generator configuration of either side.
 paths:
   - "**/*-api-contract/**"
-  - "**/*-frontend/openapi-config.yml"
 ---
 
 # Changing the API contract
@@ -51,7 +50,7 @@ and classes on both sides, in one pull request.
 
 ```bash
 ./gradlew :<app>-backend:compileKotlin
-npm run generate:client-api && npm run build    # from the frontend app
+pnpm --filter <app>-frontend typecheck          # once the app generates its client from the contract
 ```
 
 ## Traps
@@ -59,9 +58,8 @@ npm run generate:client-api && npm run build    # from the frontend app
 - An operation that its controller does not override fails the compilation: the generated interface has no
   default body. A new tag has no controller yet, so nothing fails: its operations are not served until a
   `@RestController` implements its `<Tag>Api`.
-- The two sides use separate generator versions, the backend one from the Gradle catalogs and the frontend one
-  from the frontend's `openapitools.json`. A construct can generate on one side and fail on the other: build
-  both.
+- The frontend generates its client with a generator of its own, apart from the backend one of the Gradle catalogs.
+  A construct can generate on one side and fail on the other: check both.
 - A schema that no `$ref` reaches from `api-definition.yaml` is not generated.
 
 ## Before you finish
