@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { toProblemDetail } from '../app/problem-detail.ts';
+import { toProblemDetail } from '../../app/problem-detail.ts';
 
 test('an error carrying a problem detail shows its title and detail', () => {
   // Given
