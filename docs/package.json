@@ -4,15 +4,26 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "nuxt generate",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
     "postinstall": "nuxt prepare",
-    "preview": "npx serve .output/public"
+    "preview": "pnpm dlx serve .output/public"
   },
   "dependencies": {
-    "@barzhsieh/nuxt-content-mermaid": "4.0.1",
-    "@nuxtjs/i18n": "10.6.0",
-    "docus": "5.15.0",
-    "nuxt": "4.6.4"
+    "@barzhsieh/nuxt-content-mermaid": "catalog:",
+    "@nuxt/content": "catalog:",
+    "@nuxtjs/i18n": "catalog:",
+    "docus": "catalog:",
+    "nuxt": "catalog:",
+    "scule": "catalog:"
+  },
+  "devDependencies": {
+    "@drinkit/eslint-config": "workspace:*",
+    "@drinkit/stylelint-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "stylelint": "catalog:",
+    "typescript": "catalog:",
+    "vue-tsc": "catalog:"
   }
 }

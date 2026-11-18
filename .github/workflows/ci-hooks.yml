@@ -49,17 +49,12 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up Node
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - name: Set up pnpm and install bats
+        uses: $/.github/actions/setup-pnpm
         with:
-          node-version-file: .nvmrc
-          cache: npm
-          cache-dependency-path: .hooks/package-lock.json
-
-      - name: Install bats
-        run: npm ci --ignore-scripts
+          filter: '{.hooks}'
 
       - name: Test the hooks and the harness files
         env:
           HOOK_SHELL: ${{ matrix.shell }}
-        run: npm test
+        run: pnpm test

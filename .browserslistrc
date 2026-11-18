@@ -1,0 +1,3 @@
+# The browsers the Nuxt apps support, which eslint-plugin-compat checks against: the default build target of Vite,
+# which nuxt-starter pins
+baseline widely available

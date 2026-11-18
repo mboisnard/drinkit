@@ -1,0 +1,35 @@
+{
+  "name": "@drinkit/nuxt-starter",
+  "description": "The Nuxt layer every DrinkIt app and frontend tech starter builds on: explicit imports, the error page, the browsers it builds for and the shared hooks.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "main": "./nuxt.config.ts",
+  "exports": {
+    ".": "./nuxt.config.ts",
+    "./problem-detail": "./app/problem-detail.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 . && stylelint 'app/**/*.{css,vue}' --allow-empty-input",
+    "lint:fix": "eslint --fix --max-warnings 0 . && stylelint --fix 'app/**/*.{css,vue}' --allow-empty-input",
+    "test": "vitest run",
+    "typecheck": "nuxt typecheck && tsc --project test",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@drinkit/eslint-config": "workspace:*",
+    "@drinkit/stylelint-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "nuxt": "catalog:",
+    "stylelint": "catalog:",
+    "typescript": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "vue-tsc": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "nuxt": "catalog:"
+  }
+}

@@ -4,34 +4,34 @@ on:
   workflow_call:
 
 jobs:
-  build:
-    name: Build
+  check:
+    name: Lint, type check, test and build
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: read
-    defaults:
-      run:
-        working-directory: drinkit/drinkit-frontend
+    env:
+      # The Nuxt apps and the packages they depend on, the frontend tech starters among them
+      APPS: "{drinkit/*-frontend}..."
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - name: Set up Node
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - name: Set up pnpm and install
+        uses: $/.github/actions/setup-pnpm
         with:
-          node-version-file: .nvmrc
-          cache: npm
-          cache-dependency-path: drinkit/drinkit-frontend/package-lock.json
+          filter: ${{ env.APPS }}
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Lint
+        run: pnpm --recursive --filter "$APPS" lint
 
-      # The client is gitignored and the pages import it. The generator runs on the runner's own JDK
-      - name: Generate the API client
-        run: npm run generate:client-api
+      - name: Type check
+        run: pnpm --recursive --filter "$APPS" typecheck
+
+      - name: Test
+        run: pnpm --recursive --filter "$APPS" test
 
       - name: Build
-        run: npm run build
+        run: pnpm --recursive --filter "$APPS" build

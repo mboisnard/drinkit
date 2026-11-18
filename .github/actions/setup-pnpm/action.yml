@@ -1,0 +1,26 @@
+name: Set up pnpm and Node
+description: The pnpm and Node setup every job of the pnpm workspace shares, then the install of the packages it names
+
+inputs:
+  filter:
+    description: The pnpm filter of the packages to install, such as {docs}... for the site and what it depends on
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # The version that packageManager of the root package.json pins
+    - name: Set up pnpm
+      uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+    - name: Set up Node
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version-file: .nvmrc
+        cache: pnpm
+
+    - name: Install dependencies
+      shell: bash
+      env:
+        FILTER: ${{ inputs.filter }}
+      run: pnpm install --frozen-lockfile --filter "$FILTER"
