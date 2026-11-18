@@ -28,7 +28,7 @@ services:
   # Applies the changelogs of deployment/updater, then its demo data, each time compose starts. Local only: a
   # deployment runs the default changelog, never the demo one, whose admin anyone reading the local emails can sign in as
   updater:
-    image: ghcr.io/mboisnard/drinkit-updater:latest@sha256:52e2b9cd1ca86ec6bda14cdd17b44fb527a386886b9518277854c2daf5a57ef2
+    image: ghcr.io/mboisnard/drinkit-updater:latest@sha256:76051f024f17483b791311424c79ce24294443bd840f7a4c8db2e5db8a6ec4cb
     depends_on:
       postgresql:
         condition: service_healthy
