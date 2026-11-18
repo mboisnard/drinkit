@@ -11,30 +11,38 @@
 </template>
 
 <script setup lang="ts">
-  import type { ContentNavigationItem } from '@nuxt/content'
+  import { computed } from 'vue';
+  import { UContentNavigation } from '#components';
+  import { useAppConfig, useSubNavigation } from '#imports';
+  import type { ContentNavigationItem } from '@nuxt/content';
 
-  const { sidebarNavigation } = useSubNavigation()
+  const { sidebarNavigation } = useSubNavigation();
 
-  const appConfig = useAppConfig()
+  const appConfig = useAppConfig();
 
-  // A record's menu title starts with its number, as the template of new-adr writes it
-  const isRecord = (item: ContentNavigationItem) => /^\d{3} · /.test(item.title)
-
-  const items = computed<ContentNavigationItem[]>(() => (sidebarNavigation.value ?? []).map(item => item.tile
-    ? { ...item, ui: { linkLeadingIcon: `size-6 rounded-md p-1 ${appConfig.tiles[item.tile as string]}` } }
-    : item))
-  const records = computed(() => items.value.filter(isRecord))
+  const items = computed<ContentNavigationItem[]>(() => sidebarNavigation.value.map((item) => typeof item.tile === 'string'
+    ? { ...item, ui: { linkLeadingIcon: `size-6 rounded-md p-1 ${appConfig.tiles[item.tile] ?? ''}` } }
+    : item));
+  const records = computed(() => items.value.filter(isRecord));
 
   // The records sit beside the page about them, which keeps their routes short: the menu gathers them under a heading
   const navigation = computed(() => {
-    if (!records.value.length) return items.value
+    const [firstRecord] = records.value;
+    if (firstRecord === undefined) {
+      return items.value;
+    }
 
     const heading = {
       title: 'Decisions',
-      path: records.value[0]!.path.replace(/[^/]+$/, 'records'),
+      path: firstRecord.path.replace(/[^/]+$/, 'records'),
       ui: { linkTitle: 'font-mono text-xs uppercase tracking-wider text-muted' },
       children: records.value,
-    }
-    return [...items.value.filter(item => !isRecord(item)), heading]
-  })
+    };
+    return [...items.value.filter((item) => !isRecord(item)), heading];
+  });
+
+  // A record's menu title starts with its number, as the template of new-adr writes it
+  function isRecord(item: ContentNavigationItem): boolean {
+    return /^\d{3} · /.test(item.title);
+  }
 </script>

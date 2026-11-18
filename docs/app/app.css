@@ -19,7 +19,8 @@
 }
 
 /* A system font sized like each font, so that the text keeps its lines when the font arrives. @nuxt/fonts derives
-   its own fallback from the generic family the provider returns, which matches no local font: fontaine computed these */
+   its own fallback from the generic family the provider returns, which matches no local font: fontaine computed
+   these */
 @font-face {
   font-family: 'Inter Fallback';
   src: local('Arial');
