@@ -6,6 +6,13 @@ workflows: &workflows
   - '.github/actions/**'
   - '.github/actionlint.yaml'
 
+# The pnpm workspace that the frontend, the site and the hooks' tests install from
+pnpm: &pnpm
+  - '.nvmrc'
+  - 'package.json'
+  - 'pnpm-workspace.yaml'
+  - 'pnpm-lock.yaml'
+
 backend: &backend
   - *workflows
   - 'build-logic/**'
@@ -36,21 +43,27 @@ updater: &updater
 
 frontend: &frontend
   - *workflows
-  - '.nvmrc'
-  - 'drinkit/drinkit-frontend/**'
-  - 'drinkit/drinkit-api-contract/contract/**' # the TypeScript client is generated from it
+  - *pnpm
+  - '.browserslistrc'
+  - 'code-analysis/eslint/**'
+  - 'code-analysis/stylelint/**'
+  - 'drinkit/*-frontend/**'
+  - 'tech-starters/frontend/**'
 
 docs: &docs
   - *workflows
   - *backend # the domain and tech starter pages are generated from its sources
-  - '.nvmrc'
+  - *pnpm
+  - '.browserslistrc'
+  - 'code-analysis/eslint/**' # the lint rules of the site
+  - 'code-analysis/stylelint/**'
   - 'docs/**'
   - 'tech-starters/backend/*/README.md' # copied into the tech starter pages
   - '.claude/skills/**' # published by the site
 
 hooks: &hooks
   - *workflows
-  - '.nvmrc' # the Node version that runs bats
+  - *pnpm # bats comes from the workspace
   - '.hooks/**'
   - '.claude/**'
 
@@ -68,8 +81,8 @@ dependencies: &dependencies
   - '**/*.gradle.kts'
   - '**/*.lockfile'
   - 'gradle/**'
+  - *pnpm
   - '**/package.json'
-  - '**/package-lock.json'
 
 # Files no job reads
 none: &none
@@ -87,6 +100,7 @@ changed:
   - '**'
 known:
   - *workflows
+  - *pnpm
   - *backend
   - *updater
   - *frontend

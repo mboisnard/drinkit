@@ -1,0 +1,11 @@
+{
+  "name": "drinkit",
+  "description": "The pnpm workspace of DrinkIt: the Nuxt apps, the frontend tech starters, the documentation site and the hooks' tests.",
+  "license": "Apache-2.0",
+  "private": true,
+  "packageManager": "pnpm@12.19.0",
+  "devDependencies": {
+    "eslint": "catalog:",
+    "stylelint": "catalog:"
+  }
+}

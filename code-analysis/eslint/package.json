@@ -1,0 +1,37 @@
+{
+  "name": "@drinkit/eslint-config",
+  "description": "The ESLint rule set of every DrinkIt Nuxt app, frontend tech starter and the documentation site, with its own rules for server-side rendering.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "eslint --fix --max-warnings 0 .",
+    "test": "vitest run",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@eslint-community/eslint-plugin-eslint-comments": "catalog:",
+    "@nuxt/eslint-config": "catalog:",
+    "@vitest/eslint-plugin": "catalog:",
+    "eslint-plugin-check-file": "catalog:",
+    "eslint-plugin-compat": "catalog:",
+    "eslint-plugin-playwright": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vue-eslint-parser": "catalog:"
+  },
+  "devDependencies": {
+    "@types/estree": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  }
+}

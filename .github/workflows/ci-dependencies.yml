@@ -43,7 +43,7 @@ jobs:
       - name: Review the added dependencies
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
-          # The frontend's Nuxt and Vue are devDependencies, yet they end up in what is served
+          # A build tool of the frontend, a devDependency, still shapes what is served
           fail-on-scopes: runtime, development
           # Advisories with no fix in the build tools of the documentation site, which ships static files only.
           # Remove each one once Docus or Nuxt Content moves past it

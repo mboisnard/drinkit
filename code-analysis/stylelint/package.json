@@ -1,0 +1,30 @@
+{
+  "name": "@drinkit/stylelint-config",
+  "description": "The Stylelint rule set of the CSS of every DrinkIt Nuxt app, frontend tech starter and the documentation site, in .css files and in the <style> blocks of .vue files.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./stylelint.config.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "eslint --fix --max-warnings 0 .",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@stylistic/stylelint-config": "catalog:",
+    "postcss": "catalog:",
+    "postcss-html": "catalog:"
+  },
+  "devDependencies": {
+    "@drinkit/eslint-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "stylelint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "stylelint": "catalog:"
+  }
+}

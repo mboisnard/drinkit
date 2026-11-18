@@ -1,24 +1,32 @@
 {
-  "name": "nuxt-app",
+  "name": "drinkit-frontend",
+  "description": "The Nuxt app of DrinkIt, rendered on the server.",
+  "license": "Apache-2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "generate:client-api": "openapi-generator-cli generate -i ../drinkit-api-contract/contract/api-definition.yaml -g typescript-fetch -o ./src/openapi/ --config=./openapi-config.yml",
+    "lint": "eslint --max-warnings 0 . && stylelint 'app/**/*.{css,vue}' --allow-empty-input",
+    "lint:fix": "eslint --fix --max-warnings 0 . && stylelint --fix 'app/**/*.{css,vue}' --allow-empty-input",
+    "postinstall": "nuxt prepare",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
-  },
-  "devDependencies": {
-    "@openapitools/openapi-generator-cli": "2.13.4",
-    "nuxt": "^3.11.2",
-    "nuxt-primevue": "0.2.2",
-    "vue": "3.4.23",
-    "vue-router": "4.3.2"
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
-    "primeicons": "^6.0.1",
-    "primevue": "^3.51.0"
+    "@drinkit/nuxt-starter": "workspace:*",
+    "@drinkit/security-starter": "workspace:*",
+    "nuxt": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:"
+  },
+  "devDependencies": {
+    "@drinkit/eslint-config": "workspace:*",
+    "@drinkit/stylelint-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "stylelint": "catalog:",
+    "typescript": "catalog:",
+    "vue-tsc": "catalog:"
   }
 }

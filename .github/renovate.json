@@ -79,9 +79,8 @@
       "groupName": "Konture"
     },
     {
-      "description": "The documentation site declares the i18n module that Docus loads, at the version Docus asks for: both move in one pull request",
-      "matchFileNames": ["docs/package.json"],
-      "matchPackageNames": ["docus", "@nuxtjs/i18n"],
+      "description": "The documentation site declares the modules that Docus loads or that its pages import, at the versions Docus asks for: they move in one pull request",
+      "matchPackageNames": ["docus", "@nuxtjs/i18n", "@nuxt/content", "scule"],
       "groupName": "Docus"
     },
     {
