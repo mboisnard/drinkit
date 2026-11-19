@@ -11,7 +11,8 @@
     "lint:fix": "eslint --fix --max-warnings 0 . && stylelint --fix 'app/**/*.{css,vue}' --allow-empty-input",
     "postinstall": "nuxt prepare",
     "preview": "nuxt preview",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "test:ui": "playwright test"
   },
   "dependencies": {
     "@drinkit/nuxt-starter": "workspace:*",
@@ -21,12 +22,17 @@
     "vue-router": "catalog:"
   },
   "devDependencies": {
+    "@axe-core/playwright": "catalog:",
     "@drinkit/eslint-config": "workspace:*",
     "@drinkit/stylelint-config": "workspace:*",
+    "@drinkit/test-starter": "workspace:*",
+    "@nuxt/test-utils": "catalog:",
+    "@playwright/test": "catalog:",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "stylelint": "catalog:",
     "typescript": "catalog:",
-    "vue-tsc": "catalog:"
+    "vue-tsc": "catalog:",
+    "web-vitals": "catalog:"
   }
 }

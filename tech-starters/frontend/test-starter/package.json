@@ -1,0 +1,64 @@
+{
+  "name": "@drinkit/test-starter",
+  "description": "The shared test setup of the Nuxt apps and the frontend tech starters: Vitest projects, Playwright fixtures and checks, and a fake backend.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./vitest": "./src/vitest/index.ts",
+    "./playwright": "./src/playwright/index.ts",
+    "./fake-backend": "./src/fake-backend/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "eslint --fix --max-warnings 0 .",
+    "typecheck": "tsc",
+    "test": "vitest run",
+    "test:ui": "playwright test"
+  },
+  "peerDependencies": {
+    "@axe-core/playwright": "catalog:",
+    "@nuxt/test-utils": "catalog:",
+    "@playwright/test": "catalog:",
+    "@testing-library/vue": "catalog:",
+    "msw": "catalog:",
+    "vitest": "catalog:",
+    "web-vitals": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "@axe-core/playwright": {
+      "optional": true
+    },
+    "@nuxt/test-utils": {
+      "optional": true
+    },
+    "@playwright/test": {
+      "optional": true
+    },
+    "@testing-library/vue": {
+      "optional": true
+    },
+    "msw": {
+      "optional": true
+    },
+    "vitest": {
+      "optional": true
+    },
+    "web-vitals": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "catalog:",
+    "@drinkit/eslint-config": "workspace:*",
+    "@nuxt/test-utils": "catalog:",
+    "@playwright/test": "catalog:",
+    "@testing-library/vue": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "msw": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "web-vitals": "catalog:"
+  }
+}

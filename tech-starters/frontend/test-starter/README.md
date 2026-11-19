@@ -1,0 +1,95 @@
+# Test Starter
+
+A frontend [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
+that gives a Nuxt app or a frontend starter the same test setup: Vitest projects, Playwright checks and a fake
+backend. Unlike the other frontend starters it is no Nuxt layer and holds no runtime code: a package lists it in its
+`devDependencies` only. The
+[frontend tests](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/5.writing-code/2.testing/5.frontend-tests.md)
+page says what each level proves and why a test replaces a boundary, never a module.
+
+```mermaid
+flowchart LR
+    Package["drinkit-frontend, nuxt-starter…"] -- devDependencies --> Starter["@drinkit/test-starter"]
+    Starter --> Vitest["/vitest<br/><small>src/vitest</small>"]
+    Starter --> Playwright["/playwright<br/><small>src/playwright</small>"]
+    Starter --> Fake["/fake-backend<br/><small>src/fake-backend</small>"]
+```
+
+Each folder of `src` is one export, and its `index.ts` lists what the export gives. The starter's own tests sit in
+`test`, where each one takes the path of the file it tests.
+
+## Usage
+
+Each export needs the libraries it runs, which the package declares from the catalog: the starter lists them as
+peer dependencies, so that one copy of each runs.
+
+| Export | What it gives | The package also declares |
+|---|---|---|
+| `/vitest` | `defineVitestProjects()`: `test/unit/**/*.test.ts` in Node, `test/nuxt/**/*.test.ts` in the Nuxt environment on happy-dom, Testing Library cleaned after each test | `vitest`, `@nuxt/test-utils`, `happy-dom`, `@vue/test-utils`, `@testing-library/vue` |
+| `/playwright` | `defineUiTestConfig()`, `test`, `expect`, `expectAccessible()`, `expectGoodWebVitals()`, `expectSameServerRender()` | `@playwright/test`, `@nuxt/test-utils`, `@axe-core/playwright`, `web-vitals` |
+| `/fake-backend` | `startFakeBackend(...handlers)` | `msw` |
+
+```ts
+// vitest.config.ts
+import { defineVitestProjects } from '@drinkit/test-starter/vitest';
+
+export default defineVitestProjects();
+```
+
+```ts
+// playwright.config.ts
+import { defineUiTestConfig } from '@drinkit/test-starter/playwright';
+
+export default defineUiTestConfig();
+```
+
+```ts
+// test/ui/home.test.ts
+import { expectAccessible, expectGoodWebVitals, test } from '@drinkit/test-starter/playwright';
+
+test('the home page is accessible and holds still', async ({ page, goto }) => {
+  await goto('/', { waitUntil: 'hydration' });
+
+  await expectAccessible(page);
+  await expectGoodWebVitals(page);
+});
+```
+
+## What it checks
+
+- **`test`** extends the Playwright fixtures of `@nuxt/test-utils`, so `goto('/', { waitUntil: 'hydration' })` waits
+  for Vue to take over the page. Each test fails when the page logs an error to the console or throws one it never
+  catches, such as a hydration mismatch. `test.use({ ignoredConsoleErrors: [/pattern/] })` ignores a message the
+  page cannot avoid.
+- **`expectAccessible(page)`** runs axe for WCAG 2.2 AA, and fails a page without a level one heading.
+- **`expectGoodWebVitals(page)`** measures the page with Google's `web-vitals`, and fails past an LCP of 2.5 s or a
+  CLS of 0.1, the thresholds Google rates good. It measures what happened so far: call it once the content shows.
+- **`expectSameServerRender(request, url)`** renders the page twice on the server, the nonces aside: a difference
+  means the second request saw state the first one left behind.
+- **`startFakeBackend(...handlers)`** serves MSW handlers on a real port, so the server render reaches them, which a
+  mock in the browser never does. A request no handler knows gets a `501` that names it.
+
+The UI tests build the app, serve it as in production and open it in a headless Chromium, over HTTP even when the
+shell sets a certificate for Nitro.
+
+## Configuration
+
+No setting.
+
+## Checks
+
+```
+pnpm --filter @drinkit/test-starter lint
+pnpm --filter @drinkit/test-starter typecheck
+pnpm --filter @drinkit/test-starter test
+pnpm --filter @drinkit/test-starter test:ui
+```
+
+`test:ui` needs a Chromium: `pnpm --filter @drinkit/test-starter exec playwright install chromium`.
+
+## Limits
+
+- No fake of a Nuxt composable: `useRoute`, `useCookie` or `useAsyncData` run for real in the Nuxt environment, and
+  the fake of a starter's SDK lives in that starter.
+- The Web Vitals come from a desktop Chromium on the machine, neither throttled nor on a phone: they catch a page that
+  shifts or shows late, not a slow network. The speed real users get belongs to observability.

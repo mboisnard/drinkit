@@ -42,6 +42,9 @@ out/
 
 ### Frontend ###
 **/node_modules
+# The reports of Playwright
+**/test-results/
+**/playwright-report/
 
 ### GCP ###
 **/service-account.json
