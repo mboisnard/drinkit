@@ -28,7 +28,8 @@ starters. A new starter is a new module, a structuring choice: ask the maintaine
   `@drinkit/nuxt-starter/problem-detail`: auto-imports are off. The `exports` are its public API, the rest stays
   internal.
 - It holds runtime code only. Lint rules it brings, such as a ban on bare strings for translations, go to
-  `code-analysis/eslint`, where `drinkitEslint()` lives.
+  `code-analysis/eslint`, where `drinkitEslint()` lives. `test-starter` is the one exception: a dev package, no
+  layer, that the others list in their `devDependencies` for their tests.
 - Its `eslint.config.ts` calls `drinkitEslint()` of `@drinkit/eslint-config` and its `.stylelintrc.json` extends
   `@drinkit/stylelint-config`, both dev dependencies, like the app's. Its `package.json` has the `lint` and
   `typecheck` scripts of `nuxt-starter`, which CI runs on every package.
@@ -49,5 +50,6 @@ starters. A new starter is a new module, a structuring choice: ask the maintaine
 - The lanes of `.github/workflows/config/ci-lanes.yml` already cover `tech-starters/frontend/**`: nothing to add,
   unless the starter brings a folder another lane reads.
 
-Its tests come first, through the `test-driven-development` skill. The app's build builds the layer through
+Its tests come first, through the `test-driven-development` skill, on the Vitest projects of `test-starter`, whose
+README lists what to declare. The app's build builds the layer through
 `extends`: it passes before the starter is done.

@@ -48,9 +48,26 @@ typescript-eslint and our rules for server-side rendering. `@drinkit/stylelint-c
 formats the CSS with Stylelint Stylistic, in `.css` files and in the `<style>` blocks that ESLint does not read. Each
 package lists both as dev dependencies, so no lint plugin reaches a production dependency tree.
 
-**Unit tests on Vitest.** Every package with unit tests runs them on Vitest, the tests of the lint rules included, so
-the lint knows one test runner. The test starter of [#400](https://github.com/mboisnard/drinkit/issues/400) adds the
-Nuxt environment, Playwright and Lighthouse on top.
+**Tests on Vitest and Playwright, set up by a test starter.** Every package with unit tests runs them on Vitest,
+the tests of the lint rules included, so the lint knows one test runner. `@drinkit/test-starter`, a dev package with
+no runtime code, gives each app and starter the same levels, fewer and slower towards the top:
+
+```mermaid
+flowchart TB
+  e2e["End to end, not yet<br/><small>The deployed app with its real backend</small>"]
+  ui["UI, test/ui<br/><small>Playwright: the built app in a headless Chromium, its backend faked</small>"]
+  component["Component, test/nuxt<br/><small>Vitest in the Nuxt environment: a component or a page on the real runtime</small>"]
+  unit["Unit, test/unit<br/><small>Vitest in Node: a function, a composable that needs no Nuxt</small>"]
+  e2e ~~~ ui ~~~ component ~~~ unit
+  classDef later stroke-dasharray: 5 5
+  class e2e later
+```
+
+The UI tests also fail a page that breaks WCAG 2.2 AA or passes Google's thresholds of LCP and CLS. They are no
+end-to-end tests: their backend is a fake, and the end-to-end level waits for a deployed environment. A test runs the
+real code and replaces only a boundary, the call to the backend above all, through MSW handlers on a real port that
+the server render reaches. No module mock, not even of a Nuxt composable: the test sets the route, the cookies and
+the answers of the backend, and the real runtime does the rest.
 
 **Explicit imports.** `nuxt-starter` turns auto-imports and the component scan off. Every name a file uses comes
 from an import, which the lint and the type check enforce.
@@ -73,6 +90,9 @@ only.
   imports, for components.
 - A page with a nonce is rendered for each request and sent with `Cache-Control: no-store`, so no shared cache keeps
   it.
+- A test of a page needs no list of mocks kept in step with Nuxt, but runs in the Nuxt environment, slower than in
+  Node.
+- Each pull request runs a browser, a few minutes of CI more.
 
 ## Alternatives
 
@@ -90,6 +110,20 @@ only.
   the hard part, and `nuxt-security` does it. It offered no dependency.
 - **The lint rules inside `nuxt-starter`.** Rejected because the app then listed the lint plugins among its
   production dependencies, and the site installed a whole layer for its rules. It offered one package fewer.
+- **Mocks of the Nuxt composables, shared by every test.** Rejected because each test then checks how the page is
+  wired, and the mocks must follow every change of Nuxt. It offered tests that run in Node, faster.
+- **A mock of the backend in the browser.** Rejected because the server render calls the backend from Nitro, which a
+  mock in the browser never sees. It offered no server to start.
+- **The UI tests named end to end, as Playwright and Nuxt name them.** Rejected because no real backend runs behind
+  them, where an end-to-end test drives the deployed app and all its services. It offered the words of the tools.
+- **A nightly run of the UI tests against the real backend.** Rejected because it starts every container and fills
+  the database, while the client generated from the OpenAPI contract already follows the backend. It offered a check
+  that the fakes answer as the backend does.
+- **A Lighthouse CI budget on the built app.** Rejected because Lighthouse drives Chrome through Puppeteer, whose
+  dependencies carry advisories with no fixed release and a release of `chromium-bidi` that the trust policy of pnpm
+  refuses. It offered scores for SEO and best practices, measured on a throttled phone.
+- **Components found with the selectors of `@vue/test-utils` alone.** Rejected because a test then finds an element
+  by its markup rather than by its role, label or text. It offered one dependency fewer than Testing Library.
 - **Node's own test runner until the test starter.** Rejected because the lint then needed an option to pick the test
   rules of one runner or the other, and every test would move to Vitest later. It offered no dependency.
 - **A rule set written from the presets alone.** Rejected because Nuxt's config already knows the folders of pages
@@ -103,4 +137,6 @@ only.
 - [Auto-imports](https://nuxt.com/docs/guide/concepts/auto-imports), Nuxt, the case for them
 - [Catalogs](https://pnpm.io/catalogs), pnpm
 - [ESLint config](https://eslint.nuxt.com/packages/config), Nuxt
+- [Test doubles](https://abseil.io/resources/swe-book/html/ch13.html), Software Engineering at Google
+- [Testing](https://nuxt.com/docs/4.x/getting-started/testing), Nuxt
 - [Mitigate cross-site scripting with a strict Content Security Policy](https://web.dev/articles/strict-csp), web.dev
