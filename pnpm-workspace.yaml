@@ -19,15 +19,20 @@ allowBuilds:
   vue-demi: false # picks Vue 2 or 3, and defaults to Vue 3 without its script
 
 catalog:
+  '@axe-core/playwright': 4.14.0
   '@barzhsieh/nuxt-content-mermaid': 4.0.1
   '@eslint-community/eslint-plugin-eslint-comments': 4.8.1
   '@nuxt/content': 3.16.2
   '@nuxt/eslint-config': 1.17.0
+  '@nuxt/test-utils': 4.4.0
   '@nuxtjs/i18n': 10.6.0
+  '@playwright/test': 1.65.0
   '@stylistic/stylelint-config': 6.1.0
+  '@testing-library/vue': 8.1.0
   '@types/estree': 1.0.10
   '@types/node': 26.6.6
   '@vitest/eslint-plugin': 1.6.28
+  '@vue/test-utils': 2.5.1
   bats: 1.13.0
   bats-assert: 2.2.4
   bats-support: 0.3.0
@@ -36,6 +41,8 @@ catalog:
   eslint-plugin-check-file: 3.3.2
   eslint-plugin-compat: 7.0.2
   eslint-plugin-playwright: 2.12.2
+  happy-dom: 21.0.4
+  msw: 3.0.5
   nuxt: 4.6.4
   nuxt-security: 2.7.0
   postcss: 8.5.32
@@ -49,3 +56,4 @@ catalog:
   vue-eslint-parser: 10.4.2
   vue-router: 5.5.0
   vue-tsc: 3.3.14
+  web-vitals: 6.2.3

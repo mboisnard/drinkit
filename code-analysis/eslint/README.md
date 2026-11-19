@@ -45,7 +45,7 @@ A package adds its own rules with `.append({ files, rules })`, as a starter that
 | `eslint-plugin-compat` `flat/recommended` | No browser API missing from `.browserslistrc` |
 | `eslint-plugin-check-file` | The file name conventions, one glob each |
 | `@vitest/eslint-plugin` `recommended` | On `*.test.ts` and `*.spec.ts` |
-| `eslint-plugin-playwright` `flat/recommended` | On `e2e/**` |
+| `eslint-plugin-playwright` `flat/recommended` | On `test/ui/**` |
 
 ## DrinkIt settings
 
@@ -83,14 +83,16 @@ A package adds its own rules with `.append({ files, rules })`, as a starter that
 | `vue/require-explicit-emits` | Every emitted event declared |
 | `vue/no-unused-properties` | Every prop used |
 | `check-file/filename-naming-convention` | A `.vue` file in PascalCase, a page, a layout or a `.ts` file in kebab-case, a composable named `useX.ts`; `app.vue`, `error.vue` and route parameters such as `[id].vue` aside |
-| `no-restricted-properties`, `no-restricted-imports` in tests | No `vi.mock` nor `mockNuxtImport`: a double is passed as a parameter |
+| `check-file/folder-match-with-fex` | A `*.test.ts` or `*.spec.ts` outside `test/unit`, `test/nuxt` or `test/ui`, where no test runner would find it |
+| `no-restricted-properties`, `no-restricted-imports` in tests | No `vi.mock`, `mockNuxtImport` nor `mockComponent`: a test replaces a boundary, never a module |
+| `playwright/expect-expect` | Counts `expectAccessible` and `expectSameServerRender` of `@drinkit/test-starter` as assertions |
 
 Each `lint` script and the hooks run ESLint with `--max-warnings 0`, so a rule a preset leaves at warn fails too. No
 `enum` either: `erasableSyntaxOnly`, which `nuxt-starter` sets, makes the compiler refuse it.
 
 ## Own rules
 
-Under `rules/`, each with its test, on Vitest and ESLint's `RuleTester`.
+Under `rules/`, each with its test under `test/unit/rules/`, on Vitest and ESLint's `RuleTester`.
 
 | Rule | What it refuses |
 |---|---|

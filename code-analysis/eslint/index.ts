@@ -28,7 +28,7 @@ const drinkit = {
 };
 
 const TEST_FILES = ['**/*.test.ts', '**/*.spec.ts'];
-const END_TO_END_FILES = ['**/e2e/**/*.ts'];
+const UI_TEST_FILES = ['**/test/ui/**/*.ts'];
 const DEFAULT_EXPORT_FILES = ['**/*.vue', '**/*.config.ts', '**/router.options.ts', '**/plugins/**', '**/middleware/**',
   '**/modules/**', '**/server/**'];
 
@@ -95,28 +95,44 @@ export function drinkitEslint({ tsconfigRootDir }: DrinkitEslintOptions): Return
     },
     ...fileNameRules(),
     {
-      files: [...TEST_FILES, ...END_TO_END_FILES],
+      files: [...TEST_FILES, ...UI_TEST_FILES],
       rules: {
+        // Elsewhere, a test matches no Vitest project nor the Playwright folder, and never runs
+        'check-file/folder-match-with-fex': ['error', { '*.{test,spec}.ts': '**/test/{unit,nuxt,ui}/**/' }],
         '@typescript-eslint/ban-ts-comment': ['error', { 'ts-expect-error': 'allow-with-description' }],
         'no-restricted-properties': ['error', { object: 'vi', property: 'mock', message: NO_MODULE_MOCK }],
         'no-restricted-imports': ['error', {
-          paths: [{ name: '@nuxt/test-utils/runtime', importNames: ['mockNuxtImport'], message: NO_MODULE_MOCK }],
+          paths: [{
+            name: '@nuxt/test-utils/runtime',
+            importNames: ['mockNuxtImport', 'mockComponent'],
+            message: NO_MODULE_MOCK,
+          }],
         }],
       },
     },
     {
       files: TEST_FILES,
-      ignores: END_TO_END_FILES,
+      ignores: UI_TEST_FILES,
       ...vitest.configs.recommended,
     },
     {
-      files: END_TO_END_FILES,
+      files: UI_TEST_FILES,
       ...playwright.configs['flat/recommended'],
+    },
+    {
+      files: UI_TEST_FILES,
+      rules: {
+        // The checks of @drinkit/test-starter assert, as expect does
+        'playwright/expect-expect': ['warn', {
+          assertFunctionNames: ['expectAccessible', 'expectGoodWebVitals', 'expectSameServerRender'],
+        }],
+      },
     },
   );
 }
 
-const NO_MODULE_MOCK = 'Pass the double as a parameter of the code under test instead of mocking a module';
+const NO_MODULE_MOCK = 'Run the real code and replace a boundary instead of mocking a module: the HTTP call, '
+  + 'or the SDK of a starter through its fake';
 
 function formattingRules(): Linter.RulesRecord {
   return {

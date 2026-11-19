@@ -19,15 +19,20 @@
   "devDependencies": {
     "@drinkit/eslint-config": "workspace:*",
     "@drinkit/stylelint-config": "workspace:*",
+    "@drinkit/test-starter": "workspace:*",
+    "@nuxt/test-utils": "catalog:",
+    "@testing-library/vue": "catalog:",
     "@types/node": "catalog:",
+    "@vue/test-utils": "catalog:",
     "eslint": "catalog:",
+    "happy-dom": "catalog:",
     "nuxt": "catalog:",
     "stylelint": "catalog:",
     "typescript": "catalog:",
+    "vitest": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:",
-    "vue-tsc": "catalog:",
-    "vitest": "catalog:"
+    "vue-tsc": "catalog:"
   },
   "peerDependencies": {
     "nuxt": "catalog:"
