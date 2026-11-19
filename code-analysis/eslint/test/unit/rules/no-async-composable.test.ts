@@ -1,4 +1,4 @@
-import { noAsyncComposable } from './no-async-composable.ts';
+import { noAsyncComposable } from '../../../rules/no-async-composable.ts';
 import { ruleTester } from './rule-tester.ts';
 
 const filename = '/app/composables/useCellars.ts';

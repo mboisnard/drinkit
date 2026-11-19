@@ -1,4 +1,4 @@
-import { noUnguardedBrowserGlobal } from './no-unguarded-browser-global.ts';
+import { noUnguardedBrowserGlobal } from '../../../rules/no-unguarded-browser-global.ts';
 import { ruleTester } from './rule-tester.ts';
 
 const filename = '/app/composables/useWidth.ts';

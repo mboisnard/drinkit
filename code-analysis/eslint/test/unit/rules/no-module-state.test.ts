@@ -1,4 +1,4 @@
-import { noModuleState } from './no-module-state.ts';
+import { noModuleState } from '../../../rules/no-module-state.ts';
 import { ruleTester } from './rule-tester.ts';
 
 ruleTester.run('no-module-state', noModuleState, {
