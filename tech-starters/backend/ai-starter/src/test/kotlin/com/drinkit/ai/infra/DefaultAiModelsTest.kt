@@ -5,12 +5,15 @@ import com.drinkit.ai.AiModelsTestContract
 import com.drinkit.ai.infra.AiProperties.Endpoint
 import com.drinkit.ai.infra.AiProperties.Model
 import com.drinkit.ai.infra.AiProperties.Provider
+import com.drinkit.ai.infra.observation.ChatContent
+import com.drinkit.ai.infra.observation.GenAiConventions
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldNotContain
 import io.micrometer.observation.ObservationRegistry
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import tools.jackson.databind.json.JsonMapper
 
 internal class DefaultAiModelsTest : AiModelsTestContract() {
 
@@ -84,6 +87,46 @@ internal class DefaultAiModelsTest : AiModelsTestContract() {
         call.keys shouldContain ("gen_ai.request.model" to "qwen3-embedding-0.6b")
         call.keys shouldContain ("gen_ai.usage.input_tokens" to "${FakeModelServer.PROMPT_TOKENS}")
         observations.stopped.flatMap { it.keys }.forEach { (_, value) -> value shouldNotContain "Pommard" }
+    }
+
+    @Test
+    fun `names an embedding call as the GenAI conventions do`() {
+        // Given
+        givenEmbeddingModel("qwen3-embedding-0.6b")
+        server.embeds("qwen3-embedding-0.6b", "Pommard 2019", floatArrayOf(0.1f, 0.2f, 0.3f))
+        val observations = RecordedObservations()
+        val registry = ObservationRegistry.create().apply {
+            observationConfig().observationHandler(observations).observationFilter(GenAiConventions())
+        }
+
+        // When
+        DefaultAiModels(properties(), registry).embeddings("qwen3-embedding-0.6b").embed("Pommard 2019")
+
+        // Then
+        val call = observations.stopped.single { it.name == "gen_ai.client.operation" }
+        call.keys shouldContain ("gen_ai.operation.name" to "embeddings")
+    }
+
+    @Test
+    fun `puts the messages of a call on its span once the content is switched on`() {
+        // Given
+        givenModel("qwen3-vl-4b", answer = "Bourgogne")
+        val observations = RecordedObservations()
+        val registry = ObservationRegistry.create().apply {
+            observationConfig().observationHandler(observations).observationFilter(ChatContent(JsonMapper()))
+        }
+
+        // When
+        DefaultAiModels(properties(), registry).chatClient("qwen3-vl-4b").prompt()
+            .system("You are a sommelier.").user("Which region is Pommard in?").call().content()
+
+        // Then
+        val call = observations.stopped.single { it.name == "gen_ai.client.operation" }.keys.toMap()
+        call["gen_ai.system_instructions"] shouldBe """[{"type":"text","content":"You are a sommelier."}]"""
+        call["gen_ai.input.messages"] shouldBe
+            """[{"role":"user","parts":[{"type":"text","content":"Which region is Pommard in?"}]}]"""
+        call["gen_ai.output.messages"] shouldBe
+            """[{"role":"assistant","parts":[{"type":"text","content":"Bourgogne"}],"finish_reason":"stop"}]"""
     }
 
     private fun properties() =

@@ -67,8 +67,10 @@ computes the vectors and hands them to its search engine, whatever that engine c
 
 - A key never reaches a log, an observation or an error message.
 - The observations follow [ADR 016](./016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
-  and record the model, the tokens and the duration, never the content of a prompt or an answer, which can hold
-  personal data.
+  and record the model, the tokens and the duration. The messages of a call join its span only once
+  `starters.ai.observations.include-content` is true, under the attributes of the GenAI conventions of
+  OpenTelemetry, so that a platform shows each exchange and can evaluate it: the prompt as the model received it,
+  after the guardrails masked its personal data, and the answer as the model wrote it. A photo never does.
 - Prompt security goes through Spring AI advisors, hooks the starter puts around each call. The guardrails advisor
   runs groups of rules, mostly patterns, on the prompt before the call and on the answer after it, and masks the
   personal data of the prompt. Each group blocks from a threat level of its own, or only observes, so that a rule
@@ -120,6 +122,8 @@ flowchart LR
 - A small VLM on a CPU answers in seconds, not in the tenth of a second of a frontier model, and reads a worn label
   less well.
 - A photo sent to a frontier provider leaves our infrastructure: its terms of use become ours to check.
+- With the messages switched on, the trace platform holds what users ask and what the models answer: who reads it,
+  and for how long, become ours to restrict.
 - The catalog, the fallbacks and the guardrails are ours to maintain until a gateway takes them. A pattern misses a
   reworded attack, so the code still treats every answer as untrusted.
 

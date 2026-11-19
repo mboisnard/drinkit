@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 import org.springframework.core.env.StandardEnvironment
 import org.springframework.core.env.SystemEnvironmentPropertySource
+import tools.jackson.databind.json.JsonMapper
 
 internal class AiAutoConfigurationTest {
 
@@ -157,5 +158,16 @@ internal class AiAutoConfigurationTest {
             generateSequence(context.startupFailure) { it.cause }.last().message.orEmpty() shouldContain
                 "Model nomic-embed declares 0 dimensions, an embedding model needs at least one"
         }
+    }
+
+    @Test
+    fun `puts the messages of a call on its span only once switched on`() {
+        // Given
+        val switchedOn = runner.withPropertyValues("starters.ai.observations.include-content=true")
+            .withBean(JsonMapper::class.java, { JsonMapper() })
+
+        // When & Then
+        runner.run { context -> context.containsBean("aiChatContent") shouldBe false }
+        switchedOn.run { context -> context.containsBean("aiChatContent") shouldBe true }
     }
 }
