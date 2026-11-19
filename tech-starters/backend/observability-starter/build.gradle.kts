@@ -9,8 +9,10 @@ dependencies {
         exclude(group = "io.opentelemetry", module = "opentelemetry-exporter-sender-okhttp")
     }
     implementation("io.opentelemetry:opentelemetry-exporter-sender-jdk")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0")
     compileOnly("org.springframework.boot:spring-boot-starter-webmvc")
 
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc")
     testImplementation("org.springframework.boot:spring-boot-webmvc-test")
+    testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
 }

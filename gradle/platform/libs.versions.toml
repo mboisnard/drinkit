@@ -9,6 +9,7 @@ squawk = "2.72.0"
 aws-sdk-dependencies = "2.57.12"
 cucumber-dependencies = "8.1.0"
 opentelemetry-dependencies = "1.68.0"
+opentelemetry-instrumentation-dependencies = "2.34.0-alpha"
 spring-ai-dependencies = "2.0.2"
 spring-boot-dependencies = "4.1.2"
 
@@ -38,6 +39,7 @@ testcontainers-meilisearch = "2.0.0"
 aws-sdk-dependencies-bom = { module = "software.amazon.awssdk:bom", version.ref = "aws-sdk-dependencies" }
 cucumber-dependencies-bom = { module = "io.cucumber:cucumber-bom", version.ref = "cucumber-dependencies" }
 opentelemetry-dependencies-bom = { module = "io.opentelemetry:opentelemetry-bom", version.ref = "opentelemetry-dependencies" }
+opentelemetry-instrumentation-dependencies-bom = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha", version.ref = "opentelemetry-instrumentation-dependencies" }
 spring-ai-dependencies-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai-dependencies" }
 spring-boot-dependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-dependencies" }
 

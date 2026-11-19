@@ -17,6 +17,7 @@ dependencies {
     api(platform(libs.aws.sdk.dependencies.bom))
     api(platform(libs.cucumber.dependencies.bom))
     api(platform(libs.opentelemetry.dependencies.bom))
+    api(platform(libs.opentelemetry.instrumentation.dependencies.bom))
     api(platform(libs.spring.ai.dependencies.bom))
     api(platform(libs.spring.boot.dependencies.bom))
 

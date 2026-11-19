@@ -1,1 +1,2 @@
 com.drinkit.observability.infra.ProblemDetailsAutoConfiguration
+com.drinkit.observability.infra.OpenTelemetryLogsAutoConfiguration

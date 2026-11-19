@@ -126,15 +126,24 @@ internal class CodebaseArchitectureTest {
                 that().haveName("logger")
                 should().bePrivate()
             }
-            // A logger of another library has nothing else to tell it, whatever its name, but its factory
+            // A logger of another library has nothing else to tell it, whatever its name, but its factory. Logback's
+            // LoggerContext stays allowed: a starter reads the root logger from it to add an appender
             files {
                 that().inModules(ALL)
                 should().satisfy { file, violations ->
                     file.declaration.usages
-                        .filter { it.kind == UsageKind.CALL && it.targetFqName.endsWith(".getLogger") }
+                        .filter { it.kind == UsageKind.CALL && it.targetFqName in FOREIGN_LOGGER_FACTORIES }
                         .forEach { violations += "${file.declaration.name} calls ${it.rawExpression}()" }
                 }
             }
         }.check()
+    }
+
+    private companion object {
+        val FOREIGN_LOGGER_FACTORIES = setOf(
+            "org.slf4j.LoggerFactory.getLogger",
+            "org.apache.logging.log4j.LogManager.getLogger",
+            "java.util.logging.Logger.getLogger",
+        )
     }
 }

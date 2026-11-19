@@ -1,2 +1,5 @@
 org.springframework.boot.EnvironmentPostProcessor=\
 com.drinkit.observability.infra.ObservabilityDefaultsEnvironmentPostProcessor
+
+org.springframework.context.ApplicationListener=\
+com.drinkit.observability.infra.OpenTelemetryLogsListener
