@@ -8,14 +8,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 
-internal class CreateCoreDomainDocumentationTest {
+internal class CreateCoreDomainDocumentationTest(
+    @param:TempDir private val tempDir: File,
+) {
 
-    @TempDir
-    private lateinit var tempDir: File
     private val logger = NoOpKSPLogger()
-    private val createCoreDomainDocumentation by lazy {
-        CreateCoreDomainDocumentation(tempDir.absolutePath, logger)
-    }
+    private val createCoreDomainDocumentation = CreateCoreDomainDocumentation(tempDir.absolutePath, logger)
 
     @Test
     fun `generate markdown file with domain name and description`() {

@@ -148,7 +148,8 @@ class JooqPostgresExtension :
                 // Prevent new connections to the database
                 "REVOKE CONNECT ON DATABASE \"$dbName\" FROM public;" +
                     // Kill existing connections to the database
-                    "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$dbName';",
+                    "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity " +
+                    "WHERE pg_stat_activity.datname = '$dbName';",
             )
             it.createStatement().execute(
                 "DROP DATABASE \"$dbName\"",

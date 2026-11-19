@@ -13,7 +13,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientException
-import java.math.BigDecimal
 
 internal val exchangeRateApiKey = configurationKey<String?>("currency.exchangerate-api.key", default = null)
 
@@ -61,7 +60,7 @@ internal class ExchangeRateApiProvider(
                             ExchangeRate.from(
                                 source = baseCurrency,
                                 target = targetCurrency,
-                                value = BigDecimal(rate.toString()),
+                                value = rate,
                             )
                         }
                     } catch (ex: RestClientException) {
@@ -75,7 +74,8 @@ internal class ExchangeRateApiProvider(
         }
 
         logger.info {
-            "Fetched ${allRates.size} exchange rates from ExchangeRate API across ${baseCurrencies.size} base currencies"
+            "Fetched ${allRates.size} exchange rates from ExchangeRate API " +
+                "across ${baseCurrencies.size} base currencies"
         }
 
         return allRates

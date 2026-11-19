@@ -23,7 +23,8 @@ import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.validate
 
 /**
- * KSP processor that orchestrates documentation generation from [CoreDomain], [Usecase] and [TechStarterTool] annotations.
+ * KSP processor that orchestrates documentation generation from [CoreDomain], [Usecase] and [TechStarterTool]
+ * annotations.
  */
 internal class DocumentationSymbolProcessor(
     private val createCoreDomainDocumentation: CreateCoreDomainDocumentation,
@@ -87,7 +88,7 @@ internal class DocumentationSymbolProcessor(
     private inline fun <reified A : Annotation, reified D : KSAnnotated, T> collectInfo(
         resolver: Resolver,
         noinline mapper: (D, KSAnnotation) -> T,
-    ): List<T> = resolver.getSymbolsWithAnnotation(A::class.qualifiedName!!)
+    ): List<T> = resolver.getSymbolsWithAnnotation(qualifiedNameOf<A>())
         .filterIsInstance<D>()
         .filter { it.validate(apiFeatures = apiFeatures) }
         // A member is documented with its class: only a top-level function or property is a tool of its own

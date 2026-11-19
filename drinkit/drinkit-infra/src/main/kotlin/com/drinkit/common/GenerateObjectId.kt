@@ -8,5 +8,6 @@ import kotlin.reflect.full.primaryConstructor
 @Component
 internal class GenerateObjectId : GenerateId {
     override fun <Id : AbstractId> invoke(idType: KClass<Id>): Id =
-        idType.primaryConstructor!!.call(ObjectId().toHexString())
+        requireNotNull(idType.primaryConstructor) { "${idType.simpleName} has no primary constructor" }
+            .call(ObjectId().toHexString())
 }

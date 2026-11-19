@@ -58,7 +58,9 @@ class PromoteAsAdmin(private val userEvents: UserEvents, private val users: User
                 Success(userEvents.save(decision.event))
             }
 
-            AlreadyAdmin -> Success(users.findEnabledBy(userId)!!)
+            AlreadyAdmin -> Success(
+                checkNotNull(users.findEnabledBy(userId)) { "User $userId has events but is not enabled" },
+            )
 
             Unauthorized -> Result.Forbidden
         }

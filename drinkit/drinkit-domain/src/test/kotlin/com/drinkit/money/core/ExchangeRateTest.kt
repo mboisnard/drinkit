@@ -15,7 +15,7 @@ internal class ExchangeRateTest {
         }
 
         shouldThrow<IllegalArgumentException> {
-            ExchangeRate.from(Currency.EUR, Currency.USD, BigDecimal("-1.10"))
+            ExchangeRate.from(Currency.EUR, Currency.USD, "-1.10".toBigDecimal())
         }
     }
 
@@ -26,7 +26,7 @@ internal class ExchangeRateTest {
 
         // When & Then
         val exception = shouldThrow<IllegalArgumentException> {
-            ExchangeRate.from(currency, currency, BigDecimal("1.10"))
+            ExchangeRate.from(currency, currency, "1.10".toBigDecimal())
         }
         exception.message shouldBe "Source and target currencies must be different"
     }

@@ -15,7 +15,7 @@ import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 
 internal inline fun <reified T : Annotation> KSAnnotated.findAnnotation(): KSAnnotation {
-    val qualifiedName = T::class.qualifiedName!!
+    val qualifiedName = qualifiedNameOf<T>()
     return annotations.first {
         it.annotationType.resolve().declaration.qualifiedName?.asString() == qualifiedName
     }
@@ -83,3 +83,6 @@ private fun KSClassDeclaration.extractMethods(): List<MethodInfo> = getDeclaredF
 internal fun String.sanitizeMarkdown(): String = this.trim().replace("\\", "\\\\")
     .replace("<", "\\<")
     .replace(">", "\\>")
+
+internal inline fun <reified T : Annotation> qualifiedNameOf(): String =
+    requireNotNull(T::class.qualifiedName) { "${T::class} has no qualified name" }

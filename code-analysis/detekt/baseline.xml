@@ -9,49 +9,12 @@
     <ID>CouldBeSequence:CreateCoreDomainsOverviewDocumentation.kt:CreateCoreDomainsOverviewDocumentation$filterNot { existingEntry -&gt; newEntries.any { it.fileName == existingEntry.fileName } }</ID>
     <ID>CouldBeSequence:CreateTechStartersOverviewDocumentation.kt:CreateTechStartersOverviewDocumentation$filterNot { it.moduleName == moduleName }</ID>
     <ID>EmptyFunctionBlock:NoOpKSPLogger.kt:NoOpKSPLogger${}</ID>
-    <ID>ForbiddenMethodCall:ExchangeRateApiProvider.kt:ExchangeRateApiProvider$BigDecimal(rate.toString())</ID>
-    <ID>ForbiddenMethodCall:ExchangeRateFixtures.kt:ExchangeRateFixtures$BigDecimal("1.10")</ID>
-    <ID>ForbiddenMethodCall:ExchangeRateTest.kt:ExchangeRateTest$BigDecimal("-1.10")</ID>
-    <ID>ForbiddenMethodCall:ExchangeRateTest.kt:ExchangeRateTest$BigDecimal("1.10")</ID>
-    <ID>ForbiddenMethodCall:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$BigDecimal("0.85")</ID>
-    <ID>ForbiddenMethodCall:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$BigDecimal("0.91")</ID>
-    <ID>ForbiddenMethodCall:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$BigDecimal("1.10")</ID>
-    <ID>ForbiddenMethodCall:ExchangeRatesTestContract.kt:ExchangeRatesTestContract$BigDecimal("1.15")</ID>
-    <ID>ForbiddenMethodCall:FindExchangeRateTest.kt:FindExchangeRateTest$BigDecimal("0.77272727")</ID>
-    <ID>ForbiddenMethodCall:FindExchangeRateTest.kt:FindExchangeRateTest$BigDecimal("0.80")</ID>
-    <ID>ForbiddenMethodCall:FindExchangeRateTest.kt:FindExchangeRateTest$BigDecimal("0.85")</ID>
-    <ID>ForbiddenMethodCall:FindExchangeRateTest.kt:FindExchangeRateTest$BigDecimal("0.90909091")</ID>
-    <ID>ForbiddenMethodCall:FindExchangeRateTest.kt:FindExchangeRateTest$BigDecimal("1.10")</ID>
-    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("-10.00")</ID>
-    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("1.10")</ID>
-    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("1.12345")</ID>
-    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("100.00")</ID>
-    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("110.00")</ID>
-    <ID>ForbiddenMethodCall:MoneyTest.kt:MoneyTest$BigDecimal("112.34")</ID>
-    <ID>MagicNumber:Percentage.kt:Percentage$100</ID>
-    <ID>MaxLineLength:Aggregate.kt:Aggregate$*</ID>
-    <ID>MaxLineLength:DocumentationSymbolProcessor.kt:DocumentationSymbolProcessor$* KSP processor that orchestrates documentation generation from [CoreDomain], [Usecase] and [TechStarterTool] annotations.</ID>
-    <ID>MaxLineLength:ExchangeRateApiProvider.kt:ExchangeRateApiProvider$"Fetched ${allRates.size} exchange rates from ExchangeRate API across ${baseCurrencies.size} base currencies"</ID>
-    <ID>MaxLineLength:JooqPostgresExtension.kt:JooqPostgresExtension$"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$dbName';"</ID>
-    <ID>NullableBooleanCheck:AnnotatedInfo.kt:UseCaseInfo$domain.customName?.let { className.contains(it.replace(" ", ""), ignoreCase = true) } ?: false</ID>
     <ID>ReturnCount:AnnotatedInfo.kt:CoreDomainInfo$fun findAssociatedUseCases: List&lt;UseCaseInfo&gt;</ID>
     <ID>ReturnCount:CompleteProfileInformation.kt:ProfileCompletionDecider$fun invoke: Decision</ID>
-    <ID>ReturnCount:CreateNewUser.kt:UserCreationDecider$fun invoke: Decision</ID>
     <ID>ReturnCount:DeleteUser.kt:UserDeletionDecider$fun decide: Decision</ID>
     <ID>ReturnCount:ExchangeRateApiProvider.kt:ExchangeRateApiProvider$override fun fetchRates: List&lt;ExchangeRate&gt;</ID>
     <ID>ReturnCount:FindExchangeRate.kt:FindExchangeRate$private fun crossRateCalculationFromEuro: ExchangeRate?</ID>
     <ID>ReturnCount:PromoteAsAdmin.kt:AdminPromotionDecider$fun decide: Decision</ID>
-    <ID>SpreadOperator:DrinkitApplication.kt:(*args)</ID>
-    <ID>SpreadOperator:UpdaterApplication.kt:(*args)</ID>
-    <ID>TooGenericExceptionThrown:FakeExchangeRateProvider.kt:FakeExchangeRateProvider$throw RuntimeException("Provider failed")</ID>
     <ID>TooManyFunctions:JooqPostgresExtension.kt:JooqPostgresExtension : BeforeAllCallbackAfterEachCallbackAfterAllCallbackParameterResolver</ID>
-    <ID>UnsafeCallOnNullableType:CompleteProfileInformation.kt:CompleteProfileInformation$users.findEnabledBy(userId)!!</ID>
-    <ID>UnsafeCallOnNullableType:ConfigurationKey.kt:ConfigurationKey$this::class.simpleName!!</ID>
-    <ID>UnsafeCallOnNullableType:DocumentationSymbolProcessor.kt:DocumentationSymbolProcessor$A::class.qualifiedName!!</ID>
-    <ID>UnsafeCallOnNullableType:GenerateObjectId.kt:GenerateObjectId$idType.primaryConstructor!!</ID>
-    <ID>UnsafeCallOnNullableType:KSClassDeclarationTools.kt:T::class.qualifiedName!!</ID>
-    <ID>UnsafeCallOnNullableType:PromoteAsAdmin.kt:PromoteAsAdmin$users.findEnabledBy(userId)!!</ID>
-    <ID>UnusedPrivateProperty:CellarsTestContract.kt:CellarsTestContract$private val repository: Cellars by lazy { fetchRepository() }</ID>
-    <ID>VarCouldBeVal:CreateCoreDomainDocumentationTest.kt:CreateCoreDomainDocumentationTest$@TempDir private lateinit var tempDir: File</ID>
   </CurrentIssues>
 </SmellBaseline>

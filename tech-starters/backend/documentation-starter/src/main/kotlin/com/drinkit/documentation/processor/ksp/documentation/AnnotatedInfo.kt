@@ -63,7 +63,7 @@ internal data class UseCaseInfo(
 ) : AnnotatedInfo {
 
     fun matchesDomain(domain: CoreDomainInfo): Boolean =
-        domain.customName?.let { className.contains(it.replace(" ", ""), ignoreCase = true) } ?: false ||
+        domain.customName?.let { className.contains(it.replace(" ", ""), ignoreCase = true) } == true ||
             className.contains(domain.className, ignoreCase = true)
 }
 
