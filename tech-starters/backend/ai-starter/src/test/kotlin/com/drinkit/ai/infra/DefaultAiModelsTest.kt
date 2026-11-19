@@ -2,6 +2,7 @@ package com.drinkit.ai.infra
 
 import com.drinkit.ai.AiModels
 import com.drinkit.ai.AiModelsTestContract
+import com.drinkit.ai.CompatibleModels
 import com.drinkit.ai.infra.AiProperties.Endpoint
 import com.drinkit.ai.infra.AiProperties.Model
 import com.drinkit.ai.infra.AiProperties.Provider
@@ -90,6 +91,40 @@ internal class DefaultAiModelsTest : AiModelsTestContract() {
     }
 
     @Test
+    fun `hands the schema of a typed answer to the provider rather than to the prompt`() {
+        // Given
+        givenModel("qwen3-vl-4b", answer = """{"producer": "Château Les Trois Chênes", "vintage": 2019}""")
+        val compatibleModels = CompatibleModels(DefaultAiModels(properties(), ObservationRegistry.NOOP))
+
+        // When
+        compatibleModels.entity(listOf("qwen3-vl-4b"), Label::class) { it.prompt().user("Read the label") }
+
+        // Then
+        val request = server.chats.single()
+        request.at("/response_format/type").asString() shouldBe "json_schema"
+        request.at("/response_format/json_schema/schema/required").toString() shouldBe """["producer","vintage"]"""
+        request.at("/messages/0/content").toString() shouldNotContain "JSON"
+    }
+
+    @Test
+    fun `marks a typed answer as a json output, as the GenAI conventions do`() {
+        // Given
+        givenModel("qwen3-vl-4b", answer = """{"producer": "Château Les Trois Chênes", "vintage": 2019}""")
+        val observations = RecordedObservations()
+        val registry = ObservationRegistry.create().apply {
+            observationConfig().observationHandler(observations).observationFilter(GenAiConventions())
+        }
+        val compatibleModels = CompatibleModels(DefaultAiModels(properties(), registry))
+
+        // When
+        compatibleModels.entity(listOf("qwen3-vl-4b"), Label::class) { it.prompt().user("Read the label") }
+
+        // Then
+        val call = observations.stopped.single { it.name == "gen_ai.client.operation" }
+        call.keys shouldContain ("gen_ai.output.type" to "json")
+    }
+
+    @Test
     fun `names an embedding call as the GenAI conventions do`() {
         // Given
         givenEmbeddingModel("qwen3-embedding-0.6b")
@@ -128,6 +163,8 @@ internal class DefaultAiModelsTest : AiModelsTestContract() {
         call["gen_ai.output.messages"] shouldBe
             """[{"role":"assistant","parts":[{"type":"text","content":"Bourgogne"}],"finish_reason":"stop"}]"""
     }
+
+    private data class Label(val producer: String, val vintage: Int)
 
     private fun properties() =
         AiProperties(endpoints = mapOf("localai" to localAi, "anthropic" to anthropic), models = catalog.toMap())

@@ -5,6 +5,7 @@ import com.drinkit.ai.guardrails.Finding
 import com.drinkit.ai.guardrails.GuardrailFindings
 import com.drinkit.documentation.tech.starter.TechStarterTool
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.ai.chat.client.AdvisorParams
 import org.springframework.ai.chat.client.ChatClient
 import tools.jackson.core.JacksonException
 import kotlin.reflect.KClass
@@ -55,8 +56,9 @@ class CompatibleModels(private val aiModels: AiModels) {
     }
 
     /**
-     * Asks again, with the validation error, a model whose answer does not match [type]. A model that still answers
-     * wrong fails with an [InvalidAnswerException], and the next model of the list is asked.
+     * Hands the JSON schema of [type] to the provider, which constrains the answer to it, rather than writing it in the
+     * prompt. Asks again, with the validation error, a model whose answer still does not match [type]. A model that
+     * still answers wrong fails with an [InvalidAnswerException], and the next model of the list is asked.
      */
     fun <T : Any> entity(
         models: List<String>,
@@ -64,7 +66,8 @@ class CompatibleModels(private val aiModels: AiModels) {
         prompt: (ChatClient) -> ChatClient.ChatClientRequestSpec,
     ): ModelAnswer<T> = call(models) { client ->
         try {
-            prompt(client).call().entity(type.java) { it.validateSchema() }
+            prompt(client).advisors(AdvisorParams.ENABLE_NATIVE_STRUCTURED_OUTPUT)
+                .call().entity(type.java) { it.validateSchema() }
         } catch (invalid: JacksonException) {
             throw InvalidAnswerException(fieldOf(invalid), invalid)
         }

@@ -2,14 +2,15 @@ package com.drinkit.ai.infra
 
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
+import tools.jackson.databind.JsonNode
 import tools.jackson.databind.json.JsonMapper
 import java.net.InetSocketAddress
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Answers the chat calls of the OpenAI and Anthropic protocols with the answer scripted for the model they name, and
- * the embedding calls with the vector scripted for each text it knows, skipping the others. Records each embedding
- * request.
+ * the embedding calls with the vector scripted for each text it knows, skipping the others. Records each chat and
+ * embedding request.
  */
 internal class FakeModelServer : AutoCloseable {
 
@@ -17,6 +18,7 @@ internal class FakeModelServer : AutoCloseable {
     private val answers = ConcurrentHashMap<String, String>()
     private val vectors = ConcurrentHashMap<Pair<String, String>, FloatArray>()
     private val embeddingRequests = mutableListOf<List<String>>()
+    private val chatRequests = mutableListOf<JsonNode>()
     private val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
 
     val url: String get() = "http://127.0.0.1:${server.address.port}"
@@ -26,6 +28,9 @@ internal class FakeModelServer : AutoCloseable {
 
     /** The texts of each embedding request, in the order they came. */
     val embedded: List<List<String>> get() = synchronized(embeddingRequests) { embeddingRequests.toList() }
+
+    /** The body of each chat request, in the order they came. */
+    val chats: List<JsonNode> get() = synchronized(chatRequests) { chatRequests.toList() }
 
     init {
         server.createContext("/v1/chat/completions") { exchange -> reply(exchange, ::openAiAnswer) }
@@ -45,7 +50,10 @@ internal class FakeModelServer : AutoCloseable {
     override fun close() = server.stop(0)
 
     private fun reply(exchange: HttpExchange, answer: (String, String) -> Map<String, Any?>) = exchange.use {
-        val model = json.readTree(it.requestBody.readAllBytes()).get("model").asString()
+        val request = json.readTree(it.requestBody.readAllBytes())
+        synchronized(chatRequests) { chatRequests.add(request) }
+
+        val model = request.get("model").asString()
         val text = answers[model]
         val (status, body) = if (text == null) {
             NOT_FOUND to mapOf("error" to mapOf("message" to "No model $model"))
