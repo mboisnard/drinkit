@@ -29,7 +29,7 @@ sequenceDiagram
     participant Qwen as qwen3-vl-4b
     Code->>Models: entity([claude-sonnet-5-5, qwen3-vl-4b], LabelFields)
     Note over Models,Claude: no key: unavailable, skipped
-    Models->>Qwen: the prompt and the JSON schema of LabelFields
+    Models->>Qwen: the prompt, and the JSON schema of LabelFields as its response format
     Qwen-->>Models: an answer without the vintage
     Models->>Qwen: the prompt again, with the validation error
     Qwen-->>Models: a valid answer
@@ -64,13 +64,14 @@ val text = compatibleModels.call(listOf("claude-sonnet-5-5")) { it.prompt().user
   to the next one, with a warning in the logs: an exception thrown by the code given to `call` counts as a failure of
   the model too. A refusal of the guardrails, an `AiRefusedException`, stops the call at once. When none answers, `AllModelsFailedException` holds the cause of each model, and its message names
   only the models.
-- **A typed answer** is checked against the JSON schema of its type and asked again with the error, three times at
-  most. Still invalid, the model fails with `InvalidAnswerException`, which names the field, and the next model is
-  asked.
+- **A typed answer** follows the JSON schema of its type, which the provider receives as its response format, the
+  `json_schema` of the OpenAI protocol, and enforces while the model writes, rather than an instruction in the prompt.
+  It is still checked against that schema and asked again with the error, three times at most. Still invalid, the
+  model fails with `InvalidAnswerException`, which names the field, and the next model is asked.
 - **A `ChatClientBuilderCustomizer` bean** of the application customizes the client of every model, such as to put an
   advisor around each call.
 - **Each call is observed** as `gen_ai.client.operation`, with the model, the duration and the tokens, under the
-  GenAI conventions: an embedding is the `embeddings` operation.
+  GenAI conventions: an embedding is the `embeddings` operation, and a typed answer has `gen_ai.output.type=json`.
   With `starters.ai.observations.include-content`, the span of a chat call also holds its messages, as
   `gen_ai.system_instructions`, `gen_ai.input.messages` and `gen_ai.output.messages`: the prompt after the guardrails
   masked it, never a photo.
