@@ -16,6 +16,10 @@ naming:
 performance:
   CouldBeSequence:
     active: true
+  # runApplication<App>(*args), Spring Boot's own main, copies the arguments once at start. These excludes
+  # replace detekt's, hence its tests again
+  SpreadOperator:
+    excludes: ['**/test/**', '**/*Application.kt']
 
 potential-bugs:
   # A deprecated API, often marked for removal, breaks the next upgrade: the compiler only warns about it

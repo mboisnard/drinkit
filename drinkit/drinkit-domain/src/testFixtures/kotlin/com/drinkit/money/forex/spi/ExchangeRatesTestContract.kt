@@ -6,7 +6,6 @@ import com.drinkit.money.core.Currency.USD
 import com.drinkit.money.core.ExchangeRate
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
 
 abstract class ExchangeRatesTestContract {
 
@@ -17,7 +16,7 @@ abstract class ExchangeRatesTestContract {
     @Test
     fun `save an exchange rate and find it`() {
         // Given
-        val exchangeRate = ExchangeRate.from(EUR, USD, BigDecimal("1.10"))
+        val exchangeRate = ExchangeRate.from(EUR, USD, "1.10".toBigDecimal())
 
         // When
         repository.saveOrUpdate(setOf(exchangeRate))
@@ -30,8 +29,8 @@ abstract class ExchangeRatesTestContract {
     @Test
     fun `save multiple exchange rates`() {
         // Given
-        val eurToUsd = ExchangeRate.from(EUR, USD, BigDecimal("1.10"))
-        val eurToGbp = ExchangeRate.from(EUR, GBP, BigDecimal("0.85"))
+        val eurToUsd = ExchangeRate.from(EUR, USD, "1.10".toBigDecimal())
+        val eurToGbp = ExchangeRate.from(EUR, GBP, "0.85".toBigDecimal())
 
         // When
         repository.saveOrUpdate(setOf(eurToUsd, eurToGbp))
@@ -47,11 +46,11 @@ abstract class ExchangeRatesTestContract {
     @Test
     fun `update existing exchange rate when saving with same source and target`() {
         // Given
-        val initialRate = ExchangeRate.from(EUR, USD, BigDecimal("1.10"))
+        val initialRate = ExchangeRate.from(EUR, USD, "1.10".toBigDecimal())
         repository.saveOrUpdate(setOf(initialRate))
 
         // When
-        val updatedRate = ExchangeRate.from(EUR, USD, BigDecimal("1.15"))
+        val updatedRate = ExchangeRate.from(EUR, USD, "1.15".toBigDecimal())
         repository.saveOrUpdate(setOf(updatedRate))
 
         // Then
@@ -62,8 +61,8 @@ abstract class ExchangeRatesTestContract {
     @Test
     fun `should distinguish between different currency pairs`() {
         // Given
-        val eurToUsd = ExchangeRate.from(EUR, USD, BigDecimal("1.10"))
-        val usdToEur = ExchangeRate.from(USD, EUR, BigDecimal("0.91"))
+        val eurToUsd = ExchangeRate.from(EUR, USD, "1.10".toBigDecimal())
+        val usdToEur = ExchangeRate.from(USD, EUR, "0.91".toBigDecimal())
         repository.saveOrUpdate(setOf(eurToUsd, usdToEur))
 
         // When

@@ -63,8 +63,13 @@ class CompleteProfileInformation(
 
         return when (decision) {
             is EventToPersist -> Success(userEvents.save(decision.event))
-            AlreadyCompleted -> Success(users.findEnabledBy(userId)!!)
+
+            AlreadyCompleted -> Success(
+                checkNotNull(users.findEnabledBy(userId)) { "User $userId has events but is not enabled" },
+            )
+
             is ValidationFailed -> InvalidProfile
+
             Unauthorized -> Forbidden
         }
     }

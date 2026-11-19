@@ -20,6 +20,6 @@ class ExchangeRateFixtures {
     fun givenAnExchangeRate(
         source: Currency = Currency.EUR,
         target: Currency = Currency.USD,
-        value: BigDecimal = BigDecimal("1.10"),
+        value: BigDecimal = "1.10".toBigDecimal(),
     ): ExchangeRate = exchangeRates.saveOrUpdate(setOf(ExchangeRate.from(source, target, value))).first()
 }

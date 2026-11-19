@@ -8,7 +8,6 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
 
 internal class FindExchangeRateTest {
 
@@ -18,9 +17,9 @@ internal class FindExchangeRateTest {
     @Test
     fun `find direct rate when it exists`() {
         // Given
-        val directUsdToGbp = exchangeRateFixtures.givenAnExchangeRate(USD, GBP, BigDecimal("0.80"))
-        exchangeRateFixtures.givenAnExchangeRate(EUR, USD, BigDecimal("1.10"))
-        exchangeRateFixtures.givenAnExchangeRate(EUR, GBP, BigDecimal("0.85"))
+        val directUsdToGbp = exchangeRateFixtures.givenAnExchangeRate(USD, GBP, "0.80".toBigDecimal())
+        exchangeRateFixtures.givenAnExchangeRate(EUR, USD, "1.10".toBigDecimal())
+        exchangeRateFixtures.givenAnExchangeRate(EUR, GBP, "0.85".toBigDecimal())
 
         // When
         val rate = findExchangeRate.invoke(USD, GBP)
@@ -32,8 +31,8 @@ internal class FindExchangeRateTest {
     @Test
     fun `calculate cross rate from EUR when direct rate does not exist`() {
         // Given
-        exchangeRateFixtures.givenAnExchangeRate(EUR, USD, BigDecimal("1.10"))
-        exchangeRateFixtures.givenAnExchangeRate(EUR, GBP, BigDecimal("0.85"))
+        exchangeRateFixtures.givenAnExchangeRate(EUR, USD, "1.10".toBigDecimal())
+        exchangeRateFixtures.givenAnExchangeRate(EUR, GBP, "0.85".toBigDecimal())
 
         // When
         val rate = findExchangeRate.invoke(USD, GBP)
@@ -43,14 +42,14 @@ internal class FindExchangeRateTest {
             it.source shouldBe USD
             it.target shouldBe GBP
             // Rate should be approximately 0.85 / 1.10 = 0.77272727
-            it.value shouldBe BigDecimal("0.77272727")
+            it.value shouldBe "0.77272727".toBigDecimal()
         }
     }
 
     @Test
     fun `calculate inverse rate from EUR when target is EUR`() {
         // Given
-        exchangeRateFixtures.givenAnExchangeRate(EUR, USD, BigDecimal("1.10"))
+        exchangeRateFixtures.givenAnExchangeRate(EUR, USD, "1.10".toBigDecimal())
 
         // When
         val rate = findExchangeRate.invoke(USD, EUR)
@@ -60,14 +59,14 @@ internal class FindExchangeRateTest {
             it.source shouldBe USD
             it.target shouldBe EUR
             // Rate should be approximately 1 / 1.10 = 0.90909091
-            it.value shouldBe BigDecimal("0.90909091")
+            it.value shouldBe "0.90909091".toBigDecimal()
         }
     }
 
     @Test
     fun `null when cross rate calculation is not possible`() {
         // Given
-        exchangeRateFixtures.givenAnExchangeRate(EUR, GBP, BigDecimal("0.85"))
+        exchangeRateFixtures.givenAnExchangeRate(EUR, GBP, "0.85".toBigDecimal())
 
         // When
         val rate = findExchangeRate.invoke(USD, GBP)

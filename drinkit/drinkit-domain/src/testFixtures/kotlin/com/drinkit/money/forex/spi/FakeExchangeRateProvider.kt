@@ -21,7 +21,7 @@ class FakeExchangeRateProvider(
         lastRequestedCurrencies = baseCurrencies
 
         if (shouldThrowException) {
-            throw RuntimeException("Provider failed")
+            error("Provider failed")
         }
 
         return ratesToReturn
