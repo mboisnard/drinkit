@@ -27,7 +27,8 @@ machine, so that you can try what the next pages explain.
 3. **Building and storing.** The [build tool](./4.build-and-data/1.build-tool.md) page explains Gradle and its conventions,
    the [database](./4.build-and-data/2.database.md) page how the schema changes without stopping the users.
 4. **Writing code here.** The [best practices](./5.writing-code/1.best-practices/1.craft-manifesto.md) set the habits, the
-   tests rely on [test doubles](./5.writing-code/2.testing/1.testdouble.md) and
+   [test pyramid](./5.writing-code/2.testing/0.test-pyramid.md) sorts the tests, which rely on
+   [test doubles](./5.writing-code/2.testing/1.testdouble.md) and
    [Testcontainers](./5.writing-code/2.testing/2.testcontainers.md), and the
    [architecture tests](./5.writing-code/2.testing/4.architecture-tests.md) keep the rules of the steps above true on every
    build.

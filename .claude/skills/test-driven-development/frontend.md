@@ -7,15 +7,18 @@ Work from what the user sees and does. Where code goes in the Nuxt app is in the
    way is one a screen reader cannot use either: fix the markup, not the query.
 2. A composable or plain logic, a formatting, a mapping of a response, the state a composable holds, is tested as a
    function: call it, act on it, assert on what it returns. Logic still in a template is moved out first.
-3. The backend is reached in one of two ways, never through a module mock such as `vi.mock`:
-   - a hand-written fake of the generated client, typed after it (`Pick<CellarsApi, 'findCellars'>`) and built
-     from the generated types, holding its data in memory when the page writes then reads;
-   - the real generated client at the HTTP boundary, its `Configuration` given a `fetchApi` that answers with
-     responses shaped by the contract.
+3. A test runs the real code and replaces a boundary, never a module: no `vi.mock`, `mockNuxtImport` nor
+   `mockComponent`. The composables of Nuxt run for real in `test/nuxt`, and the test sets what they read: the
+   `route` option of `renderSuspended`, `document.cookie`, fake timers. The backend is reached in one of three ways:
+   - `registerEndpoint` of `@nuxt/test-utils/runtime`, answering the call the page makes, in a component test;
+   - `startFakeBackend` of `@drinkit/test-starter/fake-backend`, MSW handlers on a real port that the server render
+     reaches, in a UI test;
+   - a hand-written fake of the generated client, typed after it (`Pick<CellarsApi, 'findCellars'>`) and holding
+     its data in memory when the page writes then reads. A page that builds its client inline cannot receive one:
+     giving it its client from a place the test can replace is a reshape that comes first.
 
-   A fake shared by several tests is written once. A page that builds its client inline, with `new CellarsApi()`
-   for instance, cannot receive one: giving it its client from a place the test can replace is a reshape that
-   comes first.
+   A fake shared by several tests is written once. The levels and their folders are in `frontend-tests.md`, under
+   `docs/content/en/1.engineering/5.writing-code/2.testing/`.
 
 ## When package.json has no test script
 

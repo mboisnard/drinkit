@@ -16,8 +16,9 @@ git config core.hooksPath .hooks/git           # once per clone: pre-commit form
 ```
 
 Frontend, documentation site and hooks' tests, one pnpm workspace, from the root: `pnpm install --frozen-lockfile`,
-then `pnpm -r lint` (`lint:fix` fixes), `pnpm -r typecheck` and `pnpm -r build`, or
-`pnpm --filter drinkit-frontend dev`.
+then `pnpm -r lint` (`lint:fix` fixes), `pnpm -r typecheck`, `pnpm -r test` and `pnpm -r build`, or
+`pnpm --filter drinkit-frontend dev`. In a headless browser: `pnpm -r test:ui`, after
+`pnpm --filter @drinkit/test-starter exec playwright install chromium`.
 
 The JDK of `gradle/gradle-daemon-jvm.properties` must be installed: Gradle finds it whatever `java` is on the
 `PATH`, but never downloads it. Integration tests need Docker. The checks of the hooks, the workflows, the
