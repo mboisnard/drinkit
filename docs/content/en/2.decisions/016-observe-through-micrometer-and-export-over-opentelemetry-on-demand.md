@@ -1,6 +1,6 @@
 ---
 title: "016. Observe through Micrometer, and export over OpenTelemetry on demand"
-description: "DrinkIt observes itself with Actuator and Micrometer, writes its logs to the console, and exports over OTLP only once enabled."
+description: "DrinkIt observes itself with Actuator and Micrometer, and once enabled pushes its logs, traces and metrics over OTLP, straight to a self-hosted platform until a collector runs."
 navigation:
   title: "016 · Observe with Micrometer"
 status: accepted
@@ -12,7 +12,9 @@ explainedIn:
 
 DrinkIt observes itself with what Spring Boot already ships: Actuator for health, Micrometer for metrics and traces,
 its structured logging for JSON lines. An environment exports over OpenTelemetry when it switches it on, and
-nothing leaves the application before. The code depends on no vendor, and a developer's machine needs no collector.
+nothing leaves the application before. The code depends on no vendor. Until the target infrastructure brings an
+OpenTelemetry Collector, the application pushes its logs, traces and metrics straight to OpenObserve, an open
+source platform that stores and shows them, which we host ourselves.
 
 ## Context
 
@@ -37,12 +39,38 @@ logs behind one property. Its OTLP export of metrics is on by default, towards `
   each request its `traceId`, which reaches no collector. A trace starts in the application: the `traceparent` that a
   caller sends is ignored, so that no one on the internet chooses a `traceId` or forces a trace into the samples.
 - **Logs.** Plain text on a developer's machine, one JSON line per event in the Logstash format elsewhere. Each line
-  carries `traceId`, `spanId` and, once signed in, `user.id`. Logs go to the console, never over OTLP.
+  carries `traceId`, `spanId` and, once signed in, `user.id`. Logs go to the console and, once the export is on and
+  `management.opentelemetry.logging.export.otlp.endpoint` is set, over OTLP too, with their trace and span, through
+  the Logback appender of OpenTelemetry, which Spring Boot does not install. The console stays, for a developer's
+  machine and for a platform that reads it.
 - **Errors.** Every error of the API, 4xx or 5xx, answers a problem detail of RFC 9457 that carries the `traceId` of
   the request, so that a client reads every error the same way and support finds its logs. An unexpected failure
   answers a 500 without its message, which only the logs hold, as OWASP's Error Handling Cheat Sheet advises. One
   exception handler of the starter answers them all: a filter hands its refusal to Spring MVC rather than writing a
   body.
+- **A platform without a collector, for now.** The application pushes its logs, traces and metrics straight to
+  OpenObserve, which also reads the attributes OpenTelemetry defines for calls to AI models, the GenAI conventions
+  that `ai-starter` follows ([ADR 021](./021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.md)).
+  A developer starts it on their machine. The services around the application, PostgreSQL, Meilisearch and
+  RabbitMQ, push nothing yet.
+- **A collector in the target infrastructure.** An OpenTelemetry Collector receives the logs, traces and metrics of
+  the application and of the services around it. It sends them to an observability platform for the dashboards and
+  the alerts, OpenObserve, Datadog or another, and the spans of the model calls to an LLM platform too, such as
+  Langfuse, which replays them, scores them and compares models on them. The application then changes its OTLP
+  endpoint, not its code.
+
+```mermaid
+flowchart LR
+    subgraph now["Now"]
+        A1["drinkit-backend<br/><small>logs, traces, metrics</small>"] -->|OTLP| O1["OpenObserve<br/><small>self-hosted</small>"]
+    end
+    subgraph target["Target infrastructure"]
+        A2["drinkit-backend"] -->|OTLP| C["OpenTelemetry Collector"]
+        S["PostgreSQL, Meilisearch,<br/>RabbitMQ"] --> C
+        C --> O2["Observability platform<br/><small>OpenObserve, Datadog…</small>"]
+        C -->|spans of the model calls| L["LLM platform<br/><small>Langfuse: evaluations, datasets</small>"]
+    end
+```
 
 The [logging page](../1.engineering/4.build-and-data/3.logging.md) and the README of the starter give the settings.
 
@@ -55,8 +83,11 @@ The [logging page](../1.engineering/4.build-and-data/3.logging.md) and the READM
 - Spring Boot creates a span for every request, sampled or not: a cost in memory that a measure may one day question.
 - The `traceId` and `user.id` live in the MDC of the request's thread: a platform event handled on another thread
   logs without them.
-- A log platform that cannot read JSON from the console, or a team that wants logs over OTLP, needs a Logback appender
-  of OpenTelemetry, which Spring Boot does not install.
+- The Logback appender of OpenTelemetry is still an alpha: a release may rename the attributes of a log.
+- A log sent over OTLP while the platform is down is lost once the queue of the exporter fills. The console keeps it.
+- Until a collector runs, the services around the application send nothing to the platform.
+- Scoring the model calls waits for the collector and an LLM platform: OpenObserve keeps it for its paid Enterprise
+  edition, and a second platform now would mean a second exporter in the application.
 
 ## Alternatives
 
@@ -66,6 +97,9 @@ The [logging page](../1.engineering/4.build-and-data/3.logging.md) and the READM
   cannot do, and duplicates what Spring Boot observes. It offered spans for libraries that Micrometer does not cover.
 - **The Datadog agent and its tracer**, as many companies run. Rejected because it ties the code and the deployment
   to one vendor before one is chosen. It offered a complete platform at once.
+- **An OpenTelemetry Collector now**, in front of OpenObserve and Langfuse. Deferred: one application with no
+  deployment does not pay for one more service to run and configure. It offers the signals of the services around
+  the application, and the model calls in a platform made for them.
 - **Health and info only, as before.** Rejected because a failing request could not be traced back to its logs. It
   added no dependency.
 

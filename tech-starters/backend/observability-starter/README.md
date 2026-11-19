@@ -43,18 +43,18 @@ dependencies {
 
 Micrometer traces each request and puts its `traceId` and `spanId` in the logs. Nothing leaves the application until
 `starters.observability.opentelemetry.enabled=true`: Spring Boot then pushes the metrics and the traces over OTLP to
-a collector, such as the Datadog Agent. Switched off, the starter exports nothing, whatever that property. Logs stay
-on the console, which the log platform already reads.
+a platform, such as OpenObserve, or to a collector. Switched off, the starter exports nothing, whatever that property.
+Logs stay on the console, and once `management.opentelemetry.logging.export.otlp.endpoint` is set, each one leaves
+over OTLP too, with the trace and the span it was written in, the logs of the start included.
 
-To see the traces on your machine, start [Grafana LGTM](https://github.com/grafana/docker-otel-lgtm), then the
-application with the export on, and open Grafana on `http://localhost:3000`:
+To see them on your machine, start [OpenObserve](https://openobserve.ai/), then the backend with the
+`dev-observability` profile. It keeps every trace and puts the messages of each model call on its span, with a
+password in clear: a local setup, never one for production. Open `http://localhost:5080` as `root@drinkit.dev`, with
+the password `Drinkit#2026`:
 
 ```bash
-docker run --rm -p 3000:3000 -p 4318:4318 grafana/otel-lgtm
-STARTERS_OBSERVABILITY_OPENTELEMETRY_ENABLED=true \
-MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT=http://localhost:4318/v1/traces \
-MANAGEMENT_TRACING_SAMPLING_PROBABILITY=1.0 \
-./gradlew :drinkit-backend:bootRun
+docker compose -f deployment/local/compose-observability.yml up --detach
+./gradlew :drinkit-backend:bootRun -Pspring.profiles.active=dev,dev-observability
 ```
 
 The application starts a new trace for each request: it ignores the `traceparent` a caller sends, since a caller
@@ -92,6 +92,7 @@ already tell whether it answers.
 | `starters.observability.enabled` | `true`, `false` leaves Actuator to the defaults of Spring Boot, and still exports nothing | `STARTERS_OBSERVABILITY_ENABLED` |
 | `starters.observability.opentelemetry.enabled` | `false`, `true` pushes the metrics and the traces over OTLP | `STARTERS_OBSERVABILITY_OPENTELEMETRY_ENABLED` |
 | `management.opentelemetry.tracing.export.otlp.endpoint` | None, required in production once the export is on | `MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT` |
+| `management.opentelemetry.logging.export.otlp.endpoint` | None: the logs stay on the console | `MANAGEMENT_OPENTELEMETRY_LOGGING_EXPORT_OTLP_ENDPOINT` |
 | `management.otlp.metrics.export.url` | `http://localhost:4318/v1/metrics`, set in production once the export is on | `MANAGEMENT_OTLP_METRICS_EXPORT_URL` |
 | `management.opentelemetry.resource-attributes.deployment.environment` | None, set in production once the export is on | `MANAGEMENT_OPENTELEMETRY_RESOURCEATTRIBUTES_DEPLOYMENT_ENVIRONMENT` |
 

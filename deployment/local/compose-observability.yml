@@ -1,0 +1,27 @@
+# OpenObserve, which stores and shows the logs, the traces and the metrics that the backend pushes over OTLP with its
+# dev-observability profile. Started by hand, apart from the services of the dev profile:
+#   docker compose -f deployment/local/compose-observability.yml up --detach
+# UI on http://localhost:5080, as root@drinkit.dev and Drinkit#2026
+# A project of its own: under the folder's name, local, each file would take the other's containers for orphans
+name: drinkit-observability
+
+volumes:
+  openobserve-data:
+
+services:
+  openobserve:
+    image: openobserve/openobserve:v1.1.2@sha256:4a154849432f75c4fb024de32fe34163c02406c905dab22bf8d213d2e3386392
+    ports:
+      - "5080:5080"
+    volumes:
+      - openobserve-data:/data
+    environment:
+      ZO_DATA_DIR: /data
+      # Read at the first start only, when the volume is empty
+      ZO_ROOT_USER_EMAIL: root@drinkit.dev
+      ZO_ROOT_USER_PASSWORD: "Drinkit#2026"
+      ZO_TELEMETRY: false
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true

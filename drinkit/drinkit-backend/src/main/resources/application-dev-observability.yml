@@ -1,0 +1,25 @@
+# Pushes the logs, the traces and the metrics to the OpenObserve of deployment/local/compose-observability.yml,
+# started by hand:
+#   ./gradlew :drinkit-backend:bootRun -Pspring.profiles.active=dev,dev-observability
+# Basic auth of its root user, root@drinkit.dev and Drinkit#2026
+openobserve:
+  url: http://localhost:5080/api/default
+  authorization: Basic cm9vdEBkcmlua2l0LmRldjpEcmlua2l0IzIwMjY=
+
+starters.observability.opentelemetry.enabled: true
+
+management:
+  tracing.sampling.probability: 1.0
+  opentelemetry:
+    resource-attributes:
+      deployment.environment: local
+    tracing.export.otlp:
+      endpoint: ${openobserve.url}/v1/traces
+      headers.Authorization: ${openobserve.authorization}
+    logging.export.otlp:
+      endpoint: ${openobserve.url}/v1/logs
+      headers.Authorization: ${openobserve.authorization}
+  otlp.metrics.export:
+    url: ${openobserve.url}/v1/metrics
+    headers.Authorization: ${openobserve.authorization}
+    step: 10s
