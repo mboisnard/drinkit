@@ -6,7 +6,10 @@ openobserve:
   url: http://localhost:5080/api/default
   authorization: Basic cm9vdEBkcmlua2l0LmRldjpEcmlua2l0IzIwMjY=
 
-starters.observability.opentelemetry.enabled: true
+starters:
+  observability.opentelemetry.enabled: true
+  # The messages of each call to a model, on its span
+  ai.observations.include-content: true
 
 management:
   tracing.sampling.probability: 1.0

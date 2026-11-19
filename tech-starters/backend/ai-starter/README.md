@@ -69,8 +69,11 @@ val text = compatibleModels.call(listOf("claude-sonnet-5-5")) { it.prompt().user
   asked.
 - **A `ChatClientBuilderCustomizer` bean** of the application customizes the client of every model, such as to put an
   advisor around each call.
-- **Each call is observed** as `gen_ai.client.operation`, with the model, the duration and the tokens, never with the
-  text of the prompt or of the answer.
+- **Each call is observed** as `gen_ai.client.operation`, with the model, the duration and the tokens, under the
+  GenAI conventions: an embedding is the `embeddings` operation.
+  With `starters.ai.observations.include-content`, the span of a chat call also holds its messages, as
+  `gen_ai.system_instructions`, `gen_ai.input.messages` and `gen_ai.output.messages`: the prompt after the guardrails
+  masked it, never a photo.
 - **Switched off**, the starter makes every model unavailable, so `CompatibleModels` fails at once.
 
 ## Embeddings
@@ -163,6 +166,7 @@ such as by a job, has no budget.
 | Property | Default | Environment variable |
 |---|---|---|
 | `starters.ai.enabled` | `true`, `false` makes every model unavailable | `STARTERS_AI_ENABLED` |
+| `starters.ai.observations.include-content` | `false`, `true` puts the messages of each chat call on its span | `STARTERS_AI_OBSERVATIONS_INCLUDECONTENT` |
 | `starters.ai.endpoints.<endpoint>.provider` | `openai`, the protocol LocalAI speaks too, or `anthropic` | `STARTERS_AI_ENDPOINTS_<ENDPOINT>_PROVIDER` |
 | `starters.ai.endpoints.<endpoint>.base-url` | The provider's API. A LocalAI URL ends with `/v1` | `STARTERS_AI_ENDPOINTS_<ENDPOINT>_BASEURL` |
 | `starters.ai.endpoints.<endpoint>.api-key` | None: the models of an endpoint without its key are unavailable | `STARTERS_AI_ENDPOINTS_<ENDPOINT>_APIKEY` |
