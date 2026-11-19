@@ -1,4 +1,4 @@
-import { composableUsesReactivity } from './composable-uses-reactivity.ts';
+import { composableUsesReactivity } from '../../../rules/composable-uses-reactivity.ts';
 import { ruleTester } from './rule-tester.ts';
 
 const filename = '/app/composables/useCellars.ts';
