@@ -52,7 +52,8 @@ Each page renders on the server first, then in the browser. Code that runs while
 - A page maps a response to what it shows only where the two differ, in a plain function next to the composable.
 - A feature that needs a new operation or field changes the contract first: the `api-contract-change` skill.
 - An error the backend answers throws a `ProblemError`, which carries its ProblemDetail. Catch it where the page
-  can tell the user what happened; `error.vue` of `nuxt-starter` shows the ones nobody catches.
+  can tell the user what happened; the app's `error.vue`, or else that of `nuxt-starter`, shows the ones nobody
+  catches.
 - The session is the backend's http-only session cookie: the frontend never reads, stores or sends a session
   token itself, and keeps nothing secret in `localStorage`. The current user, the sign-in and the sign-out come
   from `security-starter`: `useCurrentUser()` and a sign-in composable, never a call of the app.
