@@ -2,10 +2,20 @@ name: CodeQL
 
 on:
   workflow_call:
+    inputs:
+      kotlin:
+        description: Analyse the backend, when the Backend lane runs
+        type: boolean
+        required: true
+      typescript:
+        description: Analyse the Nuxt apps, their starters and the site, when the Frontend lane runs
+        type: boolean
+        required: true
 
 jobs:
   analyse:
     name: Analyse the Kotlin and Java code
+    if: inputs.kotlin
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -41,3 +51,34 @@ jobs:
         uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           category: codeql-security-analysis
+
+  analyse-typescript:
+    name: Analyse the TypeScript and Vue code
+    if: inputs.typescript
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # CodeQL reads the sources as they are, .vue files included: no install, no build, and so no code that
+      # Nuxt generates. The tests stay out, their doubles answer what a real backend never would
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          queries: security-extended
+          config: |
+            paths-ignore:
+              - '**/test/**'
+
+      - name: Analyse
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          category: codeql-typescript
