@@ -84,6 +84,7 @@ A package adds its own rules with `.append({ files, rules })`, as a starter that
 | `vue/no-unused-properties` | Every prop used |
 | `check-file/filename-naming-convention` | A `.vue` file in PascalCase, a page, a layout or a `.ts` file in kebab-case, a composable named `useX.ts`; `app.vue`, `error.vue` and route parameters such as `[id].vue` aside |
 | `check-file/folder-match-with-fex` | A `*.test.ts` or `*.spec.ts` outside `test/unit`, `test/nuxt` or `test/ui`, where no test runner would find it |
+| `no-restricted-imports` by folder, in `folder-imports.ts` | `shared/` imports neither the Vue app, Nitro's aliases nor Vue, `app/` never imports `server/`, `server/` never imports the Vue app, and `modules/` no runtime alias: Nuxt guards these in the folders of the app, not in those of a layer |
 | `no-restricted-properties`, `no-restricted-imports` in tests | No `vi.mock`, `mockNuxtImport` nor `mockComponent`: a test replaces a boundary, never a module |
 | `playwright/expect-expect` | Counts `expectAccessible` and `expectSameServerRender` of `@drinkit/test-starter` as assertions |
 

@@ -22,9 +22,10 @@ app (§3).
 
 ## 2. The layout
 
-- A Nuxt layer in `tech-starters/frontend/<name>/`, its sources under `app/` as in the app, and a package of the
-  pnpm workspace named `@drinkit/<name>`, whose dependencies come from the catalog through the `dependency-change`
-  skill.
+- A Nuxt layer in `tech-starters/frontend/<name>/`, its sources in the folders of a Nuxt app by where they run,
+  `app/`, `server/`, `shared/` or `modules/`, as "The folders of a starter" of `frontend-architecture.md` says, and
+  a package of the pnpm workspace named `@drinkit/<name>`, whose dependencies come from the catalog through the
+  `dependency-change` skill.
 - The app lists it in its `dependencies` as `workspace:*` and in the `extends` of its `nuxt.config.ts` by that
   name. The app wins over the layer.
 - What the app imports from it goes through the `exports` of its `package.json`, such as
