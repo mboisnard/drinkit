@@ -47,6 +47,7 @@ frontend: &frontend
   - '.browserslistrc'
   - 'code-analysis/eslint/**'
   - 'code-analysis/stylelint/**'
+  - 'drinkit/drinkit-api-contract/contract/**' # each app generates its client from it at each build
   - 'drinkit/*-frontend/**'
   - 'tech-starters/frontend/**'
 

@@ -8,11 +8,16 @@ import type { RequestHandler } from 'msw';
 export interface FakeBackend {
   /** The origin the app under test calls instead of the backend, such as `http://127.0.0.1:41234`. */
   url: string;
+  /** Adds handlers that answer before the others, until `reset`: the case of one test. */
+  use: (...handlers: RequestHandler[]) => void;
+  /** Keeps only the handlers the fake backend started with. */
+  reset: () => void;
   close: () => Promise<void>;
 }
 
 /** Serves MSW handlers over real HTTP, so the requests of the server render reach them too. */
-export async function startFakeBackend(...handlers: RequestHandler[]): Promise<FakeBackend> {
+export async function startFakeBackend(...initialHandlers: RequestHandler[]): Promise<FakeBackend> {
+  let handlers = initialHandlers;
   const server = createServer((incoming, outgoing) => {
     void answer(handlers, incoming, outgoing);
   });
@@ -22,6 +27,12 @@ export async function startFakeBackend(...handlers: RequestHandler[]): Promise<F
 
   return {
     url: `http://127.0.0.1:${String(port)}`,
+    use: (...added) => {
+      handlers = [...added, ...handlers];
+    },
+    reset: () => {
+      handlers = initialHandlers;
+    },
     close: () => new Promise((resolve, reject) => {
       server.close((error) => {
         if (error) {
@@ -41,7 +52,13 @@ async function answer(handlers: RequestHandler[], incoming: IncomingMessage, out
   const baseUrl = new URL(request.url).origin;
   const response = await getResponse(handlers, request, { baseUrl }) ?? unhandled(request);
 
-  outgoing.writeHead(response.status, Object.fromEntries(response.headers));
+  for (const [name, value] of response.headers) {
+    if (name !== 'set-cookie') {
+      outgoing.setHeader(name, value);
+    }
+  }
+  outgoing.setHeader('set-cookie', response.headers.getSetCookie());
+  outgoing.writeHead(response.status);
   outgoing.end(Buffer.from(await response.arrayBuffer()));
 }
 

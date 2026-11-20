@@ -1,0 +1,47 @@
+{
+  "name": "@drinkit/api-client-starter",
+  "description": "The Nuxt layer that calls the backend API: a client generated from the OpenAPI contract, the session cookies relayed in a server render, and a same-origin relay for the browser.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "main": "./nuxt.config.ts",
+  "exports": {
+    ".": "./nuxt.config.ts",
+    "./client-config": "./app/client-config.ts",
+    "./use-api": "./app/use-api.ts",
+    "./problem-error": "./app/problem-error.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "eslint --fix --max-warnings 0 .",
+    "test": "vitest run",
+    "typecheck": "nuxt typecheck && tsc --project test/unit",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@drinkit/nuxt-starter": "workspace:*",
+    "@hey-api/openapi-ts": "catalog:",
+    "h3": "catalog:",
+    "ofetch": "catalog:"
+  },
+  "devDependencies": {
+    "@drinkit/eslint-config": "workspace:*",
+    "@drinkit/test-starter": "workspace:*",
+    "@nuxt/test-utils": "catalog:",
+    "@testing-library/vue": "catalog:",
+    "@types/node": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "eslint": "catalog:",
+    "happy-dom": "catalog:",
+    "nitropack": "catalog:",
+    "nuxt": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "vue-tsc": "catalog:"
+  },
+  "peerDependencies": {
+    "nuxt": "catalog:"
+  }
+}

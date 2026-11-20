@@ -25,9 +25,9 @@ peer dependencies, so that one copy of each runs.
 
 | Export | What it gives | The package also declares |
 |---|---|---|
-| `/vitest` | `defineVitestProjects()`: `test/unit/**/*.test.ts` in Node, `test/nuxt/**/*.test.ts` in the Nuxt environment on happy-dom, Testing Library cleaned after each test | `vitest`, `@nuxt/test-utils`, `happy-dom`, `@vue/test-utils`, `@testing-library/vue` |
-| `/playwright` | `defineUiTestConfig()`, `test`, `expect`, `expectAccessible()`, `expectGoodWebVitals()`, `expectSameServerRender()` | `@playwright/test`, `@nuxt/test-utils`, `@axe-core/playwright`, `web-vitals` |
-| `/fake-backend` | `startFakeBackend(...handlers)` | `msw` |
+| `/vitest` | `defineVitestProjects()`: `test/unit/**/*.test.ts` in Node, `test/nuxt/**/*.test.ts` in the Nuxt environment on happy-dom, Testing Library cleaned after each test. Its `nuxtOverrides` give the Nuxt tests the settings an app would give a starter | `vitest`, `@nuxt/test-utils`, `happy-dom`, `@vue/test-utils`, `@testing-library/vue` |
+| `/playwright` | `defineUiTestConfig()`, `test` with its `fakeBackend` fixture, `expect`, `expectAccessible()`, `expectGoodWebVitals()`, `expectSameServerRender()` | `@playwright/test`, `@nuxt/test-utils`, `@axe-core/playwright`, `web-vitals`, `msw` |
+| `/fake-backend` | `startFakeBackend(...handlers)`, outside Playwright | `msw` |
 
 ```ts
 // vitest.config.ts
@@ -45,13 +45,16 @@ export default defineUiTestConfig();
 
 ```ts
 // test/ui/home.test.ts
-import { expectAccessible, expectGoodWebVitals, test } from '@drinkit/test-starter/playwright';
+import { expect, expectAccessible, test } from '@drinkit/test-starter/playwright';
+import { http, HttpResponse } from 'msw';
 
-test('the home page is accessible and holds still', async ({ page, goto }) => {
+test('the home page greets the signed-in user', async ({ page, goto, fakeBackend }) => {
+  fakeBackend.use(http.get('/drinkit/api/user/me', () => HttpResponse.json({ firstname: 'Camille', roles: [] })));
+
   await goto('/', { waitUntil: 'hydration' });
 
+  await expect(page.getByText('Welcome back, Camille')).toBeVisible();
   await expectAccessible(page);
-  await expectGoodWebVitals(page);
 });
 ```
 
@@ -66,8 +69,13 @@ test('the home page is accessible and holds still', async ({ page, goto }) => {
   CLS of 0.1, the thresholds Google rates good. It measures what happened so far: call it once the content shows.
 - **`expectSameServerRender(request, url)`** renders the page twice on the server, the nonces aside: a difference
   means the second request saw state the first one left behind.
+- **`fakeBackend`**, a fixture of `test`, is the backend of the app under test: a fake started before the app,
+  whose URL reaches the server as `NUXT_API_CLIENT_BACKEND_URL`, the setting of
+  [`api-client-starter`](../api-client-starter/README.md). `fakeBackend.use(...handlers)` adds MSW handlers for one
+  test, and they go once it ends.
 - **`startFakeBackend(...handlers)`** serves MSW handlers on a real port, so the server render reaches them, which a
-  mock in the browser never does. A request no handler knows gets a `501` that names it.
+  mock in the browser never does. A request no handler knows gets a `501` that names it, and every `Set-Cookie` of a
+  handler reaches the caller.
 
 The UI tests build the app, serve it as in production and open it in a headless Chromium, over HTTP even when the
 shell sets a certificate for Nitro.

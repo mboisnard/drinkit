@@ -15,9 +15,11 @@
     "test:ui": "playwright test"
   },
   "dependencies": {
+    "@drinkit/api-client-starter": "workspace:*",
     "@drinkit/nuxt-starter": "workspace:*",
     "@drinkit/security-starter": "workspace:*",
     "nuxt": "catalog:",
+    "ofetch": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"
   },
@@ -30,6 +32,7 @@
     "@playwright/test": "catalog:",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "msw": "catalog:",
     "stylelint": "catalog:",
     "typescript": "catalog:",
     "vue-tsc": "catalog:",
