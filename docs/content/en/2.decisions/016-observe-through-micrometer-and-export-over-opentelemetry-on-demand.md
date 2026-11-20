@@ -48,6 +48,12 @@ logs behind one property. Its OTLP export of metrics is on by default, towards `
   answers a 500 without its message, which only the logs hold, as OWASP's Error Handling Cheat Sheet advises. One
   exception handler of the starter answers them all: a filter hands its refusal to Spring MVC rather than writing a
   body.
+- **Errors of the frontend.** The Nuxt app's `observability-starter` catches, in the browser, every error the app
+  leaves unhandled. It logs the error once through consola with the status, the title and the `traceId` of its
+  problem detail, and calls the `drinkit:error` hook, the one place where an alerting tool such as Sentry plugs in.
+  The user sees a toast: the message the calling code gave, else the app's message for the status, and the
+  `traceId` as a reference to quote. An error of a server render is logged by Nitro, which already prints the problem
+  detail and its `traceId`, so nothing logs it twice. The browser sends nothing to a platform yet.
 - **A platform without a collector, for now.** The application pushes its logs, traces and metrics straight to
   OpenObserve, which also reads the attributes OpenTelemetry defines for calls to AI models, the GenAI conventions
   that `ai-starter` follows ([ADR 021](./021-serve-ai-models-outside-the-application-and-reach-them-through-ai-starter.md)).
@@ -79,6 +85,9 @@ The [logging page](../1.engineering/4.build-and-data/3.logging.md) and the READM
 - A metric, a span or a health check of a new starter is a few lines, with no module of our own to learn.
 - Changing platform, Datadog, Grafana or another, means setting an OTLP endpoint, not changing code.
 - A user who reports an error gives a `traceId`, and one search finds the logs of that request.
+- A page of the Nuxt app needs no code to log an unhandled error or show it, and one line to give it a message.
+- An error in a user's browser stays in their console until an alerting tool listens to `drinkit:error`, and the
+  logs of the Nitro server are plain text, not JSON lines.
 - The OpenTelemetry SDK, about twenty jars, is in every application, even where nothing is exported.
 - Spring Boot creates a span for every request, sampled or not: a cost in memory that a measure may one day question.
 - The `traceId` and `user.id` live in the MDC of the request's thread: a platform event handled on another thread
@@ -100,6 +109,10 @@ The [logging page](../1.engineering/4.build-and-data/3.logging.md) and the READM
 - **An OpenTelemetry Collector now**, in front of OpenObserve and Langfuse. Deferred: one application with no
   deployment does not pay for one more service to run and configure. It offers the signals of the services around
   the application, and the model calls in a platform made for them.
+- **A toast written by each page.** Rejected because each page would catch, log and show its errors its own way, and
+  a forgotten catch would show nothing. It offered no hook to learn.
+- **The frontend's errors logged on the server too**, through a Nitro plugin. Rejected because Nitro already logs
+  an error of a render, which would then appear twice. It offered JSON lines for those logs.
 - **Health and info only, as before.** Rejected because a failing request could not be traced back to its logs. It
   added no dependency.
 
