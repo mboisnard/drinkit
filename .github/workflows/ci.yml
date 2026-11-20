@@ -84,8 +84,11 @@ jobs:
   codeql:
     name: CodeQL
     needs: decision
-    if: contains(fromJSON(needs.decision.outputs.lanes), 'backend')
+    if: contains(fromJSON(needs.decision.outputs.lanes), 'backend') || contains(fromJSON(needs.decision.outputs.lanes), 'frontend')
     uses: $/.github/workflows/ci-codeql.yml
+    with:
+      kotlin: ${{ contains(fromJSON(needs.decision.outputs.lanes), 'backend') }}
+      typescript: ${{ contains(fromJSON(needs.decision.outputs.lanes), 'frontend') }}
     permissions:
       contents: read
       security-events: write

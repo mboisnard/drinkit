@@ -60,6 +60,7 @@ updater: &updater
 frontend: &frontend
   - *ci
   - '.github/workflows/ci-frontend.yml'
+  - '.github/workflows/ci-codeql.yml'
   - '.github/actions/setup-pnpm/**'
   - *pnpm
   - '.browserslistrc'
