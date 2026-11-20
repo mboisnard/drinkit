@@ -55,23 +55,28 @@ function serverRenderApi(nuxtApp: NuxtApp, event: H3Event, baseUrl: string): Api
   const jar = cookieJarOf(event);
   const client = clientOf(event);
 
+  function onRequest({ options }: FetchContext): void {
+    for (const [name, value] of relayHeaders(event.headers, client, 'server-render')) {
+      options.headers.set(name, value);
+    }
+    options.headers.set('cookie', jar.cookieHeader());
+    withCsrfToken(options, jar);
+  }
+
+  function keepCookies({ response }: FetchContext): void {
+    if (response) {
+      jar.receive(response.headers.getSetCookie());
+      const pageSetCookies = [getResponseHeader(event, 'set-cookie') ?? []].flat().map(String);
+      setResponseHeader(event, 'set-cookie', jar.setCookies(pageSetCookies));
+    }
+  }
+
   return {
     baseUrl,
-    onRequest: ({ options }) => {
-      for (const [name, value] of relayHeaders(event.headers, client, 'server-render')) {
-        options.headers.set(name, value);
-      }
-      options.headers.set('cookie', jar.cookieHeader());
-      withCsrfToken(options, jar);
-    },
-    onResponse: async ({ response }) => {
-      if (response) {
-        jar.receive(response.headers.getSetCookie());
-        const pageSetCookies = [getResponseHeader(event, 'set-cookie') ?? []].flat().map(String);
-        setResponseHeader(event, 'set-cookie', jar.setCookies(pageSetCookies));
-      }
-
-      await throwProblem(nuxtApp, response);
+    onRequest,
+    onResponse: async (context) => {
+      keepCookies(context);
+      await throwProblem(nuxtApp, context.response);
     },
   };
 }
@@ -83,10 +88,18 @@ function cookieJarOf(event: H3Event): CookieJar {
   return context.apiCookieJar;
 }
 
+function isWrite(options: FetchContext['options']): boolean {
+  return !SAFE_METHODS.includes(options.method?.toUpperCase() ?? 'GET');
+}
+
 // The __Host- cookie first: another site of the domain could plant the one without the prefix
+function csrfTokenOf(jar: CookieJar): string | undefined {
+  return jar.value('__Host-XSRF-TOKEN') ?? jar.value('XSRF-TOKEN');
+}
+
 function withCsrfToken(options: FetchContext['options'], jar: CookieJar): void {
-  const token = jar.value('__Host-XSRF-TOKEN') ?? jar.value('XSRF-TOKEN');
-  if (token && !SAFE_METHODS.includes(options.method?.toUpperCase() ?? 'GET')) {
+  const token = csrfTokenOf(jar);
+  if (token && isWrite(options)) {
     options.headers.set('x-xsrf-token', token);
   }
 }
