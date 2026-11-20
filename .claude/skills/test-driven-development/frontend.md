@@ -11,10 +11,10 @@ Work from what the user sees and does. Where code goes in the Nuxt app is in the
    `mockComponent`. The composables of Nuxt run for real in `test/nuxt`, and the test sets what they read: the
    `route` option of `renderSuspended`, `document.cookie`, fake timers. The backend is reached in one of three ways:
    - `registerEndpoint` of `@nuxt/test-utils/runtime`, answering the call the page makes, in a component test;
-   - `startFakeBackend` of `@drinkit/test-starter/fake-backend`, MSW handlers on a real port that the server render
-     reaches, in a UI test;
-   - a hand-written fake of the generated client, typed after it (`Pick<CellarsApi, 'findCellars'>`) and holding
-     its data in memory when the page writes then reads. A page that builds its client inline cannot receive one:
+   - the `fakeBackend` fixture of `@drinkit/test-starter/playwright`, MSW handlers on a real port that the server
+     render reaches, added by `fakeBackend.use(...)` for one test, in a UI test;
+   - a hand-written fake of the generated functions, typed after them (`typeof findCellars`) and holding its data
+     in memory when the page writes then reads. A page that builds its client inline cannot receive one:
      giving it its client from a place the test can replace is a reshape that comes first.
 
    A fake shared by several tests is written once. The levels and their folders are in `frontend-tests.md`, under
