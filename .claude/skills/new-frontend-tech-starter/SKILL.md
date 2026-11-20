@@ -50,7 +50,8 @@ app (§3).
 - Its configuration sits under one `runtimeConfig` key of its own, which the layer's `nuxt.config.ts` declares with
   a default that suits any app, or empty for the module to fill, so that an environment variable overrides it per
   environment (`NUXT_PUBLIC_<KEY>_...` for the public part). Only what the browser may see goes in the public
-  part.
+  part. A text the starter shows the user, such as the message of a toast, goes in the layer's `app/app.config.ts`
+  instead, which Nuxt merges with the app's: a build fixes it, no environment changes it.
 - What it renders follows the `frontend-feature` skill.
 
 ## 4. What it also touches
