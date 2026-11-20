@@ -1,4 +1,5 @@
-import { abortNavigation, createError, defineNuxtRouteMiddleware, navigateTo, useNuxtApp } from '#app';
+import { abortNavigation, createError, defineNuxtRouteMiddleware, navigateTo, useAppConfig, useNuxtApp } from '#app';
+import { ProblemError } from '@drinkit/api-client-starter/problem-error';
 import { accessTo } from '../../shared/access.ts';
 import { useAuthConfig } from '../auth-config.ts';
 import { useCurrentUserState } from '../current-user-state.ts';
@@ -14,7 +15,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const { state, load } = useCurrentUserState();
   const { signInPage, forbiddenRedirects } = useAuthConfig();
 
-  await load();
+  try {
+    await load();
+  } catch (error) {
+    if (!noAnswer(error)) {
+      throw error;
+    }
+
+    const { unavailableMessage } = useAppConfig().auth;
+    throw createError({ status: 503, statusText: 'Service Unavailable', message: unavailableMessage, fatal: true });
+  }
+
   const access = accessTo(to.meta.auth, state.value.user, forbiddenRedirects);
 
   switch (access.kind) {
@@ -28,3 +39,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
       return undefined;
   }
 });
+
+// No answer from the backend itself, or from a gateway in front of it: unavailable, rather than broken
+function noAnswer(error: unknown): boolean {
+  return (error instanceof Error && error.name === 'FetchError') || (error instanceof ProblemError && [502, 504].includes(error.status));
+}

@@ -15,6 +15,7 @@ flowchart LR
   MW -- "public, or allowed" --> Page
   MW -- "a visitor" --> SignIn["signInPage?redirect=…"]
   MW -- "a role missing" --> Other["forbiddenRedirects, or a 403"]
+  MW -- "no answer from the backend" --> Down["a 503: unavailableMessage"]
   SignIn -- "useEmailCodeSignIn" --> Done["completeSignIn<br/><small>user read, drinkit:signed-in,<br/>return URL on this origin</small>"]
   Done --> Page
   Page -- "signOut, or a 401" --> Out["user forgotten, drinkit:signed-out,<br/>data of the pages cleared"]
@@ -114,6 +115,10 @@ map every defense of the app to its requirement.
 | `auth.currentUserPath` | `NUXT_PUBLIC_AUTH_CURRENT_USER_PATH` | none, required once the app has a page | The path under the API that answers the current user, or 401 to a visitor |
 | `auth.signInPage` | `NUXT_PUBLIC_AUTH_SIGN_IN_PAGE` | `/sign-in` | Where a visitor goes when a page asks to sign in |
 | `auth.forbiddenRedirects` | none | `{}` | The page a signed-in user goes to, by a role they hold, when a page needs a role they lack, rather than a 403 |
+
+A backend that gives no answer to the read of the user, or a gateway in front of it that answers 502 or 504, shows
+the error page of a 503 with `unavailableMessage` of the `auth` key of the `app.config`, which the app overrides:
+`The server cannot be reached. Try again in a moment.` by default.
 
 The sign-in protocol is the backend `security-starter`'s, under the path of the API: `/api/auth/code`,
 `/api/auth/code/sign-in` and `/api/auth/logout`.
