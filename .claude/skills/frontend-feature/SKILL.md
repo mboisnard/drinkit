@@ -42,12 +42,16 @@ Each page renders on the server first, then in the browser. Code that runs while
 
 ## Calling the backend
 
-- Only through a client generated from the OpenAPI contract: no hand-written `fetch`, `$fetch` or `useFetch` to
-  the API, and no hand-written type that copies a schema of the contract. When the app has no such client yet,
-  adding it is a frontend tech starter of its own.
+- Only through the functions of `#api`, which `api-client-starter` generates from the OpenAPI contract: no
+  hand-written `fetch`, `$fetch` or `useFetch` to the API, and no hand-written type that copies a schema of the
+  contract.
+- Each call takes `useApi()` of `@drinkit/api-client-starter/use-api`, read in the composable before any `await`,
+  and a read runs in `useAsyncData`: the call then carries the cookies of its own request, and a server render
+  hands the browser the cookies the backend set.
+- A page maps a response to what it shows only where the two differ, in a plain function next to the composable.
 - A feature that needs a new operation or field changes the contract first: the `api-contract-change` skill.
-- An error the backend answers is a ProblemDetail. Catch it where the page can tell the user what happened;
-  `error.vue` of `nuxt-starter` shows the ones nobody catches.
+- An error the backend answers throws a `ProblemError`, which carries its ProblemDetail. Catch it where the page
+  can tell the user what happened; `error.vue` of `nuxt-starter` shows the ones nobody catches.
 - The session is the backend's http-only session cookie: the frontend never reads, stores or sends a session
   token itself, and keeps nothing secret in `localStorage`.
 
