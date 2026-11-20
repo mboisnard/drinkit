@@ -1,0 +1,46 @@
+{
+  "name": "@drinkit/observability-starter",
+  "description": "The Nuxt layer that logs each unhandled error of a DrinkIt app once with the backend's trace id, hands it to one hook for an alerting tool, and shows it to the user in a toast.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "main": "./nuxt.config.ts",
+  "exports": {
+    ".": "./nuxt.config.ts",
+    "./error-message": "./app/error-message.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "eslint --fix --max-warnings 0 .",
+    "test": "vitest run",
+    "typecheck": "nuxt typecheck",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@drinkit/nuxt-starter": "workspace:*",
+    "consola": "catalog:"
+  },
+  "devDependencies": {
+    "@drinkit/api-client-starter": "workspace:*",
+    "@drinkit/eslint-config": "workspace:*",
+    "@drinkit/test-starter": "workspace:*",
+    "@nuxt/test-utils": "catalog:",
+    "@nuxt/ui": "catalog:",
+    "@testing-library/vue": "catalog:",
+    "@types/node": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "eslint": "catalog:",
+    "happy-dom": "catalog:",
+    "nuxt": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "vue-tsc": "catalog:"
+  },
+  "peerDependencies": {
+    "@nuxt/ui": "catalog:",
+    "nuxt": "catalog:"
+  }
+}

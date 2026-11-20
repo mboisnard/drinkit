@@ -6,9 +6,11 @@ export interface ProblemDetail {
   status?: number;
   detail?: string;
   instance?: string;
+  /** The trace of the request in the backend's logs, when the backend gives it. */
+  traceId?: string;
 }
 
-export function toProblemDetail(error: Pick<NuxtError, 'data' | 'status' | 'statusText'>): ProblemDetail {
+export function toProblemDetail(error: Partial<Pick<NuxtError, 'data' | 'status' | 'statusText'>>): ProblemDetail {
   const problem = isProblemDetail(error.data) ? error.data : { title: error.statusText };
 
   return { ...problem, status: error.status };
