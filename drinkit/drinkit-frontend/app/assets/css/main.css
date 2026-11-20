@@ -1,2 +1,7 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
+
+/* The default primary shade of Nuxt UI is too light for WCAG AA on white, until the design system sets its own */
+:root {
+  --ui-primary: var(--ui-color-primary-700);
+}

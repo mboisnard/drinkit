@@ -23,7 +23,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     const { unavailableMessage } = useAppConfig().auth;
-    throw createError({ status: 503, statusText: 'Service Unavailable', message: unavailableMessage, fatal: true });
+    // The problem the error page shows, as a backend's 503 would carry it
+    const problem = { status: 503, title: 'Service Unavailable', detail: unavailableMessage };
+    throw createError({ status: 503, statusText: problem.title, data: problem, fatal: true });
   }
 
   const access = accessTo(to.meta.auth, state.value.user, forbiddenRedirects);

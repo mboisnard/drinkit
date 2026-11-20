@@ -8,6 +8,10 @@ security headers and follows the backend's session: the sign-in by email code, t
 declares, and [`observability-starter`](../../tech-starters/frontend/observability-starter), which logs an unhandled
 error with the backend's `traceId` and shows it in a toast of [Nuxt UI](https://ui.nuxt.com).
 
+The app replaces the error page of `nuxt-starter` with one of Nuxt UI, in `app/error.vue`, and shows a progress bar
+while a navigation in the browser waits for its page. Without the backend, a page says that the server cannot be
+reached: start it, then reload.
+
 With the backend running (`./gradlew :drinkit-backend:bootRun`), sign in on `http://localhost:3000/sign-in` with the
 code that Mailpit shows on `http://localhost:8025`.
 

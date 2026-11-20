@@ -45,6 +45,26 @@ test('after sign-out, opening the cellars again asks to sign in', async ({ page,
   await expect(page.getByText(BORDEAUX.name)).toHaveCount(0);
 });
 
+test('a navigation that waits for the backend shows a loading bar until the page shows', async ({ page, goto, fakeBackend }) => {
+  // Given
+  const { promise: answered, resolve: answer } = Promise.withResolvers<null>();
+  fakeBackend.use(http.get('/drinkit/api/cellars', async () => {
+    await answered;
+
+    return HttpResponse.json({ cellars: [BORDEAUX] });
+  }));
+  await goto('/', { waitUntil: 'hydration' });
+
+  // When
+  await page.getByRole('link', { name: 'My cellars' }).click();
+
+  // Then
+  await expect(page.getByRole('progressbar', { name: 'Loading the page' })).toBeVisible();
+  answer(null);
+  await expect(page.getByText(BORDEAUX.name)).toBeVisible();
+  await expect(page.getByRole('progressbar')).toHaveCount(0);
+});
+
 test.describe('with a sign-out that fails', () => {
   // One pattern: Playwright reads a second item of the array as the options of the fixture
   test.use({ ignoredConsoleErrors: [/status of 500|Unhandled error/] });
