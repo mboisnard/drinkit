@@ -28,7 +28,9 @@ export function useApi(): ApiOptions {
   const { path: apiPath, csrfPath } = config.public.apiClient;
 
   if (import.meta.server && event) {
-    return serverRenderApi(nuxtApp, event, `${config.apiClient.backendUrl}${apiPath}`, csrfPath);
+    const { backendUrl, serverRenderTimeout } = config.apiClient;
+
+    return serverRenderApi(nuxtApp, event, `${backendUrl}${apiPath}`, csrfPath, serverRenderTimeout);
   }
 
   return {
@@ -54,7 +56,13 @@ async function throwProblem(nuxtApp: NuxtApp, response: FetchContext['response']
   }
 }
 
-function serverRenderApi(nuxtApp: NuxtApp, event: H3Event, baseUrl: string, csrfPath: string): ApiOptions {
+function serverRenderApi(
+  nuxtApp: NuxtApp,
+  event: H3Event,
+  baseUrl: string,
+  csrfPath: string,
+  serverRenderTimeout: number,
+): ApiOptions {
   const jar = cookieJarOf(event);
   const client = clientOf(event);
 
@@ -64,6 +72,9 @@ function serverRenderApi(nuxtApp: NuxtApp, event: H3Event, baseUrl: string, csrf
     }
     options.headers.set('cookie', jar.cookieHeader());
     withCsrfToken(options, jar);
+    // A backend that accepts the connection but never answers would leave the page blank for Node's 5 minutes. The
+    // browser's calls have none: an action, such as a call to an AI model, may take longer than a page should
+    options.timeout = serverRenderTimeout;
   }
 
   function keepCookies({ response }: FetchContext): void {

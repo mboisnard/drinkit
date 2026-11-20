@@ -11,6 +11,8 @@ export interface ApiClientOptions {
   backendUrl?: string;
   /** The path under the API that writes the CSRF cookie, such as `/api/auth/csrf`, called before a write without it. */
   csrfPath?: string;
+  /** The milliseconds a call of the server render waits for the backend's answer before it gives up. */
+  serverRenderTimeout?: number;
 }
 
 /**
@@ -19,7 +21,7 @@ export interface ApiClientOptions {
  */
 export default defineNuxtModule<ApiClientOptions>({
   meta: { name: 'api-client', configKey: 'apiClient' },
-  setup({ contract, path, backendUrl, csrfPath = '' }, nuxt) {
+  setup({ contract, path, backendUrl, csrfPath = '', serverRenderTimeout = 60_000 }, nuxt) {
     if (!contract) {
       return;
     }
@@ -27,7 +29,7 @@ export default defineNuxtModule<ApiClientOptions>({
       throw new Error('apiClient needs the path of the API, such as /drinkit, and the backendUrl of the backend');
     }
 
-    nuxt.options.runtimeConfig.apiClient = { backendUrl };
+    nuxt.options.runtimeConfig.apiClient = { backendUrl, serverRenderTimeout };
     nuxt.options.runtimeConfig.public.apiClient = { path, csrfPath };
     addServerHandler({ route: `${path}/**`, handler: createResolver(import.meta.url).resolve('../server/relay.ts') });
 

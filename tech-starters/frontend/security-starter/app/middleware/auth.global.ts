@@ -12,6 +12,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return undefined;
   }
 
+  // Nuxt runs the middleware again to render the error page, which needs no user: a backend that hangs would be waited
+  // for twice
+  if (import.meta.server && nuxtApp.ssrContext?.error) {
+    return undefined;
+  }
+
   const { state, load } = useCurrentUserState();
   const { signInPage, forbiddenRedirects } = useAuthConfig();
 

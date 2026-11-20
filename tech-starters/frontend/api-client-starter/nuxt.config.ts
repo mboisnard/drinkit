@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     apiClient: {
       backendUrl: '',
+      serverRenderTimeout: 0,
     },
     public: {
       apiClient: {
