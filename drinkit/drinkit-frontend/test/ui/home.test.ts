@@ -60,6 +60,6 @@ test.describe('with a backend that fails', () => {
     await goto('/', { waitUntil: 'hydration' });
 
     // Then
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('500 Internal Server Error');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Internal Server Error');
   });
 });

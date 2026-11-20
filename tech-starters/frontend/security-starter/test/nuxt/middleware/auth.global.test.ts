@@ -99,7 +99,7 @@ test.each([502, 504])('a backend a gateway gets no answer from, %i, shows that t
   // Then
   await expect(navigation).rejects.toMatchObject({
     status: 503,
-    message: 'The server cannot be reached. Try again in a moment.',
+    data: { title: 'Service Unavailable', detail: 'The server cannot be reached. Try again in a moment.' },
   });
 });
 
@@ -114,6 +114,6 @@ test('a backend that gives no answer at all shows that the server cannot be reac
   // Then
   await expect(navigation).rejects.toMatchObject({
     status: 503,
-    message: 'The server cannot be reached. Try again in a moment.',
+    data: { title: 'Service Unavailable', detail: 'The server cannot be reached. Try again in a moment.' },
   });
 });
