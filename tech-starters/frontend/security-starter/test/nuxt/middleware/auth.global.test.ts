@@ -1,7 +1,7 @@
 import { clearError, clearNuxtState, useError, useRouter } from '#app';
 import { registerEndpoint } from '@nuxt/test-utils/runtime';
 import { setResponseStatus } from 'h3';
-import { beforeEach, expect, test } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { authBackend } from '../auth-backend.ts';
 import type { AuthBackend } from '../auth-backend.ts';
 import { addPages } from '../pages.ts';
@@ -15,6 +15,10 @@ beforeEach(async () => {
   backend = authBackend();
   await useRouter().push('/');
   clearNuxtState();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 test('a visitor opening a page for signed-in users goes to sign in, with the page as return URL', async () => {
@@ -76,4 +80,40 @@ test('a backend that cannot tell who the user is opens no page for signed-in use
   // Then
   await expect(navigation).rejects.toMatchObject({ status: 503 });
   expect(useRouter().currentRoute.value.path).toBe('/');
+});
+
+test.each([502, 504])('a backend a gateway gets no answer from, %i, shows that the server cannot be reached', async (status) => {
+  // Given
+  registerEndpoint('/drinkit/api/user/me', {
+    method: 'GET',
+    handler: (event) => {
+      setResponseStatus(event, status);
+
+      return null;
+    },
+  });
+
+  // When
+  const navigation = useRouter().push('/private');
+
+  // Then
+  await expect(navigation).rejects.toMatchObject({
+    status: 503,
+    message: 'The server cannot be reached. Try again in a moment.',
+  });
+});
+
+test('a backend that gives no answer at all shows that the server cannot be reached', async () => {
+  // Given: what ofetch throws when nothing listens
+  const noAnswer = Object.assign(new Error('[GET] "/drinkit/api/user/me": <no response> fetch failed'), { name: 'FetchError' });
+  vi.spyOn(globalThis, '$fetch').mockRejectedValue(noAnswer);
+
+  // When
+  const navigation = useRouter().push('/private');
+
+  // Then
+  await expect(navigation).rejects.toMatchObject({
+    status: 503,
+    message: 'The server cannot be reached. Try again in a moment.',
+  });
 });
