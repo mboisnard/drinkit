@@ -41,7 +41,8 @@ export function useCurrentUser(): CurrentUserSession {
       await nuxtApp.runWithContext(() => navigateTo(signInPage));
       await nuxtApp.runWithContext(() => {
         clearNuxtData();
-        clearNuxtState((key) => key !== CURRENT_USER_STATE);
+        // A deleted state breaks a module that still watches it, such as the Nuxt DevTools
+        clearNuxtState((key) => key !== CURRENT_USER_STATE, { reset: true });
       });
 
       // Nuxt reads the payload the server rendered only at start, and leaves it in the page
