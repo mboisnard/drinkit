@@ -77,6 +77,8 @@ The header comment of a hook holds two lines at most, as `AGENTS.md` asks of eve
   contains, as this skill's own description does. Every session lists it, so it puts the main use first and stays within
   the 1,024 characters of the [Agent Skills format][skill-practices]. A placeholder such as `<number>` goes in
   `argument-hint`: [Claude Code][claude-code-skills] shows the angle brackets of a description escaped.
+- A skill sends the agent to the deterministic check first, such as the architecture tests or the build, rather
+  than listing the code smells of the day. It names a pitfall only when it is a tool behavior no test catches.
 - `SKILL.md` stays short, its steps and rules. Commands, models and long examples go in files beside it, such as
   `examples.md`, that `SKILL.md` links itself: Claude may read only the start of a file it reaches through another
   one.

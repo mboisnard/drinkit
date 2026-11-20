@@ -33,10 +33,10 @@ Read the whole issue, its parent epic and the code it touches. The criteria are 
 hands back facts with their `path:line`: every file read here stays in the context of the session until it ends.
 Read yourself only the files you will change.
 
-Ask the maintainer before going on when a criterion is ambiguous or out of reach, or when the work needs a
-structuring choice. Once the maintainer settles it, record it with the `new-adr` skill in the same branch. Work
-discovered on the way becomes an issue through the `new-issue` skill. A small improvement to a file you touch goes
-in a commit of its own.
+Ask the maintainer before going on when a criterion is ambiguous or out of reach, or when the work needs a structuring
+choice, with a table that compares the options before the question. Once the maintainer settles it, record it with the
+`new-adr` skill in the same branch. Work discovered on the way becomes an issue through the `new-issue` skill. A small
+improvement to a file you touch goes in a commit of its own.
 
 ## 4. Create the worktree and seed the test list
 

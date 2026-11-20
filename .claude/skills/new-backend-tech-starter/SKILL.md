@@ -1,16 +1,16 @@
 ---
 name: new-backend-tech-starter
-description: Creates a backend tech starter under tech-starters/backend, or brings an existing one up to convention, wired by its auto-configurations with no Spring profile, with its configuration properties, test fixtures and documentation. Use it when asked for a new tech starter, a reusable technical library for the backend, or a migration of an existing starter away from profile-based activation.
+description: Creates a backend tech starter under tech-starters/backend, or brings an existing one up to convention, wired by its auto-configurations with no Spring profile, with its configuration properties, test fixtures and documentation. Use it when asked for a new tech starter or a reusable technical library for the backend.
 paths:
   - "tech-starters/backend/**"
 ---
 
 # New backend tech starter
 
-A tech starter solves one technical concern under `tech-starters/backend/<name>-starter/` and knows no business
-word (`docs/content/en/1.engineering/2.architecture/6.tech-starters.md`). The module layout, the build file and the
-code shapes are in [examples.md](examples.md). Any other change to an existing starter keeps its wiring: bringing
-the starter up to convention, as step 7 does, is an issue of its own.
+A tech starter solves one technical concern under `tech-starters/backend/<name>-starter/` and knows no business word
+(`docs/content/en/1.engineering/2.architecture/6.tech-starters.md`). It serves one application or several from its
+first version, even while one uses it: nothing that belongs to one application is a constant of the starter (§3). The
+module layout, the build file and the code shapes are in [examples.md](examples.md).
 
 ## Done means
 
@@ -21,8 +21,8 @@ the starter up to convention, as step 7 does, is an issue of its own.
       stereotype, and no Spring profile.
 - [ ] Every bean is `@ConditionalOnMissingBean`, by name when its type is generic or shared, and
       `starters.<name>.enabled=false` switches the starter off.
-- [ ] Properties live under `starters.<name>.*`, constructor-bound with defaults in Kotlin, and the README gives
-      each one's environment variable.
+- [ ] Properties live under `starters.<name>.*`, constructor-bound in Kotlin, with a default only where it suits
+      any application, and the README gives each one's environment variable.
 - [ ] `testFixtures` ship a hand-written double of each public interface that consumers' tests use.
 - [ ] `ApplicationContextRunner` tests cover the default bean, the back-off, the disabled starter and each
       implementation branch, and one `*TestContract` runs against both the double and the real implementation.
@@ -34,9 +34,8 @@ the starter up to convention, as step 7 does, is an issue of its own.
 ## 1. Before writing anything
 
 Read the convention plugins the build file needs, and one existing starter close to the need, from
-`ls tech-starters/backend`. A starter whose `src/main` holds a stereotype, or whose profile is in
-`spring.profiles.include`, predates this skill: copy its tests and fixtures, never its wiring. A starter with no
-bean, such as `kotlin-starter`, is a plain library with no auto-configuration and no switch: that is not a gap.
+`ls tech-starters/backend`. A starter with no bean, such as `kotlin-starter`, is a plain library with no
+auto-configuration and no switch: that is not a gap.
 
 Settle these from the issue, and ask the maintainer what it leaves open, a new module being a structuring choice:
 
@@ -45,16 +44,25 @@ Settle these from the issue, and ask the maintainer what it leaves open, a new m
 3. The public API: what a business module injects.
 4. One implementation, or several that the application chooses between.
 5. Whether it owns PostgreSQL tables.
-6. Its properties, their defaults, and which ones production must set.
+6. Its properties: every value that changes from one application to another, and which ones production must set.
 7. Its test support: a double only, or also a Testcontainers JUnit extension.
+
+Shape the public API for the code that will consume it:
+
+- Writes and lifecycle go through the starter's own small interface, so that behavior can be plugged on them. A
+  vendor SDK stays exposed for queries only.
+- A method that needs the caller, a user, a visitor or a flag subject, reads it from the request. An overload that
+  takes it explicitly exists only for code outside a request.
+- One extension point per concern, merged into one interface rather than split across bean types.
+- The design holds with several instances of the application running.
+- A cross-cutting concern takes one generic mechanism, a hook of the framework first, the simplest that works.
 
 ## 2. Auto-configurations, no stereotype
 
 The component scan of an application starts from the package of its `@SpringBootApplication`, `com.drinkit` for
-`drinkit-backend`, which holds every starter package. That is why the older starters work with bare `@Service`
-annotations, and what must stop: a scanned bean ignores `@ConditionalOnMissingBean`, is invisible to
-`ApplicationContextRunner`, is registered even when the starter is switched off, and disappears the day an
-application with another base package imports the starter.
+`drinkit-backend`, which holds every starter package. A scanned bean ignores `@ConditionalOnMissingBean`, is
+invisible to `ApplicationContextRunner`, is registered even when the starter is switched off, and disappears the
+day an application with another base package imports the starter: `starters.no-stereotype` refuses it.
 
 Traps:
 
@@ -83,6 +91,8 @@ Several implementations: one property selects, its default is the safest one, an
 A starter made of features that depend on each other, as `security-starter` is, may keep one auto-configuration per
 feature in a package per feature, each ordered by `after` on those it needs. Under `infra/`, the classes stay flat
 while the starter uses one technology, and a subpackage named after each technology appears with the second one.
+A concept that any technology of the starter would use, such as a retry, goes in `infra/<concept>`, never in the
+package of one technology. One class per concept, and no internal interface that repeats the public API.
 The auto-configuration and the properties are named `<Name>AutoConfiguration` and `<Name>Properties`, with
 `Starter` before the suffix only when Spring Boot already has the name, as `CacheStarterProperties`.
 
@@ -90,9 +100,13 @@ The auto-configuration and the properties are named `<Name>AutoConfiguration` an
 
 Properties go under `starters.<name>.*`, never under `spring.*`, `server.*` or `management.*`. The environment
 variable is the property uppercased, with `.` turned into `_` and hyphens removed:
-`starters.feature-management.flipt.url` is `STARTERS_FEATUREMANAGEMENT_FLIPT_URL`. Do not reproduce the old
-`${DRINKIT_XXX:}` placeholders, which hide a property from Spring's metadata. A starter whose only property is
+`starters.feature-management.flipt.url` is `STARTERS_FEATUREMANAGEMENT_FLIPT_URL`. A starter whose only property is
 `enabled` reads it in `@ConditionalOnProperty` with no properties class, and its README documents it.
+
+A value that belongs to one application, such as the URL of a service, a path, a name, a prefix or a table, is a
+property, never a constant, even while one application uses the starter. Its default suits any application, or it
+has none and the application fails at startup without it. A default that names DrinkIt is a sign it belongs to the
+application.
 
 A default for a key Spring owns, such as `spring.datasource.*`, goes in a defaults file loaded at the lowest
 precedence by an `EnvironmentPostProcessor`, so that the application and the environment always win. In Spring
@@ -120,6 +134,11 @@ A double of a public interface always runs the contract, however simple it is: w
 double breaks with it. A test is named after the rule it proves, never after its example, and marks its
 `// Given`, `// When` and `// Then` blocks.
 
+A change to a starter is proved by the starter's own tests, never by a test through a business module in the same
+pull request. A store that the tests need without the real technology lives in the test fixtures, never in
+`src/main`. A public helper, constant or `api` dependency that nothing uses yet stays: the starter is a toolkit for
+its consumers.
+
 The fixtures are plain public classes that implement the public interface, so the compiler breaks them when the
 API changes. The kinds and their models are in [examples.md](examples.md#test-fixtures).
 
@@ -135,15 +154,7 @@ A KDoc says only what the name and the types cannot: a trap, an outside constrai
 an OWASP rule ends its KDoc with that rule, `OWASP: ASVS 5.0 V7.2.4, Session Management Cheat Sheet (id renewal)`,
 so a reader sees why it exists. Wiring, or a class that only applies a rule another class holds, names none.
 
-## 7. Bringing an existing starter up to convention
+## 7. Aligning an existing starter
 
-One starter at a time, never mixing the two mechanisms in one module:
-
-1. Add the `@AutoConfiguration` class and its `.imports` file, and move every `@Bean` into it.
-2. Remove the stereotypes from the implementation classes.
-3. Move `application-<name>.yml` to a defaults file behind an `EnvironmentPostProcessor` (§3), keeping the keys
-   the application relies on.
-4. Remove the profile from `spring.profiles.include`: last, once the `ApplicationContextRunner` tests and a
-   `bootRun` both pass.
-5. Rename the properties into `starters.<name>.*`, keeping the old keys bound and marked deprecated in the
-   README until the application no longer sets them.
+The starter keeps what teaches its use: its example classes, the bodies of its tests, its type parameter names and
+its file layout. Test titles are renamed after the rule, and missing tests are added in the same style.

@@ -17,6 +17,9 @@ shows it on the first starter: follow both.
 Say it in one sentence. If it needs a word of the domain it belongs in the app; if it needs two sentences it is two
 starters. A new starter is a new module, a structuring choice: ask the maintainer first, as `AGENTS.md` says.
 
+Then list what would change for a second app with its own backend: each of those values becomes an option of the
+app (§3).
+
 ## 2. The layout
 
 - A Nuxt layer in `tech-starters/frontend/<name>/`, its sources under `app/` as in the app, and a package of the
@@ -38,9 +41,15 @@ starters. A new starter is a new module, a structuring choice: ask the maintaine
 
 - It never imports from the app, nor from the app's generated client: the app depends on the starter, never the
   reverse.
-- Its configuration sits under one `runtimeConfig` key of its own, with defaults in the layer's `nuxt.config.ts`,
-  so that an environment variable overrides it (`NUXT_PUBLIC_<KEY>_...` for the public part). Only what the
-  browser may see goes in the public part.
+- It serves one app or several, from its first version, even while one app uses it. A value that belongs to one
+  app, such as a backend URL, an API path, a contract, a name or a prefix, is an option the app sets in its own
+  `nuxt.config.ts`, through the starter's module, never a constant of the starter. With no default that suits any
+  app, the option is required and the build stops without it: the `apiClient` options of `api-client-starter` are
+  the model.
+- Its configuration sits under one `runtimeConfig` key of its own, which the layer's `nuxt.config.ts` declares with
+  a default that suits any app, or empty for the module to fill, so that an environment variable overrides it per
+  environment (`NUXT_PUBLIC_<KEY>_...` for the public part). Only what the browser may see goes in the public
+  part.
 - What it renders follows the `frontend-feature` skill.
 
 ## 4. What it also touches

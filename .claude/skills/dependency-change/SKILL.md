@@ -13,6 +13,10 @@ paths:
 The catalogs and the BOM are described in `docs/content/en/1.engineering/4.build-and-data/1.build-tool.md`. This skill gives the
 order, the commands and what proves each step.
 
+Before an in-house mechanism, survey the maintained libraries and read the source of the best one: adopt it, or
+write a simple version inspired by it. Off a deprecated API, take the replacement its documentation names,
+`@deprecated` or `ReplaceWith`, and make the setup change it needs.
+
 A new dependency is a structuring choice: ask the maintainer first, as `AGENTS.md` says. Renovate already opens
 the routine bumps. Before a dependency between modules, read
 `docs/content/en/1.engineering/2.architecture/3.hexagonal-architecture.md`.
