@@ -1,10 +1,16 @@
 # The lanes of ci.yml: a lane runs when a changed file matches one of its paths, and a changed file no list
 # below matches runs every lane. No '!' pattern: it would match every other file
 
+# The CI files lane: actionlint and zizmor read every workflow and action
 workflows: &workflows
   - '.github/workflows/**'
   - '.github/actions/**'
   - '.github/actionlint.yaml'
+
+# What every lane runs through: the jobs of ci.yml and these lists
+ci: &ci
+  - '.github/workflows/ci.yml'
+  - '.github/workflows/config/**'
 
 # The pnpm workspace that the frontend, the site and the hooks' tests install from
 pnpm: &pnpm
@@ -13,47 +19,63 @@ pnpm: &pnpm
   - 'pnpm-workspace.yaml'
   - 'pnpm-lock.yaml'
 
-backend: &backend
-  - *workflows
+# The Gradle build, which configures every module before it runs a task of one
+gradle: &gradle
+  - '.github/actions/setup-gradle-jdk/**'
   - 'build-logic/**'
-  - 'code-analysis/**'
   - 'gradle/**'
   - 'gradlew*'
   - 'gradle.properties'
   - '**/*.gradle.kts'
   - '**/*.lockfile'
-  - 'drinkit/drinkit-api-contract/contract/**'
-  - 'drinkit/drinkit-backend/src/**'
-  - 'drinkit/drinkit-domain/src/**'
-  - 'drinkit/drinkit-infra/src/**'
+
+# The sources of the Gradle modules, by the folders of the Gradle layout, so that a Nuxt app with a src/ stays out
+backend-sources: &backend-sources
+  - 'drinkit/*-api-contract/contract/**'
+  - 'drinkit/*/src/*/kotlin/**'
+  - 'drinkit/*/src/*/java/**'
+  - 'drinkit/*/src/*/resources/**'
+  - 'drinkit/*/src/generated/**' # the jOOQ classes
   - 'tech-starters/backend/*/src/**'
   - 'architecture-tests/src/**'
 
+backend: &backend
+  - *ci
+  - '.github/workflows/ci-backend.yml'
+  - '.github/workflows/ci-codeql.yml'
+  - *gradle
+  - 'code-analysis/detekt/**'
+  - *backend-sources
+
 updater: &updater
-  - *workflows
-  - 'build-logic/**'
-  - 'code-analysis/**'
-  - 'gradle/**'
-  - 'gradlew*'
-  - 'gradle.properties'
-  - '**/*.gradle.kts'
-  - '**/*.lockfile'
+  - *ci
+  - '.github/workflows/ci-updater.yml'
+  - '.github/workflows/cd-updater.yml'
+  - '.github/actions/updater-smoke/**'
+  - *gradle
+  - 'code-analysis/detekt/**'
   - 'deployment/updater/**'
   - 'deployment/local/compose.yml' # its PostgreSQL runs the image under test
 
 frontend: &frontend
-  - *workflows
+  - *ci
+  - '.github/workflows/ci-frontend.yml'
+  - '.github/actions/setup-pnpm/**'
   - *pnpm
   - '.browserslistrc'
   - 'code-analysis/eslint/**'
   - 'code-analysis/stylelint/**'
-  - 'drinkit/drinkit-api-contract/contract/**' # each app generates its client from it at each build
+  - 'drinkit/*-api-contract/contract/**' # each app generates its client from it at each build
   - 'drinkit/*-frontend/**'
   - 'tech-starters/frontend/**'
 
 docs: &docs
-  - *workflows
-  - *backend # the domain and tech starter pages are generated from its sources
+  - *ci
+  - '.github/workflows/ci-docs.yml'
+  - '.github/workflows/cd-docs.yml'
+  - '.github/actions/setup-pnpm/**'
+  - *gradle
+  - *backend-sources # the domain and tech starter pages are generated from them
   - *pnpm
   - '.browserslistrc'
   - 'code-analysis/eslint/**' # the lint rules of the site
@@ -63,22 +85,26 @@ docs: &docs
   - '.claude/skills/**' # published by the site
 
 hooks: &hooks
-  - *workflows
+  - *ci
+  - '.github/workflows/ci-hooks.yml'
+  - '.github/actions/setup-pnpm/**'
   - *pnpm # bats comes from the workspace
   - '.hooks/**'
-  - '.claude/**'
+  - '.claude/**' # harness.bats checks the settings, the globs and the links of the skills
 
 ops: &ops
-  - *workflows
+  - *ci
+  - '.github/workflows/ci-ops.yml'
   - 'deployment/local/**'
   - 'deployment/updater/src/main/resources/db/**' # compose's updater applies them, with the demo data
 
 renovate: &renovate
-  - *workflows
+  - *ci
+  - '.github/workflows/ci-renovate.yml'
   - '.github/renovate.json'
 
 dependencies: &dependencies
-  - *workflows
+  - *workflows # the dependency review reads the actions the workflows use
   - '**/*.gradle.kts'
   - '**/*.lockfile'
   - 'gradle/**'
