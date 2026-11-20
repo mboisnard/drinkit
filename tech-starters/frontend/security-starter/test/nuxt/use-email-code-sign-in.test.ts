@@ -1,0 +1,96 @@
+import { clearNuxtState, useNuxtApp, useRouter } from '#app';
+import { beforeEach, expect, test } from 'vitest';
+import { ProblemError } from '@drinkit/api-client-starter/problem-error';
+import { useCurrentUser } from '../../app/use-current-user.ts';
+import { useEmailCodeSignIn } from '../../app/use-email-code-sign-in.ts';
+import { authBackend } from './auth-backend.ts';
+import type { AuthBackend } from './auth-backend.ts';
+import { addPages } from './pages.ts';
+
+let backend: AuthBackend;
+
+beforeEach(async () => {
+  addPages();
+  clearNuxtState();
+  backend = authBackend();
+  backend.signsIn = { firstname: 'Ada', roles: ['ROLE_USER'] };
+  await useRouter().push('/sign-in');
+});
+
+test('asking for a code sends the email to the backend', async () => {
+  // When
+  await useEmailCodeSignIn().requestCode('ada@drinkit.com');
+
+  // Then
+  expect(backend.bodies.code).toStrictEqual([{ email: 'ada@drinkit.com' }]);
+});
+
+test('the right code signs the visitor in', async () => {
+  // When
+  await useEmailCodeSignIn().signIn({ email: 'ada@drinkit.com', code: '123456', rememberMe: false });
+
+  // Then
+  expect(useCurrentUser().user.value).toStrictEqual({ firstname: 'Ada', roles: ['ROLE_USER'] });
+});
+
+test('signing in asks the backend to remember the user when the visitor chose it', async () => {
+  // When
+  await useEmailCodeSignIn().signIn({ email: 'ada@drinkit.com', code: '123456', rememberMe: true });
+
+  // Then
+  expect(backend.bodies['sign-in']).toStrictEqual([{ email: 'ada@drinkit.com', code: '123456', rememberMe: true }]);
+});
+
+test('a signed-in visitor goes back to the page they asked for', async () => {
+  // Given
+  await useRouter().push('/sign-in?redirect=/cellars');
+
+  // When
+  await useEmailCodeSignIn().signIn({ email: 'ada@drinkit.com', code: '123456', rememberMe: false });
+
+  // Then
+  expect(useRouter().currentRoute.value.fullPath).toBe('/cellars');
+});
+
+test('a signed-in visitor without a return URL goes to the home page', async () => {
+  // When
+  await useEmailCodeSignIn().signIn({ email: 'ada@drinkit.com', code: '123456', rememberMe: false });
+
+  // Then
+  expect(useRouter().currentRoute.value.fullPath).toBe('/');
+});
+
+test('a return URL to another origin is ignored, and the visitor goes to the home page', async () => {
+  // Given
+  await useRouter().push('/sign-in?redirect=https://evil.example/cellars');
+
+  // When
+  await useEmailCodeSignIn().signIn({ email: 'ada@drinkit.com', code: '123456', rememberMe: false });
+
+  // Then
+  expect(useRouter().currentRoute.value.fullPath).toBe('/');
+});
+
+test('signing in tells the drinkit:signed-in hook once the user is known', async () => {
+  // Given
+  const known: unknown[] = [];
+  const unhook = useNuxtApp().hook('drinkit:signed-in', () => {
+    known.push(useCurrentUser().user.value);
+  });
+
+  // When
+  await useEmailCodeSignIn().signIn({ email: 'ada@drinkit.com', code: '123456', rememberMe: false });
+
+  // Then
+  unhook();
+  expect(known).toStrictEqual([{ firstname: 'Ada', roles: ['ROLE_USER'] }]);
+});
+
+test('a refused code throws the problem of the backend, and the visitor stays anonymous', async () => {
+  // When
+  const signIn = useEmailCodeSignIn().signIn({ email: 'ada@drinkit.com', code: '000000', rememberMe: false });
+
+  // Then
+  await expect(signIn).rejects.toBeInstanceOf(ProblemError);
+  expect(useCurrentUser().signedIn.value).toBe(false);
+});

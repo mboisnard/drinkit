@@ -10,7 +10,10 @@
 
 <script setup lang="ts">
   import { useSeoMeta } from '#app';
+  import { definePageMeta } from '#imports';
   import { useGreeting } from '../composables/useGreeting';
+
+  definePageMeta({ auth: 'public' });
 
   useSeoMeta({
     title: 'DrinkIt',

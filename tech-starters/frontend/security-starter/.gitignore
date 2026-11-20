@@ -22,3 +22,6 @@ logs
 .env
 .env.*
 !.env.example
+
+# The setup marker @nuxt/test-utils writes on its first run
+.nuxtrc

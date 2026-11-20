@@ -1,33 +1,58 @@
 {
   "name": "@drinkit/security-starter",
-  "description": "The Nuxt layer that secures every page of a DrinkIt app: the security headers, a Content Security Policy with a nonce per response, and no cache.",
+  "description": "The Nuxt layer that secures every page of a DrinkIt app: the security headers, no cache, the current user, the sign-in and sign-out, and the access of each page by role.",
   "license": "Apache-2.0",
   "private": true,
   "type": "module",
   "main": "./nuxt.config.ts",
   "exports": {
-    ".": "./nuxt.config.ts"
+    ".": "./nuxt.config.ts",
+    "./types": "./app/types.ts",
+    "./use-current-user": "./app/use-current-user.ts",
+    "./use-email-code-sign-in": "./app/use-email-code-sign-in.ts",
+    "./safe-redirect": "./shared/safe-redirect.ts",
+    "./testing": "./testing/index.ts"
   },
   "scripts": {
     "lint": "eslint --max-warnings 0 .",
     "lint:fix": "eslint --fix --max-warnings 0 .",
-    "typecheck": "nuxt typecheck",
+    "test": "vitest run",
+    "typecheck": "nuxt typecheck && tsc --project test/unit",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@drinkit/api-client-starter": "workspace:*",
+    "@drinkit/nuxt-starter": "workspace:*",
     "nuxt-security": "catalog:"
   },
   "devDependencies": {
     "@drinkit/eslint-config": "workspace:*",
+    "@drinkit/test-starter": "workspace:*",
+    "@nuxt/test-utils": "catalog:",
+    "@testing-library/vue": "catalog:",
     "@types/node": "catalog:",
+    "@vue/test-utils": "catalog:",
     "eslint": "catalog:",
+    "happy-dom": "catalog:",
+    "msw": "catalog:",
     "nuxt": "catalog:",
     "typescript": "catalog:",
+    "vitest": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:",
     "vue-tsc": "catalog:"
   },
   "peerDependencies": {
-    "nuxt": "catalog:"
+    "msw": "catalog:",
+    "nuxt": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "msw": {
+      "optional": true
+    },
+    "vitest": {
+      "optional": true
+    }
   }
 }
