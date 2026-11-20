@@ -40,6 +40,7 @@ export default defineNuxtConfig({
     contract: '../drinkit-api-contract/contract/api-definition.yaml',
     path: '/drinkit',
     backendUrl: 'http://127.0.0.1:8080',
+    csrfPath: '/api/auth/csrf',
   },
 });
 ```
@@ -84,6 +85,7 @@ restart it after a change of the contract.
 | `apiClient.contract` | none | none: no client, no relay | The contract the client is generated from, relative to the app |
 | `apiClient.path` | none | none, required with a contract | The path of the API on the backend, which the browser calls on the app's origin |
 | `apiClient.backendUrl` | `NUXT_API_CLIENT_BACKEND_URL` | none, required with a contract | The origin of the backend, which only the server reaches: the local one in `nuxt.config.ts`, the variable elsewhere |
+| `apiClient.csrfPath` | `NUXT_PUBLIC_API_CLIENT_CSRF_PATH` | none: a write without the cookie leaves without a token | The path under the API that writes the CSRF cookie. A write that finds no cookie, the first of a visitor or the first after a sign-out, calls it once before leaving |
 
 The CSRF token is read from `__Host-XSRF-TOKEN`, then from `XSRF-TOKEN`, the name of the `dev` profile.
 
