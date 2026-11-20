@@ -11,6 +11,10 @@ Read `docs/content/en/1.engineering/4.build-and-data/1.build-tool.md` first: it 
 the build, and each convention file explains its own choices in its comments. This skill gives the rules and what
 proves them.
 
+A check that enforces a convention uses an established tool, or readable code over the tool's own parser, never a
+hard-to-read regular expression. It turns on as many of the tool's rules as hold, fixes the existing files rather
+than baselining them, and gives each rule an id and its fix in the failure message.
+
 ## 1. Name the plugin by its file
 
 A convention's plugin id is its file name: `com.drinkit.<name>-convention.gradle.kts` is the plugin

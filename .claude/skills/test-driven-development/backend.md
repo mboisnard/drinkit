@@ -10,3 +10,5 @@ specific to the tests:
   double, as `InMemoryExchangeRatesTest` runs `ExchangeRatesTestContract`.
 - The adapter runs the same contract against the real technology, in the application's `-infra` module, as
   `JooqExchangeRatesTest` does, or in the starter that owns the adapter.
+- An endpoint of the application gets no MockMvc test: a `curl` against `bootRun`, quoted in the pull request,
+  proves a controller change. A starter tests its own endpoints.

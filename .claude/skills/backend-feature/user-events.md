@@ -18,6 +18,9 @@ Creating a user has no history to load: `CreateNewUser` builds the `Initialized`
 
 ## A new kind of event
 
+An event carries a business fact: no event, decider or use case exists only to migrate technical data. Before
+supporting an old format, check that deployed data holds it, and fix the seed data when nothing deployed does.
+
 The compiler finds some of the places, not all:
 
 - the event, a `data class` implementing `UserEvent`, next to the others in `UserHistory.kt`;

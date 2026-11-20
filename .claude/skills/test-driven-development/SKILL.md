@@ -62,10 +62,12 @@ Rules at every step:
 - Tests are fast, independent and repeatable: no sleep, no shared mutable state, time and identifiers from test
   doubles.
 - Once the list is done, no value shaped after a test remains: the code works for every valid input.
+- A test proves a behavior that could break, never one written only to have a test. The code, its tests and its
+  README describe what the code does: no assertion or comment guards against a behavior that is gone.
 
 ## 3. Refactor the feature
 
-This phase is required, even when the code looks good enough: agents tend to skip it. It reshapes the code the
+This phase is required, even when the code looks good enough. It reshapes the code the
 branch added, as a whole, tests green at every step and no assertion changed. A test name may follow a rename of
 the domain, since the names are the specification. The rules of `architecture-tests.md`, `coding-rules.md` and the
 `backend-feature` skill hold for the whole diff.

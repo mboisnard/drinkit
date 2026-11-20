@@ -23,7 +23,10 @@ An ADR records a choice that:
   later contributors work with
 
 The structuring choices of `AGENTS.md` usually qualify: a module, a dependency, the API contract, the schema
-layout, a security rule. A detail inside a pattern already decided, a version bump or a bug fix does not.
+layout, a security rule. A detail inside a pattern already decided, a version bump or a bug fix does not, nor a
+library swapped for the framework's own feature, nor a choice about the documentation site alone: the pull
+request's "Choices" keeps those. A decision that extends the topic of an ADR, without reversing it, enriches that
+ADR (§7).
 
 One ADR holds one decision. A choice made of independent parts gets one ADR per part.
 
@@ -68,7 +71,8 @@ give its context.
   one something a contributor will notice. A consequence may name what would reopen the decision.
 - **Alternatives.** Each real option, opening with why it was rejected, so that a reader sees the intent at once,
   then what it offered: "**Maven.** Rejected because a module inherits from one parent POM only. It offered a
-  well-known, declarative build." One or two sentences each.
+  well-known, declarative build." One or two sentences each, for the few strongest options, never a benchmark of
+  every provider.
 - **Sources.** Two or three references a reader would open, the title as link text, then the publisher. One of
   them argues another way when such a source exists, with a few words that say so, such as "the case against".
 
@@ -96,6 +100,9 @@ changes:
 
 1. Write a new ADR whose `supersedes` names the old one, and whose context says what changed.
 2. Set the `status` of the old one to `superseded`, and its `supersededBy` to the new one.
+
+A decision that extends the same topic without reversing it, such as a new channel for the emails, enriches the
+Decision, Consequences and Alternatives of that ADR in the same pull request, rather than taking a new number.
 
 A decision dropped with no replacement becomes `deprecated`, with the reason in the pull request. A `proposed`
 ADR the maintainer turns down becomes `rejected` and stays, so that the question does not start again from

@@ -76,3 +76,5 @@ needs no rule. A path that is public, reachable during registration, or for admi
       every decision maps to a `Result` case and every `Result` case to a status.
 - [ ] Every operation of the contract is implemented by its controller, and `SecurityConfiguration` gives each
       new path the access it needs.
+- [ ] Behavior tied to a class we own is a method of that class: an extension function stays for a type we do not
+      own. No in-memory implementation lives in `src/main`.
