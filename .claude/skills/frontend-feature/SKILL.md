@@ -26,8 +26,8 @@ frontend tech starter: the `new-frontend-tech-starter` skill.
 ## Explicit imports
 
 Auto-imports are off. Every name comes from an import: Vue from `vue`, Nuxt composables from `#imports` or `#app`,
-components from `#components`, a starter from its `@drinkit/<name>` package. The lint refuses a component used
-without its import, the type check a composable.
+Nuxt's components from `#components`, a component of the app by its path, a starter from its `@drinkit/<name>`
+package. The lint refuses a component used without its import, the type check a composable.
 
 ## Rendered on the server
 
@@ -44,7 +44,8 @@ Each page renders on the server first, then in the browser. Code that runs while
 
 - Only through the functions of `#api`, which `api-client-starter` generates from the OpenAPI contract: no
   hand-written `fetch`, `$fetch` or `useFetch` to the API, and no hand-written type that copies a schema of the
-  contract.
+  contract. A starter never imports `#api`: one that speaks a protocol of its backend namesake, as
+  `security-starter` the sign-in, calls it with `$fetch` and the options of `useApi()`.
 - Each call takes `useApi()` of `@drinkit/api-client-starter/use-api`, read in the composable before any `await`,
   and a read runs in `useAsyncData`: the call then carries the cookies of its own request, and a server render
   hands the browser the cookies the backend set.
@@ -53,7 +54,14 @@ Each page renders on the server first, then in the browser. Code that runs while
 - An error the backend answers throws a `ProblemError`, which carries its ProblemDetail. Catch it where the page
   can tell the user what happened; `error.vue` of `nuxt-starter` shows the ones nobody catches.
 - The session is the backend's http-only session cookie: the frontend never reads, stores or sends a session
-  token itself, and keeps nothing secret in `localStorage`.
+  token itself, and keeps nothing secret in `localStorage`. The current user, the sign-in and the sign-out come
+  from `security-starter`: `useCurrentUser()` and a sign-in composable, never a call of the app.
+
+## Who may open a page
+
+Every page declares it, `definePageMeta({ auth: 'public' })`, `'signed-in'` or a role, written as a literal: a page
+without it fails the type check. The access of a page decides what the app shows, the backend still decides what
+it answers.
 
 ## Business rules stay in the backend
 
