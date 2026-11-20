@@ -86,8 +86,19 @@ restart it after a change of the contract.
 | `apiClient.path` | none | none, required with a contract | The path of the API on the backend, which the browser calls on the app's origin |
 | `apiClient.backendUrl` | `NUXT_API_CLIENT_BACKEND_URL` | none, required with a contract | The origin of the backend, which only the server reaches: the local one in `nuxt.config.ts`, the variable elsewhere |
 | `apiClient.csrfPath` | `NUXT_PUBLIC_API_CLIENT_CSRF_PATH` | none: a write without the cookie leaves without a token | The path under the API that writes the CSRF cookie. A write that finds no cookie, the first of a visitor or the first after a sign-out, calls it once before leaving |
+| `apiClient.serverRenderTimeout` | `NUXT_API_CLIENT_SERVER_RENDER_TIMEOUT` | `60000` | The milliseconds a call of the server render waits for the backend's answer, as [below](#the-timeout-of-a-server-render) explains |
 
 The CSRF token is read from `__Host-XSRF-TOKEN`, then from `XSRF-TOKEN`, the name of the `dev` profile.
+
+## The timeout of a server render
+
+A backend that is down refuses the connection, and the page fails at once, whatever the timeout. One that accepts
+the connection but never answers, stuck on a lock or on a slow service it calls, would leave the page blank for the
+five minutes of Node's own limit: past `serverRenderTimeout`, the call fails with a `FetchError` instead, and the
+page shows the error page. A minute leaves room to a page that is slow for a good reason.
+
+A call of the browser has no timeout: the user sees the page load, and an action, such as a call to an AI model, may
+take longer than a page should.
 
 ## Checks
 
