@@ -9,4 +9,8 @@ export default defineNuxtConfig({
     path: '/drinkit',
     backendUrl: 'http://127.0.0.1:8080',
   },
+  auth: {
+    currentUserPath: '/api/user/me',
+    forbiddenRedirects: { ROLE_REGISTRATION_IN_PROGRESS: '/registration' },
+  },
 });

@@ -48,8 +48,9 @@ An app overrides any of them in its own `nuxt.config.ts`: the app wins over the 
 
 - **`toProblemDetail()`**, from `@drinkit/nuxt-starter/problem-detail`: the ProblemDetail an error carries, or its
   status alone, which `app/error.vue` shows.
-- **The hooks** of `app/hooks.d.ts`, typed: `drinkit:api:problem`, `drinkit:signed-in`, `drinkit:signed-out`. A starter
-  calls them, another listens, and a wrong name fails the type check.
+- **The hooks** of `app/hooks.d.ts`, typed: `drinkit:api:problem`, which `api-client-starter` calls,
+  `drinkit:signed-in` and `drinkit:signed-out`, which `security-starter` calls. A starter calls them, another
+  listens, and a wrong name fails the type check.
 
 ## Checks
 
