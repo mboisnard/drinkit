@@ -44,6 +44,45 @@ test('the body of a request reaches the handler', async () => {
   expect(await response.json()).toStrictEqual({ name: 'Home' });
 });
 
+test('every cookie a handler sets reaches the caller', async () => {
+  // Given
+  const headers = new Headers();
+  headers.append('set-cookie', 'SESSION=1; Path=/');
+  headers.append('set-cookie', 'visitor=2; Path=/');
+  backend = await startFakeBackend(http.get('/cellars', () => new HttpResponse(null, { headers })));
+
+  // When
+  const response = await fetch(`${backend.url}/cellars`);
+
+  // Then
+  expect(response.headers.getSetCookie()).toStrictEqual(['SESSION=1; Path=/', 'visitor=2; Path=/']);
+});
+
+test('a handler a test adds answers before the ones the fake backend started with', async () => {
+  // Given
+  backend = await startFakeBackend(http.get('/cellars', () => HttpResponse.json(['Home'])));
+
+  // When
+  backend.use(http.get('/cellars', () => HttpResponse.json([])));
+
+  // Then
+  const response = await fetch(`${backend.url}/cellars`);
+  expect(await response.json()).toStrictEqual([]);
+});
+
+test('a reset brings back the handlers the fake backend started with', async () => {
+  // Given
+  backend = await startFakeBackend(http.get('/cellars', () => HttpResponse.json(['Home'])));
+  backend.use(http.get('/cellars', () => HttpResponse.json([])));
+
+  // When
+  backend.reset();
+
+  // Then
+  const response = await fetch(`${backend.url}/cellars`);
+  expect(await response.json()).toStrictEqual(['Home']);
+});
+
 test('a closed fake backend no longer answers', async () => {
   // Given
   const closed = await startFakeBackend();
