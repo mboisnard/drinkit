@@ -7,6 +7,7 @@ import compat from 'eslint-plugin-compat';
 import playwright from 'eslint-plugin-playwright';
 import tseslint from 'typescript-eslint';
 import vueParser from 'vue-eslint-parser';
+import { folderImportRules } from './folder-imports.ts';
 import { composableUsesReactivity } from './rules/composable-uses-reactivity.ts';
 import { noAsyncComposable } from './rules/no-async-composable.ts';
 import { noModuleState } from './rules/no-module-state.ts';
@@ -94,6 +95,7 @@ export function drinkitEslint({ tsconfigRootDir }: DrinkitEslintOptions): Return
       rules: { 'import/no-default-export': 'off' },
     },
     ...fileNameRules(),
+    ...folderImportRules(),
     {
       files: [...TEST_FILES, ...UI_TEST_FILES],
       rules: {

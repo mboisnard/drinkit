@@ -33,10 +33,11 @@ the official command. Every page renders on the server first. The server is wher
 the backend and a nonce per response live.
 
 **Frontend tech starters are Nuxt layers.** Each starter lives in `tech-starters/frontend/<name>/`, its sources
-under `app/` as in the app, and is a package named `@drinkit/<name>`. The app lists it as `workspace:*`, extends it
-by that name, and imports what it exposes through the `exports` of its `package.json`, its public API. A starter
-holds runtime code only. The first one, `nuxt-starter`, holds what every app and starter relies on: explicit imports,
-the error page and the shared hooks.
+in the folders of a Nuxt app, sorted by where the code runs, and is a package named `@drinkit/<name>`. The lint
+refuses an import across those folders that Nuxt refuses in the app but not in a layer. The app lists it as
+`workspace:*`, extends it by that name, and imports what it exposes through the `exports` of its `package.json`, its
+public API. A starter holds runtime code only. The first one, `nuxt-starter`, holds what every app and starter relies
+on: explicit imports, the error page and the shared hooks.
 
 **One pnpm workspace.** A version lives once, in the strict catalog of `pnpm-workspace.yaml`, and one
 `pnpm-lock.yaml` covers every package. A release waits seven days before it can be installed, as Renovate waits, and
