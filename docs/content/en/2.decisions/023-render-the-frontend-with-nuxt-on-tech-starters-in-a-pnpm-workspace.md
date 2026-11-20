@@ -70,6 +70,11 @@ real code and replaces only a boundary, the call to the backend above all, throu
 the server render reaches. No module mock, not even of a Nuxt composable: the test sets the route, the cookies and
 the answers of the backend, and the real runtime does the rest.
 
+**Nuxt UI for the components.** The app takes its components from Nuxt UI, built on Reka UI and Tailwind CSS, and
+the toasts of `observability-starter` come from it. Until a starter of the design system holds its setup, the app
+installs the module itself, with the Lucide icons bundled into the build, no font downloaded and no color mode, whose
+inline script carries no nonce.
+
 **Explicit imports.** `nuxt-starter` turns auto-imports and the component scan off. Every name a file uses comes
 from an import, which the lint and the type check enforce.
 
@@ -87,6 +92,8 @@ only.
 - Each page carries the security headers and its nonce without a line of app code.
 - A contributor installs pnpm on top of Node: Node 26, the version of `.nvmrc`, ships without Corepack.
 - Every file lists its imports, which takes more lines than auto-imports did.
+- Nuxt UI brings Tailwind CSS, about 200 kB of CSS before compression, and an inline style of its colors that a
+  strict Content Security Policy has to allow.
 - The documentation site extends Docus, which needs auto-imports: it keeps them, and only the lint checks its
   imports, for components.
 - A page with a nonce is rendered for each request and sent with `Cache-Control: no-store`, so no shared cache keeps
@@ -129,6 +136,10 @@ only.
   rules of one runner or the other, and every test would move to Vitest later. It offered no dependency.
 - **A rule set written from the presets alone.** Rejected because Nuxt's config already knows the folders of pages
   and layouts and brings the Nuxt rules. It offered a lighter lock, by some sixty packages.
+- **A toast and components of our own**, before a design system exists. Rejected because accessible focus, live
+  regions and swipe are what a component library already gets right. It offered no dependency.
+- **PrimeVue, as the Nuxt 3 app used.** Rejected because Nuxt UI is the Nuxt team's own library, themed by Tailwind
+  tokens, and the documentation site already runs on it through Docus. It offered a wider set of components.
 - **Keeping auto-imports.** Rejected because an import shows where a name comes from and what a starter exposes.
   Nuxt's documentation argues the other way, for less boilerplate.
 
