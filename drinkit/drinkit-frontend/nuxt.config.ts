@@ -1,8 +1,17 @@
 import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
-  extends: ['@drinkit/nuxt-starter', '@drinkit/security-starter', '@drinkit/api-client-starter'],
+  extends: [
+    '@drinkit/nuxt-starter',
+    '@drinkit/security-starter',
+    '@drinkit/api-client-starter',
+    '@drinkit/observability-starter',
+  ],
+  modules: ['@nuxt/ui'],
   devtools: { enabled: true },
+  css: ['~/assets/css/main.css'],
+  // No font downloaded at build, and no color mode script, which carries no nonce and the CSP would refuse
+  ui: { fonts: false, colorMode: false },
   compatibilityDate: '2025-07-15',
   apiClient: {
     contract: '../drinkit-api-contract/contract/api-definition.yaml',

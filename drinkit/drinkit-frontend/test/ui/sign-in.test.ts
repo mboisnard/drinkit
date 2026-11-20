@@ -99,5 +99,6 @@ test.describe('with a refused code', () => {
     // Then
     await expect(page.getByRole('alert')).toHaveText('This code is wrong or has expired. Check it, or ask for a new one.');
     await expect(page).toHaveURL('/sign-in');
+    await expect(page.getByRole('region', { name: /Notifications/ }).getByRole('listitem')).toHaveCount(0);
   });
 });

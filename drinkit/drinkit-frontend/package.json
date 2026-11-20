@@ -17,9 +17,13 @@
   "dependencies": {
     "@drinkit/api-client-starter": "workspace:*",
     "@drinkit/nuxt-starter": "workspace:*",
+    "@drinkit/observability-starter": "workspace:*",
     "@drinkit/security-starter": "workspace:*",
+    "@iconify-json/lucide": "catalog:",
+    "@nuxt/ui": "catalog:",
     "nuxt": "catalog:",
     "ofetch": "catalog:",
+    "tailwindcss": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"
   },
