@@ -1,4 +1,4 @@
-import { clearNuxtState, useNuxtApp, useNuxtData, useRouter } from '#app';
+import { clearNuxtState, useNuxtApp, useNuxtData, useRouter, useState } from '#app';
 import { beforeEach, expect, test } from 'vitest';
 import { useCurrentUser } from '../../app/use-current-user.ts';
 import { authBackend } from './auth-backend.ts';
@@ -102,6 +102,19 @@ test('signing out clears the data the pages read for the user', async () => {
 
   // Then
   expect(useNuxtData('cellars').data.value).toBeUndefined();
+});
+
+test('signing out puts every state back to the value it starts with', async () => {
+  // Given
+  backend.user = { firstname: 'Ada', roles: ['ROLE_USER'] };
+  await useCurrentUser().refresh();
+  useState('draft', () => ({ note: '' })).value = { note: 'Ada' };
+
+  // When
+  await useCurrentUser().signOut();
+
+  // Then
+  expect(useState('draft').value).toStrictEqual({ note: '' });
 });
 
 test('signing out removes the data the server rendered into the page', async () => {
