@@ -9,6 +9,6 @@ export default defineVitestProjects({
       currentUserPath: '/api/user/me',
       forbiddenRedirects: { ROLE_REGISTRATION_IN_PROGRESS: '/registration' },
     },
-    runtimeConfig: { public: { apiClient: { path: '/drinkit' } } },
+    runtimeConfig: { public: { apiClient: { path: '/drinkit', csrfPath: '' } } },
   },
 });

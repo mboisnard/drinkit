@@ -34,6 +34,7 @@ flowchart LR
 // nuxt.config.ts
 export default defineNuxtConfig({
   extends: ['@drinkit/nuxt-starter', '@drinkit/security-starter', '@drinkit/api-client-starter'],
+  apiClient: { /* …, */ csrfPath: '/api/auth/csrf' },
   auth: {
     currentUserPath: '/api/user/me',
     forbiddenRedirects: { ROLE_REGISTRATION_IN_PROGRESS: '/registration' },

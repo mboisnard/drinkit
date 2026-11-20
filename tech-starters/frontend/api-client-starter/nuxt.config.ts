@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     public: {
       apiClient: {
         path: '',
+        csrfPath: '',
       },
     },
   },

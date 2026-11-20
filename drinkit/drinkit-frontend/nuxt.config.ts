@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     contract: '../drinkit-api-contract/contract/api-definition.yaml',
     path: '/drinkit',
     backendUrl: 'http://127.0.0.1:8080',
+    csrfPath: '/api/auth/csrf',
   },
   auth: {
     currentUserPath: '/api/user/me',

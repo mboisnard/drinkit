@@ -1,4 +1,4 @@
-import { useNuxtApp } from '#app';
+import { useNuxtApp, useRuntimeConfig } from '#app';
 import { registerEndpoint } from '@nuxt/test-utils/runtime';
 import { getHeader, setResponseHeader, setResponseStatus } from 'h3';
 import type { EventHandler } from 'h3';
@@ -34,6 +34,23 @@ function problem(status: number, statusText: string, body: ProblemDetail): Event
 
     return body;
   };
+}
+
+// The relay answers with the cookie, which the browser keeps: the endpoint writes it the way the browser would
+function serveCsrfToken(path: string, token: string): { calls: number } {
+  const served = { calls: 0 };
+  registerEndpoint(path, {
+    method: 'GET',
+    handler: (event) => {
+      served.calls++;
+      document.cookie = `XSRF-TOKEN=${token}`;
+      setResponseStatus(event, 204);
+
+      return null;
+    },
+  });
+
+  return served;
 }
 
 function echoCsrfToken(path: string): void {
@@ -110,4 +127,57 @@ test('a problem answer is told to the drinkit:api:problem hook', async () => {
   // Then
   unhook();
   expect(problems).toStrictEqual([{ title: 'No such cellar', status: 404 }]);
+});
+
+test('a write without a CSRF cookie first fetches the token, then carries it', async () => {
+  // Given
+  serveCsrfToken('/drinkit/api/auth/csrf', 'fetched-token');
+  echoCsrfToken('/drinkit/api/auth/code');
+
+  // When
+  const answer = await call(useApi(), '/api/auth/code', 'POST');
+
+  // Then
+  expect(answer).toStrictEqual({ token: 'fetched-token' });
+});
+
+test('a write with a CSRF cookie fetches no token', async () => {
+  // Given
+  const csrf = serveCsrfToken('/drinkit/api/auth/csrf', 'fetched-token');
+  echoCsrfToken('/drinkit/api/cellars/kept');
+  document.cookie = 'XSRF-TOKEN=kept-token';
+
+  // When
+  const answer = await call(useApi(), '/api/cellars/kept', 'POST');
+
+  // Then
+  expect({ answer, fetches: csrf.calls }).toStrictEqual({ answer: { token: 'kept-token' }, fetches: 0 });
+});
+
+test('a read fetches no CSRF token', async () => {
+  // Given
+  const csrf = serveCsrfToken('/drinkit/api/auth/csrf', 'fetched-token');
+  registerEndpoint('/drinkit/api/cellars/list', { method: 'GET', handler: () => ({ cellars: [] }) });
+
+  // When
+  await call(useApi(), '/api/cellars/list');
+
+  // Then
+  expect(csrf.calls).toBe(0);
+});
+
+test('without a CSRF path, a write without a cookie leaves without a token', async () => {
+  // Given
+  const csrf = serveCsrfToken('/drinkit/api/auth/csrf', 'fetched-token');
+  echoCsrfToken('/drinkit/api/cellars/no-csrf-path');
+  const apiClient = useRuntimeConfig().public.apiClient;
+  apiClient.csrfPath = '';
+
+  // When
+  const answer = await call(useApi(), '/api/cellars/no-csrf-path', 'POST').finally(() => {
+    apiClient.csrfPath = '/api/auth/csrf';
+  });
+
+  // Then
+  expect({ answer, fetches: csrf.calls }).toStrictEqual({ answer: { token: null }, fetches: 0 });
 });

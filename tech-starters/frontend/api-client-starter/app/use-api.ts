@@ -25,15 +25,18 @@ export function useApi(): ApiOptions {
   const nuxtApp = useNuxtApp();
   const event = useRequestEvent();
   const config = useRuntimeConfig();
-  const apiPath = config.public.apiClient.path;
+  const { path: apiPath, csrfPath } = config.public.apiClient;
 
   if (import.meta.server && event) {
-    return serverRenderApi(nuxtApp, event, `${config.apiClient.backendUrl}${apiPath}`);
+    return serverRenderApi(nuxtApp, event, `${config.apiClient.backendUrl}${apiPath}`, csrfPath);
   }
 
   return {
     baseUrl: apiPath,
-    onRequest: ({ options }) => {
+    onRequest: async ({ options }) => {
+      if (needsCsrfToken(options, new CookieJar(document.cookie), csrfPath)) {
+        await $fetch(csrfPath, { baseURL: apiPath });
+      }
       withCsrfToken(options, new CookieJar(document.cookie));
     },
     onResponse: async ({ response }) => {
@@ -51,7 +54,7 @@ async function throwProblem(nuxtApp: NuxtApp, response: FetchContext['response']
   }
 }
 
-function serverRenderApi(nuxtApp: NuxtApp, event: H3Event, baseUrl: string): ApiOptions {
+function serverRenderApi(nuxtApp: NuxtApp, event: H3Event, baseUrl: string, csrfPath: string): ApiOptions {
   const jar = cookieJarOf(event);
   const client = clientOf(event);
 
@@ -73,7 +76,12 @@ function serverRenderApi(nuxtApp: NuxtApp, event: H3Event, baseUrl: string): Api
 
   return {
     baseUrl,
-    onRequest,
+    onRequest: async (context) => {
+      if (needsCsrfToken(context.options, jar, csrfPath)) {
+        await $fetch(csrfPath, { baseURL: baseUrl, onRequest, onResponse: keepCookies });
+      }
+      onRequest(context);
+    },
     onResponse: async (context) => {
       keepCookies(context);
       await throwProblem(nuxtApp, context.response);
@@ -94,7 +102,13 @@ function isWrite(options: FetchContext['options']): boolean {
 
 // The __Host- cookie first: another site of the domain could plant the one without the prefix
 function csrfTokenOf(jar: CookieJar): string | undefined {
-  return jar.value('__Host-XSRF-TOKEN') ?? jar.value('XSRF-TOKEN');
+  return [jar.value('__Host-XSRF-TOKEN'), jar.value('XSRF-TOKEN')].find(Boolean);
+}
+
+// A visitor's first write, or the first after a sign-out, has no token yet: the backend writes it on demand.
+// OWASP: ASVS 5.0 V3.5.1, CSRF Prevention Cheat Sheet (cookie-to-header token)
+function needsCsrfToken(options: FetchContext['options'], jar: CookieJar, csrfPath: string): boolean {
+  return Boolean(csrfPath) && isWrite(options) && !csrfTokenOf(jar);
 }
 
 function withCsrfToken(options: FetchContext['options'], jar: CookieJar): void {

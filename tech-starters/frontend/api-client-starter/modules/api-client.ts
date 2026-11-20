@@ -9,6 +9,8 @@ export interface ApiClientOptions {
   path?: string;
   /** The origin of the backend on a developer's machine, which `NUXT_API_CLIENT_BACKEND_URL` replaces elsewhere. */
   backendUrl?: string;
+  /** The path under the API that writes the CSRF cookie, such as `/api/auth/csrf`, called before a write without it. */
+  csrfPath?: string;
 }
 
 /**
@@ -17,7 +19,7 @@ export interface ApiClientOptions {
  */
 export default defineNuxtModule<ApiClientOptions>({
   meta: { name: 'api-client', configKey: 'apiClient' },
-  setup({ contract, path, backendUrl }, nuxt) {
+  setup({ contract, path, backendUrl, csrfPath = '' }, nuxt) {
     if (!contract) {
       return;
     }
@@ -26,7 +28,7 @@ export default defineNuxtModule<ApiClientOptions>({
     }
 
     nuxt.options.runtimeConfig.apiClient = { backendUrl };
-    nuxt.options.runtimeConfig.public.apiClient = { path };
+    nuxt.options.runtimeConfig.public.apiClient = { path, csrfPath };
     addServerHandler({ route: `${path}/**`, handler: createResolver(import.meta.url).resolve('../server/relay.ts') });
 
     const input = resolve(nuxt.options.rootDir, contract);
