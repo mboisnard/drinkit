@@ -12,10 +12,13 @@ import { composableUsesReactivity } from './rules/composable-uses-reactivity.ts'
 import { noAsyncComposable } from './rules/no-async-composable.ts';
 import { noModuleState } from './rules/no-module-state.ts';
 import { noUnguardedBrowserGlobal } from './rules/no-unguarded-browser-global.ts';
+import { translationRules } from './translation-rules.ts';
 
 export interface DrinkitEslintOptions {
   /** The folder of the package's tsconfig.json, `import.meta.dirname` in its eslint.config.ts. */
   tsconfigRootDir: string;
+  /** Refuses a text written in a template and the untyped translation of vue-i18n, unless a package shows no text. */
+  translations?: boolean;
 }
 
 const drinkit = {
@@ -33,7 +36,9 @@ const UI_TEST_FILES = ['**/test/ui/**/*.ts'];
 const DEFAULT_EXPORT_FILES = ['**/*.vue', '**/*.config.ts', '**/router.options.ts', '**/plugins/**', '**/middleware/**',
   '**/modules/**', '**/server/**'];
 
-export function drinkitEslint({ tsconfigRootDir }: DrinkitEslintOptions): ReturnType<typeof createConfigForNuxt> {
+export function drinkitEslint(
+  { tsconfigRootDir, translations = true }: DrinkitEslintOptions,
+): ReturnType<typeof createConfigForNuxt> {
   return createConfigForNuxt(
     {
       features: {
@@ -96,6 +101,7 @@ export function drinkitEslint({ tsconfigRootDir }: DrinkitEslintOptions): Return
     },
     ...fileNameRules(),
     ...folderImportRules(),
+    ...(translations ? translationRules() : []),
     {
       files: [...TEST_FILES, ...UI_TEST_FILES],
       rules: {

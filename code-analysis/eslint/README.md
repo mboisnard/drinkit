@@ -33,7 +33,8 @@ import { drinkitEslint } from '@drinkit/eslint-config';
 export default drinkitEslint({ tsconfigRootDir: import.meta.dirname });
 ```
 
-A package adds its own rules with `.append({ files, rules })`, as a starter that brings a concern brings its rules.
+A package adds its own rules with `.append({ files, rules })`. The documentation site passes `translations: false`,
+since its texts are its pages.
 
 ## Presets
 
@@ -86,6 +87,8 @@ A package adds its own rules with `.append({ files, rules })`, as a starter that
 | `check-file/folder-match-with-fex` | A `*.test.ts` or `*.spec.ts` outside `test/unit`, `test/nuxt` or `test/ui`, where no test runner would find it |
 | `no-restricted-imports` by folder, in `folder-imports.ts` | `shared/` imports neither the Vue app, Nitro's aliases nor Vue, `app/` never imports `server/`, `server/` never imports the Vue app, and `modules/` no runtime alias: Nuxt guards these in the folders of the app, not in those of a layer |
 | `no-restricted-properties`, `no-restricted-imports` in tests | No `vi.mock`, `mockNuxtImport` nor `mockComponent`: a test replaces a boundary, never a module |
+| `vue/no-bare-strings-in-template`, unless `translations: false`, in `translation-rules.ts` | No text written in a template or in a label attribute, outside a page of a test |
+| `vue/no-restricted-syntax`, `@typescript-eslint/no-restricted-imports`, unless `translations: false` | No `$t`, `$d`, `$n` of vue-i18n in a template, nor `useI18n`: `useTranslate()` of `i18n-starter`, whose keys the type check knows |
 | `vitest/expect-expect` | Counts `expectLocaleParity` and `expectValidMessages` of `@drinkit/i18n-starter` as assertions |
 | `playwright/expect-expect` | Counts `expectAccessible` and `expectSameServerRender` of `@drinkit/test-starter` as assertions |
 
