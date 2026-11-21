@@ -8,10 +8,10 @@ export default defineNuxtConfig({
   imports: {
     autoImport: false,
   },
-  // Relative to .nuxt: the lint and test configs, which Nuxt leaves out of its tsconfigs, run on Node
+  // Relative to .nuxt: the lint and test configs and the unit tests, which run on Node outside Nuxt's tsconfigs
   typescript: {
     nodeTsConfig: {
-      include: ['../eslint.config.ts', '../vitest.config.ts'],
+      include: ['../eslint.config.ts', '../vitest.config.ts', '../test/unit/**/*.ts'],
       compilerOptions: { types: ['node'] },
     },
   },

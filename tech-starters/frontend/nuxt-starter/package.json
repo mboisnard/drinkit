@@ -13,7 +13,7 @@
     "lint": "eslint --max-warnings 0 . && stylelint 'app/**/*.{css,vue}' --allow-empty-input",
     "lint:fix": "eslint --fix --max-warnings 0 . && stylelint --fix 'app/**/*.{css,vue}' --allow-empty-input",
     "test": "vitest run",
-    "typecheck": "nuxt typecheck && tsc --project test/unit",
+    "typecheck": "nuxt typecheck",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
