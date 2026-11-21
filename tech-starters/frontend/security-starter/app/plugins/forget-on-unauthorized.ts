@@ -15,7 +15,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       return;
     }
 
-    await forget();
+    forget();
+    await nuxtApp.callHook('drinkit:signed-out');
     const page = router.currentRoute.value;
     const signIn = { path: localizedPath(signInPage), query: { redirect: page.fullPath } };
     await nuxtApp.runWithContext(() => navigateTo(signIn));

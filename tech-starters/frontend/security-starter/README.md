@@ -74,7 +74,8 @@ const { user, signedIn, hasRole, signOut } = useCurrentUser();
 - **`safeRedirect(value)`**, from `./safe-redirect`: a return URL when it stays on the app's origin, `undefined`
   otherwise.
 - **The hooks** `drinkit:signed-in` and `drinkit:signed-out` of `nuxt-starter`, called after a sign-in and a sign-out
-  in the page. A session restored by the remember-me cookie, or opened by a redirect, calls neither: a listener also
+  in the page, `drinkit:signed-out` once every state is back to its start, so that what a listener loads for the
+  visitor stays. A session restored by the remember-me cookie, or opened by a redirect, calls neither: a listener also
   reads `useCurrentUser()` when it starts.
 - **A 401 to a signed-in user**, an ended session, forgets them and sends them to sign in, back to the page after.
 - **The headers**: a Content Security Policy with `strict-dynamic` and a nonce per response, `default-src` and

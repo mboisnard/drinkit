@@ -1,0 +1,51 @@
+{
+  "name": "@drinkit/feature-management-starter",
+  "description": "The Nuxt layer that reads the feature flags and the A/B test variants of a DrinkIt app from its backend over OFREP, once per server render and again on each sign-in and sign-out, and reports the exposure of a variant shown.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "main": "./nuxt.config.ts",
+  "exports": {
+    ".": "./nuxt.config.ts",
+    "./use-flag": "./app/use-flag.ts",
+    "./use-variant": "./app/use-variant.ts",
+    "./testing": "./testing/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "eslint --fix --max-warnings 0 .",
+    "test": "vitest run",
+    "typecheck": "nuxt typecheck",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@drinkit/api-client-starter": "workspace:*",
+    "@drinkit/nuxt-starter": "workspace:*"
+  },
+  "devDependencies": {
+    "@drinkit/eslint-config": "workspace:*",
+    "@drinkit/i18n-starter": "workspace:*",
+    "@drinkit/test-starter": "workspace:*",
+    "@nuxt/test-utils": "catalog:",
+    "@types/node": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "eslint": "catalog:",
+    "happy-dom": "catalog:",
+    "msw": "catalog:",
+    "nuxt": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "vue-tsc": "catalog:"
+  },
+  "peerDependencies": {
+    "msw": "catalog:",
+    "nuxt": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "msw": {
+      "optional": true
+    }
+  }
+}
