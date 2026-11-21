@@ -32,9 +32,12 @@ sequenceDiagram
     end
     Note over Code: the variant reaches the user
     Code->>Starter: trackExposure(assignment)
+    Starter->>Starter: track("exposure") on the experiments provider, in the experiment only
 ```
 
-Until PostHog is wired, no provider draws variants, and exposures go nowhere: every user gets `control`.
+The provider of the `experiments` domain of OpenFeature both draws the variants and receives the exposures, through
+`track("exposure")` with the `experiment` and `variant` details: a connector, such as PostHog's, is that provider.
+Until one is set, no provider draws variants, and exposures go nowhere: every user gets `control`.
 
 ## Usage
 
