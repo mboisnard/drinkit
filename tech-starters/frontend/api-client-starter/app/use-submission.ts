@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import type { Ref } from 'vue';
-import { ProblemError } from '@drinkit/api-client-starter/problem-error';
+import { ProblemError } from './problem-error.ts';
 
 export interface Submission {
   pending: Ref<boolean>;

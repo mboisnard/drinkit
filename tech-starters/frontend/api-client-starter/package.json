@@ -9,7 +9,8 @@
     ".": "./nuxt.config.ts",
     "./client-config": "./app/client-config.ts",
     "./use-api": "./app/use-api.ts",
-    "./problem-error": "./app/problem-error.ts"
+    "./problem-error": "./app/problem-error.ts",
+    "./submission": "./app/use-submission.ts"
   },
   "scripts": {
     "lint": "eslint --max-warnings 0 .",
