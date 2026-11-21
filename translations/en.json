@@ -2,6 +2,8 @@
   "auth.forbidden": "Forbidden",
   "auth.unavailable.detail": "The server cannot be reached. Try again in a moment.",
   "auth.unavailable.title": "Service Unavailable",
+  "cellars.delete": "Delete",
+  "cellars.deleteLabel": "Delete {cellarName}",
   "cellars.empty": "No cellar yet.",
   "cellars.item": "{cellarName}, {city}",
   "cellars.title": "My cellars",

@@ -1,9 +1,12 @@
 import { http, HttpResponse } from 'msw';
 import { expect, expectAccessible, test } from '@drinkit/test-starter/playwright';
 import { BORDEAUX, cellarBackend } from './cellar-backend.ts';
+import type { CellarBackend } from './cellar-backend.ts';
+
+let backend: CellarBackend;
 
 test.beforeEach(async ({ context, fakeBackend, baseURL }) => {
-  const backend = cellarBackend(fakeBackend);
+  backend = cellarBackend(fakeBackend);
   const cookies = backend.signedInAs({ firstname: 'Camille', roles: ['ROLE_USER'] });
   await context.addCookies(cookies.map((cookie) => ({ ...cookie, url: baseURL })));
 });
@@ -43,6 +46,41 @@ test('after sign-out, opening the cellars again asks to sign in', async ({ page,
   // Then
   await expect(page).toHaveURL('/sign-in?redirect=/cellars');
   await expect(page.getByText(BORDEAUX.name)).toHaveCount(0);
+});
+
+test('a double click on delete deletes the cellar once, with no error', async ({ page, goto }) => {
+  // Given
+  await goto('/cellars', { waitUntil: 'hydration' });
+
+  // When
+  await page.getByRole('button', { name: `Delete ${BORDEAUX.name}` }).dblclick();
+
+  // Then
+  await expect(page.getByText(BORDEAUX.name)).toHaveCount(0);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  expect(backend.cellarDeletion.executions).toBe(1);
+});
+
+test.describe('with an answer lost on the way back', () => {
+  test.use({ ignoredConsoleErrors: [/status of 502/] });
+
+  test('a deletion sent again after a lost answer reuses its key and deletes the cellar once', async ({ page, goto }) => {
+    // Given
+    backend.cellarDeletion.loseNextAnswer();
+    await goto('/cellars', { waitUntil: 'hydration' });
+    const deleteBordeaux = page.getByRole('button', { name: `Delete ${BORDEAUX.name}` });
+    await deleteBordeaux.click();
+    await expect(page.getByRole('alert')).toBeVisible();
+
+    // When
+    await deleteBordeaux.click();
+
+    // Then
+    await expect(page.getByText(BORDEAUX.name)).toHaveCount(0);
+    await expect(page.getByRole('alert')).toHaveCount(0);
+    expect(backend.cellarDeletion.executions).toBe(1);
+    expect(new Set(backend.cellarDeletion.keys).size).toBe(1);
+  });
 });
 
 test('a navigation that waits for the backend shows a loading bar until the page shows', async ({ page, goto, fakeBackend }) => {
