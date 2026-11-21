@@ -118,6 +118,19 @@ export function drinkitEslint({ tsconfigRootDir }: DrinkitEslintOptions): Return
       ...vitest.configs.recommended,
     },
     {
+      // A page of a layer's tests is named after its route, as a page of an app
+      files: ['**/test/nuxt/pages/**/*.vue'],
+      rules: { 'vue/multi-word-component-names': 'off' },
+    },
+    {
+      files: TEST_FILES,
+      ignores: UI_TEST_FILES,
+      rules: {
+        // The checks of @drinkit/i18n-starter assert, as expect does
+        'vitest/expect-expect': ['error', { assertFunctionNames: ['expect', 'expectLocaleParity', 'expectValidMessages'] }],
+      },
+    },
+    {
       files: UI_TEST_FILES,
       ...playwright.configs['flat/recommended'],
     },

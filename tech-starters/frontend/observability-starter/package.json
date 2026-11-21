@@ -17,6 +17,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@drinkit/i18n-starter": "workspace:*",
     "@drinkit/nuxt-starter": "workspace:*",
     "consola": "catalog:"
   },

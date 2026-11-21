@@ -1,9 +1,11 @@
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import { clearNuxtData, clearNuxtState, navigateTo, useNuxtApp } from '#app';
+import { isLocaleState } from '@drinkit/i18n-starter/locale-state';
 import { useAuthBackend } from './auth-backend.ts';
 import { useAuthConfig } from './auth-config.ts';
 import { CURRENT_USER_STATE, useCurrentUserState } from './current-user-state.ts';
+import { useLocalizedPath } from './localized-path.ts';
 import type { CurrentUser, Role } from './types.ts';
 
 export interface CurrentUserSession {
@@ -27,6 +29,7 @@ export function useCurrentUser(): CurrentUserSession {
   const backend = useAuthBackend();
   const nuxtApp = useNuxtApp();
   const { signInPage } = useAuthConfig();
+  const localizedPath = useLocalizedPath();
 
   return {
     user: computed(() => state.value.user),
@@ -38,11 +41,11 @@ export function useCurrentUser(): CurrentUserSession {
       await forget();
 
       // Away from the page first, so that it never renders again without its data
-      await nuxtApp.runWithContext(() => navigateTo(signInPage));
+      await nuxtApp.runWithContext(() => navigateTo(localizedPath(signInPage)));
       await nuxtApp.runWithContext(() => {
         clearNuxtData();
         // A deleted state breaks a module that still watches it, such as the Nuxt DevTools
-        clearNuxtState((key) => key !== CURRENT_USER_STATE, { reset: true });
+        clearNuxtState((key) => key !== CURRENT_USER_STATE && !isLocaleState(key), { reset: true });
       });
 
       // Nuxt reads the payload the server rendered only at start, and leaves it in the page

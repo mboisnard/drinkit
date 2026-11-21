@@ -1,0 +1,52 @@
+{
+  "name": "@drinkit/i18n-starter",
+  "description": "The Nuxt layer that translates an app and its starters from the shared ICU catalog of translations/: the keys of the prefixes each one declares, typed, the locale in the URL, the head and the named formats.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "main": "./nuxt.config.ts",
+  "exports": {
+    ".": "./nuxt.config.ts",
+    "./translate": "./app/translate.ts",
+    "./locale-state": "./app/locale-state.ts",
+    "./testing": "./testing/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "eslint --fix --max-warnings 0 .",
+    "test": "vitest run",
+    "typecheck": "nuxt typecheck && tsc --project test/unit",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@formatjs/icu-messageformat-parser": "catalog:",
+    "@nuxtjs/i18n": "catalog:",
+    "intl-messageformat": "catalog:"
+  },
+  "devDependencies": {
+    "@drinkit/eslint-config": "workspace:*",
+    "@drinkit/test-starter": "workspace:*",
+    "@nuxt/test-utils": "catalog:",
+    "@testing-library/vue": "catalog:",
+    "@types/node": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "eslint": "catalog:",
+    "happy-dom": "catalog:",
+    "nitropack": "catalog:",
+    "nuxt": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "vue-tsc": "catalog:"
+  },
+  "peerDependencies": {
+    "nuxt": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "vitest": {
+      "optional": true
+    }
+  }
+}

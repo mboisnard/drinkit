@@ -68,7 +68,9 @@ restart it after a change of the contract.
 - **`useApi()`**, from `@drinkit/api-client-starter/use-api`, the options every call takes. Read it before any
   `await`. In the browser, the call goes to the relay with the CSRF token. In a server render, it goes to the
   backend with the cookies of the page and the address of the browser, and the cookies the backend sets reach the
-  page once per name. A call without it fails at once, rather than leave without the cookies of its user.
+  page once per name. A call without it fails at once, rather than leave without the cookies of its user. On both
+  paths, `Accept-Language` names the language of the page, such as `fr-FR`, not the browser's, so that the backend
+  answers in the language the user reads.
 - **`ProblemError`**, from `@drinkit/api-client-starter/problem-error`, the error of a refused call: its `status`,
   and the ProblemDetail of the backend in `data`, which the error page of `nuxt-starter` shows. Each one also goes
   to the `drinkit:api:problem` hook.
