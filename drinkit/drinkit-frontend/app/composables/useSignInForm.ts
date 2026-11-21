@@ -1,11 +1,11 @@
 import { ref } from 'vue';
 import type { Ref } from 'vue';
 import type { ProblemError } from '@drinkit/api-client-starter/problem-error';
+import { detailOf, useSubmission } from '@drinkit/api-client-starter/submission';
+import type { Submission } from '@drinkit/api-client-starter/submission';
 import { useTranslate } from '@drinkit/i18n-starter/translate';
 import type { TranslationKey } from '@drinkit/i18n-starter/translate';
 import { useEmailCodeSignIn } from '@drinkit/security-starter/use-email-code-sign-in';
-import { detailOf, useSubmission } from './useSubmission';
-import type { Submission } from './useSubmission';
 
 export interface SignInForm extends Omit<Submission, 'submit'> {
   email: Ref<string>;

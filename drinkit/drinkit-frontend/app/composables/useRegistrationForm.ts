@@ -1,10 +1,10 @@
 import { ref } from 'vue';
 import type { Ref } from 'vue';
 import { navigateTo } from '#app';
+import { detailOf, useSubmission } from '@drinkit/api-client-starter/submission';
+import type { Submission } from '@drinkit/api-client-starter/submission';
 import { useApi } from '@drinkit/api-client-starter/use-api';
 import { useCurrentUser } from '@drinkit/security-starter/use-current-user';
-import { detailOf, useSubmission } from './useSubmission';
-import type { Submission } from './useSubmission';
 import { completeUserInformation } from '#api';
 
 export interface RegistrationForm extends Omit<Submission, 'submit'> {
