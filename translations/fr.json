@@ -2,6 +2,8 @@
   "auth.forbidden": "Accès refusé",
   "auth.unavailable.detail": "Le serveur est injoignable. Réessayez dans un instant.",
   "auth.unavailable.title": "Service indisponible",
+  "cellars.delete": "Supprimer",
+  "cellars.deleteLabel": "Supprimer {cellarName}",
   "cellars.empty": "Aucune cave pour l’instant.",
   "cellars.item": "{cellarName}, {city}",
   "cellars.title": "Mes caves",

@@ -51,6 +51,10 @@ with no place to scope a key to its user.
   carries `sha256(current key, event type, rank)`, so a replay publishes it under the same key, and an event
   published outside any key gets a random one. A handler takes the key of its event, or one a SpEL expression reads
   from it.
+- **The frontend keys a submission, not a call.** `useSubmission` of `api-client-starter` puts the key on each unsafe
+  call of a form, the same while its outcome is unknown, after a network error, a `5xx`, a `409` or a `429`, and a
+  new one after a known answer or for another method, URL or body, as the IETF draft asks. It sends a `409` again
+  after its `Retry-After`.
 - **Providers opt in.** A web client group whose API honours `Idempotency-Key` retries its unsafe calls that carry
   one, with a key derived from the current one.
 
@@ -73,7 +77,9 @@ sequenceDiagram
 
 ## Consequences
 
-- A retry of a creation is safe for the client as soon as it sends a key, and the frontend has to send one.
+- A retry of a creation is safe for the client as soon as it sends a key, which the forms of the frontend do. An
+  endpoint that renews the session in its answer, such as the registration, cannot replay it to a client that lost
+  it, since a replay carries no cookie.
 - The mail server gets an email once per event, whatever the deliveries, while a delivery held past its lease of 5
   minutes may still run twice.
 - A request whose instance crashes before its commit runs again once its lease of 5 minutes ends, since nothing of
@@ -93,6 +99,8 @@ sequenceDiagram
   the HTTP replay and the joined transaction already written, a design the starter follows.
 - **Deduplicate on the message id only.** Rejected because a request replayed after its commit publishes new
   messages, with new ids. It offered no key to carry from a request to its events.
+- **A key per call, set by the API client.** Rejected because a double click or a retry after a lost answer makes
+  two calls, hence two keys. It offered keys no form has to pass, as stripe-node does for its own retries.
 - **Keys in Redis or the cache.** Rejected because a key that an eviction or a restart drops lets the action run
   twice, and DrinkIt runs no Redis. It offered keys that expire by themselves.
 - **No answer kept, only the key.** Rejected because a client that retries a creation needs its id back. It offered
