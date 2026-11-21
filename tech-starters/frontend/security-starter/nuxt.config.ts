@@ -30,7 +30,6 @@ export default defineNuxtConfig({
   },
   // The backend rate limits and checks its input: the module's own limiter and XSS validator would refuse twice.
   // The app is same-origin, so no other origin may read its pages
-  // HSTS for a year as the backend sends it, where the module gives 180 days: OWASP ASVS 5.0 V3.4.1
   // The module drops console calls through an esbuild option that Vite ignores since it transforms with Oxc
   security: {
     rateLimiter: false,
@@ -38,6 +37,15 @@ export default defineNuxtConfig({
     corsHandler: false,
     removeLoggers: false,
     headers: {
+      // A fetch or a frame the policy forgets stays on the app's origin: OWASP ASVS 5.0 V3.4.3
+      // No page is ever shown in a frame, as the backend answers: OWASP ASVS 5.0 V3.4.6
+      contentSecurityPolicy: {
+        'default-src': ['\'self\''],
+        'connect-src': ['\'self\''],
+        'frame-ancestors': ['\'none\''],
+      },
+      xFrameOptions: 'DENY',
+      // For a year as the backend sends it, where the module gives 180 days: OWASP ASVS 5.0 V3.4.1
       strictTransportSecurity: { maxAge: 31536000, includeSubdomains: true },
     },
   },
