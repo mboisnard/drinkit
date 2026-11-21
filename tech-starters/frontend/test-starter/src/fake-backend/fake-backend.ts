@@ -51,6 +51,11 @@ async function answer(handlers: RequestHandler[], incoming: IncomingMessage, out
   const request = await toRequest(incoming);
   const baseUrl = new URL(request.url).origin;
   const response = await getResponse(handlers, request, { baseUrl }) ?? unhandled(request);
+  if (response.type === 'error') {
+    outgoing.destroy();
+
+    return;
+  }
 
   for (const [name, value] of response.headers) {
     if (name !== 'set-cookie') {

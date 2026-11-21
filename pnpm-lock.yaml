@@ -591,6 +591,9 @@ importers:
       happy-dom:
         specifier: 'catalog:'
         version: 21.0.4
+      msw:
+        specifier: 'catalog:'
+        version: 3.0.5(@types/node@26.6.6)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
       nitropack:
         specifier: 'catalog:'
         version: 2.13.6(bare-buffer@3.7.1)(better-sqlite3@12.11.1)(oxc-parser@0.151.0)(rolldown@1.2.19)(srvx@1.0.8)(supports-color@10.2.2)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))

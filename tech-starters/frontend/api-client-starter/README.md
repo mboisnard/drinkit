@@ -74,11 +74,66 @@ restart it after a change of the contract.
 - **`ProblemError`**, from `@drinkit/api-client-starter/problem-error`, the error of a refused call: its `status`,
   and the ProblemDetail of the backend in `data`, which the error page of `nuxt-starter` shows. Each one also goes
   to the `drinkit:api:problem` hook.
+- **`useSubmission()`**, from `@drinkit/api-client-starter/submission`, the sending of a form, with its
+  `Idempotency-Key`, as [below](#a-form-sent-once) explains.
 - **The relay**, the API's path on the app's origin, `/drinkit/**` for DrinkIt, which forwards the call of the browser with only the headers the
   API reads, the `Sec-Fetch-*` headers included, and streams its body. A path whose dot segments climb out of
   the API's path gets a 404, so that no other path of the backend's origin is reachable from the app's.
 - **Only the cookies of the API** reach the backend, on both paths: `SESSION`, `XSRF-TOKEN`, `remember-me` and
   `visitor`, with or without their `__Host-` prefix.
+
+## A form sent once
+
+A double click, or a retry after an answer lost on the way back, sends a form twice. The backend runs an
+[`@Idempotent`](../../backend/idempotency-starter/README.md) endpoint once per `Idempotency-Key`, so `useSubmission`
+gives a key to each unsafe call of a submission, by the rule of the
+[IETF draft](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/) and of Stripe:
+
+- the key stays while the outcome of the call is unknown: a network error, a `5xx`, a `429`, a `409`;
+- a known answer, a `2xx` or another `4xx`, or another method, URL or body gives a new key;
+- a submission sent while one runs is ignored, and a `409`, the first one still running, is sent again after its
+  `Retry-After`, three times at most.
+
+```ts
+// app/composables/useCellarDeletion.ts
+const { pending, problem, submit } = useSubmission();
+
+const remove = (cellarId: string) => submit((api) => deleteCellar({ ...api, path: { cellarId } }));
+```
+
+`submit` hands its function the options of `useApi()` with the key added: a call made with them carries it, a call
+made with `useApi()` never does. A `GET` carries none, and an endpoint without `@Idempotent` ignores it. `pending`
+disables the button, and `problem` holds the refusal as the user reads it: the detail the backend gives, or the
+text a function given to `useSubmission` returns, that detail again when it returns `undefined`:
+
+```ts
+const { problem, submit } = useSubmission((refusal) => refusal.status === 401 ? t('signIn.wrongCode') : undefined);
+```
+
+```mermaid
+sequenceDiagram
+  participant Form
+  participant Backend as "@Idempotent endpoint"
+  Form->>Backend: DELETE /cellars/1, Idempotency-Key K
+  Backend--xForm: 204, lost on the way back
+  Form->>Backend: same call, K
+  Backend-->>Form: 204 replayed, the cellar deleted once
+  Form->>Backend: DELETE /cellars/2, new key K2
+```
+
+**In a UI test**, `idempotentEndpoint(resolver)` of `@drinkit/api-client-starter/testing` wraps the MSW resolver of
+an endpoint as the backend's `IdempotencyFilter` runs it: a key already answered gets that answer back. `executions`
+counts the runs, `keys` lists the key of each request, and `loseNextAnswer()` drops the next answer, as a network
+failure would. It has no contract suite: the CI of the frontend runs no backend, and the replay it copies is tested
+by the integration tests of `idempotency-starter`.
+
+```ts
+const deletion = idempotentEndpoint(() => new HttpResponse(null, { status: 204 }));
+fakeBackend.use(http.delete('/drinkit/api/cellars/:cellarId', deletion.resolver));
+
+// then, after a double click
+expect(deletion.executions).toBe(1);
+```
 
 ## Configuration
 
@@ -117,5 +172,8 @@ The relay and the server render are tested through the UI tests of the app, whic
 - `X-Forwarded-For` and `X-Forwarded-Proto` describe the connection to the app. Behind an ingress, that is the
   ingress's connection: the headers the ingress sets must then be trusted, or every user shares the limits per
   address of the backend.
-- No retry, no cache and no validation of the responses at run time: the type check against the contract stands
-  for the last one.
+- No retry, other than a submission the backend still runs, no cache and no validation of the responses at run
+  time: the type check against the contract stands for the last one.
+- A replay carries no cookie. An endpoint that renews the session in its answer, as the registration and the sign-in
+  do, leaves a client that lost the answer with the old session: the key protects it from a double click only.
+- `crypto.randomUUID()` needs a secure context: the app is served over HTTPS, or on `localhost` in development.

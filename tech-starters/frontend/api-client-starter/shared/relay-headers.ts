@@ -21,7 +21,7 @@ export function clientOf(event: H3Event): Client {
 }
 
 const READ_BY_THE_API: Record<CallOrigin, string[]> = {
-  'browser': ['accept', 'accept-language', 'content-type', 'if-none-match', 'user-agent', 'x-xsrf-token'],
+  'browser': ['accept', 'accept-language', 'content-type', 'idempotency-key', 'if-none-match', 'user-agent', 'x-xsrf-token'],
   'server-render': ['accept-language', 'user-agent'],
 };
 

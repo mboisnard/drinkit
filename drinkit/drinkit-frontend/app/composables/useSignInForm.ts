@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import type { Ref } from 'vue';
 import type { ProblemError } from '@drinkit/api-client-starter/problem-error';
-import { detailOf, useSubmission } from '@drinkit/api-client-starter/submission';
+import { useSubmission } from '@drinkit/api-client-starter/submission';
 import type { Submission } from '@drinkit/api-client-starter/submission';
 import { useTranslate } from '@drinkit/i18n-starter/translate';
 import type { TranslationKey } from '@drinkit/i18n-starter/translate';
@@ -23,7 +23,7 @@ export function useSignInForm(): SignInForm {
   const { pending, problem, submit } = useSubmission((refusal) => {
     const key = messageKeyOf(refusal);
 
-    return key ? t(key) : detailOf(refusal);
+    return key ? t(key) : undefined;
   });
   const email = ref('');
   const code = ref('');
