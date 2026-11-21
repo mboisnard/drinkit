@@ -1,22 +1,22 @@
 <template>
   <main>
-    <h1>Complete your account</h1>
+    <h1>{{ t('registration.title') }}</h1>
     <form @submit.prevent="register">
-      <label for="firstname">First name</label>
+      <label for="firstname">{{ t('registration.firstname') }}</label>
       <input
         id="firstname"
         v-model="firstname"
         autocomplete="given-name"
         required
       >
-      <label for="lastname">Last name</label>
+      <label for="lastname">{{ t('registration.lastname') }}</label>
       <input
         id="lastname"
         v-model="lastname"
         autocomplete="family-name"
         required
       >
-      <label for="birthdate">Birth date</label>
+      <label for="birthdate">{{ t('registration.birthdate') }}</label>
       <input
         id="birthdate"
         v-model="birthdate"
@@ -28,7 +28,7 @@
         type="submit"
         :disabled="pending"
       >
-        Continue
+        {{ t('registration.submit') }}
       </button>
     </form>
     <p
@@ -43,10 +43,13 @@
 <script setup lang="ts">
   import { useSeoMeta } from '#app';
   import { definePageMeta } from '#imports';
+  import { useTranslate } from '@drinkit/i18n-starter/translate';
   import { useRegistrationForm } from '../composables/useRegistrationForm';
 
   definePageMeta({ auth: 'ROLE_REGISTRATION_IN_PROGRESS', layout: 'signed-in' });
-  useSeoMeta({ title: 'Complete your account · DrinkIt' });
+
+  const { t } = useTranslate();
+  useSeoMeta({ title: () => t('registration.title') });
 
   const { firstname, lastname, birthdate, pending, problem, register } = useRegistrationForm();
 </script>

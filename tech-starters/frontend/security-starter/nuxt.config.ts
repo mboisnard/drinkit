@@ -24,13 +24,19 @@ export default defineNuxtConfig({
       compilerOptions: { types: ['node'] },
     },
   },
+  // The texts of the pages a navigation cannot open, under auth. in the catalog
+  i18nCatalog: {
+    prefixes: ['auth'],
+  },
   // The backend rate limits and checks its input: the module's own limiter and XSS validator would refuse twice.
   // The app is same-origin, so no other origin may read its pages
   // HSTS for a year as the backend sends it, where the module gives 180 days: OWASP ASVS 5.0 V3.4.1
+  // The module drops console calls through an esbuild option that Vite ignores since it transforms with Oxc
   security: {
     rateLimiter: false,
     xssValidator: false,
     corsHandler: false,
+    removeLoggers: false,
     headers: {
       strictTransportSecurity: { maxAge: 31536000, includeSubdomains: true },
     },

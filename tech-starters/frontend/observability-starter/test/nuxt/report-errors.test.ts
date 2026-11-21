@@ -1,8 +1,8 @@
 import { defineComponent, h } from 'vue';
-import { clearError, clearNuxtState, createError, updateAppConfig, useNuxtApp } from '#app';
+import { clearError, clearNuxtState, createError, useNuxtApp } from '#app';
 import { renderSuspended } from '@nuxt/test-utils/runtime';
 import UApp from '@nuxt/ui/components/App.vue';
-import { fireEvent, screen } from '@testing-library/vue';
+import { fireEvent, getDefaultNormalizer, screen } from '@testing-library/vue';
 import { flushPromises } from '@vue/test-utils';
 import { consola } from 'consola';
 import type { ConsolaReporter, LogObject } from 'consola';
@@ -18,8 +18,8 @@ const reports: Array<{ error: unknown; fatal: boolean }> = [];
 let stopListening: () => void;
 
 beforeEach(() => {
-  // The toasts of the previous test, which Nuxt UI keeps in a useState
-  clearNuxtState();
+  // The toasts of the previous test, which Nuxt UI keeps in a useState, but not the locales @nuxtjs/i18n loaded
+  clearNuxtState((key) => !key.startsWith('i18n:'));
   logs.length = 0;
   errorsOfAnotherHandler.length = 0;
   reports.length = 0;
@@ -152,15 +152,30 @@ test.each([
   { failure: refusal(502), message: 'The server is unavailable. Try again in a moment.' },
   { failure: named('FetchError', '[POST] "/drinkit/api/cellars": <no response> Failed to fetch'), message: 'The server cannot be reached. Check your connection and try again.' },
   { failure: refusal(409), message: 'A cellar already has this name.' },
-])('without a message of its caller, an unhandled error shows the message the app gives its status: $message', async ({ failure, message }) => {
+])('without a message of its caller, an unhandled error shows the message the catalog gives its status: $message', async ({ failure, message }) => {
   // Given
-  updateAppConfig({ observability: { errorMessages: { 409: 'A cellar already has this name.' } } });
+  useNuxtApp().$i18n.mergeLocaleMessage('en', { 'observability.error.409': 'A cellar already has this name.' });
 
   // When
   await clickFailing(() => Promise.reject(failure));
 
   // Then
   expect((await screen.findByText(message)).textContent).toBe(message);
+});
+
+test('an unhandled error shows its message and its reference in the language of the page', async () => {
+  // Given
+  await useNuxtApp().$i18n.setLocale('fr');
+
+  // When
+  await clickFailing(() => Promise.reject(refusal(500, '0af7651916cd43dd')));
+
+  // Then
+  await screen.findByText('Une erreur est survenue. Réessayez.');
+  // French puts a narrow no-break space before a colon, which the default matcher would collapse
+  const exact = { normalizer: getDefaultNormalizer({ collapseWhitespace: false }) };
+  expect(screen.getByText('Référence\u202F: 0af7651916cd43dd', exact).textContent).toBe('Référence\u202F: 0af7651916cd43dd');
+  await useNuxtApp().$i18n.setLocale('en');
 });
 
 test('a cancelled call is neither logged nor shown', async () => {

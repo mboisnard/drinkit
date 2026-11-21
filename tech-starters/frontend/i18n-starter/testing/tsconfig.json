@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "nodenext",
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "strict": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
@@ -10,5 +12,8 @@
     "erasableSyntaxOnly": true,
     "skipLibCheck": true
   },
-  "include": ["*.ts", "../../app/problem-detail.ts"]
+  "include": [
+    "*.ts",
+    "../shared/**/*.ts"
+  ]
 }

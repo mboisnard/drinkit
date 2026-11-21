@@ -1,11 +1,11 @@
 <template>
   <main>
-    <h1>Sign in</h1>
+    <h1>{{ t('signIn.title') }}</h1>
     <form
       v-if="!codeSent"
       @submit.prevent="sendCode"
     >
-      <label for="email">Email</label>
+      <label for="email">{{ t('signIn.email') }}</label>
       <input
         id="email"
         v-model="email"
@@ -17,15 +17,15 @@
         type="submit"
         :disabled="pending"
       >
-        Send me a code
+        {{ t('signIn.sendCode') }}
       </button>
     </form>
     <form
       v-else
       @submit.prevent="signIn"
     >
-      <p>We sent a code to {{ email }}.</p>
-      <label for="code">Code</label>
+      <p>{{ t('signIn.codeSent', { email }) }}</p>
+      <label for="code">{{ t('signIn.code') }}</label>
       <input
         id="code"
         v-model="code"
@@ -40,12 +40,12 @@
         v-model="rememberMe"
         type="checkbox"
       >
-      <label for="remember-me">Keep me signed in on this device</label>
+      <label for="remember-me">{{ t('signIn.rememberMe') }}</label>
       <button
         type="submit"
         :disabled="pending"
       >
-        Sign in
+        {{ t('signIn.submit') }}
       </button>
     </form>
     <p
@@ -60,10 +60,13 @@
 <script setup lang="ts">
   import { useSeoMeta } from '#app';
   import { definePageMeta } from '#imports';
+  import { useTranslate } from '@drinkit/i18n-starter/translate';
   import { useSignInForm } from '../composables/useSignInForm';
 
   definePageMeta({ auth: 'public' });
-  useSeoMeta({ title: 'Sign in · DrinkIt' });
+
+  const { t } = useTranslate();
+  useSeoMeta({ title: () => t('signIn.title') });
 
   const { email, code, rememberMe, codeSent, pending, problem, sendCode, signIn } = useSignInForm();
 </script>

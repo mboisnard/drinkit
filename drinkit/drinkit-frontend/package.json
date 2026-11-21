@@ -11,11 +11,13 @@
     "lint:fix": "eslint --fix --max-warnings 0 . && stylelint --fix 'app/**/*.{css,vue}' --allow-empty-input",
     "postinstall": "nuxt prepare",
     "preview": "nuxt preview",
-    "typecheck": "nuxt typecheck",
-    "test:ui": "playwright test"
+    "test": "vitest run",
+    "test:ui": "playwright test",
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@drinkit/api-client-starter": "workspace:*",
+    "@drinkit/i18n-starter": "workspace:*",
     "@drinkit/nuxt-starter": "workspace:*",
     "@drinkit/observability-starter": "workspace:*",
     "@drinkit/security-starter": "workspace:*",
@@ -34,11 +36,15 @@
     "@drinkit/test-starter": "workspace:*",
     "@nuxt/test-utils": "catalog:",
     "@playwright/test": "catalog:",
+    "@testing-library/vue": "catalog:",
     "@types/node": "catalog:",
+    "@vue/test-utils": "catalog:",
     "eslint": "catalog:",
+    "happy-dom": "catalog:",
     "msw": "catalog:",
     "stylelint": "catalog:",
     "typescript": "catalog:",
+    "vitest": "catalog:",
     "vue-tsc": "catalog:",
     "web-vitals": "catalog:"
   }

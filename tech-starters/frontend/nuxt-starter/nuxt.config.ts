@@ -1,15 +1,12 @@
 import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
+  extends: ['@drinkit/i18n-starter'],
   components: {
     dirs: [],
   },
   imports: {
     autoImport: false,
-  },
-  // The language a screen reader reads the page in, until the app translates it
-  app: {
-    head: { htmlAttrs: { lang: 'en' } },
   },
   // Their names carry a hash of their content
   routeRules: {
@@ -28,5 +25,9 @@ export default defineNuxtConfig({
       include: ['../eslint.config.ts', '../vitest.config.ts', '../playwright.config.ts', '../test/ui/**/*.ts'],
       compilerOptions: { types: ['node'] },
     },
+  },
+  // The texts of the error page, under nuxt. in the catalog
+  i18nCatalog: {
+    prefixes: ['nuxt'],
   },
 });

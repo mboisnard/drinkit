@@ -26,6 +26,7 @@ catalog:
   '@axe-core/playwright': 4.14.0
   '@barzhsieh/nuxt-content-mermaid': 4.0.1
   '@eslint-community/eslint-plugin-eslint-comments': 4.8.1
+  '@formatjs/icu-messageformat-parser': 3.5.23
   # 0.x: each minor may break, so its release notes come with every bump
   '@hey-api/openapi-ts': 0.99.0
   '@iconify-json/lucide': 1.2.153
@@ -52,6 +53,7 @@ catalog:
   eslint-plugin-playwright: 2.12.2
   h3: 1.15.11
   happy-dom: 21.0.4
+  intl-messageformat: 12.1.5
   js-yaml: 4.3.2
   msw: 3.0.5
   nitropack: 2.13.6

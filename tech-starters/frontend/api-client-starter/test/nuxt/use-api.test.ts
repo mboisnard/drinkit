@@ -9,7 +9,8 @@ import { ProblemError } from '../../app/problem-error.ts';
 import { useApi } from '../../app/use-api.ts';
 import type { ApiOptions } from '../../app/use-api.ts';
 
-afterEach(() => {
+afterEach(async () => {
+  await useNuxtApp().$i18n.setLocale('en');
   document.cookie = '__Host-XSRF-TOKEN=; max-age=0; Secure; Path=/';
   document.cookie = 'XSRF-TOKEN=; max-age=0';
 });
@@ -180,4 +181,16 @@ test('without a CSRF path, a write without a cookie leaves without a token', asy
 
   // Then
   expect({ answer, fetches: csrf.calls }).toStrictEqual({ answer: { token: null }, fetches: 0 });
+});
+
+test('a call asks the backend for the language of the page, which the texts it sends follow', async () => {
+  // Given
+  registerEndpoint('/drinkit/api/language', { method: 'GET', handler: (event) => ({ language: getHeader(event, 'accept-language') }) });
+  await useNuxtApp().$i18n.setLocale('fr');
+
+  // When
+  const answer = await call(useApi(), '/api/language');
+
+  // Then
+  expect(answer).toStrictEqual({ language: 'fr-FR' });
 });

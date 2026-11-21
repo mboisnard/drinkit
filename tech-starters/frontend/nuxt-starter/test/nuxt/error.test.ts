@@ -1,4 +1,4 @@
-import { createError, useRouter } from '#app';
+import { createError, useNuxtApp, useRouter } from '#app';
 import { renderSuspended } from '@nuxt/test-utils/runtime';
 import { fireEvent, screen } from '@testing-library/vue';
 import { expect, test } from 'vitest';
@@ -24,4 +24,17 @@ test('the error page takes the user back to the home page', async () => {
 
   // Then
   await expect.poll(() => useRouter().currentRoute.value.path).toBe('/');
+});
+
+test('the error page takes the user back to the home page of their language', async () => {
+  // Given
+  await useNuxtApp().$i18n.setLocale('fr');
+  await renderSuspended(ErrorPage, { props: { error: createError({ status: 404 }) }, route: '/fr/cellars/42' });
+
+  // When
+  await fireEvent.click(screen.getByRole('button', { name: 'Retour à l’accueil' }));
+
+  // Then
+  await expect.poll(() => useRouter().currentRoute.value.path).toBe('/fr');
+  await useNuxtApp().$i18n.setLocale('en');
 });

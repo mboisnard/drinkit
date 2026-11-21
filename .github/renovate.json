@@ -79,9 +79,14 @@
       "groupName": "Konture"
     },
     {
-      "description": "The documentation site declares the modules that Docus loads or that its pages import, at the versions Docus asks for: they move in one pull request",
+      "description": "The documentation site declares the modules that Docus loads or that its pages import, at the versions Docus asks for: they move in one pull request. @nuxtjs/i18n is in the catalog, so i18n-starter follows the version Docus asks for",
       "matchPackageNames": ["docus", "@nuxtjs/i18n", "@nuxt/content", "scule"],
       "groupName": "Docus"
+    },
+    {
+      "description": "The ICU parser and formatter of i18n-starter come from one monorepo and depend on each other: they move in one pull request",
+      "matchPackageNames": ["@formatjs/**", "intl-messageformat"],
+      "groupName": "formatjs"
     },
     {
       "description": "Majors need code changes: open them from the Dependency Dashboard",

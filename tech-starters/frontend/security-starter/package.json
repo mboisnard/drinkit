@@ -17,10 +17,11 @@
     "lint": "eslint --max-warnings 0 .",
     "lint:fix": "eslint --fix --max-warnings 0 .",
     "test": "vitest run",
-    "typecheck": "nuxt typecheck && tsc --project test/unit",
+    "typecheck": "nuxt typecheck",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@drinkit/i18n-starter": "workspace:*",
     "@drinkit/api-client-starter": "workspace:*",
     "@drinkit/nuxt-starter": "workspace:*",
     "nuxt-security": "catalog:"

@@ -9,4 +9,8 @@ export default defineNuxtConfig({
       compilerOptions: { types: ['node'] },
     },
   },
+  // The toasts of the errors, under observability. in the catalog
+  i18nCatalog: {
+    prefixes: ['observability'],
+  },
 });

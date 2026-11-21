@@ -15,7 +15,7 @@ flowchart LR
   MW -- "public, or allowed" --> Page
   MW -- "a visitor" --> SignIn["signInPage?redirect=…"]
   MW -- "a role missing" --> Other["forbiddenRedirects, or a 403"]
-  MW -- "no answer from the backend" --> Down["a 503: unavailableMessage"]
+  MW -- "no answer from the backend" --> Down["a 503: auth.unavailable"]
   SignIn -- "useEmailCodeSignIn" --> Done["completeSignIn<br/><small>user read, drinkit:signed-in,<br/>return URL on this origin</small>"]
   Done --> Page
   Page -- "signOut, or a 401" --> Out["user forgotten, drinkit:signed-out,<br/>data of the pages cleared"]
@@ -80,7 +80,7 @@ const { user, signedIn, hasRole, signOut } = useCurrentUser();
 - **The headers**: a Content Security Policy with `strict-dynamic` and a nonce per response, HSTS for a year,
   `X-Content-Type-Options` and the module's other defaults, and `Cache-Control: no-store` on every page. The rate
   limiter, XSS validator and CORS handler of `nuxt-security` are off: the backend rate limits and checks its input,
-  and the app answers its own origin only.
+  and the app answers its own origin only. Its removal of `console` calls is off too: Vite ignores it.
 
 A new way of signing in, a passkey or Google, is a composable of its own that ends with the shared step of
 `app/complete-sign-in.ts`: the state, the middleware and the pages stay as they are.
@@ -116,10 +116,16 @@ map every defense of the app to its requirement.
 | `auth.signInPage` | `NUXT_PUBLIC_AUTH_SIGN_IN_PAGE` | `/sign-in` | Where a visitor goes when a page asks to sign in |
 | `auth.forbiddenRedirects` | none | `{}` | The page a signed-in user goes to, by a role they hold, when a page needs a role they lack, rather than a 403 |
 
+The paths are written without the prefix of a locale: the starter adds the one of the page.
+
 A backend that gives no answer to the read of the user within the `apiClient.serverRenderTimeout` of
 `api-client-starter`, or a gateway in front of it that answers 502 or 504, shows the error page of a 503 whose problem
-has `unavailableMessage` as its `detail`. It is a text of the `auth` key of the `app.config`, which the app overrides:
-`The server cannot be reached. Try again in a moment.` by default.
+has the texts of `auth.unavailable.title` and `auth.unavailable.detail` of the
+[catalog](../i18n-starter/README.md), in the language of the page. A refused page has the `auth.forbidden` text. A page
+whose `auth` is not `public` has no language prefix, and shows in the language that `locale` of the current user
+names, such as `fr`, when the app offers it. Each redirect stays in the current language: a visitor reading `/fr`
+who opens `/cellars` signs in at `/fr/sign-in`. The sign-out clears the state of the pages but
+keeps the locales of `@nuxtjs/i18n`.
 
 The sign-in protocol is the backend `security-starter`'s, under the path of the API: `/api/auth/code`,
 `/api/auth/code/sign-in` and `/api/auth/logout`.

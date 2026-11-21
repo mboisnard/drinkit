@@ -1,5 +1,6 @@
 import { clearNuxtState, useNuxtApp, useNuxtData, useRouter, useState } from '#app';
 import { beforeEach, expect, test } from 'vitest';
+import { isLocaleState } from '@drinkit/i18n-starter/locale-state';
 import { useCurrentUser } from '../../app/use-current-user.ts';
 import { authBackend } from './auth-backend.ts';
 import type { AuthBackend } from './auth-backend.ts';
@@ -9,7 +10,7 @@ let backend: AuthBackend;
 
 beforeEach(async () => {
   addPages();
-  clearNuxtState();
+  clearNuxtState((key) => !isLocaleState(key));
   backend = authBackend();
   await useRouter().push('/');
 });
@@ -17,7 +18,7 @@ beforeEach(async () => {
 test('the current user is read once from the backend, then shared by every page', async () => {
   // Given
   backend.user = { firstname: 'Ada', roles: ['ROLE_USER'] };
-  clearNuxtState();
+  clearNuxtState((key) => !isLocaleState(key));
   backend.readsOfCurrentUser = 0;
 
   // When
@@ -89,6 +90,39 @@ test('signing out goes to the sign-in page', async () => {
 
   // Then
   expect(useRouter().currentRoute.value.fullPath).toBe('/sign-in');
+});
+
+test('signing out keeps the language of the account on the sign-in page it leads to', async () => {
+  // Given
+  backend.user = { firstname: 'Ada', roles: ['ROLE_USER'], locale: 'fr' };
+  await useCurrentUser().refresh();
+  await useRouter().push('/cellars');
+
+  // When
+  await useCurrentUser().signOut();
+
+  // Then
+  expect({ at: useRouter().currentRoute.value.fullPath, locale: useNuxtApp().$i18n.locale.value })
+    .toStrictEqual({ at: '/fr/sign-in', locale: 'fr' });
+  await useNuxtApp().$i18n.setLocale('en');
+});
+
+// Nuxt keeps a useState in the payload under its key prefixed with $s
+function localeStates(): Array<[string, unknown]> {
+  return Object.entries(useNuxtApp().payload.state).filter(([key]) => isLocaleState(key.replace(/^\$s/, '')));
+}
+
+test('signing out spares the locales @nuxtjs/i18n keeps, which it reads to load the next language', async () => {
+  // Given
+  backend.user = { firstname: 'Ada', roles: ['ROLE_USER'] };
+  await useCurrentUser().refresh();
+  const before = localeStates();
+
+  // When
+  await useCurrentUser().signOut();
+
+  // Then
+  expect(localeStates()).toStrictEqual(before);
 });
 
 test('signing out clears the data the pages read for the user', async () => {

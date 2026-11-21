@@ -3,6 +3,7 @@ import type { NuxtApp } from '#app';
 import { getResponseHeader, setResponseHeader } from 'h3';
 import type { H3Event } from 'h3';
 import type { FetchContext, FetchHook } from 'ofetch';
+import { useTranslate } from '@drinkit/i18n-starter/translate';
 import { toProblemDetail } from '@drinkit/nuxt-starter/problem-detail';
 import { CookieJar } from '../shared/cookie-jar.ts';
 import { clientOf, relayHeaders } from '../shared/relay-headers.ts';
@@ -26,20 +27,24 @@ export function useApi(): ApiOptions {
   const event = useRequestEvent();
   const config = useRuntimeConfig();
   const { path: apiPath, csrfPath } = config.public.apiClient;
+  const { language } = useTranslate();
 
   if (import.meta.server && event) {
     const { backendUrl, serverRenderTimeout } = config.apiClient;
 
-    return serverRenderApi(nuxtApp, event, `${backendUrl}${apiPath}`, csrfPath, serverRenderTimeout);
+    return serverRenderApi(nuxtApp, event, { baseUrl: `${backendUrl}${apiPath}`, csrfPath, serverRenderTimeout, language });
   }
 
   return {
     baseUrl: apiPath,
     onRequest: async ({ options }) => {
+      // The language of the page, not that of the browser: the URL decides it
+      const headers = { 'accept-language': language() };
       if (needsCsrfToken(options, new CookieJar(document.cookie), csrfPath)) {
-        await $fetch(csrfPath, { baseURL: apiPath });
+        await $fetch(csrfPath, { baseURL: apiPath, headers });
       }
       withCsrfToken(options, new CookieJar(document.cookie));
+      options.headers.set('accept-language', headers['accept-language']);
     },
     onResponse: async ({ response }) => {
       await throwProblem(nuxtApp, response);
@@ -56,12 +61,17 @@ async function throwProblem(nuxtApp: NuxtApp, response: FetchContext['response']
   }
 }
 
+interface ServerRenderOptions {
+  baseUrl: string;
+  csrfPath: string;
+  serverRenderTimeout: number;
+  language: () => string;
+}
+
 function serverRenderApi(
   nuxtApp: NuxtApp,
   event: H3Event,
-  baseUrl: string,
-  csrfPath: string,
-  serverRenderTimeout: number,
+  { baseUrl, csrfPath, serverRenderTimeout, language }: ServerRenderOptions,
 ): ApiOptions {
   const jar = cookieJarOf(event);
   const client = clientOf(event);
@@ -71,6 +81,7 @@ function serverRenderApi(
       options.headers.set(name, value);
     }
     options.headers.set('cookie', jar.cookieHeader());
+    options.headers.set('accept-language', language());
     withCsrfToken(options, jar);
     // A backend that accepts the connection but never answers would leave the page blank for Node's 5 minutes. The
     // browser's calls have none: an action, such as a call to an AI model, may take longer than a page should
