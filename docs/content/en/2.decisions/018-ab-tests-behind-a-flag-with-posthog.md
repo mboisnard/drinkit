@@ -50,7 +50,8 @@ works without it.
   hook reports it, and PostHog's automatic event stays off: both fire on every evaluation.
 - **In the frontend.** The variants come with the flags, in the same call and in the server render, for the experiments
   the client names, with the OFREP reason `SPLIT` when the user was assigned, which tells the browser to report an
-  exposure. The browser reports it to the backend when it shows the variant. The server render never does, since bots
+  exposure. The browser reports it to the backend when the component that shows the variant mounts, called in every
+  variant at the same place. The server render never does, since bots
   get it too and the browser reports after it. The backend assigns the variant again and forwards the exposure only when
   both match, so a forged or outdated call counts nothing.
 - **In the backend.** A request assigns, then reports the exposure where the variant changes the answer. An event
@@ -59,6 +60,9 @@ works without it.
 - **Visitors.** Visitors take part, under the visitor id of ADR 017, which also authors what someone does before
   signing in, such as creating an account. At sign-in, the backend links the visitor to the user in PostHog, so that
   what the visitor did counts for the user.
+- **PostHog as the provider of the experiments.** PostHog plugs in as the OpenFeature provider of the experiments,
+  apart from the provider of the flags: it draws the variants, and receives each exposure the backend reports
+  through `track`, the tracking API of OpenFeature, which runs only when the code calls it, unlike a hook.
 - **Until PostHog.** Every user gets `control` and no exposure leaves DrinkIt.
 - **Open point.** Sending exposures and identities to PostHog waits for the consent management of DrinkIt, which will
   say what happens to a user who refuses.
@@ -91,6 +95,7 @@ sequenceDiagram
 - A visitor's variant can change at sign-in, unless the experiment turns on PostHog's experience continuity, which
   makes PostHog evaluate every assignment over the network.
 - An exposure from the browser is lost when the tab closes before the call.
+- A variant shown again after a navigation reports another exposure, which PostHog counts once per user.
 
 ## Alternatives
 

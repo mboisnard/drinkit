@@ -5,6 +5,7 @@ import com.drinkit.featuremanagement.Experiments
 import com.drinkit.featuremanagement.FeatureFlags
 import com.drinkit.featuremanagement.FlagSubject
 import dev.openfeature.sdk.Client
+import dev.openfeature.sdk.MutableTrackingEventDetails
 import dev.openfeature.sdk.Reason
 
 private val NOT_DRAWN = setOf(Reason.DEFAULT.name, Reason.DISABLED.name, Reason.ERROR.name)
@@ -24,7 +25,14 @@ internal class OpenFeatureExperiments(
         return Assignment(experiment, subject, variant, inExperiment = true)
     }
 
-    override fun trackExposure(assignment: Assignment) = Unit
+    override fun trackExposure(assignment: Assignment) {
+        if (!assignment.inExperiment) return
+
+        val details = MutableTrackingEventDetails()
+            .add("experiment", assignment.experiment)
+            .add("variant", assignment.variant)
+        variants.track("exposure", assignment.subject.toContext(), details)
+    }
 
     private fun drawnVariant(experiment: String, subject: FlagSubject): String? {
         if (gates.isDisabled(experiment, subject)) return null
