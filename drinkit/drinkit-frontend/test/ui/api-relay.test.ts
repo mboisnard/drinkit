@@ -76,3 +76,21 @@ test('the backend sees the scheme the browser used, not one the browser claims',
   // Then
   expect(await answer.json()).toStrictEqual({ scheme: 'http' });
 });
+
+test('a body over 2 MB reaches the backend through the relay, which alone decides its size', async ({ request, fakeBackend }) => {
+  // Given
+  fakeBackend.use(http.post('/drinkit/api/cellars', async ({ request: call }) => HttpResponse.json({
+    received: (await call.arrayBuffer()).byteLength,
+  }, { status: 201 })));
+  const threeMegabytes = JSON.stringify({ name: 'x'.repeat(3_000_000) });
+
+  // When
+  const answer = await request.post('/drinkit/api/cellars', {
+    data: threeMegabytes,
+    headers: { 'content-type': 'application/json', 'x-xsrf-token': 'token' },
+  });
+
+  // Then
+  expect(answer.status()).toBe(201);
+  expect(await answer.json()).toStrictEqual({ received: threeMegabytes.length });
+});

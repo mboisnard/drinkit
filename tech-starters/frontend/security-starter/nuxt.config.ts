@@ -36,6 +36,9 @@ export default defineNuxtConfig({
     xssValidator: false,
     corsHandler: false,
     removeLoggers: false,
+    // The backend alone decides the size of a body, per upload usage, and answers a ProblemDetail: a second ceiling
+    // here would refuse an upload the backend allows. The relay streams the body, so Nitro holds none whole
+    requestSizeLimiter: false,
     headers: {
       // A fetch or a frame the policy forgets stays on the app's origin: OWASP ASVS 5.0 V3.4.3
       // No page is ever shown in a frame, as the backend answers: OWASP ASVS 5.0 V3.4.6
