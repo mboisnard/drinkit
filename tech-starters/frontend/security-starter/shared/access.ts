@@ -1,6 +1,14 @@
 /** Who may open a page: anybody, any signed-in user, or a user holding a role. */
 export type PageAccess = 'public' | 'signed-in' | (string & {});
 
+/**
+ * Whether a page shows in the language of its address, under the prefix of its locale: a public page, which a search
+ * engine indexes. Any other page shows in the language of the account, without a prefix.
+ */
+export function hasLanguagePrefix(page: PageAccess | undefined): boolean {
+  return page === 'public';
+}
+
 export type Access = { kind: 'open' } | { kind: 'sign-in' } | { kind: 'redirect'; to: string } | { kind: 'forbidden' };
 
 /**

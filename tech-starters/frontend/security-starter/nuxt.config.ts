@@ -24,6 +24,10 @@ export default defineNuxtConfig({
       compilerOptions: { types: ['node'] },
     },
   },
+  // The texts of the pages a navigation cannot open, under auth. in the catalog
+  i18nCatalog: {
+    prefixes: ['auth'],
+  },
   // The backend rate limits and checks its input: the module's own limiter and XSS validator would refuse twice.
   // The app is same-origin, so no other origin may read its pages
   // HSTS for a year as the backend sends it, where the module gives 180 days: OWASP ASVS 5.0 V3.4.1

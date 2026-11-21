@@ -21,6 +21,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@drinkit/i18n-starter": "workspace:*",
     "@drinkit/api-client-starter": "workspace:*",
     "@drinkit/nuxt-starter": "workspace:*",
     "nuxt-security": "catalog:"

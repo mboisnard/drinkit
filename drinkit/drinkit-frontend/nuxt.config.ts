@@ -23,4 +23,16 @@ export default defineNuxtConfig({
     currentUserPath: '/api/user/me',
     forbiddenRedirects: { ROLE_REGISTRATION_IN_PROGRESS: '/registration' },
   },
+  i18n: {
+    locales: [
+      { code: 'en', language: 'en-GB' },
+      { code: 'fr', language: 'fr-FR' },
+    ],
+    defaultLocale: 'en',
+    baseUrl: 'http://localhost:3000',
+  },
+  i18nCatalog: {
+    catalog: '../../translations',
+    prefixes: ['home', 'signIn', 'registration', 'cellars', 'layout', 'error'],
+  },
 });
