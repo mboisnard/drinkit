@@ -10,7 +10,15 @@ components:
       type: object
       required:
         - roles
+        - locale
       properties:
+        locale:
+          type: string
+          description: The language of the account, as an ISO 639 code such as fr, which the pages without a language prefix show
+          minLength: 2
+          maxLength: 3
+          pattern: '^[a-z]{2,3}$'
+          example: fr
         firstname:
           type: string
         lastname:
