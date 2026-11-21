@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     '@drinkit/security-starter',
     '@drinkit/api-client-starter',
     '@drinkit/observability-starter',
+    '@drinkit/feature-management-starter',
   ],
   modules: ['@nuxt/ui'],
   devtools: { enabled: true },
@@ -22,6 +23,10 @@ export default defineNuxtConfig({
   auth: {
     currentUserPath: '/api/user/me',
     forbiddenRedirects: { ROLE_REGISTRATION_IN_PROGRESS: '/registration' },
+  },
+  featureManagement: {
+    flags: ['cellar-count'],
+    experiments: ['cellars-heading'],
   },
   i18n: {
     locales: [

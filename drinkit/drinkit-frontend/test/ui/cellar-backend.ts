@@ -1,6 +1,8 @@
 import { http, HttpResponse } from 'msw';
 import { idempotentEndpoint } from '@drinkit/api-client-starter/testing';
 import type { IdempotentEndpoint } from '@drinkit/api-client-starter/testing';
+import { ofrepBackendDouble } from '@drinkit/feature-management-starter/testing';
+import type { EvaluatedFlag, OfrepBackendDouble } from '@drinkit/feature-management-starter/testing';
 import { authBackendDouble } from '@drinkit/security-starter/testing';
 import type { AuthBackendDouble } from '@drinkit/security-starter/testing';
 import type { FakeBackend } from '@drinkit/test-starter/fake-backend';
@@ -20,11 +22,14 @@ export const BORDEAUX = {
 
 export interface CellarBackend extends AuthBackendDouble<User> {
   cellarDeletion: IdempotentEndpoint;
+  /** The flags and variants the backend evaluates for a signed-in user and for a visitor, none by default. */
+  flags: { user: EvaluatedFlag[]; visitor: EvaluatedFlag[] };
+  exposures: OfrepBackendDouble['exposures'];
 }
 
 /**
- * The backend of DrinkIt for the UI tests: its sign-in, the cellars of a user and their deletion, and the completion
- * of an account.
+ * The backend of DrinkIt for the UI tests: its sign-in, the cellars of a user and their deletion, the completion
+ * of an account, and the feature flags.
  */
 export function cellarBackend(
   fakeBackend: FakeBackend,
@@ -36,6 +41,11 @@ export function cellarBackend(
     newUser,
   });
   const cellars = [BORDEAUX];
+  const flags: CellarBackend['flags'] = { user: [], visitor: [] };
+  const ofrep = ofrepBackendDouble({
+    apiPath: '/drinkit',
+    evaluate: (request) => (auth.userOf(request) ? flags.user : flags.visitor),
+  });
 
   function isUser(request: Request): boolean {
     return auth.userOf(request)?.roles.includes('ROLE_USER') === true;
@@ -56,6 +66,7 @@ export function cellarBackend(
 
   fakeBackend.use(
     ...auth.handlers,
+    ...ofrep.handlers,
     http.get('/drinkit/api/cellars', ({ request }) => {
       if (!isUser(request)) {
         return problem(401, 'Unauthorized');
@@ -75,7 +86,7 @@ export function cellarBackend(
     }),
   );
 
-  return { ...auth, cellarDeletion };
+  return { ...auth, cellarDeletion, flags, exposures: ofrep.exposures };
 }
 
 function problem(status: number, title: string): Response {
