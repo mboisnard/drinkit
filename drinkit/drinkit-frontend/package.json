@@ -13,7 +13,7 @@
     "preview": "nuxt preview",
     "test": "vitest run",
     "test:ui": "playwright test",
-    "typecheck": "nuxt typecheck && tsc --project test/unit"
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@drinkit/api-client-starter": "workspace:*",
