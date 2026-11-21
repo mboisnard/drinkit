@@ -77,6 +77,16 @@ the user sees. When a page needs a decision the API does not give, the contract 
 - Accessible markup, which is also what tests select by: a label tied to each input, an `aria-label` on an
   icon-only button, a button or a link for an action.
 
+## Texts
+
+Every text a user reads, a label and an `aria-label` included, is a key of the catalog in `translations/`, written in
+`en.json` and `fr.json` in the same change, under a prefix the app or the starter declares in `i18nCatalog.prefixes`.
+A component takes `t` of `useTranslate()` from `@drinkit/i18n-starter/translate` and writes `{{ t('cellars.empty') }}`;
+a date or an amount goes through its `d` or `n`. A link to a public page is a `NuxtLinkLocale`, a navigation
+to it goes through `useLocalePath()` of `#i18n`, so that it keeps its language; any other page has no prefix and
+shows in the language of the account, so a link to it is a `NuxtLink`. The rules of a key and a message are in
+"Translations" of `frontend-coding-conventions.md`, and the lint refuses a text written in a template.
+
 ## Checks
 
 From the root, for the app or the starter changed, `<package>` being its `name` in `package.json`:
