@@ -31,12 +31,12 @@ app (§3).
 - What the app imports from it goes through the `exports` of its `package.json`, such as
   `@drinkit/nuxt-starter/problem-detail`: auto-imports are off. The `exports` are its public API, the rest stays
   internal.
-- It holds runtime code only. Lint rules it brings, such as a ban on bare strings for translations, go to
-  `code-analysis/eslint`, where `drinkitEslint()` lives. `test-starter` is the one exception: a dev package, no
+- It holds runtime code only. Lint rules it brings go to `code-analysis/eslint`, where `drinkitEslint()` lives. `test-starter` is the one exception: a dev package, no
   layer, that the others list in their `devDependencies` for their tests.
-- Its `eslint.config.ts` calls `drinkitEslint()` of `@drinkit/eslint-config` and its `.stylelintrc.json` extends
-  `@drinkit/stylelint-config`, both dev dependencies, like the app's. Its `package.json` has the `lint` and
-  `typecheck` scripts of `nuxt-starter`, which CI runs on every package.
+- It extends `nuxt-starter`, which extends `i18n-starter`, the base of every frontend starter.
+- Its `eslint.config.ts` calls `drinkitEslint({ tsconfigRootDir })` of `@drinkit/eslint-config`
+  and its `.stylelintrc.json` extends `@drinkit/stylelint-config`, both dev dependencies, like the app's. Its
+  `package.json` has the `lint` and `typecheck` scripts of `nuxt-starter`, which CI runs on every package.
 
 ## 3. The rules
 
@@ -50,8 +50,10 @@ app (§3).
 - Its configuration sits under one `runtimeConfig` key of its own, which the layer's `nuxt.config.ts` declares with
   a default that suits any app, or empty for the module to fill, so that an environment variable overrides it per
   environment (`NUXT_PUBLIC_<KEY>_...` for the public part). Only what the browser may see goes in the public
-  part. A text the starter shows the user, such as the message of a toast, goes in the layer's `app/app.config.ts`
-  instead, which Nuxt merges with the app's: a build fixes it, no environment changes it.
+  part. A text the starter shows the user, such as the message of a toast, is a key of the catalog in
+  `translations/`, in every language, under a prefix of the starter's own that its `nuxt.config.ts` declares in
+  `i18nCatalog.prefixes`, such as `auth` for `security-starter`. Its Nuxt tests load the catalog through
+  `i18nTestSettings()` of `@drinkit/i18n-starter/testing`.
 - What it renders follows the `frontend-feature` skill.
 
 ## 4. What it also touches
