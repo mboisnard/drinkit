@@ -26,6 +26,14 @@ test('a browser request reaches the backend with only the headers the API reads'
   expect(headers.has('authorization')).toBe(false);
 });
 
+test('a browser request keeps its idempotency key, so that the backend runs a retry once', () => {
+  // When
+  const headers = relayHeaders(new Headers({ 'idempotency-key': 'key' }), CLIENT, 'browser');
+
+  // Then
+  expect(headers.get('idempotency-key')).toBe('key');
+});
+
 test('a browser request carries only the cookies of the API to the backend', () => {
   // Given
   const incoming = new Headers({ cookie: '_ga=tracker; SESSION=1' });

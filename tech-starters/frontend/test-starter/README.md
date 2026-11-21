@@ -74,8 +74,8 @@ test('the home page greets the signed-in user', async ({ page, goto, fakeBackend
   [`api-client-starter`](../api-client-starter/README.md). `fakeBackend.use(...handlers)` adds MSW handlers for one
   test, and they go once it ends.
 - **`startFakeBackend(...handlers)`** serves MSW handlers on a real port, so the server render reaches them, which a
-  mock in the browser never does. A request no handler knows gets a `501` that names it, and every `Set-Cookie` of a
-  handler reaches the caller.
+  mock in the browser never does. A request no handler knows gets a `501` that names it, every `Set-Cookie` of a
+  handler reaches the caller, and a handler's `HttpResponse.error()` drops the connection without an answer.
 
 The UI tests build the app, serve it as in production and open it in a headless Chromium, over HTTP even when the
 shell sets a certificate for Nitro.

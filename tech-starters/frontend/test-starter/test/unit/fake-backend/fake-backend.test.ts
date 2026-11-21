@@ -44,6 +44,14 @@ test('the body of a request reaches the handler', async () => {
   expect(await response.json()).toStrictEqual({ name: 'Home' });
 });
 
+test('a network error of a handler drops the connection without an answer', async () => {
+  // Given
+  backend = await startFakeBackend(http.get('/cellars', () => HttpResponse.error()));
+
+  // When & Then
+  await expect(fetch(`${backend.url}/cellars`)).rejects.toThrow('fetch failed');
+});
+
 test('every cookie a handler sets reaches the caller', async () => {
   // Given
   const headers = new Headers();

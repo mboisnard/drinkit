@@ -10,7 +10,8 @@
     "./client-config": "./app/client-config.ts",
     "./use-api": "./app/use-api.ts",
     "./problem-error": "./app/problem-error.ts",
-    "./submission": "./app/use-submission.ts"
+    "./submission": "./app/use-submission.ts",
+    "./testing": "./testing/index.ts"
   },
   "scripts": {
     "lint": "eslint --max-warnings 0 .",
@@ -35,6 +36,7 @@
     "@vue/test-utils": "catalog:",
     "eslint": "catalog:",
     "happy-dom": "catalog:",
+    "msw": "catalog:",
     "nitropack": "catalog:",
     "nuxt": "catalog:",
     "typescript": "catalog:",
@@ -44,6 +46,12 @@
     "vue-tsc": "catalog:"
   },
   "peerDependencies": {
+    "msw": "catalog:",
     "nuxt": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "msw": {
+      "optional": true
+    }
   }
 }
