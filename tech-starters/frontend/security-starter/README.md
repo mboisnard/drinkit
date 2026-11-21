@@ -77,7 +77,8 @@ const { user, signedIn, hasRole, signOut } = useCurrentUser();
   in the page. A session restored by the remember-me cookie, or opened by a redirect, calls neither: a listener also
   reads `useCurrentUser()` when it starts.
 - **A 401 to a signed-in user**, an ended session, forgets them and sends them to sign in, back to the page after.
-- **The headers**: a Content Security Policy with `strict-dynamic` and a nonce per response, HSTS for a year,
+- **The headers**: a Content Security Policy with `strict-dynamic` and a nonce per response, `default-src` and
+  `connect-src` on the app's origin, `frame-ancestors 'none'` with `X-Frame-Options: DENY`, HSTS for a year,
   `X-Content-Type-Options` and the module's other defaults, and `Cache-Control: no-store` on every page. The rate
   limiter, XSS validator and CORS handler of `nuxt-security` are off: the backend rate limits and checks its input,
   and the app answers its own origin only. Its removal of `console` calls is off too: Vite ignores it.
