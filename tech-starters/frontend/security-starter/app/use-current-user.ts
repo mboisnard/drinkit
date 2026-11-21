@@ -38,7 +38,7 @@ export function useCurrentUser(): CurrentUserSession {
     refresh,
     signOut: async () => {
       await backend.signOut();
-      await forget();
+      forget();
 
       // Away from the page first, so that it never renders again without its data
       await nuxtApp.runWithContext(() => navigateTo(localizedPath(signInPage)));
@@ -50,6 +50,9 @@ export function useCurrentUser(): CurrentUserSession {
 
       // Nuxt reads the payload the server rendered only at start, and leaves it in the page
       for (const payload of document.querySelectorAll('script[data-nuxt-data]')) payload.remove();
+
+      // Once the states are back to their start, so that what a handler loads for the visitor stays
+      await nuxtApp.callHook('drinkit:signed-out');
     },
   };
 }

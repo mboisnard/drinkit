@@ -46,12 +46,17 @@ OFREP lets any of them read flags over HTTP from a server that speaks it.
   random id in an `HttpOnly` cookie kept 30 days after the last visit.
 - **Clients read over OFREP.** The backend answers the OFREP bulk endpoint, `/ofrep/v1/evaluate/flags`, for the keys
   the client names in the context of its request, and ignores the rest of that context, which anyone can forge. It
-  evaluates for the subject of the request. The browser reads the answer with the OpenFeature web SDK and its OFREP
-  provider. `/ofrep/**` sits outside `/api/**`, which only signed-in users reach, and asks for the CSRF token like any
+  evaluates for the subject of the request. `/ofrep/**` sits outside `/api/**`, which only signed-in users reach, and asks for the CSRF token like any
   POST ([ADR 014](./014-protect-against-csrf-with-a-cookie-token-and-fetch-metadata.md)).
-- **Flags in the server render.** When Nuxt renders a page on the server, it fetches the flags before rendering, so
-  the HTML already holds the blocks they open and nothing flickers. The flags travel in the Nuxt payload, and the
-  browser's provider starts from them without a request.
+- **Flags in the server render.** The Nuxt app declares every key it reads in its configuration. When Nuxt renders a
+  page on the server, it fetches them all in one request before rendering, so the HTML already holds the blocks they
+  open and nothing flickers. The flags travel in the Nuxt payload, and the browser starts from them without a request.
+  A sign-in or a sign-out reads them again for the new subject, once the app has forgotten the previous one.
+- **No OpenFeature SDK in the Nuxt app.** The app reads the OFREP answer with code of its own, through the API client
+  that already carries the cookies and the CSRF token of each call. The web SDK keeps a global state, which would mix
+  the flags of two users in a server render, so it could only serve the browser, where it would start from the
+  payload only through a fetch replaced by hand, keep the flags apart from the state of Vue, and cache them in
+  `localStorage` by default.
 
 ```mermaid
 sequenceDiagram
@@ -64,23 +69,26 @@ sequenceDiagram
     Nuxt->>Backend: GET /api/auth/csrf
     Backend-->>Nuxt: XSRF-TOKEN and visitor cookies
   end
-  Nuxt->>Backend: POST /ofrep/v1/evaluate/flags, cookies, CSRF token, the keys of the page
+  Nuxt->>Backend: POST /ofrep/v1/evaluate/flags, cookies, CSRF token, the keys of the app
   Backend->>Flipt: evaluate for the user or the visitor
   Flipt-->>Backend: values
   Backend-->>Nuxt: flags, ETag
   Nuxt-->>Browser: HTML rendered with the flags, payload, the cookies of a first visit
-  Note over Browser: the OFREP provider starts from the payload, no request
-  Browser->>Backend: on sign-in, or back to the tab: POST with the ETag
-  Backend-->>Browser: 304, or the new flags
+  Note over Browser: the app starts from the payload, no request
+  Browser->>Backend: on sign-in or sign-out: POST, the keys of the app
+  Backend-->>Browser: the flags of the new subject
 ```
 
-The OpenFeature web SDK never runs on the Nuxt server, where its global state would mix the flags of two users: the
-server calls the endpoint itself, and relays to the browser the cookies of a first visit.
+The Nuxt server calls the endpoint itself, and relays to the browser the cookies of a first visit.
 
 ## Consequences
 
 - Another flag tool, PostHog's flags included, replaces Flipt by changing the starter, and no code that reads flags.
 - A missing flag or a stopped Flipt shows the old behavior.
+- A flag switched in Flipt reaches an open page at its next full load, sign-in or sign-out, not while the user
+  browses.
+- The Nuxt app reads its flags through composables of its own, not the OpenFeature API, so a browser provider of a
+  vendor does not plug in.
 - A flag targets what the session knows, roles and the attributes the application adds, never what a client sends.
 - A client may ask for any key, and learns no more than whether that flag is on.
 - A page rendered with flags belongs to one user or visitor, so no shared cache may keep it.
@@ -103,6 +111,9 @@ server calls the endpoint itself, and relays to the browser the cookies of a fir
   account on every machine. It offered flags, experiments and analytics in one tool.
 - **FF4J**, which many Spring applications use. Rejected because it is barely maintained and supports neither
   OpenFeature nor variants. It offered flags declared in an XML file and stored in our own database.
+- **The OpenFeature web SDK and its OFREP provider in the Nuxt app.** Rejected because they cannot run in the server
+  render, and in the browser would repeat what the API client does, with a second state to keep in step with Vue's.
+  They offered the standard API in the browser, and a new read of the flags when the user comes back to the tab.
 - **A subject passed to every evaluation.** Rejected because each feature would carry it from the controller down
   to the domain. It offered the same call in a request and in an event handler.
 - **A catalog of the flags in the code.** Rejected because each flag would need a declaration apart from where it is

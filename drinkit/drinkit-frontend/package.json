@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@drinkit/api-client-starter": "workspace:*",
+    "@drinkit/feature-management-starter": "workspace:*",
     "@drinkit/i18n-starter": "workspace:*",
     "@drinkit/nuxt-starter": "workspace:*",
     "@drinkit/observability-starter": "workspace:*",

@@ -1,5 +1,5 @@
 import type { Ref } from 'vue';
-import { useNuxtApp, useState } from '#app';
+import { useState } from '#app';
 import { ProblemError } from '@drinkit/api-client-starter/problem-error';
 import { useAuthBackend } from './auth-backend.ts';
 import type { CurrentUser } from './types.ts';
@@ -15,7 +15,7 @@ interface CurrentUserStore {
   state: Readonly<Ref<CurrentUserState>>;
   load: () => Promise<void>;
   refresh: () => Promise<void>;
-  forget: () => Promise<void>;
+  forget: () => void;
 }
 
 /**
@@ -28,7 +28,6 @@ interface CurrentUserStore {
 export function useCurrentUserState(): CurrentUserStore {
   const state = useState<CurrentUserState>(CURRENT_USER_STATE, () => ({ loaded: false, user: null }));
   const backend = useAuthBackend();
-  const nuxtApp = useNuxtApp();
 
   async function refresh(): Promise<void> {
     state.value = { loaded: true, user: await backend.currentUser().catch(visitorOn401) };
@@ -42,9 +41,8 @@ export function useCurrentUserState(): CurrentUserStore {
         await refresh();
       }
     },
-    forget: async () => {
+    forget: () => {
       state.value = { loaded: true, user: null };
-      await nuxtApp.callHook('drinkit:signed-out');
     },
   };
 }

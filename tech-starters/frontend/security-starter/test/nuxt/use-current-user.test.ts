@@ -184,3 +184,19 @@ test('signing out tells the drinkit:signed-out hook', async () => {
   unhook();
   expect(signedOut).toBe(1);
 });
+
+test('signing out keeps what a drinkit:signed-out handler loads for the visitor', async () => {
+  // Given
+  backend.user = { firstname: 'Ada', roles: ['ROLE_USER'] };
+  await useCurrentUser().refresh();
+  const unhook = useNuxtApp().hook('drinkit:signed-out', () => {
+    useState('visitor-settings', () => ({ loaded: false })).value = { loaded: true };
+  });
+
+  // When
+  await useCurrentUser().signOut();
+
+  // Then
+  unhook();
+  expect(useState('visitor-settings').value).toStrictEqual({ loaded: true });
+});
