@@ -1,6 +1,8 @@
 import { relative } from 'node:path';
 import { addTemplate, defineNuxtModule, updateTemplates } from 'nuxt/kit';
 import type { NuxtPage } from 'nuxt/schema';
+import { hasLanguagePrefix } from '../shared/access.ts';
+import type { PageAccess } from '../shared/access.ts';
 
 export interface AuthOptions {
   /** The path under the API that answers the current user, or 401 to a visitor, such as `/api/user/me`. */
@@ -37,6 +39,7 @@ export default defineNuxtModule<AuthOptions>({
         throw new Error('auth needs the currentUserPath of the API, such as /api/user/me');
       }
 
+      withoutLanguagePrefix(pages);
       pagesWithoutAuth = withoutAuth(pages).map((file) => relative(nuxt.options.rootDir, file));
       await updateTemplates({ filter: (template) => template.filename === CHECK });
     });
@@ -55,6 +58,17 @@ function withoutAuth(pages: NuxtPage[], inherited = false): string[] {
 
     return [...own, ...withoutAuth(page.children ?? [], declared)];
   });
+}
+
+// @nuxtjs/i18n reads the pages after this module, and leaves out of its locales the pages whose i18n is false
+function withoutLanguagePrefix(pages: NuxtPage[], inherited?: PageAccess): void {
+  for (const page of pages) {
+    const auth = (page.meta?.auth as PageAccess | undefined) ?? inherited;
+    if (!hasLanguagePrefix(auth)) {
+      page.meta = { ...page.meta, i18n: false };
+    }
+    withoutLanguagePrefix(page.children ?? [], auth);
+  }
 }
 
 function checkOf(pages: string[]): string {

@@ -9,9 +9,14 @@
 export interface AuthTypes {}
 
 // Before an app registers its user, any role: `string & {}` keeps the other literals of PageAuth in the editor
-type RegisteredUser = AuthTypes extends { user: infer User } ? User : { roles: ReadonlyArray<string & {}> };
+type RegisteredUser = AuthTypes extends { user: infer User }
+  ? User
+  : { roles: ReadonlyArray<string & {}>; locale?: string };
 
-/** The user the backend answers on the current user path: whatever its fields, it holds roles. */
+/**
+ * The user the backend answers on the current user path: whatever its fields, it holds roles, and the language of the
+ * account in `locale`, such as `fr`, when the pages without a language prefix follow it.
+ */
 export type CurrentUser = RegisteredUser extends { roles: readonly string[] } ? RegisteredUser : never;
 
 export type Role = CurrentUser['roles'][number];

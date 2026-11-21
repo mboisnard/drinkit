@@ -7,6 +7,7 @@ import type { FakeBackend } from '@drinkit/test-starter/fake-backend';
 export interface User {
   firstname?: string;
   roles: string[];
+  locale?: string;
 }
 
 export const BORDEAUX = {

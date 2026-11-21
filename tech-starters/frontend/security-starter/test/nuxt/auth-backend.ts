@@ -5,6 +5,7 @@ import type { H3Event } from 'h3';
 interface User {
   firstname?: string;
   roles: string[];
+  locale?: string;
 }
 
 /** The auth endpoints of the backend in the Nuxt test environment, with what they received. */

@@ -1,0 +1,5 @@
+{
+  "cellar.bottles": "{count, plural, one {# bottle} other {# bottles}}",
+  "cellar.welcome": "Welcome to {cellarName}",
+  "hidden.secret": "Not loaded: no layer declares the hidden prefix"
+}

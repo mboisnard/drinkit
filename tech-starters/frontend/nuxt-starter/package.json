@@ -16,6 +16,9 @@
     "typecheck": "nuxt typecheck && tsc --project test/unit",
     "postinstall": "nuxt prepare"
   },
+  "dependencies": {
+    "@drinkit/i18n-starter": "workspace:*"
+  },
   "devDependencies": {
     "@drinkit/eslint-config": "workspace:*",
     "@drinkit/stylelint-config": "workspace:*",

@@ -69,6 +69,7 @@ frontend: &frontend
   - 'drinkit/*-api-contract/contract/**' # each app generates its client from it at each build
   - 'drinkit/*-frontend/**'
   - 'tech-starters/frontend/**'
+  - 'translations/**' # the catalog each app and starter loads its keys from
 
 docs: &docs
   - *ci

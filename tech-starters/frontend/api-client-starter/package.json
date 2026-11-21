@@ -19,6 +19,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@drinkit/i18n-starter": "workspace:*",
     "@drinkit/nuxt-starter": "workspace:*",
     "@hey-api/openapi-ts": "catalog:",
     "h3": "catalog:",
