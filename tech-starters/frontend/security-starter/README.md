@@ -80,7 +80,7 @@ const { user, signedIn, hasRole, signOut } = useCurrentUser();
 - **The headers**: a Content Security Policy with `strict-dynamic` and a nonce per response, HSTS for a year,
   `X-Content-Type-Options` and the module's other defaults, and `Cache-Control: no-store` on every page. The rate
   limiter, XSS validator and CORS handler of `nuxt-security` are off: the backend rate limits and checks its input,
-  and the app answers its own origin only.
+  and the app answers its own origin only. Its removal of `console` calls is off too: Vite ignores it.
 
 A new way of signing in, a passkey or Google, is a composable of its own that ends with the shared step of
 `app/complete-sign-in.ts`: the state, the middleware and the pages stay as they are.
