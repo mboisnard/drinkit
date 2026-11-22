@@ -123,6 +123,25 @@ sequenceDiagram
   Form->>Backend: DELETE /cellars/2, new key K2
 ```
 
+## A search that cancels the call it replaces
+
+A search typed letter by letter must not show the answer of a word the user has already changed. `useAsyncData`
+cancels its running call when it runs again, by default, and hands its function the `signal` of that call: given
+to the generated function, it aborts the request too, so the backend stops working for nothing.
+
+```ts
+// app/composables/useWineSearch.ts
+const api = useApi();
+const query = ref('');
+const typed = refDebounced(query, 300);
+
+const { data: wines } = useAsyncData(
+  'wine-search',
+  (_, { signal }) => searchWines({ ...api, query: { q: typed.value }, signal }),
+  { watch: [typed] },
+);
+```
+
 ## Configuration
 
 | Key | Environment variable | Default | Effect |
