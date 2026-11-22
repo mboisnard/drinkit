@@ -58,8 +58,9 @@ that sends an event, by name, with a payload, to a user id or to a session id.
 - **Browser.** A page opens its stream only while its tab is visible: it closes the stream when the
   [Page Visibility API](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API) reports the tab hidden,
   and opens it again, then reads its data again, once the tab is visible. A tab in the background, a window minimized
-  or a screen off sends no request, so the idle timeout of the session runs. The frontend starter of SSE will carry
-  this rule.
+  or a screen off sends no request, so the idle timeout of the session runs. The frontend
+  [`sse-starter`](https://github.com/mboisnard/drinkit/blob/master/tech-starters/frontend/sse-starter/README.md)
+  carries this rule.
 - **Domain.** The domain never sees the starter: a handler of the application turns a business event into a call to
   `ServerEvents`, as `NotificationSender` turns one into an email.
 
