@@ -9,6 +9,7 @@ dependencies {
 
     implementation(project(":ai-starter"))
     implementation(project(":file-storage-starter"))
+    implementation(project(":i18n-starter"))
     implementation(project(":idempotency-starter"))
     implementation(project(":messaging-starter"))
     implementation(project(":security-starter"))
@@ -20,6 +21,7 @@ dependencies {
     openApiInput(project(":drinkit-api-contract"))
 
     testImplementation(testFixtures(project(":drinkit-domain")))
+    testImplementation(testFixtures(project(":i18n-starter")))
     testImplementation(testFixtures(project(":messaging-starter")))
     testImplementation(testFixtures(project(":security-starter")))
 }
@@ -40,6 +42,11 @@ openApiGenerate {
             "UserId" to "com.drinkit.user.core.UserId",
         ),
     )
+}
+
+// The catalog the frontend shares, which i18n-starter reads from the classpath
+tasks.processResources {
+    from(rootProject.layout.projectDirectory.dir("translations")) { into("translations") }
 }
 
 // Simplify configuration for local application launch

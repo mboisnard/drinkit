@@ -10,6 +10,8 @@ spring:
         base-url: https://www.ecb.europa.eu
 
 starters:
+  i18n:
+    prefixes: [mail] # the keys of the shared catalog the backend writes
   security:
     code:
       max-email-length: 100 # MAX_EMAIL_LENGTH of the domain

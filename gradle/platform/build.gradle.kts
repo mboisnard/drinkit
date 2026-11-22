@@ -28,6 +28,7 @@ dependencies {
         api(libs.bouncycastle.bcprov)
         api(libs.bouncycastle.bcutil)
         api(libs.bson)
+        api(libs.icu4j)
         api(libs.jooq)
         api(libs.jooq.kotlin)
         api(libs.kotlin.logging.jvm)

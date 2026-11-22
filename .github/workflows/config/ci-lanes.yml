@@ -46,6 +46,7 @@ backend: &backend
   - *gradle
   - 'code-analysis/detekt/**'
   - *backend-sources
+  - 'translations/**' # the catalog the backend writes its emails from
 
 updater: &updater
   - *ci
