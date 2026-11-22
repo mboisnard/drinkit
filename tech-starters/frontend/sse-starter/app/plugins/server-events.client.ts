@@ -2,6 +2,8 @@ import { defineNuxtPlugin, useRuntimeConfig } from '#app';
 
 // The path of the stream in the backend's sse-starter, under the path of its API
 const STREAM_PATH = '/sse/event-stream';
+// The event that opens each stream, with the id of the last event sent to the user
+const OPENING_EVENT = 'init';
 // EventSource.OPEN
 const OPEN = 1;
 
@@ -17,7 +19,9 @@ interface Listener {
 export default defineNuxtPlugin((nuxtApp) => {
   const url = `${useRuntimeConfig().public.apiClient.path}${STREAM_PATH}`;
   const listeners = new Set<Listener>();
-  const openHandlers = new Set<() => void>();
+  const openingHandlers = new Set<(missed: boolean) => void>();
+  // The id of the last event the tab got, which the opening of a stream compares with the last one sent to the user
+  let lastEventId: string | null = null;
   // Kept after the browser gives up on a stream the backend refused: the tab shown again or a sign-in reopens it
   let source: EventSource | null = null;
 
@@ -27,9 +31,11 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
 
     const opened = new EventSource(url);
-    opened.addEventListener('open', () => {
-      openHandlers.forEach((handler) => {
-        handler();
+    opened.addEventListener(OPENING_EVENT, (event) => {
+      const missed = event.lastEventId !== lastEventId;
+      ({ lastEventId } = event);
+      openingHandlers.forEach((handler) => {
+        handler(missed);
       });
     });
     listeners.forEach(({ name, listener }) => {
@@ -63,6 +69,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           const entry: Listener = {
             name,
             listener: (event) => {
+              ({ lastEventId } = event as MessageEvent);
+
               // Thrown in a listener of EventSource, it would reach no handler of the app
               try {
                 handler(JSON.parse((event as MessageEvent<string>).data));
@@ -84,20 +92,20 @@ export default defineNuxtPlugin((nuxtApp) => {
             }
           };
         },
-        onOpen(handler: () => void): () => void {
+        onMissed(handler: () => void): () => void {
           // The page reads its data as it mounts: the opening this mount starts in a visible tab is no reconnection
           let mountOpening = document.visibilityState === 'visible' && source?.readyState !== OPEN;
-          function onOpening(): void {
+          function onOpening(missed: boolean): void {
             if (mountOpening) {
               mountOpening = false;
-            } else {
+            } else if (missed) {
               handler();
             }
           }
-          openHandlers.add(onOpening);
+          openingHandlers.add(onOpening);
 
           return () => {
-            openHandlers.delete(onOpening);
+            openingHandlers.delete(onOpening);
           };
         },
       },

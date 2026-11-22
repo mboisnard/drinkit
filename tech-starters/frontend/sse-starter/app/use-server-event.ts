@@ -16,12 +16,12 @@ export function useServerEvent(name: string, handler: (payload: never) => void):
 }
 
 /**
- * Calls `handler` each time the connection opens again while the component is mounted: the backend replays no event,
- * so a page reads its data again here to catch up with what it missed. The opening its mount starts in a visible tab
- * calls nothing, since the page has just read its data. Only `useServerEvent` opens the connection.
+ * Calls `handler` when the connection opens again after the tab missed an event, while the component is mounted: the
+ * backend replays no event, so a page reads its data again here to catch up. The opening its mount starts in a visible
+ * tab calls nothing, since the page has just read its data. Only `useServerEvent` opens the connection.
  */
-export function onStreamOpen(handler: () => void): void {
+export function onMissedEvents(handler: () => void): void {
   if (import.meta.client) {
-    onScopeDispose(useNuxtApp().$serverEvents.onOpen(handler));
+    onScopeDispose(useNuxtApp().$serverEvents.onMissed(handler));
   }
 }

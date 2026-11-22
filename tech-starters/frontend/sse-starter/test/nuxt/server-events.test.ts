@@ -4,7 +4,7 @@ import { useNuxtApp } from '#app';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { FakeEventSource } from '@drinkit/sse-starter/testing';
 import { useServerData } from '@drinkit/sse-starter/use-server-data';
-import { onStreamOpen, useServerEvent } from '@drinkit/sse-starter/use-server-event';
+import { onMissedEvents, useServerEvent } from '@drinkit/sse-starter/use-server-event';
 
 // EventSource.CLOSED
 const CLOSED = 2;
@@ -168,70 +168,73 @@ test('a tab visible again opens a connection', () => {
   expect(FakeEventSource.active()).toHaveLength(1);
 });
 
-test('the opening that the mount starts calls no onStreamOpen handler, the page has just read its data', () => {
+test('the opening that the mount starts calls no onMissedEvents handler, the page has just read its data', () => {
   // Given
-  let opens = 0;
+  let calls = 0;
   mounted(() => {
-    onStreamOpen(() => opens++);
+    onMissedEvents(() => calls++);
     useServerEvent('cellar-updated', vi.fn());
   });
 
   // When
-  FakeEventSource.instances[0]?.accept();
+  FakeEventSource.instances[0]?.accept('o1');
 
   // Then
-  expect(opens).toBe(0);
+  expect(calls).toBe(0);
 });
 
-test('a reconnection calls the handlers of onStreamOpen', () => {
+test('a reconnection after an event the tab missed calls the handlers of onMissedEvents', () => {
   // Given
-  let opens = 0;
+  let calls = 0;
   mounted(() => {
     useServerEvent('cellar-updated', vi.fn());
-    onStreamOpen(() => opens++);
+    onMissedEvents(() => calls++);
   });
   const source = FakeEventSource.instances[0];
-  source?.accept();
+  source?.accept('o1');
   source?.drop();
 
   // When
-  source?.accept();
+  source?.accept('e1');
 
   // Then
-  expect(opens).toBe(1);
+  expect(calls).toBe(1);
 });
 
-test('a page mounted in a hidden tab calls its onStreamOpen handlers once the tab is shown', () => {
+test('a reconnection with no event missed meanwhile calls no onMissedEvents handler', () => {
   // Given
-  let opens = 0;
+  let calls = 0;
+  mounted(() => {
+    useServerEvent('cellar-updated', vi.fn());
+    onMissedEvents(() => calls++);
+  });
+  const source = FakeEventSource.instances[0];
+  source?.accept('o1');
+  source?.emit('cellar-updated', { id: 'c1' }, 'e1');
+  source?.drop();
+
+  // When
+  source?.accept('e1');
+
+  // Then
+  expect(calls).toBe(0);
+});
+
+test('a page mounted in a hidden tab calls its onMissedEvents handlers once the tab is shown', () => {
+  // Given
+  let calls = 0;
   showTab('hidden');
   mounted(() => {
     useServerEvent('cellar-updated', vi.fn());
-    onStreamOpen(() => opens++);
+    onMissedEvents(() => calls++);
   });
   showTab('visible');
 
   // When
-  FakeEventSource.instances[0]?.accept();
+  FakeEventSource.instances[0]?.accept('o1');
 
   // Then
-  expect(opens).toBe(1);
-});
-
-test('a page reads its data once as it loads', async () => {
-  // Given
-  let reads = 0;
-  await answerPage(async () => {
-    reads++;
-
-    return Promise.resolve(['Hello']);
-  });
-
-  // When
-  FakeEventSource.instances[0]?.accept();
-
-  // Then
-  expect(reads).toBe(1);
+  expect(calls).toBe(1);
 });
 
 test('an event changes the data through its reducer, without reading it again', async () => {
@@ -251,7 +254,7 @@ test('an event changes the data through its reducer, without reading it again', 
   expect({ answer: data.value, reads }).toStrictEqual({ answer: ['Hello', 'world'], reads: 1 });
 });
 
-test('a reconnection reads the data again', async () => {
+test('a reconnection after an event the tab missed reads the data again', async () => {
   // Given
   let reads = 0;
   await answerPage(async () => {
@@ -260,16 +263,36 @@ test('a reconnection reads the data again', async () => {
     return Promise.resolve(['Hello']);
   });
   const source = FakeEventSource.instances[0];
-  source?.accept();
+  source?.accept('o1');
   source?.drop();
 
   // When
-  source?.accept();
+  source?.accept('e1');
 
   // Then
   await vi.waitFor(() => {
     expect(reads).toBe(2);
   });
+});
+
+test('a reconnection with no event missed meanwhile makes no call to the API', async () => {
+  // Given
+  let reads = 0;
+  await answerPage(async () => {
+    reads++;
+
+    return Promise.resolve(['Hello']);
+  });
+  const source = FakeEventSource.instances[0];
+  source?.accept('o1');
+  source?.drop();
+
+  // When
+  source?.accept('o1');
+
+  // Then
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  expect(reads).toBe(1);
 });
 
 test('an event that comes before the data is read is left to the read, with no error', async () => {

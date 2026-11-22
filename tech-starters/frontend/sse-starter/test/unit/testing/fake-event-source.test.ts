@@ -14,8 +14,8 @@ describe('FakeEventSource', () => {
       accept: () => {
         source.accept();
       },
-      emit: (name, data) => {
-        source.emit(name, data);
+      emit: (name, data, id) => {
+        source.emit(name, data, id);
       },
       drop: () => {
         source.drop();
@@ -62,8 +62,9 @@ describe('Node\'s EventSource', () => {
         // A short retry, so that a drop reconnects within the test
         response.writeHead(200, { 'content-type': 'text/event-stream' }).write('retry: 10\n\n');
       },
-      emit: async (name, data) => new Promise<void>((resolve) => {
-        response?.write(`event: ${name}\ndata: ${JSON.stringify(data)}\n\n`, () => {
+      emit: async (name, data, id) => new Promise<void>((resolve) => {
+        const idField = id === undefined ? '' : `id: ${id}\n`;
+        response?.write(`${idField}event: ${name}\ndata: ${JSON.stringify(data)}\n\n`, () => {
           resolve();
         });
       }),

@@ -1,13 +1,13 @@
 import { useAsyncData } from '#app';
 import type { AsyncData, NuxtError } from '#app';
-import { onStreamOpen, useServerEvent } from './use-server-event.ts';
+import { onMissedEvents, useServerEvent } from './use-server-event.ts';
 
 export type ServerData<T> = AsyncData<T | undefined, NuxtError | undefined>;
 
 /**
  * Data a page reads through `read`, kept up to date by the events of the backend: each event of `reducers` changes it
- * with no call to the API, and a reconnection reads it again, since the backend replays no event it missed. It reads in
- * the server render, as `useAsyncData` does, under `key`.
+ * with no call to the API, and a reconnection after a missed event reads it again, since the backend replays none. It
+ * reads in the server render, as `useAsyncData` does, under `key`.
  *
  * Each reducer declares the type of its payload, which nothing checks at runtime.
  */
@@ -26,7 +26,7 @@ export function useServerData<T>(
       }
     });
   });
-  onStreamOpen(() => {
+  onMissedEvents(() => {
     void page.refresh();
   });
 

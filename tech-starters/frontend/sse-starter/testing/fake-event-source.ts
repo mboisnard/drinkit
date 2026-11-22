@@ -12,6 +12,8 @@ export class FakeEventSource extends EventTarget {
 
   readonly url: string;
   readyState: number = CONNECTING;
+  // Kept from one event to the next, as the browser does
+  private lastEventId = '';
 
   constructor(url: string | URL) {
     super();
@@ -28,16 +30,24 @@ export class FakeEventSource extends EventTarget {
     this.readyState = CLOSED;
   }
 
-  /** The server answers 200: the stream opens, again after a drop. */
-  accept(): void {
+  /**
+   * The server answers 200: the stream opens, again after a drop. With `lastEventId`, the backend's `sse-starter`
+   * then sends the `init` event, which carries the id of the last event sent to the user.
+   */
+  accept(lastEventId?: string): void {
     this.readyState = OPEN;
     this.dispatchEvent(new Event('open'));
+
+    if (lastEventId !== undefined) {
+      this.emit('init', {}, lastEventId);
+    }
   }
 
-  /** The server writes an event of that name, its data serialized as the backend does. */
-  emit(name: string, data: unknown): void {
+  /** The server writes an event of that name, its data serialized as the backend does, with its id if any. */
+  emit(name: string, data: unknown, id?: string): void {
     if (this.readyState === OPEN) {
-      this.dispatchEvent(new MessageEvent(name, { data: JSON.stringify(data) }));
+      this.lastEventId = id ?? this.lastEventId;
+      this.dispatchEvent(new MessageEvent(name, { data: JSON.stringify(data), lastEventId: this.lastEventId }));
     }
   }
 

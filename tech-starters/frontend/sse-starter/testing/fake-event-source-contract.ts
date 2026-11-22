@@ -4,7 +4,7 @@ import { expect, test } from 'vitest';
 export interface StreamUnderTest {
   source: EventTarget & { readonly readyState: number };
   accept: () => Promise<void> | void;
-  emit: (name: string, data: unknown) => Promise<void> | void;
+  emit: (name: string, data: unknown, id?: string) => Promise<void> | void;
   drop: () => Promise<void> | void;
 }
 
@@ -37,6 +37,20 @@ export function fakeEventSourceContract(connect: () => Promise<StreamUnderTest>)
 
     // Then
     expect(((await received) as MessageEvent<string>).data).toBe('{"id":"c1"}');
+  });
+
+  test('an event carries the id the server wrote, kept by the next event that has none', async () => {
+    // Given
+    const { source, accept, emit } = await connect();
+    await accept();
+    await emit('cellar-updated', { id: 'c1' }, 'e1');
+    const received = next(source, 'bottle-added');
+
+    // When
+    await emit('bottle-added', { id: 'b1' });
+
+    // Then
+    expect(((await received) as MessageEvent<string>).lastEventId).toBe('e1');
   });
 
   test('a dropped stream opens again once the server accepts it', async () => {
