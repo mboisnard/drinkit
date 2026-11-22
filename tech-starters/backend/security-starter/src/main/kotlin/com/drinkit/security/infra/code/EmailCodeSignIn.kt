@@ -51,7 +51,7 @@ internal class EmailCodeSignInFilter(
         // A malformed sign-in goes to the provider too, which publishes the failure that the security log records
         val login = body?.login(maxEmailLength).orEmpty()
         val code = body?.code().orEmpty()
-        return authenticationManager.authenticate(EmailCodeAuthenticationToken(login, code, request.locale))
+        return authenticationManager.authenticate(EmailCodeAuthenticationToken(login, code))
     }
 }
 

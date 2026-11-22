@@ -1,11 +1,13 @@
 package com.drinkit.user
 
 import com.drinkit.common.Constants.DELETED_ACCOUNT_RETENTION
+import com.drinkit.i18n.FixedCurrentLocale
 import com.drinkit.security.InMemoryCurrentVisitor
 import com.drinkit.security.UserAccount
 import com.drinkit.security.UserAccounts
 import com.drinkit.security.UserAccountsTestContract
 import com.drinkit.user.core.Email
+import com.drinkit.user.core.Preferences
 import com.drinkit.user.core.UserStatus
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -17,12 +19,14 @@ internal class DomainUserAccountsTest : UserAccountsTestContract() {
 
     private val userFixtures = UserFixtures()
     private val clock = userFixtures.controlledClock.fix()
+    private val currentLocale = FixedCurrentLocale(Locale.ENGLISH)
 
     override fun fetchUserAccounts(): UserAccounts = DomainUserAccounts(
         users = userFixtures.users,
         createNewUser = userFixtures.createNewUser,
         reactivateUser = userFixtures.reactivateUser,
         currentVisitor = InMemoryCurrentVisitor(),
+        currentLocale = currentLocale,
     )
 
     override fun givenAnAccount(login: String): UserAccount {
@@ -63,9 +67,9 @@ internal class DomainUserAccountsTest : UserAccountsTestContract() {
     }
 
     @Test
-    fun `registers a new user, in the language of the browser, who has a profile to complete`() {
+    fun `registers a new user, who has a profile to complete`() {
         // When
-        val account = accounts.register("grace@drinkit.test", Locale.ITALIAN).shouldNotBeNull()
+        val account = accounts.register("grace@drinkit.test").shouldNotBeNull()
 
         // Then
         account.roles shouldBe setOf("ROLE_REGISTRATION_IN_PROGRESS")
@@ -74,12 +78,34 @@ internal class DomainUserAccountsTest : UserAccountsTestContract() {
     }
 
     @Test
+    fun `registers a new user in the language the request reads in`() {
+        // When
+        accounts.register("grace@drinkit.test")
+
+        // Then
+        userFixtures.users.findEnabledBy(Email("grace@drinkit.test")).shouldNotBeNull().preferences shouldBe
+            Preferences(language = Locale.ENGLISH)
+    }
+
+    @Test
+    fun `keeps the language of the account for the session it signs in, whatever the request reads in`() {
+        // Given
+        val user = userFixtures.givenAnInitializedUser()
+
+        // When
+        accounts.signedIn(user.id.value)
+
+        // Then
+        currentLocale.get() shouldBe user.preferences.language
+    }
+
+    @Test
     fun `brings back the user of an email deleted within the retention period`() {
         // Given
         val user = givenAUserDeleted(ago = Duration.ofDays(1))
 
         // When
-        val account = accounts.register(user.email.value, Locale.FRENCH)
+        val account = accounts.register(user.email.value)
 
         // Then
         account.shouldNotBeNull().id shouldBe user.id.value
@@ -91,7 +117,7 @@ internal class DomainUserAccountsTest : UserAccountsTestContract() {
         val user = givenAUserDeleted(ago = DELETED_ACCOUNT_RETENTION)
 
         // When
-        val account = accounts.register(user.email.value, Locale.FRENCH)
+        val account = accounts.register(user.email.value)
 
         // Then
         account shouldBe null
@@ -99,7 +125,7 @@ internal class DomainUserAccountsTest : UserAccountsTestContract() {
 
     @Test
     fun `refuses a login that is not an email`() {
-        accounts.register("not an email", Locale.FRENCH) shouldBe null
+        accounts.register("not an email") shouldBe null
     }
 
     private fun givenAUserDeleted(ago: Duration) = userFixtures.givenAnInitializedUser().also { user ->

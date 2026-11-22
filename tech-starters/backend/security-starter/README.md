@@ -31,15 +31,16 @@ sequenceDiagram
     participant Accounts as UserAccounts
     Front->>Starter: POST /api/auth/code {email}
     Starter->>Starter: six random digits, kept as a SHA-256 hash,<br/>in place of any earlier code of the email
-    Starter->>Sender: send(email, code, locale)
+    Starter->>Sender: send(email, code)
     Starter-->>Front: 204, whatever the email
     Front->>Starter: POST /api/auth/code/sign-in {email, code, rememberMe}
     Starter->>Starter: accept the code once, within its validity and its tries
     Starter->>Accounts: findByLogin(email)
     opt no account
-        Starter->>Accounts: register(email, locale)
+        Starter->>Accounts: register(email)
     end
     Accounts-->>Starter: UserAccount, or null to refuse
+    Starter->>Accounts: signedIn(id), in the request
     Starter-->>Front: 204, a new session id and a new XSRF token, or the same 401 for every refusal
 ```
 
@@ -70,7 +71,8 @@ from its filters, outside any use case, so the adapters open their own transacti
 
 `UserAccounts` gives the accounts. A disabled or deleted account is not found, and roles are full authority names
 such as `ROLE_USER`. `register` gives the account of an email that a code has just proven, when `findByLogin` found
-none: a new account, or one the application brings back. Null refuses the sign-in.
+none: a new account, or one the application brings back. Null refuses the sign-in. `signedIn` runs in the request of
+each sign-in, by code or remembered, such as to keep the account's language for the session.
 
 ```kotlin
 @Component
@@ -86,9 +88,9 @@ internal class DomainUserAccounts(
     override fun findById(id: String): UserAccount? = users.findEnabledBy(UserId(id))?.toAccount()
 
     @Transactional
-    override fun register(login: String, locale: Locale): UserAccount? {
+    override fun register(login: String): UserAccount? {
         val email = Email(login)
-        return users.findDeletedBy(email)?.let(::reactivate) ?: create(email, locale)
+        return users.findDeletedBy(email)?.let(::reactivate) ?: create(email)
     }
 }
 ```
@@ -99,7 +101,7 @@ code:
 ```kotlin
 @Component
 internal class SignInCodeEmails(private val notificationSender: NotificationSender) : SignInCodeSender {
-    override fun send(login: String, code: String, locale: Locale) = notificationSender.queue(…)
+    override fun send(login: String, code: String) = notificationSender.queue(…)
 }
 
 @Bean

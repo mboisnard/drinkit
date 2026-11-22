@@ -2,11 +2,13 @@ package com.drinkit.user
 
 import com.drinkit.generated.jooq.tables.User.Companion.USER
 import com.drinkit.generated.jooq.tables.records.UserRecord
+import com.drinkit.postgresql.JSONBToJacksonConverter
 import com.drinkit.postgresql.JooqRepository
 import com.drinkit.user.core.BirthDate
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.FirstName
 import com.drinkit.user.core.LastName
+import com.drinkit.user.core.Preferences
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.Roles.Role.ROLE_ADMIN
@@ -18,14 +20,17 @@ import com.drinkit.user.core.UserStatus
 import com.drinkit.user.spi.Users
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jooq.DSLContext
+import tools.jackson.databind.json.JsonMapper
 import java.time.Clock
 import java.time.LocalDate
 import java.time.OffsetDateTime
 
 @JooqRepository
-internal class JooqUsers(private val dsl: DSLContext, private val clock: Clock) : Users {
+internal class JooqUsers(private val dsl: DSLContext, private val clock: Clock, jsonMapper: JsonMapper) : Users {
 
     private val logger = KotlinLogging.logger {}
+
+    private val preferencesConverter = JSONBToJacksonConverter(Preferences::class.java, jsonMapper)
 
     override fun saveOrUpdate(user: User): User {
         val query = dsl.insertInto(USER)
@@ -34,6 +39,7 @@ internal class JooqUsers(private val dsl: DSLContext, private val clock: Clock) 
             .set(USER.STATUS, user.status.name)
             .set(USER.ENABLED, user.enabled)
             .set(USER.ROLES, user.roles.allAsString().toTypedArray())
+            .set(USER.PREFERENCES, preferencesConverter.to(user.preferences))
             .set(USER.FIRSTNAME, user.profile?.firstName?.value)
             .set(USER.LASTNAME, user.profile?.lastName?.value)
             .set(USER.BIRTHDATE, user.profile?.birthDate?.value)
@@ -44,6 +50,7 @@ internal class JooqUsers(private val dsl: DSLContext, private val clock: Clock) 
             .set(USER.STATUS, user.status.name)
             .set(USER.ENABLED, user.enabled)
             .set(USER.ROLES, user.roles.allAsString().toTypedArray())
+            .set(USER.PREFERENCES, preferencesConverter.to(user.preferences))
             .set(USER.FIRSTNAME, user.profile?.firstName?.value)
             .set(USER.LASTNAME, user.profile?.lastName?.value)
             .set(USER.BIRTHDATE, user.profile?.birthDate?.value)
@@ -84,6 +91,7 @@ internal class JooqUsers(private val dsl: DSLContext, private val clock: Clock) 
         lastConnection = lastconnection,
         roles = toRoles(roles),
         status = toStatus(status),
+        preferences = preferencesConverter.from(preferences),
     )
 
     private fun toProfile(firstname: String?, lastname: String?, birthdate: LocalDate?): ProfileInformation? {

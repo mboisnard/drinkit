@@ -1,6 +1,5 @@
 package com.drinkit.security
 
-import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
 class SpySignInCodeSender : SignInCodeSender {
@@ -8,7 +7,7 @@ class SpySignInCodeSender : SignInCodeSender {
     private val codes = ConcurrentHashMap<String, String>()
     private val failingLogins = ConcurrentHashMap.newKeySet<String>()
 
-    override fun send(login: String, code: String, locale: Locale) {
+    override fun send(login: String, code: String) {
         check(login !in failingLogins) { "The code could not be sent" }
         codes[login] = code
     }

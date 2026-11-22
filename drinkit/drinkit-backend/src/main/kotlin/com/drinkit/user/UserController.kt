@@ -25,12 +25,9 @@ internal class UserController(private val users: Users, private val currentUser:
 
     private fun User.toInformation() = ConnectedUserInformation(
         roles = roles.values.map { Role.forValue(it.name) },
-        locale = ACCOUNT_LANGUAGE,
+        locale = preferences.language.language,
         firstname = profile?.firstName?.value,
         lastname = profile?.lastName?.value,
         birthdate = profile?.birthDate?.value,
     )
 }
-
-// The same for every account until the User projection carries the language of its account (#707)
-private const val ACCOUNT_LANGUAGE = "fr"

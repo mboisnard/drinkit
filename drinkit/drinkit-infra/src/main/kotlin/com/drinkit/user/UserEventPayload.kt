@@ -12,6 +12,7 @@ import com.drinkit.user.core.Author
 import com.drinkit.user.core.Deleted
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.Initialized
+import com.drinkit.user.core.Preferences
 import com.drinkit.user.core.ProfileCompleted
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.PromotedAsAdmin
@@ -22,7 +23,6 @@ import com.drinkit.user.core.UserId
 import org.jooq.JSONB
 import tools.jackson.databind.json.JsonMapper
 import java.time.OffsetDateTime
-import java.util.Locale
 
 internal fun UserEvent.toEventNameWithPayload(jsonMapper: JsonMapper): Pair<UserEventPayloadType, JSONB> {
     val payload = when (this) {
@@ -49,7 +49,7 @@ internal fun UserEventRecord.toEvent(jsonMapper: JsonMapper): UserEvent {
                 author = commonFields.author,
                 email = payload.email,
                 roles = payload.roles,
-                preferredLocale = payload.preferredLocale,
+                preferences = payload.preferences,
             )
         }
 
@@ -105,14 +105,14 @@ internal sealed interface UserEventPayload
 
 internal object NoPayload : UserEventPayload
 
-internal data class InitializedPayload(val email: Email, val roles: Roles, val preferredLocale: Locale) :
+internal data class InitializedPayload(val email: Email, val roles: Roles, val preferences: Preferences) :
     UserEventPayload {
 
     companion object {
         fun from(event: Initialized) = InitializedPayload(
             email = event.email,
             roles = event.roles,
-            preferredLocale = event.preferredLocale,
+            preferences = event.preferences,
         )
     }
 }

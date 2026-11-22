@@ -10,10 +10,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.FactorGrantedAuthority
 import java.time.Clock
-import java.util.Locale
 
-internal class EmailCodeAuthenticationToken(val login: String, val code: String, val locale: Locale) :
-    AbstractAuthenticationToken(emptyList()) {
+internal class EmailCodeAuthenticationToken(val login: String, val code: String) :
+    AbstractAuthenticationToken(
+        emptyList(),
+    ) {
 
     override fun getCredentials() = code
 
@@ -46,7 +47,7 @@ internal class EmailCodeAuthenticationProvider(
         if (!accepted) throw BadCredentialsException("Wrong code")
 
         val account = accounts.findByLogin(attempt.login)
-            ?: accounts.register(attempt.login, attempt.locale)
+            ?: accounts.register(attempt.login)
             ?: throw BadCredentialsException("Account refused")
 
         val user = account.toUserDetails()

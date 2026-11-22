@@ -9,7 +9,7 @@ INSERT INTO drinkit_application.user_event (user_id, sequence_id, event_name, da
 VALUES
     ('64656d6f0000000000000001', 0, 'INITIALIZED', '2026-01-01T00:00:00Z',
      '{"type": "UNLOGGED", "visitorId": {"value": "64656d6f-0000-4000-8000-000000000001"}}',
-     '{"email": {"value": "demo@drinkit.test"}, "roles": {"values": ["ROLE_REGISTRATION_IN_PROGRESS"]}, "preferredLocale": "fr-FR"}'),
+     '{"email": {"value": "demo@drinkit.test"}, "roles": {"values": ["ROLE_REGISTRATION_IN_PROGRESS"]}, "preferences": {"language": "fr"}}'),
     ('64656d6f0000000000000001', 20, 'PROFILE_COMPLETED', '2026-01-01T00:02:00Z',
      '{"type": "CONNECTED", "userId": "64656d6f0000000000000001"}',
      '{"profile": {"firstName": {"value": "Demo"}, "lastName": {"value": "Drinkit"}, "birthDate": {"value": "1990-01-01"}}}'),
@@ -19,10 +19,10 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 INSERT INTO drinkit_application.user
-    (id, firstname, lastname, birthdate, email, status, enabled, roles, modified)
+    (id, firstname, lastname, birthdate, email, status, enabled, roles, preferences, modified)
 VALUES
     ('64656d6f0000000000000001', 'Demo', 'Drinkit', '1990-01-01', 'demo@drinkit.test', 'ACTIVE', TRUE,
-     '{ROLE_USER,ROLE_ADMIN}', '2026-01-01T00:03:00Z')
+     '{ROLE_USER,ROLE_ADMIN}', '{"language": "fr"}', '2026-01-01T00:03:00Z')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO drinkit_application.cellar (id, owner_id, name, location, rooms, modified)

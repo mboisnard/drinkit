@@ -8,6 +8,7 @@ import com.drinkit.user.core.Author
 import com.drinkit.user.core.Author.Unlogged
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.Initialized
+import com.drinkit.user.core.Preferences
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserHistory
@@ -84,7 +85,7 @@ class UserFixtures(
             command = CreateNewUserCommand(
                 author = author,
                 email = email,
-                locale = Locale.FRANCE,
+                preferences = Preferences(language = Locale.FRENCH),
             ),
             emailFoundInDatabase = false,
             newUserId = userId,
