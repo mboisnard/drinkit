@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     '@drinkit/api-client-starter',
     '@drinkit/observability-starter',
     '@drinkit/feature-management-starter',
+    '@drinkit/utils-starter',
   ],
   modules: ['@nuxt/ui'],
   // Every component comes from an import: Nuxt reads this setting per layer, so the app sets its own

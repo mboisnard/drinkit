@@ -1,0 +1,43 @@
+{
+  "name": "@drinkit/utils-starter",
+  "description": "The Nuxt layer that gives a DrinkIt app VueUse and the few helpers neither VueUse, Nuxt nor the browser offer, with a catalog of where each common need is answered.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "main": "./nuxt.config.ts",
+  "exports": {
+    ".": "./nuxt.config.ts",
+    "./retry": "./shared/retry.ts",
+    "./use-text-overflow": "./app/use-text-overflow.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "eslint --fix --max-warnings 0 .",
+    "test": "vitest run",
+    "typecheck": "nuxt typecheck",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@drinkit/nuxt-starter": "workspace:*",
+    "@vueuse/core": "catalog:"
+  },
+  "devDependencies": {
+    "@drinkit/eslint-config": "workspace:*",
+    "@drinkit/i18n-starter": "workspace:*",
+    "@drinkit/test-starter": "workspace:*",
+    "@nuxt/test-utils": "catalog:",
+    "@types/node": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "eslint": "catalog:",
+    "happy-dom": "catalog:",
+    "nuxt": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "vue-tsc": "catalog:"
+  },
+  "peerDependencies": {
+    "nuxt": "catalog:"
+  }
+}

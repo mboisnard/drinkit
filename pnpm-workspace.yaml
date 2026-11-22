@@ -42,6 +42,7 @@ catalog:
   '@types/node': 26.6.6
   '@vitest/eslint-plugin': 1.6.28
   '@vue/test-utils': 2.5.1
+  '@vueuse/core': 14.4.0
   bats: 1.13.0
   bats-assert: 2.2.4
   bats-support: 0.3.0
