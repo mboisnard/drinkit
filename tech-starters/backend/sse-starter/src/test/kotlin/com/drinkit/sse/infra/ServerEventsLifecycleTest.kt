@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.web.server.context.WebServerApplicationContext
+import org.springframework.cache.concurrent.ConcurrentMapCache
 import java.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -16,7 +17,10 @@ private val GRACE = Recipient.user("grace")
 
 internal class ServerEventsLifecycleTest {
 
-    private val streams = InMemoryStreams(maxStreamsPerRecipient = 5)
+    private val streams = InMemoryStreams(
+        maxStreamsPerRecipient = 5,
+        lastEventIds = LastEventIds(ConcurrentMapCache("last-event-ids")),
+    )
     private val lifecycle = ServerEventsLifecycle(streams, heartbeat = Duration.ofMillis(10))
 
     @AfterEach

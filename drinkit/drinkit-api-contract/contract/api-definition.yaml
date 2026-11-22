@@ -261,8 +261,10 @@ paths:
       description: |
         Served by the SSE starter, not by a controller. Open it with the browser's EventSource, once per tab, not with
         the generated client. It carries the events sent to the signed-in user, or to the session the application
-        opened for a visitor, each named by the application, and a comment line from time to time that keeps it open.
-        It closes after a few minutes, and EventSource opens it again. An event sent while the stream is closed is lost.
+        opened for a visitor, each named by the application and with an id, and a comment line from time to time that
+        keeps it open. It opens with an event named init, whose id is the one of the last event sent to that recipient:
+        a tab whose last id differs missed an event. It closes after a few minutes, and EventSource opens it again. An
+        event sent while the stream is closed is lost.
       security: []
       responses:
         '204':

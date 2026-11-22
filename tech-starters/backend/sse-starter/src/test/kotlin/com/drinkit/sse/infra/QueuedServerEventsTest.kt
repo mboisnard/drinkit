@@ -4,8 +4,10 @@ import com.drinkit.messaging.SpyPlatformEventPublisher
 import com.drinkit.sse.ServerEvents
 import com.drinkit.sse.ServerEventsTestContract
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
+import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 import tools.jackson.databind.json.JsonMapper
 
@@ -25,8 +27,19 @@ internal class QueuedServerEventsTest : ServerEventsTestContract() {
         serverEvents.send("ada", "cellar-updated", mapOf("cellarId" to "42"))
 
         // Then
-        publisher.findLastSentEvent() shouldBe
-            SendServerEvent(Recipient.user("ada"), "cellar-updated", """{"cellarId":"42"}""")
+        val event = publisher.findLastSentEvent().shouldBeInstanceOf<SendServerEvent>()
+        event shouldBe SendServerEvent(Recipient.user("ada"), event.id, "cellar-updated", """{"cellarId":"42"}""")
+    }
+
+    @Test
+    fun `queues each event under an id of its own, which every instance writes to its streams`() {
+        // When
+        serverEvents.send("ada", "cellar-updated", "{}")
+        val first = publisher.findLastSentEvent().shouldBeInstanceOf<SendServerEvent>()
+        serverEvents.send("ada", "cellar-updated", "{}")
+
+        // Then
+        publisher.findLastSentEvent().shouldBeInstanceOf<SendServerEvent>().id shouldNotBe first.id
     }
 
     @Test

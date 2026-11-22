@@ -7,6 +7,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
 
+    implementation(project(":cache-starter"))
     implementation(project(":messaging-starter"))
     compileOnly(project(":security-starter"))
 

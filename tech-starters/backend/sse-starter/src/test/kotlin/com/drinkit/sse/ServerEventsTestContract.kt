@@ -46,4 +46,10 @@ internal abstract class ServerEventsTestContract {
         // When & Then
         shouldThrow<IllegalArgumentException> { serverEvents.sendToSession("session-1", "price\nchanged", "{}") }
     }
+
+    @Test
+    fun `refuses the name of the event that opens every stream`() {
+        // When & Then
+        shouldThrow<IllegalArgumentException> { serverEvents.send("ada", "init", "{}") }
+    }
 }
