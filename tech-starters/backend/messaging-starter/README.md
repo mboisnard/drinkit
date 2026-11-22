@@ -48,13 +48,12 @@ dependencies {
 ```
 
 ```kotlin
-platformEventPublisher.publish(SignInCodeRequested(email, code, locale))
+platformEventPublisher.publish(SendEmail(email))
 
-@Component
-internal class SignInCodeEmails(private val notificationSender: NotificationSender) {
+internal class SmtpEmailDelivery(private val mailSender: JavaMailSender) {
 
-    @PlatformEventHandler("send.sign.in.code.queue")
-    fun sendTheCode(event: SignInCodeRequested) { … }
+    @PlatformEventHandler("mail.delivery.queue", idempotent = true)
+    fun deliver(command: SendEmail) { … }
 }
 ```
 
@@ -87,7 +86,7 @@ internal class SignInCodeEmails(private val notificationSender: NotificationSend
 `SpyPlatformEventPublisher`, from `testFixtures(project(":messaging-starter"))`, records what a use case publishes:
 
 ```kotlin
-spyEventPublisher.countEventsOfType(SignInCodeRequested::class) shouldBe 1
+spyEventPublisher.countEventsOfType(SendEmail::class) shouldBe 1
 ```
 
 ## Limits

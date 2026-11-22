@@ -93,21 +93,13 @@ internal class DomainUserAccounts(
 }
 ```
 
-`SignInCodeSender` sends the code. The starter calls it before it answers, so hand the sending off, such as to a
-platform event, and never log the code:
+`SignInCodeSender` sends the code. The starter calls it before it answers, so queue the email, and never log the
+code:
 
 ```kotlin
 @Component
-internal class SignInCodeEmails(
-    private val publisher: PlatformEventPublisher,
-    private val notificationSender: NotificationSender,
-) : SignInCodeSender {
-    override fun send(login: String, code: String, locale: Locale) {
-        publisher.publish(SignInCodeRequested(login, code, locale))
-    }
-
-    @PlatformEventHandler("send.sign.in.code.queue")
-    fun sendTheCode(event: SignInCodeRequested) { … }
+internal class SignInCodeEmails(private val notificationSender: NotificationSender) : SignInCodeSender {
+    override fun send(login: String, code: String, locale: Locale) = notificationSender.queue(…)
 }
 
 @Bean
