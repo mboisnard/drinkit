@@ -23,6 +23,7 @@
   "dependencies": {
     "@drinkit/i18n-starter": "workspace:*",
     "@drinkit/nuxt-starter": "workspace:*",
+    "@drinkit/utils-starter": "workspace:*",
     "@hey-api/openapi-ts": "catalog:",
     "h3": "catalog:",
     "ofetch": "catalog:"
