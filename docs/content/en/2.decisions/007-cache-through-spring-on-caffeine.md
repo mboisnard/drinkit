@@ -29,7 +29,9 @@ once it runs several instances, shares its cache through Redis.
 bounded number of them, so no cache fills the memory. The module that owns a cache knows how stale its data may be,
 and declares its time to live, which the application can override in its configuration. A put or an eviction made in
 a transaction waits for its commit, so a rollback leaves the cache as it was. A module caches through the annotations
-only, never through Caffeine's API. The starter's README gives the settings.
+only, never through Caffeine's API. A tech starter that keeps state no annotation can express, such as the id of
+the last event `sse-starter` sent to each recipient, uses Spring's `Cache` of its cache by name, still never
+Caffeine's. The starter's README gives the settings.
 
 ## Consequences
 

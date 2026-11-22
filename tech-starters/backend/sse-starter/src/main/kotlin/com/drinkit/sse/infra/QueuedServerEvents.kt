@@ -3,6 +3,7 @@ package com.drinkit.sse.infra
 import com.drinkit.messaging.PlatformEventPublisher
 import com.drinkit.sse.ServerEvents
 import tools.jackson.databind.json.JsonMapper
+import java.util.UUID
 
 internal class QueuedServerEvents(private val publisher: PlatformEventPublisher, private val jsonMapper: JsonMapper) :
     ServerEvents {
@@ -20,6 +21,6 @@ internal class QueuedServerEvents(private val publisher: PlatformEventPublisher,
 
         val json = jsonMapper.writeValueAsString(payload)
 
-        publisher.publish(SendServerEvent(recipient, eventName, json))
+        publisher.publish(SendServerEvent(recipient, UUID.randomUUID().toString(), eventName, json))
     }
 }

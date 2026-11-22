@@ -1,5 +1,6 @@
 package com.drinkit.sse.infra
 
+import com.drinkit.sse.ServerEvents.Companion.OPENING_EVENT
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.web.servlet.function.ServerResponse.SseBuilder
 import java.io.IOException
@@ -7,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 /** The open streams of each recipient, one per browser tab. */
-internal class InMemoryStreams(private val maxStreamsPerRecipient: Int) {
+internal class InMemoryStreams(private val maxStreamsPerRecipient: Int, private val lastEventIds: LastEventIds) {
 
     private val logger = KotlinLogging.logger { }
 
@@ -38,12 +39,22 @@ internal class InMemoryStreams(private val maxStreamsPerRecipient: Int) {
         oldest?.let { runCatching { it.complete() } }
 
         // Completed at once while the application stops, for the browser to open it again on another instance
-        if (added) write(recipient, stream) { comment("").send() } else runCatching { stream.complete() }
+        if (!added) {
+            runCatching { stream.complete() }
+            return
+        }
+
+        // Read once the stream is added: an event sent meanwhile either reaches the stream or comes in this id
+        val lastEventId = lastEventIds.lastOf(recipient)
+        write(recipient, stream) { id(lastEventId).event(OPENING_EVENT).data("{}") }
     }
 
-    fun send(recipient: Recipient, eventName: String, json: String) {
+    fun send(recipient: Recipient, eventId: String, eventName: String, json: String) {
+        // Kept before the streams get it, for the same reason as at the opening
+        lastEventIds.sent(recipient, eventId)
+
         streams[recipient]?.forEach { stream ->
-            write(recipient, stream) { event(eventName).data(json) }
+            write(recipient, stream) { id(eventId).event(eventName).data(json) }
         }
     }
 

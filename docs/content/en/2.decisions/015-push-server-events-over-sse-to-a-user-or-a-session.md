@@ -48,6 +48,11 @@ that sends an event, by name, with a payload, to a user id or to a session id.
   streams of that recipient it holds. The browser filters the events by name, so a tab never opens one stream per
   kind of event. A comment every 30 seconds keeps a stream open through the proxies, and the starter closes every
   stream when the application stops, for the browser to open it again on another instance.
+- **Missed events.** Each event carries an id, and a stream opens with an `init` event whose id is the one of the
+  last event sent to its recipient, or one of its own while none was. A tab whose last id differs missed an event
+  while its stream was closed, and reads its data again: the starter replays no event. Each instance keeps these ids
+  for an hour in its cache, as it gets every event, through `cache-starter`'s `Cache` of Spring, which a cache
+  entry lost only turns into one more read.
 - **Access.** With `security-starter` on the classpath, the starter registers a rule that opens its stream to anyone,
   in an auto-configuration of its own guarded by `@ConditionalOnClass(EndpointRules::class)`, with `security-starter`
   as a `compileOnly` dependency. An application bean of the same name replaces it. The path stays out of `/api/**`,
@@ -57,7 +62,7 @@ that sends an event, by name, with a payload, to a user id or to a session id.
   checks the stream's rule too.
 - **Browser.** A page opens its stream only while its tab is visible: it closes the stream when the
   [Page Visibility API](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API) reports the tab hidden,
-  and opens it again, then reads its data again, once the tab is visible. A tab in the background, a window minimized
+  and opens it again once the tab is visible, then reads its data again if it missed an event. A tab in the background, a window minimized
   or a screen off sends no request, so the idle timeout of the session runs. The frontend
   [`sse-starter`](https://github.com/mboisnard/drinkit/blob/master/tech-starters/frontend/sse-starter/README.md)
   carries this rule.
@@ -70,8 +75,10 @@ The starter's README gives the usage and the settings.
 
 - A use case or a handler sends to a user without knowing whether, or where, that user is connected.
 - A tab opens one connection whatever the number of events the page listens to.
-- An event sent while a tab reconnects is lost, so a page reads its data again when its stream opens, not only when
-  an event comes.
+- An event sent while a tab reconnects is lost, so a page reads its data again when its stream opens after a missed
+  event, not only when an event comes. A page with nothing missed makes no call when its stream opens again.
+- Until a shared cache such as Redis replaces Caffeine, a tab that opens its stream again on another instance with
+  no event sent in between reads its data once more, as each instance gives that recipient an id of its own.
 - A visitor gets events only once the application has opened their session, and the stream of a visitor stays on that
   session: after the sign-in, which renews the session id, the page opens its stream again.
 - A user or a session keeps a few streams at most, and one more closes the oldest, so that no caller fills the memory
@@ -101,6 +108,11 @@ The starter's README gives the usage and the settings.
   these requests apart before Spring Session, through a filter and a wrapper of the session repository, and a
   remember-me cookie signs the user in again on them anyway. It offered an idle timeout that runs while a tab is
   visible.
+- **Replaying the events a tab missed, from its `Last-Event-ID`.** Rejected because every event would be stored
+  for every recipient, the chunks of an AI agent's answer included, when the page can read its data again. It
+  offered a page that never reads again.
+- **Reading again at each opening of the stream.** Rejected because the backend ends each stream after 3 minutes, so
+  every visible page read its data every 3 minutes. It offered no id and no cache.
 - **WebSocket.** Rejected because the browser sends nothing back on this channel, and a WebSocket needs its own
   security and proxy settings. It offered a channel both ways.
 

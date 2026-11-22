@@ -6,6 +6,7 @@ import com.drinkit.security.connectedAs
 import com.drinkit.security.generated.jooq.DrinkitSession
 import io.kotest.assertions.nondeterministic.eventually
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldStartWith
 import jakarta.servlet.http.Cookie
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
@@ -69,6 +70,24 @@ internal class ServerEventsStreamTest(private val mockMvc: MockMvc, private val 
                 stream.contentAsString shouldContain "event:cellar-updated\ndata:{\"cellarId\":\"42\"}\n\n"
             }
         }
+    }
+
+    @Test
+    fun `opens a stream with the id of the last event its user got, so that a tab knows it missed none`() {
+        // Given
+        val grace = ConnectedUser("grace", setOf("ROLE_USER"))
+        val firstTab = mockMvc.get("/sse/event-stream") { with(connectedAs(grace)) }.andReturn().response
+        serverEvents.send("grace", "cellar-updated", mapOf("cellarId" to "42"))
+        val sentEvent = Regex("id:(.+)\nevent:cellar-updated")
+        val eventId = runBlocking {
+            eventually(2.seconds) { checkNotNull(sentEvent.find(firstTab.contentAsString)) }
+        }.groupValues[1]
+
+        // When
+        val secondTab = mockMvc.get("/sse/event-stream") { with(connectedAs(grace)) }.andReturn().response
+
+        // Then
+        secondTab.contentAsString shouldStartWith "id:$eventId\nevent:init\n"
     }
 
     private fun visit(): Cookie = checkNotNull(mockMvc.get("/visit").andReturn().response.getCookie(SESSION_COOKIE))

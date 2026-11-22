@@ -17,9 +17,10 @@ flowchart LR
 
 ## How it works
 
-An event is queued as a platform event, after the commit of the transaction that sends it, and written to the
-streams of its recipient that the instance holds. A comment every 30 seconds keeps a stream open through the
-proxies:
+An event is queued as a platform event, after the commit of the transaction that sends it, and written with its id
+to the streams of its recipient that the instance holds. A stream opens with an `init` event, whose id is the one of
+the last event sent to its recipient: a tab whose last id differs missed an event while its stream was closed. A
+comment every 30 seconds keeps a stream open through the proxies:
 
 ```mermaid
 sequenceDiagram
@@ -29,14 +30,14 @@ sequenceDiagram
     participant App as Handler of the application
     Tab->>Starter: GET /sse/event-stream
     alt signed in, or a session the application opened
-        Starter-->>Tab: 200, a comment, the stream is open
+        Starter-->>Tab: 200, event init with the id of the last event sent to ada
     else a visitor without a session
         Starter-->>Tab: 204, EventSource stops asking
     end
     App->>Starter: send(ada, cellar-updated, payload)
     Starter->>Events: the event, after the commit
     Events->>Starter: the event
-    Starter-->>Tab: event cellar-updated, to every tab of ada
+    Starter-->>Tab: event cellar-updated with its id, to every tab of ada
     Note over Starter,Tab: after 3 minutes, the starter closes the stream and the browser opens it again
 ```
 
@@ -57,7 +58,7 @@ sequenceDiagram
     Note over Session: no request, the session ends after 30 idle minutes
     Page->>Starter: GET /sse/event-stream, the tab is visible again
     alt the session is alive, or a remember-me cookie signs the user in again
-        Starter-->>Page: 200, the page reads its data again
+        Starter-->>Page: 200, init: the page reads its data again if its id differs
     else the session has ended
         Starter-->>Page: 204, the next call of the API asks to sign in
     end
@@ -78,16 +79,25 @@ dependencies {
 ```
 
 The browser opens one stream per tab, under the context path of the application, while the tab is visible. It
-listens to the events it needs by name, and reads its data again at each opening, since an event sent while the
-stream was closed is lost:
+listens to the events it needs by name, and reads its data again when `init` tells it missed one, since an event sent
+while the stream was closed is lost. The frontend
+[`sse-starter`](https://github.com/mboisnard/drinkit/blob/master/tech-starters/frontend/sse-starter/README.md)
+does this for a Nuxt page:
 
 ```javascript
 let events = null;
+let lastEventId = null;
 
 function openStream() {
   events = new EventSource('/drinkit/sse/event-stream');
-  events.addEventListener('open', () => refreshCellars());
-  events.addEventListener('cellar-updated', (event) => refreshCellar(JSON.parse(event.data).cellarId));
+  events.addEventListener('init', (event) => {
+    if (lastEventId !== null && event.lastEventId !== lastEventId) refreshCellars();
+    lastEventId = event.lastEventId;
+  });
+  events.addEventListener('cellar-updated', (event) => {
+    lastEventId = event.lastEventId;
+    refreshCellar(JSON.parse(event.data).cellarId);
+  });
 }
 
 document.addEventListener('visibilitychange', () => {
@@ -111,6 +121,11 @@ serverEvents.sendToSession(sessionId = session.id, eventName = "price-changed", 
   sign-in, which renews the session id.
 - The payload is written as JSON. It says what changed, never personal data, and the page reads the data again
   through the API: an event sent while a tab reconnects is lost.
+- Each instance keeps the id of the last event sent to each recipient for an hour, in the `sse-last-event-ids` cache
+  of [`cache-starter`](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/cache-starter/README.md),
+  since it gets every event. A recipient no event reached yet gets an id of its own, and an entry the cache lost gives
+  a new one: the tab reads its data once more, never misses an event. `init` opens every stream, so `ServerEvents`
+  refuses it as the name of an event.
 - With `security-starter`, the starter opens the stream to anyone, and each caller gets their own events only. An
   application bean named `serverEventsAccessRules` replaces that rule:
 
@@ -133,6 +148,7 @@ fun serverEventsAccessRules() = endpointRules {
 | `starters.sse.timeout` | `3m`, kept under the idle timeout of the proxies in front of the application | `STARTERS_SSE_TIMEOUT` |
 | `starters.sse.heartbeat` | `30s` between two comments on each stream, shorter than the timeout | `STARTERS_SSE_HEARTBEAT` |
 | `starters.sse.max-streams` | `5` per user or session, one more closes the oldest | `STARTERS_SSE_MAXSTREAMS` |
+| `starters.cache.ttl.sse-last-event-ids` | `1h` that an instance keeps the last event id of a recipient | `SPRING_APPLICATION_JSON`, as [`cache-starter`](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/cache-starter/README.md#limits) says |
 
 ## Tests
 
@@ -150,6 +166,9 @@ serverEvents.sentTo("ada-id").single().eventName shouldBe "cellar-updated"
 - An event reaches only the streams of the instance that published it, since the
   [platform events](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/3.domain/2.platform-events.md)
   travel inside the process. A broker would deliver it to every instance.
+- Each instance gives a recipient no event reached yet an id of its own, and the cache keeps an id for an hour: a tab
+  that opens its stream again on another instance with no event in between, or after an hour, reads its data once
+  more. A cache shared between instances, such as Redis, removes the first case.
 - A visible tab left alone keeps its session alive until its absolute timeout, as each opening of the stream counts
   as activity.
 - A signed-in tab keeps its stream until the stream times out, even after a sign out or a revocation: the events

@@ -3,40 +3,55 @@ package com.drinkit.sse.infra
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import org.springframework.cache.concurrent.ConcurrentMapCache
 import java.io.IOException
-
-private const val OPENING = ":\n\n"
 
 private val ADA = Recipient.user("ada")
 private val GRACE = Recipient.user("grace")
 
 internal class InMemoryStreamsTest {
 
-    private val streams = InMemoryStreams(maxStreamsPerRecipient = 2)
+    private val streams = InMemoryStreams(
+        maxStreamsPerRecipient = 2,
+        lastEventIds = LastEventIds(ConcurrentMapCache("last-event-ids")),
+    )
 
     @Test
-    fun `opens a stream with a comment, so that the browser and the proxies see it open at once`() {
+    fun `opens a stream with the id of the last event of its recipient, for a tab to know whether it missed one`() {
         // Given
+        streams.send(ADA, "event-1", "cellar-updated", "{}")
         val tab = RecordingSseBuilder()
 
         // When
         streams.open(ADA, tab)
 
         // Then
-        tab.sent shouldContainExactly listOf(OPENING)
+        tab.sent shouldContainExactly listOf(opening("event-1"))
     }
 
     @Test
-    fun `sends an event to every stream of its user`() {
+    fun `opens the streams of a recipient with the same id while no event reaches it`() {
+        // Given
+        val firstTab = openedTab(ADA)
+
+        // When
+        val secondTab = openedTab(ADA)
+
+        // Then
+        secondTab.sent shouldBe firstTab.sent
+    }
+
+    @Test
+    fun `sends an event with its id to every stream of its user`() {
         val firstTab = openedTab(ADA)
         val secondTab = openedTab(ADA)
 
         // When
-        streams.send(ADA, "cellar-updated", """{"cellarId":"42"}""")
+        streams.send(ADA, "event-1", "cellar-updated", """{"cellarId":"42"}""")
 
         // Then
-        firstTab.sent.last() shouldBe "event:cellar-updated\ndata:{\"cellarId\":\"42\"}\n\n"
-        secondTab.sent.last() shouldBe "event:cellar-updated\ndata:{\"cellarId\":\"42\"}\n\n"
+        firstTab.sent.last() shouldBe "id:event-1\nevent:cellar-updated\ndata:{\"cellarId\":\"42\"}\n\n"
+        secondTab.sent.last() shouldBe "id:event-1\nevent:cellar-updated\ndata:{\"cellarId\":\"42\"}\n\n"
     }
 
     @Test
@@ -45,10 +60,10 @@ internal class InMemoryStreamsTest {
         val otherTab = openedTab(GRACE)
 
         // When
-        streams.send(ADA, "cellar-updated", "{}")
+        streams.send(ADA, "event-1", "cellar-updated", "{}")
 
         // Then
-        otherTab.sent shouldContainExactly listOf(OPENING)
+        otherTab.sent.size shouldBe 1
     }
 
     @Test
@@ -59,7 +74,7 @@ internal class InMemoryStreamsTest {
         val newest = openedTab(ADA)
 
         // When
-        streams.send(ADA, "cellar-updated", "{}")
+        streams.send(ADA, "event-1", "cellar-updated", "{}")
 
         // Then
         listOf(oldest.completed, second.sent.size, newest.sent.size) shouldBe listOf(true, 2, 2)
@@ -73,7 +88,7 @@ internal class InMemoryStreamsTest {
         ).also { streams.open(ADA, it) }
 
         // When
-        streams.send(ADA, "cellar-updated", "{}")
+        streams.send(ADA, "event-1", "cellar-updated", "{}")
 
         // Then
         broken.completed shouldBe true
@@ -86,7 +101,7 @@ internal class InMemoryStreamsTest {
         val tab = openedTab(ADA)
 
         // When
-        streams.send(ADA, "cellar-updated", "{}")
+        streams.send(ADA, "event-1", "cellar-updated", "{}")
 
         // Then
         tab.sent.size shouldBe 2
@@ -99,10 +114,10 @@ internal class InMemoryStreamsTest {
         tab.complete()
 
         // When
-        streams.send(ADA, "cellar-updated", "{}")
+        streams.send(ADA, "event-1", "cellar-updated", "{}")
 
         // Then
-        tab.sent shouldContainExactly listOf(OPENING)
+        tab.sent.size shouldBe 1
     }
 
     @Test
@@ -112,10 +127,10 @@ internal class InMemoryStreamsTest {
         tab.failConnection(IOException("Connection reset"))
 
         // When
-        streams.send(ADA, "cellar-updated", "{}")
+        streams.send(ADA, "event-1", "cellar-updated", "{}")
 
         // Then
-        tab.sent shouldContainExactly listOf(OPENING)
+        tab.sent.size shouldBe 1
     }
 
     @Test
@@ -143,4 +158,6 @@ internal class InMemoryStreamsTest {
     }
 
     private fun openedTab(recipient: Recipient) = RecordingSseBuilder().also { streams.open(recipient, it) }
+
+    private fun opening(lastEventId: String) = "id:$lastEventId\nevent:init\ndata:{}\n\n"
 }
