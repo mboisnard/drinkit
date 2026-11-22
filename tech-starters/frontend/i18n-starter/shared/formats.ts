@@ -1,7 +1,5 @@
-/** The named formats of a date: a day, a long day, a day with its time, or a time. */
 export type DateFormat = 'date' | 'dateLong' | 'dateTime' | 'time';
 
-/** The named formats of a number: with decimals, a whole number, a share as a percentage, or an amount. */
 export type NumberFormat = 'decimal' | 'integer' | 'percent' | 'currency';
 
 const DATE_FORMATS: Record<DateFormat, Intl.DateTimeFormatOptions> = {
@@ -34,7 +32,6 @@ export function formatDate(
   return new Intl.DateTimeFormat(language, { ...DATE_FORMATS[format], timeZone }).format(value);
 }
 
-/** A number in the conventions of the language, an amount in the currency it is given. */
 export function formatNumber(
   value: number,
   format: NumberFormat,

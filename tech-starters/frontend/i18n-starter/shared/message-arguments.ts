@@ -1,7 +1,6 @@
 import { isArgumentElement, isNumberElement, isPluralElement, isSelectElement, parse } from '@formatjs/icu-messageformat-parser';
 import type { MessageFormatElement } from '@formatjs/icu-messageformat-parser';
 
-/** The TypeScript type of a value a message places. */
 export type ArgumentType = 'string | number' | 'number' | 'string';
 
 /** The values a message places, by name, with the type each needs: a number to count, a text to choose a branch. */

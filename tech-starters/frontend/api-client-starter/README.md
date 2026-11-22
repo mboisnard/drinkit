@@ -11,6 +11,8 @@ records why Hey API, and
 [Calling the API](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/3.reference/2.security/2.calling-the-api.md)
 draws both paths.
 
+## How it works
+
 ```mermaid
 flowchart LR
     Browser -- "/drinkit/**, same origin" --> Relay["server/relay.ts<br/><small>the relay</small>"]
@@ -61,7 +63,7 @@ export function useGreeting() {
 The generated client imports `ofetch`, which the app declares. `nuxt dev` generates the client when it starts:
 restart it after a change of the contract.
 
-## What it gives
+It gives:
 
 - **`#api`**, the client of the app's contract, one function per operation and its types, generated under
   `.nuxt/openapi` at each prepare, dev and build, never committed. A call the backend refuses throws.
@@ -121,20 +123,6 @@ sequenceDiagram
   Form->>Backend: DELETE /cellars/2, new key K2
 ```
 
-**In a UI test**, `idempotentEndpoint(resolver)` of `@drinkit/api-client-starter/testing` wraps the MSW resolver of
-an endpoint as the backend's `IdempotencyFilter` runs it: a key already answered gets that answer back. `executions`
-counts the runs, `keys` lists the key of each request, and `loseNextAnswer()` drops the next answer, as a network
-failure would. It has no contract suite: the CI of the frontend runs no backend, and the replay it copies is tested
-by the integration tests of `idempotency-starter`.
-
-```ts
-const deletion = idempotentEndpoint(() => new HttpResponse(null, { status: 204 }));
-fakeBackend.use(http.delete('/drinkit/api/cellars/:cellarId', deletion.resolver));
-
-// then, after a double click
-expect(deletion.executions).toBe(1);
-```
-
 ## Configuration
 
 | Key | Environment variable | Default | Effect |
@@ -157,12 +145,20 @@ page shows the error page. A minute leaves room to a page that is slow for a goo
 A call of the browser has no timeout: the user sees the page load, and an action, such as a call to an AI model, may
 take longer than a page should.
 
-## Checks
+## Tests
 
-```
-pnpm --filter @drinkit/api-client-starter lint
-pnpm --filter @drinkit/api-client-starter typecheck
-pnpm --filter @drinkit/api-client-starter test
+In a UI test, `idempotentEndpoint(resolver)` of `@drinkit/api-client-starter/testing` wraps the MSW resolver of an
+endpoint as the backend's `IdempotencyFilter` runs it: a key already answered gets that answer back. `executions`
+counts the runs, `keys` lists the key of each request, and `loseNextAnswer()` drops the next answer, as a network
+failure would. It has no contract suite: the CI of the frontend runs no backend, and the replay it copies is tested
+by the integration tests of `idempotency-starter`.
+
+```ts
+const deletion = idempotentEndpoint(() => new HttpResponse(null, { status: 204 }));
+fakeBackend.use(http.delete('/drinkit/api/cellars/:cellarId', deletion.resolver));
+
+// then, after a double click
+expect(deletion.executions).toBe(1);
 ```
 
 The relay and the server render are tested through the UI tests of the app, which build it with a contract.

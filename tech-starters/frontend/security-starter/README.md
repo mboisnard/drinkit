@@ -9,6 +9,8 @@ the backend, speaks its sign-in protocol, and opens each page to whom it declare
 records why. It is a Nuxt layer, published in the pnpm workspace as `@drinkit/security-starter`, on top of
 `api-client-starter`.
 
+## How it works
+
 ```mermaid
 flowchart LR
   Nav["A navigation"] --> MW["auth.global<br/><small>reads the user once</small>"]
@@ -20,6 +22,13 @@ flowchart LR
   Done --> Page
   Page -- "signOut, or a 401" --> Out["user forgotten, drinkit:signed-out,<br/>data of the pages cleared"]
 ```
+
+A new way of signing in, a passkey or Google, is a composable of its own that ends with the shared step of
+`app/complete-sign-in.ts`: the state, the middleware and the pages stay as they are.
+
+The files that hold a rule of OWASP ASVS name it, and the
+[security principles](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/3.reference/2.security/1.principles.md)
+map every defense of the app to its requirement.
 
 ## Usage
 
@@ -61,7 +70,7 @@ definePageMeta({ auth: 'ROLE_USER' });
 const { user, signedIn, hasRole, signOut } = useCurrentUser();
 ```
 
-## What it gives
+It gives:
 
 - **`useCurrentUser()`**, from `./use-current-user`: `user`, `null` for a visitor, `signedIn`, `hasRole(role)`,
   `refresh()` once the backend changed the user, and `signOut()`. The user is read once per app, on the server for the
@@ -85,32 +94,6 @@ const { user, signedIn, hasRole, signOut } = useCurrentUser();
   checks its input and the size of a body, the relay streams the body without holding it, and the app answers its
   own origin only. Its removal of `console` calls is off too: Vite ignores it.
 
-A new way of signing in, a passkey or Google, is a composable of its own that ends with the shared step of
-`app/complete-sign-in.ts`: the state, the middleware and the pages stay as they are.
-
-## How it is built
-
-Each file holds one step of the session, so that a change to a step reads in one place.
-
-| File | What it does | Why apart |
-|---|---|---|
-| `app/use-current-user.ts` | The public composable: the user, their roles, `refresh` and `signOut` | The only API the pages need |
-| `app/current-user-state.ts` | The `useState` that holds the user, read once, and forgotten on sign-out or a 401 | Shared by the composable, the middleware and the plugin, without exposing `load` and `forget` to the pages |
-| `app/auth-backend.ts` | Every call to the backend: the current user, the code, the sign-in, the sign-out | The protocol of the backend in one file, through `useApi()` |
-| `app/use-email-code-sign-in.ts` | The sign-in by email code | One file per way of signing in |
-| `app/complete-sign-in.ts` | What every sign-in ends with: the user read, the hook, the return URL | The step a passkey or Google reuses |
-| `app/middleware/auth.global.ts` | Sends each navigation where `accessTo` says | Runs on every page, server and browser |
-| `app/plugins/forget-on-unauthorized.ts` | A 401 to a signed-in user sends them to sign in | Listens to every call of the app, not only the starter's |
-| `shared/access.ts` | Decides, from the page's `auth` and the user, whether to open, sign in, redirect or refuse | A plain function, tested without Nuxt |
-| `shared/safe-redirect.ts` | Keeps a return URL only on the app's origin | A plain function, tested without Nuxt |
-| `modules/auth.ts` | Reads the options, and lists the pages without `auth` into a file that fails the type check | Runs at build time |
-| `app/types.ts`, `app/page-auth.d.ts` | The user and the roles of the app, and the `auth` of `definePageMeta` | Typed by each app's contract |
-| `testing/` | The protocol in memory for the UI tests of an app, and the suite that holds it to the backend | Ships to the tests only |
-
-The files that hold a rule of OWASP ASVS name it, and the
-[security principles](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/3.reference/2.security/1.principles.md)
-map every defense of the app to its requirement.
-
 ## Configuration
 
 | Key | Environment variable | Default | Effect |
@@ -133,7 +116,7 @@ keeps the locales of `@nuxtjs/i18n`.
 The sign-in protocol is the backend `security-starter`'s, under the path of the API: `/api/auth/code`,
 `/api/auth/code/sign-in` and `/api/auth/logout`.
 
-## Testing
+## Tests
 
 `@drinkit/security-starter/testing` gives the UI tests of an app the protocol in memory, for the fake backend of
 `test-starter`:
@@ -148,14 +131,6 @@ auth.userOf(request);                           // the user of a request, for th
 
 `authBackendContract` holds what the app relies on in that protocol. The tests of the starter run it on the double,
 and it runs on the real backend with the code read in Mailpit, before a change of the protocol.
-
-## Checks
-
-```
-pnpm --filter @drinkit/security-starter lint
-pnpm --filter @drinkit/security-starter typecheck
-pnpm --filter @drinkit/security-starter test
-```
 
 The headers are checked with `curl -sI` on a page of the built app, the pages and the sign-in by the UI tests of the
 app.

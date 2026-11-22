@@ -10,6 +10,8 @@ records why. It is a Nuxt layer on [`@nuxtjs/i18n`](https://i18n.nuxtjs.org), pu
 `@drinkit/i18n-starter`, and the base of [`nuxt-starter`](../nuxt-starter/README.md), so every app and starter
 has it.
 
+## How it works
+
 ```mermaid
 flowchart LR
   Catalog["translations/en.json, fr.json"] --> Module["i18n-catalog module, at build<br/><small>keeps the declared prefixes</small>"]
@@ -19,6 +21,10 @@ flowchart LR
   I18n --> T["useTranslate().t"]
   Keys --> T
 ```
+
+A loader is a `.ts` file rather than JSON: `@nuxtjs/i18n` precompiles a JSON locale file with vue-i18n's syntax, which
+fails on an ICU plural. A loader holds its messages, so the hash of the URL the browser loads them from follows the
+text.
 
 ## Usage
 
@@ -63,6 +69,16 @@ A component takes `t` in its `<script setup>` and calls it in its template:
 A link to a public page stays in the language of the page through `NuxtLinkLocale` or `useLocalePath()` of `#i18n`.
 `security-starter` takes the prefix off every other page, which shows in the language of the account.
 
+It exports:
+
+| Export | What it gives |
+|---|---|
+| `@drinkit/i18n-starter/translate` | `useTranslate()`: `t` for a key of the catalog and the values its message places, `exists` for a key built at run time, such as one per status, `d` and `n` in the named formats of a date in the time zone the caller gives, or of a number, an amount in the currency the caller gives, `locale` and `language`, such as `fr-FR` |
+| `@drinkit/i18n-starter/locale-state` | `isLocaleState()`: the keys of `useState` a reset of the app's state spares, or the page loses its locales |
+| `@drinkit/i18n-starter/testing` | `expectLocaleParity()` and `expectValidMessages()` for the catalog, `i18nTestSettings()` for the Nuxt tests of a starter |
+
+The plugin `locale-head` writes the `lang` and `dir` of `<html>` and the links to the other languages.
+
 ## Configuration
 
 | Key | Default | Effect |
@@ -73,32 +89,7 @@ A link to a public page stays in the language of the page through `NuxtLinkLocal
 | `i18n.detectBrowserLanguage` | `false` | The URL alone decides the locale, so that a page renders the same for every request |
 | `i18n.baseUrl` | none | The origin of the links to the other languages in the `<head>`, `NUXT_PUBLIC_I18N_BASE_URL` in a deployment. A built app refuses to start on a local origin, which a search engine cannot reach |
 
-## What it exports
-
-| Export | What it gives |
-|---|---|
-| `@drinkit/i18n-starter/translate` | `useTranslate()`: `t` for a key of the catalog and the values its message places, `exists` for a key built at run time, such as one per status, `d` and `n` in the named formats of a date in the time zone the caller gives, or of a number, an amount in the currency the caller gives, `locale` and `language`, such as `fr-FR` |
-| `@drinkit/i18n-starter/locale-state` | `isLocaleState()`: the keys of `useState` a reset of the app's state spares, or the page loses its locales |
-| `@drinkit/i18n-starter/testing` | `expectLocaleParity()` and `expectValidMessages()` for the catalog, `i18nTestSettings()` for the Nuxt tests of a starter |
-
-The plugin `locale-head` writes the `lang` and `dir` of `<html>` and the links to the other languages.
-
-## How it is built
-
-| File | What it does |
-|---|---|
-| `modules/i18n-catalog.ts` | Filters the catalog by prefix, writes one loader per locale under the cache folder of the build, registers them with `@nuxtjs/i18n` and declares the keys and their values for the type check |
-| `shared/message-arguments.ts` | The values a message places, a number to count, a text to choose a branch |
-| `server/plugins/base-url.ts` | Stops a built app whose `i18n.baseUrl` is not a public origin |
-| `i18n/i18n.config.ts` | Compiles each message with `intl-messageformat`, `en` as fallback |
-| `shared/catalog-checks.ts` | What the checks of the catalog refuse: a key missing from a locale, an argument renamed, a message outside the ICU subset the backend reads the same |
-| `shared/formats.ts` | The named formats of `d` and `n`, the one place that calls `Intl` |
-
-A loader is a `.ts` file rather than JSON: `@nuxtjs/i18n` precompiles a JSON locale file with vue-i18n's syntax, which
-fails on an ICU plural. A loader holds its messages, so the hash of the URL the browser loads them from follows the
-text.
-
-## Testing
+## Tests
 
 A starter's Nuxt tests load the catalog with the locales an app would name:
 
@@ -118,10 +109,5 @@ test('every locale of the catalog holds the keys of en.json, with the same value
 });
 ```
 
-## Checks
-
-```
-pnpm --filter @drinkit/i18n-starter lint
-pnpm --filter @drinkit/i18n-starter typecheck
-pnpm --filter @drinkit/i18n-starter test
-```
+`expectLocaleParity` fails on a key missing from a locale or an argument renamed, `expectValidMessages` on a message
+outside the ICU subset that the frontend and the backend read the same.

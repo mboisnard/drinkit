@@ -118,7 +118,6 @@ function cookieJarOf(event: H3Event): CookieJar {
   return context.apiCookieJar;
 }
 
-/** Whether a call may change the backend's state: any method but GET, HEAD, OPTIONS and TRACE. */
 export function isWrite(method = 'GET'): boolean {
   return !SAFE_METHODS.includes(method.toUpperCase());
 }

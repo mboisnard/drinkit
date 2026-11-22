@@ -17,7 +17,6 @@ export default defineNuxtConfig({
   routeRules: {
     '/**': { headers: { 'cache-control': 'no-store' } },
   },
-  // The texts of the pages a navigation cannot open, under auth. in the catalog
   i18nCatalog: {
     prefixes: ['auth'],
   },

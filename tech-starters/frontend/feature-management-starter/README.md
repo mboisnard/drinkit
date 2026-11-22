@@ -8,6 +8,8 @@ and [ADR 018](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2
 record why. It is a Nuxt layer, published in the pnpm workspace as `@drinkit/feature-management-starter`, on top of
 `api-client-starter`.
 
+## How it works
+
 ```mermaid
 sequenceDiagram
   participant Browser
@@ -71,7 +73,7 @@ stays mounted, and none outside the experiment or during a server render.
 The endpoints are those of the backend `feature-management-starter`, under the path of the API:
 `/ofrep/v1/evaluate/flags` and `/experiments/{key}/exposures`.
 
-## Testing
+## Tests
 
 `@drinkit/feature-management-starter/testing` gives the UI tests of an app both endpoints in memory, for the fake
 backend of `test-starter`:
@@ -80,14 +82,6 @@ backend of `test-starter`:
 const ofrep = ofrepBackendDouble({ apiPath: '/drinkit', evaluate: (request) => flagsOf(request) });
 fakeBackend.use(...ofrep.handlers);
 ofrep.exposures;                                    // [{ experiment, variant }], in the order reported
-```
-
-## Checks
-
-```
-pnpm --filter @drinkit/feature-management-starter lint
-pnpm --filter @drinkit/feature-management-starter typecheck
-pnpm --filter @drinkit/feature-management-starter test
 ```
 
 ## Limits

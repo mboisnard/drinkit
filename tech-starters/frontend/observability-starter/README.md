@@ -8,6 +8,8 @@ every problem detail, so a user who reports the reference of a toast leads to th
 [ADR 016](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/016-observe-through-micrometer-and-export-over-opentelemetry-on-demand.md)
 records why. It is a Nuxt layer, published in the pnpm workspace as `@drinkit/observability-starter`.
 
+## How it works
+
 ```mermaid
 flowchart LR
   Vue["An error of a component<br/><small>Vue's errorHandler</small>"] --> Report
@@ -24,6 +26,8 @@ over the browser's own report of a promise nobody awaits, from any code of the p
 and it passes each error of a component on to the error handler another layer installed, such as an alerting
 module. When the
 app renders on the server, Nitro logs an error of that render itself, with the problem detail and its `traceId`.
+
+The toast is a listener of the hook like any other, so moving it to the starter of a design system moves one file.
 
 ## Usage
 
@@ -61,7 +65,7 @@ const signOut = withErrorMessage(useCurrentUser().signOut, t('layout.signOutFail
 The wrapped function has the same signature, and still throws the error it got, a `ProblemError` for instance. An
 action wrapped twice, by a composable and then by its page, shows the message of the outermost wrapper.
 
-## Messages
+## Configuration
 
 The messages of the toast are keys of the [catalog](../i18n-starter/README.md) under the `observability` prefix, which
 the starter declares. The toast shows `observability.error.<status>` when the catalog holds one, else
@@ -95,17 +99,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 `@sentry/nuxt` catches the errors of Vue itself: with it, read the `traceId` from the event's error in `beforeSend`
 rather than listening to the hook, or each error is reported twice.
 
-## How it is built
-
-| File | What it does |
-|---|---|
-| `app/plugins/report-errors.client.ts` | Catches each unhandled error once, logs it, calls `drinkit:error` |
-| `app/plugins/toast-errors.client.ts` | Listens to `drinkit:error` and shows the toast of an error that is not fatal |
-| `app/error-message.ts` | `withErrorMessage`, which ties a message to the error of an action |
-
-The toast is a listener of the hook like any other, so moving it to the starter of a design system moves one file.
-
-## Testing
+## Tests
 
 `renderSuspended` of `@nuxt/test-utils` mounts a component in a Vue app of its own. A test of an error that reaches
 the starter gives it the error handler of the app:
@@ -118,11 +112,3 @@ A test that needs a message the catalog lacks adds it to the locale with `useNux
 
 A UI test whose page leaves an error unhandled sees the line of the log as a console error, and lists it in
 `ignoredConsoleErrors`.
-
-## Checks
-
-```
-pnpm --filter @drinkit/observability-starter lint
-pnpm --filter @drinkit/observability-starter typecheck
-pnpm --filter @drinkit/observability-starter test
-```

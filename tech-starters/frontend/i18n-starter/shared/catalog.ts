@@ -9,7 +9,6 @@ export function messagesOf(catalog: Messages, prefixes: readonly string[]): Mess
   return Object.fromEntries(Object.entries(catalog).filter(([key]) => prefixes.includes(prefixOf(key))));
 }
 
-/** The prefixes no key of the catalog starts with. */
 export function prefixesWithoutKeys(catalog: Messages, prefixes: readonly string[]): string[] {
   const present = new Set(Object.keys(catalog).map(prefixOf));
 

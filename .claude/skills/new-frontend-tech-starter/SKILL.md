@@ -58,8 +58,9 @@ app (§3).
 
 ## 4. What it also touches
 
-- A `README.md` for the developer who uses it: what it provides, how the app extends it, each configuration key
-  with its environment variable.
+- A `README.md` for the developer who uses it, in the sections of a backend starter's: `How it works`, `Usage`,
+  with what it provides and how the app extends it, `Configuration`, with each key and its environment variable,
+  `Tests` and `Limits`.
 - The lanes of `.github/workflows/config/ci-lanes.yml` already cover `tech-starters/frontend/**`: nothing to add,
   unless the starter brings a folder another lane reads.
 
