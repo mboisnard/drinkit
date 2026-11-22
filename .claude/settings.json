@@ -4,15 +4,15 @@
     "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "450000"
   },
   "permissions": {
-    "additionalDirectories": [
-      "../drinkit-worktrees"
-    ],
     "deny": [
       "Bash(gh pr merge *)",
       "Bash(git push --no-verify *)"
     ],
     "ask": [
       "Edit(//**/.hooks/**)"
+    ],
+    "additionalDirectories": [
+      "../drinkit-worktrees"
     ]
   },
   "hooks": {
@@ -66,14 +66,14 @@
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/detekt-after-edit",
-            "statusMessage": "Linting with detekt...",
-            "timeout": 120
+            "timeout": 120,
+            "statusMessage": "Linting with detekt..."
           },
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/lint-after-edit",
-            "statusMessage": "Linting...",
-            "timeout": 60
+            "timeout": 60,
+            "statusMessage": "Linting..."
           }
         ]
       },
@@ -82,8 +82,8 @@
         "hooks": [
           {
             "type": "command",
-            "if": "Bash(gh pr *)",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/cmux-status",
+            "if": "Bash(gh pr *)",
             "timeout": 5
           }
         ]
@@ -95,8 +95,8 @@
         "hooks": [
           {
             "type": "command",
-            "if": "Bash(gh pr *)",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.hooks/claude/cmux-status",
+            "if": "Bash(gh pr *)",
             "timeout": 5
           }
         ]
@@ -138,5 +138,8 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "ponytail@ponytail": true
   }
 }
