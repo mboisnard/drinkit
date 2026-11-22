@@ -40,7 +40,7 @@ export default defineNuxtConfig({
 
 | Setting | Effect |
 |---|---|
-| `imports.autoImport: false`, `components.dirs: []` | Every Vue API, composable and component comes from an import |
+| `imports.autoImport: false`, from `i18n-starter` | Every Vue API and composable comes from an import. Nuxt reads `components` per layer, so the app sets `components: { dirs: [] }` itself for its components |
 | `routeRules` | A year of cache on the hashed files of `/_nuxt/` |
 | `typescript.tsConfig`, `erasableSyntaxOnly` | No `enum`, namespace nor parameter property: the compiler refuses TypeScript it cannot strip to JavaScript |
 | `vite.build.target` | The browsers of `.browserslistrc`, which `eslint-plugin-compat` checks the code against |

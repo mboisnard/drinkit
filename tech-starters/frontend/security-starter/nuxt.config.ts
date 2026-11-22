@@ -8,7 +8,7 @@ export default defineNuxtConfig({
     public: {
       auth: {
         currentUserPath: '',
-        signInPage: '/sign-in',
+        signInPage: '',
         forbiddenRedirects: {},
       },
     },
@@ -16,13 +16,6 @@ export default defineNuxtConfig({
   // A page may hold the data of a signed-in user, and its nonce changes on each response
   routeRules: {
     '/**': { headers: { 'cache-control': 'no-store' } },
-  },
-  // Relative to .nuxt: the lint config, which Nuxt leaves out of its tsconfigs, runs on Node
-  typescript: {
-    nodeTsConfig: {
-      include: ['../eslint.config.ts'],
-      compilerOptions: { types: ['node'] },
-    },
   },
   // The texts of the pages a navigation cannot open, under auth. in the catalog
   i18nCatalog: {
