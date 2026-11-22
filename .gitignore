@@ -42,6 +42,20 @@ out/
 
 ### Frontend ###
 **/node_modules
+# What Nuxt, Nitro and Vite write
+.nuxt
+.output
+.data
+.nitro
+.cache
+**/dist
+# The setup marker @nuxt/test-utils writes on its first run
+.nuxtrc
+logs
+*.log
+.fleet
+.env.*
+!.env.example
 # The reports of Playwright
 **/test-results/
 **/playwright-report/

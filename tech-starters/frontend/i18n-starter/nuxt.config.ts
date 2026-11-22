@@ -15,11 +15,15 @@ export default defineNuxtConfig({
       include: ['@drinkit/i18n-starter > intl-messageformat'],
     },
   },
-  // Relative to .nuxt: the lint and test configs, the unit tests and the helpers a package gives the tests of others,
-  // which run on Node outside Nuxt's tsconfigs
+  // Relative to the .nuxt of each package that extends it: the files that run on Node outside Nuxt's tsconfigs
   typescript: {
     nodeTsConfig: {
-      include: ['../eslint.config.ts', '../vitest.config.ts', '../test/unit/**/*.ts', '../testing/**/*.ts'],
+      include: [
+        '../eslint.config.ts',
+        '../vitest.config.ts',
+        '../test/unit/**/*.ts',
+        '../testing/**/*.ts',
+      ],
       compilerOptions: { types: ['node'] },
     },
   },

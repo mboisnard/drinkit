@@ -9,6 +9,8 @@ export default defineNuxtConfig({
     '@drinkit/feature-management-starter',
   ],
   modules: ['@nuxt/ui'],
+  // Every component comes from an import: Nuxt reads this setting per layer, so the app sets its own
+  components: { dirs: [] },
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   // No font downloaded at build, and no color mode script, which carries no nonce and the CSP would refuse
