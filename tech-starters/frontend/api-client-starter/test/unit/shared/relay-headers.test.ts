@@ -9,6 +9,7 @@ test('a browser request reaches the backend with only the headers the API reads'
     'accept': 'application/json',
     'cookie': 'SESSION=1',
     'x-xsrf-token': 'token',
+    'idempotency-key': 'key',
     'host': 'drinkit.example',
     'connection': 'keep-alive',
     'authorization': 'Basic leaked',
@@ -21,17 +22,10 @@ test('a browser request reaches the backend with only the headers the API reads'
   expect(headers.get('accept')).toBe('application/json');
   expect(headers.get('cookie')).toBe('SESSION=1');
   expect(headers.get('x-xsrf-token')).toBe('token');
+  expect(headers.get('idempotency-key')).toBe('key');
   expect(headers.has('host')).toBe(false);
   expect(headers.has('connection')).toBe(false);
   expect(headers.has('authorization')).toBe(false);
-});
-
-test('a browser request keeps its idempotency key, so that the backend runs a retry once', () => {
-  // When
-  const headers = relayHeaders(new Headers({ 'idempotency-key': 'key' }), CLIENT, 'browser');
-
-  // Then
-  expect(headers.get('idempotency-key')).toBe('key');
 });
 
 test('a browser request carries only the cookies of the API to the backend', () => {
@@ -53,22 +47,15 @@ test('a browser request without a cookie of the API carries no cookie', () => {
   expect(headers.has('cookie')).toBe(false);
 });
 
-test('the backend sees the address of the client, never an address the client claims', () => {
+test('the backend sees the address and the scheme of the client, never those the client claims', () => {
   // Given
-  const incoming = new Headers({ 'x-forwarded-for': '198.51.100.1' });
+  const incoming = new Headers({ 'x-forwarded-for': '198.51.100.1', 'x-forwarded-proto': 'http' });
 
   // When
   const headers = relayHeaders(incoming, CLIENT, 'browser');
 
   // Then
   expect(headers.get('x-forwarded-for')).toBe('203.0.113.7');
-});
-
-test('the backend sees the scheme the client used', () => {
-  // When
-  const headers = relayHeaders(new Headers(), CLIENT, 'browser');
-
-  // Then
   expect(headers.get('x-forwarded-proto')).toBe('https');
 });
 

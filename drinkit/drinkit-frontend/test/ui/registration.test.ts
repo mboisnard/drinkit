@@ -2,9 +2,7 @@ import { expect, expectAccessible, test } from '@drinkit/test-starter/playwright
 import { BORDEAUX, cellarBackend } from './cellar-backend.ts';
 
 test.beforeEach(async ({ context, fakeBackend, baseURL }) => {
-  const backend = cellarBackend(fakeBackend);
-  const cookies = backend.signedInAs({ roles: ['ROLE_REGISTRATION_IN_PROGRESS'] });
-  await context.addCookies(cookies.map((cookie) => ({ ...cookie, url: baseURL })));
+  await cellarBackend(fakeBackend).openSession(context, baseURL, { roles: ['ROLE_REGISTRATION_IN_PROGRESS'] });
 });
 
 test('the registration page is accessible', async ({ page, goto }) => {

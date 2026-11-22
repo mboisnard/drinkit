@@ -1,6 +1,6 @@
 import { expect, test as nuxtTest } from '@nuxt/test-utils/playwright';
-import { startFakeBackend } from '../fake-backend/fake-backend.ts';
-import type { FakeBackend } from '../fake-backend/fake-backend.ts';
+import { startFakeBackend } from '../fake-backend/index.ts';
+import type { FakeBackend } from '../fake-backend/index.ts';
 import { watchConsoleErrors } from './console-errors.ts';
 
 export { expect };

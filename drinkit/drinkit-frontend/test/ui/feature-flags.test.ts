@@ -1,23 +1,10 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from '@drinkit/test-starter/playwright';
-import { cellarBackend } from './cellar-backend.ts';
-import type { CellarBackend, User } from './cellar-backend.ts';
+import { cellarBackend, member, signInByCode } from './cellar-backend.ts';
+import type { CellarBackend } from './cellar-backend.ts';
 
-const EMAIL = 'camille@drinkit.dev';
 const DRAWN_WELCOME = { key: 'cellars-heading', value: 'welcome', variant: 'welcome', reason: 'SPLIT' };
 const COUNT_ON = { key: 'cellar-count', value: true };
-
-function member(): User {
-  return { firstname: 'Camille', roles: ['ROLE_USER'] };
-}
-
-async function signIn(page: Page, backend: CellarBackend): Promise<void> {
-  await page.getByLabel('Email').fill(EMAIL);
-  await page.getByRole('button', { name: 'Send me a code' }).click();
-  await expect(page.getByLabel('Code')).toBeVisible();
-  await page.getByLabel('Code').fill(backend.lastCodeOf(EMAIL) ?? '');
-  await page.getByRole('button', { name: 'Sign in' }).click();
-}
 
 // The requests of the browser only: those of the server render never reach the page
 function ofrepRequestsOf(page: Page): string[] {
@@ -36,8 +23,7 @@ test.describe('signed in', () => {
 
   test.beforeEach(async ({ context, fakeBackend, baseURL }) => {
     backend = cellarBackend(fakeBackend);
-    const cookies = backend.signedInAs(member());
-    await context.addCookies(cookies.map((cookie) => ({ ...cookie, url: baseURL })));
+    await backend.openSession(context, baseURL, member());
   });
 
   test('the server renders the variant the backend drew, and the browser reads no flag again', async ({ page, goto }) => {
@@ -124,7 +110,7 @@ test('signing in shows the flags of the user, without reloading the page', async
   });
 
   // When
-  await signIn(page, backend);
+  await signInByCode(page, backend);
 
   // Then
   await expect(page.getByText('1 cellar')).toBeVisible();

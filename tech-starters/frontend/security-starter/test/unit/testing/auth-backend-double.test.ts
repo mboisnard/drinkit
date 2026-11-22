@@ -1,7 +1,7 @@
 import { afterAll, beforeAll } from 'vitest';
+import { authBackendContract, authBackendDouble } from '@drinkit/security-starter/testing';
 import { startFakeBackend } from '@drinkit/test-starter/fake-backend';
 import type { FakeBackend } from '@drinkit/test-starter/fake-backend';
-import { authBackendContract, authBackendDouble } from '../../../testing/index.ts';
 
 const double = authBackendDouble({
   apiPath: '/drinkit',

@@ -1,5 +1,5 @@
-import { useTranslate } from '../../app/translate.ts';
-import type { MessageValues, TranslationKey } from '../../app/translate.ts';
+import { useTranslate } from '@drinkit/i18n-starter/translate';
+import type { MessageValues, TranslationKey } from '@drinkit/i18n-starter/translate';
 
 /**
  * The t of useTranslate for the keys of the fixture catalog. Nuxt type-checks the tests of a layer with the app that

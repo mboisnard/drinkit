@@ -1,7 +1,7 @@
 import { clearNuxtState, useNuxtApp, useRouter } from '#app';
 import { beforeEach, expect, test } from 'vitest';
 import { isLocaleState } from '@drinkit/i18n-starter/locale-state';
-import { useCurrentUser } from '../../../app/use-current-user.ts';
+import { useCurrentUser } from '@drinkit/security-starter/use-current-user';
 import { authBackend } from '../auth-backend.ts';
 import type { AuthBackend } from '../auth-backend.ts';
 import { addPages } from '../pages.ts';

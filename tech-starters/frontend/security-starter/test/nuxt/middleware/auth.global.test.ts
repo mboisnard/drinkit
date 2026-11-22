@@ -141,23 +141,8 @@ test.each([502, 504])('a backend a gateway gets no answer from, %i, shows that t
   });
 });
 
-test('a backend that gives no answer at all shows that the server cannot be reached', async () => {
-  // Given: what ofetch throws when nothing listens
-  const noAnswer = Object.assign(new Error('[GET] "/drinkit/api/user/me": <no response> fetch failed'), { name: 'FetchError' });
-  vi.spyOn(globalThis, '$fetch').mockRejectedValue(noAnswer);
-
-  // When
-  const navigation = useRouter().push('/private');
-
-  // Then
-  await expect(navigation).rejects.toMatchObject({
-    status: 503,
-    data: { title: 'Service Unavailable', detail: 'The server cannot be reached. Try again in a moment.' },
-  });
-});
-
 test('a backend that gives no answer shows that the server cannot be reached in the language of the page', async () => {
-  // Given
+  // Given: what ofetch throws when nothing listens
   await useNuxtApp().$i18n.setLocale('fr');
   clearNuxtState((key) => !isLocaleState(key));
   vi.spyOn(globalThis, '$fetch').mockRejectedValue(Object.assign(new Error('fetch failed'), { name: 'FetchError' }));

@@ -1,3 +1,4 @@
+import type { BrowserContext, Page } from '@playwright/test';
 import { http, HttpResponse } from 'msw';
 import { idempotentEndpoint } from '@drinkit/api-client-starter/testing';
 import type { IdempotentEndpoint } from '@drinkit/api-client-starter/testing';
@@ -6,12 +7,24 @@ import type { EvaluatedFlag, OfrepBackendDouble } from '@drinkit/feature-managem
 import { authBackendDouble } from '@drinkit/security-starter/testing';
 import type { AuthBackendDouble } from '@drinkit/security-starter/testing';
 import type { FakeBackend } from '@drinkit/test-starter/fake-backend';
+import { expect } from '@drinkit/test-starter/playwright';
 
 /** The user of the current user path, as the contract describes it. */
 export interface User {
   firstname?: string;
   roles: string[];
   locale?: string;
+}
+
+const API_PATH = '/drinkit';
+const ME_PATH = '/api/user/me';
+
+export const CURRENT_USER_PATH = `${API_PATH}${ME_PATH}`;
+
+export const EMAIL = 'camille@drinkit.dev';
+
+export function member(): User {
+  return { firstname: 'Camille', roles: ['ROLE_USER'] };
 }
 
 export const BORDEAUX = {
@@ -21,6 +34,8 @@ export const BORDEAUX = {
 };
 
 export interface CellarBackend extends AuthBackendDouble<User> {
+  /** Opens a session for the user in the browser, before its first page. */
+  openSession: (context: BrowserContext, baseURL: string | undefined, user: User) => Promise<void>;
   cellarDeletion: IdempotentEndpoint;
   /** The flags and variants the backend evaluates for a signed-in user and for a visitor, none by default. */
   flags: { user: EvaluatedFlag[]; visitor: EvaluatedFlag[] };
@@ -36,14 +51,14 @@ export function cellarBackend(
   newUser: () => User = () => ({ roles: ['ROLE_REGISTRATION_IN_PROGRESS'] }),
 ): CellarBackend {
   const auth = authBackendDouble<User>({
-    apiPath: '/drinkit',
-    currentUserPath: '/api/user/me',
+    apiPath: API_PATH,
+    currentUserPath: ME_PATH,
     newUser,
   });
   const cellars = [BORDEAUX];
   const flags: CellarBackend['flags'] = { user: [], visitor: [] };
   const ofrep = ofrepBackendDouble({
-    apiPath: '/drinkit',
+    apiPath: API_PATH,
     evaluate: (request) => (auth.userOf(request) ? flags.user : flags.visitor),
   });
 
@@ -86,7 +101,21 @@ export function cellarBackend(
     }),
   );
 
-  return { ...auth, cellarDeletion, flags, exposures: ofrep.exposures };
+  async function openSession(context: BrowserContext, baseURL: string | undefined, user: User): Promise<void> {
+    await context.addCookies(auth.signedInAs(user).map((cookie) => ({ ...cookie, url: baseURL })));
+  }
+
+  return { ...auth, openSession, cellarDeletion, flags, exposures: ofrep.exposures };
+}
+
+/** Signs in on the sign-in page with the code the backend sent to EMAIL. */
+export async function signInByCode(page: Page, backend: AuthBackendDouble<User>, rememberMe = false): Promise<void> {
+  await page.getByLabel('Email').fill(EMAIL);
+  await page.getByRole('button', { name: 'Send me a code' }).click();
+  await expect(page.getByLabel('Code')).toBeVisible();
+  await page.getByLabel('Code').fill(backend.lastCodeOf(EMAIL) ?? '');
+  await page.getByLabel('Keep me signed in on this device').setChecked(rememberMe);
+  await page.getByRole('button', { name: 'Sign in' }).click();
 }
 
 function problem(status: number, title: string): Response {

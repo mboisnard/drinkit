@@ -1,12 +1,13 @@
 import { http, HttpResponse } from 'msw';
 import { expect, expectAccessible, test } from '@drinkit/test-starter/playwright';
+import { CURRENT_USER_PATH } from './cellar-backend.ts';
 
 // The browser reports the status of the page it was served
 test.use({ ignoredConsoleErrors: [/status of 503/] });
 
 test.beforeEach(({ fakeBackend }) => {
   // What a gateway answers for a backend that is down
-  fakeBackend.use(http.get('/drinkit/api/user/me', () => new HttpResponse(null, { status: 502 })));
+  fakeBackend.use(http.get(CURRENT_USER_PATH, () => new HttpResponse(null, { status: 502 })));
 });
 
 test('without a backend, the error page says the server cannot be reached, with its status and a way out', async ({ page, goto }) => {
@@ -31,7 +32,7 @@ test('the error page is accessible', async ({ page, goto }) => {
 test('a backend that hangs is waited for once, until the timeout, before the page says the server cannot be reached', async ({ page, goto, fakeBackend }) => {
   // Given
   let readsOfUser = 0;
-  fakeBackend.use(http.get('/drinkit/api/user/me', async () => {
+  fakeBackend.use(http.get(CURRENT_USER_PATH, async () => {
     readsOfUser++;
     await new Promise(() => undefined);
   }));

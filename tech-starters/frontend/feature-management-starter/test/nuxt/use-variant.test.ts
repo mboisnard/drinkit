@@ -2,8 +2,8 @@ import { defineComponent, h } from 'vue';
 import { useNuxtApp } from '#app';
 import { mountSuspended } from '@nuxt/test-utils/runtime';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { useVariant } from '../../app/use-variant.ts';
-import type { ExperimentKey } from '../../app/use-variant.ts';
+import { useVariant } from '@drinkit/feature-management-starter/use-variant';
+import type { ExperimentKey } from '@drinkit/feature-management-starter/use-variant';
 import { ofrepBackend } from './ofrep-backend.ts';
 import type { OfrepBackend } from './ofrep-backend.ts';
 

@@ -1,7 +1,7 @@
 import { useNuxtApp } from '#app';
 import { beforeEach, expect, test } from 'vitest';
-import { useFlag } from '../../app/use-flag.ts';
-import type { FlagKey } from '../../app/use-flag.ts';
+import { useFlag } from '@drinkit/feature-management-starter/use-flag';
+import type { FlagKey } from '@drinkit/feature-management-starter/use-flag';
 import { ofrepBackend } from './ofrep-backend.ts';
 import type { OfrepBackend } from './ofrep-backend.ts';
 

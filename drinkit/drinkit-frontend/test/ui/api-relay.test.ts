@@ -1,9 +1,10 @@
 import { http, HttpResponse } from 'msw';
 import { expect, test } from '@drinkit/test-starter/playwright';
+import { CURRENT_USER_PATH } from './cellar-backend.ts';
 
 test('the cookies the backend sets during a server render reach the browser with the page', async ({ request, fakeBackend }) => {
   // Given
-  fakeBackend.use(http.get('/drinkit/api/user/me', () => HttpResponse.json(
+  fakeBackend.use(http.get(CURRENT_USER_PATH, () => HttpResponse.json(
     { roles: ['ROLE_USER'] },
     { headers: { 'set-cookie': 'SESSION=s1; Path=/; HttpOnly' } },
   )));
@@ -18,7 +19,7 @@ test('the cookies the backend sets during a server render reach the browser with
 
 test('two server renders at once each call the backend with the cookies of their own user', async ({ request, fakeBackend }) => {
   // Given
-  fakeBackend.use(http.get('/drinkit/api/user/me', ({ cookies }) => HttpResponse.json(
+  fakeBackend.use(http.get(CURRENT_USER_PATH, ({ cookies }) => HttpResponse.json(
     { firstname: cookies.SESSION, roles: ['ROLE_USER'] },
   )));
 

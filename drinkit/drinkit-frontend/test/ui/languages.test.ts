@@ -1,13 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { expect, expectAccessible, expectSameServerRender, test } from '@drinkit/test-starter/playwright';
-import { cellarBackend } from './cellar-backend.ts';
-import type { User } from './cellar-backend.ts';
-
-const EMAIL = 'camille@drinkit.dev';
-
-function member(): User {
-  return { firstname: 'Camille', roles: ['ROLE_USER'] };
-}
+import { CURRENT_USER_PATH, EMAIL, cellarBackend, member } from './cellar-backend.ts';
 
 function langOf(html: string): string | undefined {
   return /<html[^>]* lang="([^"]+)"/.exec(html)?.[1];
@@ -19,7 +12,7 @@ function alternatesOf(html: string): string[] {
 
 test.describe('a visitor', () => {
   test.beforeEach(({ fakeBackend }) => {
-    fakeBackend.use(http.get('/drinkit/api/user/me', () => new HttpResponse(null, { status: 401 })));
+    fakeBackend.use(http.get(CURRENT_USER_PATH, () => new HttpResponse(null, { status: 401 })));
   });
 
   test('a page names its language, and its versions in the other languages, in the HTML the server renders', async ({ request }) => {
@@ -52,7 +45,7 @@ test.describe('a page the app does not have', () => {
 
   test('says so in the language of its path', async ({ page, goto, fakeBackend }) => {
     // Given
-    fakeBackend.use(http.get('/drinkit/api/user/me', () => HttpResponse.json(member())));
+    fakeBackend.use(http.get(CURRENT_USER_PATH, () => HttpResponse.json(member())));
 
     // When
     await goto('/fr/nowhere', { waitUntil: 'hydration' });
@@ -67,7 +60,7 @@ test.describe('with a backend that is down', () => {
 
   test('the error page says that the server cannot be reached in the language of the page', async ({ page, goto, fakeBackend }) => {
     // Given
-    fakeBackend.use(http.get('/drinkit/api/user/me', () => new HttpResponse(null, { status: 502 })));
+    fakeBackend.use(http.get(CURRENT_USER_PATH, () => new HttpResponse(null, { status: 502 })));
 
     // When
     await goto('/fr', { waitUntil: 'hydration' });
@@ -102,8 +95,7 @@ test('a visitor signs in in French, and every call asks the backend for French',
 
 test('a member reads the pages without a prefix in the language of their account, and the public ones in that of the address', async ({ page, goto, context, fakeBackend, baseURL }) => {
   // Given
-  const cookies = cellarBackend(fakeBackend).signedInAs({ firstname: 'Camille', roles: ['ROLE_USER'], locale: 'fr' });
-  await context.addCookies(cookies.map((cookie) => ({ ...cookie, url: baseURL })));
+  await cellarBackend(fakeBackend).openSession(context, baseURL, { ...member(), locale: 'fr' });
 
   // When
   await goto('/cellars', { waitUntil: 'hydration' });

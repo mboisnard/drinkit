@@ -1,8 +1,9 @@
 import { http, HttpResponse } from 'msw';
 import { expect, expectAccessible, expectGoodWebVitals, expectSameServerRender, test } from '@drinkit/test-starter/playwright';
+import { CURRENT_USER_PATH } from './cellar-backend.ts';
 
 test.beforeEach(({ fakeBackend }) => {
-  fakeBackend.use(http.get('/drinkit/api/user/me', () => new HttpResponse(null, { status: 401 })));
+  fakeBackend.use(http.get(CURRENT_USER_PATH, () => new HttpResponse(null, { status: 401 })));
 });
 
 test('the home page is accessible', async ({ page, goto }) => {
@@ -28,7 +29,7 @@ test('the home page renders the same for every request', async ({ request }) => 
 
 test('the home page greets the signed-in user by first name', async ({ page, goto, fakeBackend }) => {
   // Given
-  fakeBackend.use(http.get('/drinkit/api/user/me', () => HttpResponse.json({ firstname: 'Camille', roles: ['ROLE_USER'] })));
+  fakeBackend.use(http.get(CURRENT_USER_PATH, () => HttpResponse.json({ firstname: 'Camille', roles: ['ROLE_USER'] })));
 
   // When
   await goto('/', { waitUntil: 'hydration' });
@@ -51,7 +52,7 @@ test.describe('with a backend that fails', () => {
 
   test('the home page shows the error of a backend that fails', async ({ page, goto, fakeBackend }) => {
     // Given
-    fakeBackend.use(http.get('/drinkit/api/user/me', () => HttpResponse.json(
+    fakeBackend.use(http.get(CURRENT_USER_PATH, () => HttpResponse.json(
       { title: 'Internal Server Error', status: 500 },
       { status: 500, headers: { 'content-type': 'application/problem+json' } },
     )));

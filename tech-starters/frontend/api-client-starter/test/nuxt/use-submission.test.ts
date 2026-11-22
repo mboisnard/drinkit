@@ -2,8 +2,8 @@ import { registerEndpoint } from '@nuxt/test-utils/runtime';
 import { getHeader, setResponseHeader, setResponseStatus } from 'h3';
 import { ofetch } from 'ofetch';
 import { afterEach, beforeEach, expect, test } from 'vitest';
-import type { ApiOptions } from '../../app/use-api.ts';
-import { useSubmission } from '../../app/use-submission.ts';
+import type { ApiOptions } from '@drinkit/api-client-starter/use-api';
+import { useSubmission } from '@drinkit/api-client-starter/use-submission';
 
 beforeEach(() => {
   document.cookie = 'XSRF-TOKEN=dev-token';

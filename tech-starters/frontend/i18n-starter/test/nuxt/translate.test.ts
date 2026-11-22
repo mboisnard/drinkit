@@ -1,6 +1,6 @@
 import { useNuxtApp } from '#app';
 import { afterEach, expect, test } from 'vitest';
-import { useTranslate } from '../../app/translate.ts';
+import { useTranslate } from '@drinkit/i18n-starter/translate';
 import { useFixtureTranslate } from './fixture-translate.ts';
 
 afterEach(async () => {
