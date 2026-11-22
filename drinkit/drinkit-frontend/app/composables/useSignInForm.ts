@@ -1,8 +1,8 @@
 import { ref } from 'vue';
 import type { Ref } from 'vue';
 import type { ProblemError } from '@drinkit/api-client-starter/problem-error';
-import { useSubmission } from '@drinkit/api-client-starter/submission';
-import type { Submission } from '@drinkit/api-client-starter/submission';
+import { useSubmission } from '@drinkit/api-client-starter/use-submission';
+import type { Submission } from '@drinkit/api-client-starter/use-submission';
 import { useTranslate } from '@drinkit/i18n-starter/translate';
 import type { TranslationKey } from '@drinkit/i18n-starter/translate';
 import { useEmailCodeSignIn } from '@drinkit/security-starter/use-email-code-sign-in';

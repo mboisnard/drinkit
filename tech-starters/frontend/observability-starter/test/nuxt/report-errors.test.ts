@@ -8,6 +8,7 @@ import { consola } from 'consola';
 import type { ConsolaReporter, LogObject } from 'consola';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { ProblemError } from '@drinkit/api-client-starter/problem-error';
+import { isLocaleState } from '@drinkit/i18n-starter/locale-state';
 import { withErrorMessage } from '../../app/error-message.ts';
 import { errorsOfAnotherHandler } from './plugins/another-error-handler.ts';
 
@@ -19,7 +20,7 @@ let stopListening: () => void;
 
 beforeEach(() => {
   // The toasts of the previous test, which Nuxt UI keeps in a useState, but not the locales @nuxtjs/i18n loaded
-  clearNuxtState((key) => !key.startsWith('i18n:'));
+  clearNuxtState((key) => !isLocaleState(key));
   logs.length = 0;
   errorsOfAnotherHandler.length = 0;
   reports.length = 0;

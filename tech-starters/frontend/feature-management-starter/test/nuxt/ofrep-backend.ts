@@ -1,12 +1,6 @@
 import { registerEndpoint } from '@nuxt/test-utils/runtime';
 import { readBody, setResponseStatus } from 'h3';
-
-export interface EvaluatedFlag {
-  key: string;
-  value: unknown;
-  reason?: string;
-  variant?: string;
-}
+import type { EvaluatedFlag } from '../../shared/ofrep.ts';
 
 /** The OFREP and exposure endpoints of the backend in the Nuxt test environment, with what they received. */
 export interface OfrepBackend {
