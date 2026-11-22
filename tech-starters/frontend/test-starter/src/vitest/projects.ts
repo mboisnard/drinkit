@@ -6,6 +6,8 @@ import type { ViteUserConfig } from 'vitest/config';
 export interface VitestProjectsOptions {
   /** Nuxt settings for the `test/nuxt` tests alone, such as the runtime config an app would give a starter. */
   nuxtOverrides?: Record<string, unknown>;
+  /** Node flags for the `test/unit` tests alone, such as one that turns on a global of Node still experimental. */
+  unitNodeFlags?: string[];
 }
 
 /** The tests of a Nuxt app or starter: `test/unit` in Node, `test/nuxt` in the Nuxt environment, never mixed. */
@@ -13,7 +15,14 @@ export async function defineVitestProjects(options: VitestProjectsOptions = {}):
   return defineConfig({
     test: {
       projects: [
-        { test: { name: 'unit', include: ['test/unit/**/*.test.ts'], environment: 'node' } },
+        {
+          test: {
+            name: 'unit',
+            include: ['test/unit/**/*.test.ts'],
+            environment: 'node',
+            execArgv: options.unitNodeFlags ?? [],
+          },
+        },
         await defineVitestProject({
           test: {
             name: 'nuxt',

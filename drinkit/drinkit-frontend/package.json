@@ -22,6 +22,7 @@
     "@drinkit/nuxt-starter": "workspace:*",
     "@drinkit/observability-starter": "workspace:*",
     "@drinkit/security-starter": "workspace:*",
+    "@drinkit/sse-starter": "workspace:*",
     "@drinkit/utils-starter": "workspace:*",
     "@iconify-json/lucide": "catalog:",
     "@nuxt/ui": "catalog:",
