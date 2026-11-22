@@ -5,7 +5,7 @@ that keeps a page up to date as the backend pushes events to its user, such as t
 writes, on the [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) stream of
 the backend [`sse-starter`](../../backend/sse-starter/README.md). The backend replays no event a tab missed. A page
 with data to show takes `useServerData`: it reads the data through the API client, applies each event to it with no
-other call, and reads it again after a reconnection. A component that only reacts to an event takes
+other call, and reads it again after a reconnection only when the tab missed an event. A component that only reacts to an event takes
 `useServerEvent`. The starter is a
 [Nuxt layer](https://nuxt.com/docs/guide/going-further/layers) that extends
 [`api-client-starter`](../api-client-starter/README.md), published in the pnpm workspace as `@drinkit/sse-starter`.
@@ -31,12 +31,16 @@ sequenceDiagram
     Starter->>Backend: GET /drinkit/sse/event-stream
     Note over B: useServerEvent('typing', handler)
     B->>Starter: listen to typing, on the same connection
-    Backend-->>Starter: 200, the stream is open
+    Backend-->>Starter: 200, event init, id o1
     Note over A: no second read, the page has just read its data
-    Backend-->>Starter: event agent-chunk
+    Backend-->>Starter: event agent-chunk, id e1
     Starter-->>A: data = reducer(data, chunk), no call to the API
     Note over Starter,Backend: the connection drops, EventSource opens it again
-    A->>Backend: read again, since an event may have been lost meanwhile
+    Backend-->>Starter: event init, id e1, the last event sent to the user
+    Note over A: the tab got e1 already, no read
+    Note over Starter,Backend: the tab is hidden, an event e2 is sent, the tab is shown
+    Backend-->>Starter: event init, id e2
+    A->>Backend: read again, the tab missed e2
 ```
 
 Each opening of the stream is a request that keeps the backend session alive. The connection is therefore open only
@@ -56,9 +60,11 @@ stateDiagram-v2
 ```
 
 The backend ends each stream after [3 minutes](../../backend/sse-starter/README.md#configuration), under the idle
-timeout of the proxies. An event sent while the connection is closed is lost, so `useServerData` reads again at each
-opening but the one its mount starts. A page mounted in a hidden tab, whose stream waits for the tab to be shown, reads
-again at that first opening too.
+timeout of the proxies. An event sent while the connection is closed is lost. Each event carries an id, and the
+backend opens each stream with an `init` event whose id is the one of the last event sent to the user, so
+`useServerData` reads again only when that id is not the last one the tab got. The opening its mount starts reads
+nothing, and a page mounted in a hidden tab, whose stream waits for the tab to be shown, reads again at that first
+opening.
 
 ## Usage
 
@@ -79,8 +85,8 @@ export default defineNuxtConfig({
 
 | Export | What it gives |
 |---|---|
-| `/use-server-data` | `useServerData(key, read, reducers)`: the `AsyncData` of `useAsyncData(key, read)`, which each event named in `reducers` changes through its reducer, `(data, payload) => data`, and which a reconnection reads again |
-| `/use-server-event` | `useServerEvent(name, handler)`: calls `handler` with the payload of each event of that name, until the component unmounts. `onStreamOpen(handler)`: calls `handler` at each opening after the one the mount starts. Only an event listener opens the connection |
+| `/use-server-data` | `useServerData(key, read, reducers)`: the `AsyncData` of `useAsyncData(key, read)`, which each event named in `reducers` changes through its reducer, `(data, payload) => data`, and which a reconnection after a missed event reads again |
+| `/use-server-event` | `useServerEvent(name, handler)`: calls `handler` with the payload of each event of that name, until the component unmounts. `onMissedEvents(handler)`: calls `handler` when the connection opens again after the tab missed an event. Only an event listener opens the connection |
 
 A reducer or a handler declares the type of its payload, `(chunk: AnswerChunk) => ...`. An error it throws, or a
 payload that is not JSON, goes to the error handler of the app, named `server event <name>`.
@@ -116,8 +122,10 @@ the test. Its contract, the tests of what the starter relies on in `EventSource`
 
 ```ts
 vi.stubGlobal('EventSource', FakeEventSource);
-FakeEventSource.instances[0]?.accept();             // the backend answers 200, the stream opens
-FakeEventSource.instances[0]?.emit('cellar-updated', { id: 'c1' });
+FakeEventSource.instances[0]?.accept('o1');         // the backend answers 200, then init with the last id o1
+FakeEventSource.instances[0]?.emit('cellar-updated', { id: 'c1' }, 'e1');
+FakeEventSource.instances[0]?.drop();               // the connection breaks
+FakeEventSource.instances[0]?.accept('e2');         // opens again: the tab missed e2
 FakeEventSource.active();                           // the connections not closed
 ```
 
@@ -126,9 +134,11 @@ FakeEventSource.active();                           // the connections not close
 - An event sent between the read of a page and the opening its mount starts, a fraction of a second at the load of
   the page, is lost: reading again at that opening would call the API twice at each load. An event that comes before
   the first read of a page lands is left to that read.
-- `useServerData` reads again at each reconnection, every 3 minutes while its tab is visible, since the backend sends
-  no event id that would tell whether the tab missed one:
-  [#719](https://github.com/mboisnard/drinkit/issues/719).
+- An event that no component of the tab listens to still moves the last id of the user: the next opening of the
+  stream reads the data of the page again, as if the tab had missed it.
+- The backend keeps the last id for an hour, on each instance: a tab hidden longer, or one that opens its stream again
+  on another instance with no event in between, reads its data once more, as the
+  [backend `sse-starter`](../../backend/sse-starter/README.md#limits) says.
 - A stream the backend refuses stays closed until the tab is visible again or the user signs in: `EventSource` tells
   no status, so the 204 that ends the stream of a visitor without a session looks like the 5xx of a deploy.
 - The API contract does not describe the payloads: the type a reducer or a handler declares is checked by nothing.
