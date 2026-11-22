@@ -27,7 +27,7 @@ peer dependencies, so that one copy of each runs.
 
 | Export | What it gives | The package also declares |
 |---|---|---|
-| `/vitest` | `defineVitestProjects()`: `test/unit/**/*.test.ts` in Node, `test/nuxt/**/*.test.ts` in the Nuxt environment on happy-dom, Testing Library cleaned after each test. Its `nuxtOverrides` give the Nuxt tests the settings an app would give a starter | `vitest`, `@nuxt/test-utils`, `happy-dom`, `@vue/test-utils`, `@testing-library/vue` |
+| `/vitest` | `defineVitestProjects()`: `test/unit/**/*.test.ts` in Node, `test/nuxt/**/*.test.ts` in the Nuxt environment on happy-dom, Testing Library cleaned after each test. Its `nuxtOverrides` give the Nuxt tests the settings an app would give a starter, its `unitNodeFlags` the Node tests a flag such as `--experimental-eventsource` | `vitest`, `@nuxt/test-utils`, `happy-dom`, `@vue/test-utils`, `@testing-library/vue` |
 | `/playwright` | `defineUiTestConfig()`, `test` with its `fakeBackend` fixture, `expect`, `expectAccessible()`, `expectGoodWebVitals()`, `expectSameServerRender()` | `@playwright/test`, `@nuxt/test-utils`, `@axe-core/playwright`, `web-vitals`, `msw` |
 | `/fake-backend` | `startFakeBackend(...handlers)`, outside Playwright | `msw` |
 
