@@ -566,6 +566,9 @@ importers:
       '@drinkit/nuxt-starter':
         specifier: workspace:*
         version: link:../nuxt-starter
+      '@drinkit/utils-starter':
+        specifier: workspace:*
+        version: link:../utils-starter
       '@hey-api/openapi-ts':
         specifier: 'catalog:'
         version: 0.99.0(magicast@0.5.5)(typescript@6.0.3)

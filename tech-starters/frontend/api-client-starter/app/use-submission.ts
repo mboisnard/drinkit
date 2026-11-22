@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import type { Ref } from 'vue';
 import type { FetchContext } from 'ofetch';
+import { retry } from '@drinkit/utils-starter/retry';
 import { ProblemError } from './problem-error.ts';
 import { isWrite, useApi } from './use-api.ts';
 import type { ApiOptions } from './use-api.ts';
@@ -48,21 +49,6 @@ export function useSubmission(messageOf?: (problem: ProblemError) => string | un
     },
   };
 
-  async function sendUntilNotInProgress(send: () => Promise<unknown>): Promise<void> {
-    for (let retry = 1; ; retry++) {
-      try {
-        await send();
-
-        return;
-      } catch (error) {
-        if (!(error instanceof ProblemError && error.status === 409) || retry > IN_PROGRESS_RETRIES) {
-          throw error;
-        }
-        await new Promise((resolve) => setTimeout(resolve, retryAfterMs));
-      }
-    }
-  }
-
   return {
     pending,
     problem,
@@ -74,7 +60,11 @@ export function useSubmission(messageOf?: (problem: ProblemError) => string | un
       pending.value = true;
       problem.value = undefined;
       try {
-        await sendUntilNotInProgress(() => send(keyed));
+        await retry(() => send(keyed), {
+          retries: IN_PROGRESS_RETRIES,
+          delayMs: () => retryAfterMs,
+          retryIf: (error) => error instanceof ProblemError && error.status === 409,
+        });
         keys.clear();
       } catch (error) {
         if (!(error instanceof ProblemError)) {
