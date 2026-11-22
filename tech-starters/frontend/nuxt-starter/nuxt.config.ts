@@ -16,7 +16,6 @@ export default defineNuxtConfig({
     // Added to those of i18n-starter: the UI tests of the packages that render pages
     nodeTsConfig: { include: ['../playwright.config.ts', '../test/ui/**/*.ts'] },
   },
-  // The texts of the error page, under nuxt. in the catalog
   i18nCatalog: {
     prefixes: ['nuxt'],
   },

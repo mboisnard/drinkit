@@ -17,7 +17,6 @@ export interface AuthBackend {
   requestCode: (email: string) => Promise<void>;
   /** Opens the session. A refused code throws the `ProblemError` of the backend. */
   signInWithCode: (emailCode: EmailCode) => Promise<void>;
-  /** Ends the session and expires its cookies. */
   signOut: () => Promise<void>;
 }
 

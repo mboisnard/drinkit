@@ -7,6 +7,8 @@ backend. Unlike the other frontend starters it is no Nuxt layer and holds no run
 [frontend tests](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/5.writing-code/2.testing/5.frontend-tests.md)
 page says what each level proves and why a test replaces a boundary, never a module.
 
+## How it works
+
 ```mermaid
 flowchart LR
     Package["drinkit-frontend, nuxt-starter…"] -- devDependencies --> Starter["@drinkit/test-starter"]
@@ -84,16 +86,9 @@ shell sets a certificate for Nitro.
 
 No setting.
 
-## Checks
+## Tests
 
-```
-pnpm --filter @drinkit/test-starter lint
-pnpm --filter @drinkit/test-starter typecheck
-pnpm --filter @drinkit/test-starter test
-pnpm --filter @drinkit/test-starter test:ui
-```
-
-`test:ui` needs a Chromium: `pnpm --filter @drinkit/test-starter exec playwright install chromium`.
+The Playwright checks are tested on pages of their own in a headless Chromium, the fake backend on Node.
 
 ## Limits
 

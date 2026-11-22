@@ -1,4 +1,3 @@
-/** Who may open a page: anybody, any signed-in user, or a user holding a role. */
 export type PageAccess = 'public' | 'signed-in' | (string & {});
 
 /**
