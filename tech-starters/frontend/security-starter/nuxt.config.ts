@@ -34,10 +34,16 @@ export default defineNuxtConfig({
     headers: {
       // A fetch or a frame the policy forgets stays on the app's origin: OWASP ASVS 5.0 V3.4.3
       // No page is ever shown in a frame, as the backend answers: OWASP ASVS 5.0 V3.4.6
+      // A script or a style comes from the app's origin or carries the nonce of the response: OWASP ASVS 5.0 V3.4.3
       contentSecurityPolicy: {
         'default-src': ['\'self\''],
         'connect-src': ['\'self\''],
         'frame-ancestors': ['\'none\''],
+        'script-src': ['\'self\'', '\'strict-dynamic\'', '\'nonce-{{nonce}}\''],
+        // Nuxt DevTools adds its styles without a nonce: a nonce would make the browser ignore 'unsafe-inline'
+        'style-src': process.env.NODE_ENV === 'development'
+          ? ['\'self\'', '\'unsafe-inline\'']
+          : ['\'self\'', '\'nonce-{{nonce}}\''],
       },
       xFrameOptions: 'DENY',
       // For a year as the backend sends it, where the module gives 180 days: OWASP ASVS 5.0 V3.4.1

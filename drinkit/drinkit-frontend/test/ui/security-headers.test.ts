@@ -26,3 +26,20 @@ test('a page reaches by default only its own origin', async ({ request }) => {
   expect(policy.get('default-src')).toBe('\'self\'');
   expect(policy.get('connect-src')).toBe('\'self\'');
 });
+
+test('a page runs only the scripts its response signs', async ({ request }) => {
+  // When
+  const page = await request.get('/');
+
+  // Then
+  expect(directivesOf(page.headers()['content-security-policy']).get('script-src'))
+    .toMatch(/^'self' 'strict-dynamic' 'nonce-[^']+'$/);
+});
+
+test('a page applies only its own styles and those its response signs', async ({ request }) => {
+  // When
+  const page = await request.get('/');
+
+  // Then
+  expect(directivesOf(page.headers()['content-security-policy']).get('style-src')).toMatch(/^'self' 'nonce-[^']+'$/);
+});
