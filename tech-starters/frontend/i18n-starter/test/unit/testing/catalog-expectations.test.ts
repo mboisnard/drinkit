@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import { expect, test } from 'vitest';
-import { expectLocaleParity, expectValidMessages } from '../../../testing/index.ts';
+import { expectLocaleParity, expectValidMessages } from '@drinkit/i18n-starter/testing';
 
 const balanced = fileURLToPath(new URL('../../fixtures/translations', import.meta.url));
 const unbalanced = fileURLToPath(new URL('../../fixtures/unbalanced', import.meta.url));

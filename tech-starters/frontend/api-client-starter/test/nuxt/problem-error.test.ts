@@ -1,7 +1,7 @@
 import { createError } from '#app';
 import { expect, test } from 'vitest';
+import { ProblemError } from '@drinkit/api-client-starter/problem-error';
 import { toProblemDetail } from '@drinkit/nuxt-starter/problem-detail';
-import { ProblemError } from '../../app/problem-error.ts';
 
 test('a refused call nobody catches shows the problem of the backend on the error page', () => {
   // Given

@@ -1,7 +1,7 @@
 import { clearNuxtState, useNuxtApp, useNuxtData, useRouter, useState } from '#app';
 import { beforeEach, expect, test } from 'vitest';
 import { isLocaleState } from '@drinkit/i18n-starter/locale-state';
-import { useCurrentUser } from '../../app/use-current-user.ts';
+import { useCurrentUser } from '@drinkit/security-starter/use-current-user';
 import { authBackend } from './auth-backend.ts';
 import type { AuthBackend } from './auth-backend.ts';
 import { addPages } from './pages.ts';
@@ -78,18 +78,6 @@ test('signing out tells the backend, and the user is anonymous', async () => {
     signedIn: false,
     logouts: 1,
   });
-});
-
-test('signing out goes to the sign-in page', async () => {
-  // Given
-  backend.user = { firstname: 'Ada', roles: ['ROLE_USER'] };
-  await useRouter().push('/cellars');
-
-  // When
-  await useCurrentUser().signOut();
-
-  // Then
-  expect(useRouter().currentRoute.value.fullPath).toBe('/sign-in');
 });
 
 test('signing out keeps the language of the account on the sign-in page it leads to', async () => {

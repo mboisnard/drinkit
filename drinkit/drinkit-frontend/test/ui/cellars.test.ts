@@ -1,14 +1,13 @@
 import { http, HttpResponse } from 'msw';
 import { expect, expectAccessible, test } from '@drinkit/test-starter/playwright';
-import { BORDEAUX, cellarBackend } from './cellar-backend.ts';
+import { BORDEAUX, cellarBackend, member } from './cellar-backend.ts';
 import type { CellarBackend } from './cellar-backend.ts';
 
 let backend: CellarBackend;
 
 test.beforeEach(async ({ context, fakeBackend, baseURL }) => {
   backend = cellarBackend(fakeBackend);
-  const cookies = backend.signedInAs({ firstname: 'Camille', roles: ['ROLE_USER'] });
-  await context.addCookies(cookies.map((cookie) => ({ ...cookie, url: baseURL })));
+  await backend.openSession(context, baseURL, member());
 });
 
 test('the cellars page is accessible', async ({ page, goto }) => {

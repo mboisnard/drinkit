@@ -2,8 +2,8 @@ import { clearNuxtState, useNuxtApp, useRouter } from '#app';
 import { beforeEach, expect, test } from 'vitest';
 import { ProblemError } from '@drinkit/api-client-starter/problem-error';
 import { isLocaleState } from '@drinkit/i18n-starter/locale-state';
-import { useCurrentUser } from '../../app/use-current-user.ts';
-import { useEmailCodeSignIn } from '../../app/use-email-code-sign-in.ts';
+import { useCurrentUser } from '@drinkit/security-starter/use-current-user';
+import { useEmailCodeSignIn } from '@drinkit/security-starter/use-email-code-sign-in';
 import { authBackend } from './auth-backend.ts';
 import type { AuthBackend } from './auth-backend.ts';
 import { addPages } from './pages.ts';
@@ -51,14 +51,6 @@ test('a signed-in visitor goes back to the page they asked for', async () => {
 
   // Then
   expect(useRouter().currentRoute.value.fullPath).toBe('/cellars');
-});
-
-test('a signed-in visitor without a return URL goes to the home page', async () => {
-  // When
-  await useEmailCodeSignIn().signIn({ email: 'ada@drinkit.com', code: '123456', rememberMe: false });
-
-  // Then
-  expect(useRouter().currentRoute.value.fullPath).toBe('/');
 });
 
 test('a sign-in without a return URL ends on the home page of the language it was made in', async () => {

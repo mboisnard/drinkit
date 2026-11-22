@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { createClientConfig } from '../../app/client-config.ts';
+import { createClientConfig } from '@drinkit/api-client-starter/client-config';
 
 test('a call without the options of useApi() fails at once rather than leave without the cookies of the user', () => {
   // Given

@@ -4,10 +4,12 @@ import { getHeader, setResponseHeader, setResponseStatus } from 'h3';
 import type { EventHandler } from 'h3';
 import { ofetch } from 'ofetch';
 import { afterEach, expect, test } from 'vitest';
+import { ProblemError } from '@drinkit/api-client-starter/problem-error';
+import { useApi } from '@drinkit/api-client-starter/use-api';
+import type { ApiOptions } from '@drinkit/api-client-starter/use-api';
 import type { ProblemDetail } from '@drinkit/nuxt-starter/problem-detail';
-import { ProblemError } from '../../app/problem-error.ts';
-import { useApi } from '../../app/use-api.ts';
-import type { ApiOptions } from '../../app/use-api.ts';
+
+const CSRF_URL = '/drinkit/api/auth/csrf';
 
 afterEach(async () => {
   await useNuxtApp().$i18n.setLocale('en');
@@ -61,8 +63,9 @@ function echoCsrfToken(path: string): void {
   });
 }
 
-test('a write carries the CSRF token of its cookie, which the backend checks', async () => {
+test('a write carries the CSRF token of its cookie, which the backend checks, and fetches none', async () => {
   // Given
+  const csrf = serveCsrfToken(CSRF_URL, 'fetched-token');
   echoCsrfToken('/drinkit/api/cellars');
   document.cookie = 'XSRF-TOKEN=dev-token';
 
@@ -70,7 +73,7 @@ test('a write carries the CSRF token of its cookie, which the backend checks', a
   const answer = await call(useApi(), '/api/cellars', 'POST');
 
   // Then
-  expect(answer).toStrictEqual({ token: 'dev-token' });
+  expect({ answer, fetches: csrf.calls }).toStrictEqual({ answer: { token: 'dev-token' }, fetches: 0 });
 });
 
 test('the token of the __Host- cookie wins over a cookie another site could have planted', async () => {
@@ -86,8 +89,9 @@ test('the token of the __Host- cookie wins over a cookie another site could have
   expect(answer).toStrictEqual({ token: 'real' });
 });
 
-test('a read carries no CSRF token', async () => {
+test('a read neither fetches a CSRF token nor carries one', async () => {
   // Given
+  const csrf = serveCsrfToken(CSRF_URL, 'fetched-token');
   registerEndpoint('/drinkit/api/cellars/read', {
     method: 'GET',
     handler: (event) => ({ token: getHeader(event, 'x-xsrf-token') ?? null }),
@@ -98,7 +102,7 @@ test('a read carries no CSRF token', async () => {
   const answer = await call(useApi(), '/api/cellars/read');
 
   // Then
-  expect(answer).toStrictEqual({ token: null });
+  expect({ answer, fetches: csrf.calls }).toStrictEqual({ answer: { token: null }, fetches: 0 });
 });
 
 test('a problem answer raises a ProblemError with the problem the backend sent', async () => {
@@ -132,7 +136,7 @@ test('a problem answer is told to the drinkit:api:problem hook', async () => {
 
 test('a write without a CSRF cookie first fetches the token, then carries it', async () => {
   // Given
-  serveCsrfToken('/drinkit/api/auth/csrf', 'fetched-token');
+  serveCsrfToken(CSRF_URL, 'fetched-token');
   echoCsrfToken('/drinkit/api/auth/code');
 
   // When
@@ -142,34 +146,9 @@ test('a write without a CSRF cookie first fetches the token, then carries it', a
   expect(answer).toStrictEqual({ token: 'fetched-token' });
 });
 
-test('a write with a CSRF cookie fetches no token', async () => {
-  // Given
-  const csrf = serveCsrfToken('/drinkit/api/auth/csrf', 'fetched-token');
-  echoCsrfToken('/drinkit/api/cellars/kept');
-  document.cookie = 'XSRF-TOKEN=kept-token';
-
-  // When
-  const answer = await call(useApi(), '/api/cellars/kept', 'POST');
-
-  // Then
-  expect({ answer, fetches: csrf.calls }).toStrictEqual({ answer: { token: 'kept-token' }, fetches: 0 });
-});
-
-test('a read fetches no CSRF token', async () => {
-  // Given
-  const csrf = serveCsrfToken('/drinkit/api/auth/csrf', 'fetched-token');
-  registerEndpoint('/drinkit/api/cellars/list', { method: 'GET', handler: () => ({ cellars: [] }) });
-
-  // When
-  await call(useApi(), '/api/cellars/list');
-
-  // Then
-  expect(csrf.calls).toBe(0);
-});
-
 test('without a CSRF path, a write without a cookie leaves without a token', async () => {
   // Given
-  const csrf = serveCsrfToken('/drinkit/api/auth/csrf', 'fetched-token');
+  const csrf = serveCsrfToken(CSRF_URL, 'fetched-token');
   echoCsrfToken('/drinkit/api/cellars/no-csrf-path');
   const apiClient = useRuntimeConfig().public.apiClient;
   apiClient.csrfPath = '';
