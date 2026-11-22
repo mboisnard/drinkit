@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS drinkit_application.user
     status         VARCHAR(50)              NOT NULL,
     enabled        BOOLEAN                  NOT NULL,
     roles          VARCHAR(50) ARRAY        NOT NULL,
+    preferences    JSONB                    NOT NULL,
     modified       TIMESTAMP WITH TIME ZONE NOT NULL,
     CONSTRAINT roles_check CHECK (roles::VARCHAR[] <@ ARRAY['ROLE_ADMIN'::VARCHAR, 'ROLE_USER'::VARCHAR, 'ROLE_REGISTRATION_IN_PROGRESS'::VARCHAR] AND cardinality(roles) > 0)
 );

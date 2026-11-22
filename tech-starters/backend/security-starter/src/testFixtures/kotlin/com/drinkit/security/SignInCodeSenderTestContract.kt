@@ -2,7 +2,6 @@ package com.drinkit.security
 
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
-import java.util.Locale
 
 abstract class SignInCodeSenderTestContract {
 
@@ -16,7 +15,7 @@ abstract class SignInCodeSenderTestContract {
     @Test
     fun `sends the code to the login it names`() {
         // When
-        sender.send("ada@drinkit.test", "042137", Locale.FRENCH)
+        sender.send("ada@drinkit.test", "042137")
 
         // Then
         codeSentTo("ada@drinkit.test") shouldBe "042137"
@@ -25,7 +24,7 @@ abstract class SignInCodeSenderTestContract {
     @Test
     fun `sends no code to another login`() {
         // When
-        sender.send("ada@drinkit.test", "042137", Locale.FRENCH)
+        sender.send("ada@drinkit.test", "042137")
 
         // Then
         codeSentTo("grace@drinkit.test") shouldBe null

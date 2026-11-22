@@ -1,17 +1,18 @@
 package com.drinkit.user
 
 import com.drinkit.common.VisitorId
+import com.drinkit.i18n.CurrentLocale
 import com.drinkit.security.CurrentVisitor
 import com.drinkit.security.UserAccount
 import com.drinkit.security.UserAccounts
 import com.drinkit.user.core.Author
 import com.drinkit.user.core.Email
+import com.drinkit.user.core.Preferences
 import com.drinkit.user.core.User
 import com.drinkit.user.core.UserId
 import com.drinkit.user.spi.Users
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import java.util.Locale
 
 @Component
 internal class DomainUserAccounts(
@@ -19,6 +20,7 @@ internal class DomainUserAccounts(
     private val createNewUser: CreateNewUser,
     private val reactivateUser: ReactivateUser,
     private val currentVisitor: CurrentVisitor,
+    private val currentLocale: CurrentLocale,
 ) : UserAccounts {
 
     @Transactional(readOnly = true)
@@ -30,10 +32,15 @@ internal class DomainUserAccounts(
     @Transactional(readOnly = true)
     override fun findById(id: String): UserAccount? = users.findEnabledBy(UserId(id))?.toAccount()
 
+    @Transactional(readOnly = true)
+    override fun signedIn(id: String) {
+        users.findEnabledBy(UserId(id))?.let { currentLocale.keepForTheSession(it.preferences.language) }
+    }
+
     @Transactional
-    override fun register(login: String, locale: Locale): UserAccount? {
+    override fun register(login: String): UserAccount? {
         val email = Email(login)
-        return users.findDeletedBy(email)?.let(::reactivate) ?: create(email, locale)
+        return users.findDeletedBy(email)?.let(::reactivate) ?: create(email)
     }
 
     // The code proved that the caller owns the email of the deleted user, who is the author of its own comeback
@@ -48,8 +55,12 @@ internal class DomainUserAccounts(
             -> null
         }
 
-    private fun create(email: Email, locale: Locale): UserAccount? {
-        val command = CreateNewUserCommand(Author.Unlogged(VisitorId(currentVisitor.id())), email, locale)
+    private fun create(email: Email): UserAccount? {
+        val command = CreateNewUserCommand(
+            author = Author.Unlogged(VisitorId(currentVisitor.id())),
+            email = email,
+            preferences = Preferences(language = currentLocale.get()),
+        )
         return when (val result = createNewUser.invoke(command)) {
             is CreateNewUser.Result.UserCreated -> result.user.toAccount()
 

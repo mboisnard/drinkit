@@ -42,7 +42,7 @@ private val NOW_WITH_NANOSECONDS = Instant.now().truncatedTo(ChronoUnit.SECONDS)
 internal class RememberMeTest(
     private val mockMvc: MockMvc,
     private val database: JdbcClient,
-    accounts: InMemoryUserAccounts,
+    private val accounts: InMemoryUserAccounts,
     private val codes: SpySignInCodeSender,
     private val clock: ControlledClock,
 ) {
@@ -111,6 +111,18 @@ internal class RememberMeTest(
         rotated.second shouldNotBe decode(first).second
         returning.cookie(XSRF_COOKIE)?.value shouldNotBeIn listOf(null, "token-of-the-ended-session")
         returning.post("/api/cellars").andExpect { status { isCreated() } }
+    }
+
+    @Test
+    fun `tells the application of a remembered sign-in`() {
+        // Given
+        browser.signIn(account.login, codes, rememberMe = true)
+
+        // When
+        returningBrowser().get("/api/cellars/me")
+
+        // Then
+        accounts.signInsOf(account.id) shouldBe 2
     }
 
     @Test

@@ -9,6 +9,7 @@ import com.drinkit.generated.jooq.tables.User
 import java.time.LocalDate
 import java.time.OffsetDateTime
 
+import org.jooq.JSONB
 import org.jooq.Record1
 import org.jooq.impl.UpdatableRecordImpl
 
@@ -55,9 +56,13 @@ open class UserRecord private constructor() : UpdatableRecordImpl<UserRecord>(Us
         set(value): Unit = set(8, value)
         get(): Array<String?> = get(8) as Array<String?>
 
-    open var modified: OffsetDateTime
+    open var preferences: JSONB
         set(value): Unit = set(9, value)
-        get(): OffsetDateTime = get(9) as OffsetDateTime
+        get(): JSONB = get(9) as JSONB
+
+    open var modified: OffsetDateTime
+        set(value): Unit = set(10, value)
+        get(): OffsetDateTime = get(10) as OffsetDateTime
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -68,7 +73,7 @@ open class UserRecord private constructor() : UpdatableRecordImpl<UserRecord>(Us
     /**
      * Create a detached, initialised UserRecord
      */
-    constructor(id: String, firstname: String? = null, lastname: String? = null, birthdate: LocalDate? = null, email: String, lastconnection: OffsetDateTime? = null, status: String, enabled: Boolean, roles: Array<String?>, modified: OffsetDateTime): this() {
+    constructor(id: String, firstname: String? = null, lastname: String? = null, birthdate: LocalDate? = null, email: String, lastconnection: OffsetDateTime? = null, status: String, enabled: Boolean, roles: Array<String?>, preferences: JSONB, modified: OffsetDateTime): this() {
         this.id = id
         this.firstname = firstname
         this.lastname = lastname
@@ -78,6 +83,7 @@ open class UserRecord private constructor() : UpdatableRecordImpl<UserRecord>(Us
         this.status = status
         this.enabled = enabled
         this.roles = roles
+        this.preferences = preferences
         this.modified = modified
         resetTouchedOnNotNull()
     }

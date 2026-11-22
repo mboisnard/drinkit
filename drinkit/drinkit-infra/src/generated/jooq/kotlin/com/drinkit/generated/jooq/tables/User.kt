@@ -22,6 +22,7 @@ import org.jooq.Field
 import org.jooq.ForeignKey
 import org.jooq.Index
 import org.jooq.InverseForeignKey
+import org.jooq.JSONB
 import org.jooq.Name
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
@@ -121,6 +122,11 @@ open class User(
      * The column <code>drinkit_application.user.roles</code>.
      */
     val ROLES: TableField<UserRecord, Array<String?>?> = createField(DSL.name("roles"), SQLDataType.VARCHAR(50).array().nullable(false), this, "")
+
+    /**
+     * The column <code>drinkit_application.user.preferences</code>.
+     */
+    val PREFERENCES: TableField<UserRecord, JSONB?> = createField(DSL.name("preferences"), SQLDataType.JSONB.nullable(false), this, "")
 
     /**
      * The column <code>drinkit_application.user.modified</code>.

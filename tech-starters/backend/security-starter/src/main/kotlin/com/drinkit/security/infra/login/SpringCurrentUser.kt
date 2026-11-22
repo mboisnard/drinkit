@@ -43,6 +43,7 @@ internal class SpringCurrentUser(
         val user = requireNotNull(accounts.findById(userId)) { "No account $userId to sign in" }.toUserDetails()
         val connected = connect(UsernamePasswordAuthenticationToken.authenticated(user, null, user.authorities))
 
+        accounts.signedIn(connected.id)
         events.loginSucceeded(connected.id, "sign_in")
         return connected
     }

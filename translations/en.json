@@ -22,6 +22,8 @@
   "layout.pageTitle": "{page} · DrinkIt",
   "layout.signOut": "Sign out",
   "layout.signOutFailed": "Sign-out failed. Try again.",
+  "mail.signInCode.body": "Your code is {code}. It expires in a few minutes. If you did not ask to sign in to DrinkIt, ignore this email.",
+  "mail.signInCode.subject": "Your DrinkIt sign-in code",
   "nuxt.error.backHome": "Back to the home page",
   "observability.error.401": "Your session has ended. Sign in again.",
   "observability.error.403": "You are not allowed to do this.",

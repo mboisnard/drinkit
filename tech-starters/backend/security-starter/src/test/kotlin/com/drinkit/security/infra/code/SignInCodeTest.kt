@@ -107,6 +107,20 @@ internal class SignInCodeTest(
     }
 
     @Test
+    fun `tells the application of a sign-in by code`() {
+        // Given
+        val account = testAccounts.user()
+
+        browser.requestCode(account.login)
+
+        // When
+        browser.signInWithCode(account.login, codes.lastCodeOf(account.login))
+
+        // Then
+        accounts.signInsOf(account.id) shouldBe 1
+    }
+
+    @Test
     fun `finds the account whatever the case and the spaces of the email`() {
         // Given
         val account = testAccounts.user(login = "ada@drinkit.test")

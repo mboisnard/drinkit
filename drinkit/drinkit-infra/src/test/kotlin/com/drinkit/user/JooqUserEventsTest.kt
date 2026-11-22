@@ -22,7 +22,11 @@ internal class JooqUserEventsTest : UserEventsTestContract() {
         this.dsl = dsl
     }
 
-    override fun fetchUsers(): Users = JooqUsers(dsl = dsl, clock = ControlledClock())
+    override fun fetchUsers(): Users = JooqUsers(
+        dsl = dsl,
+        clock = ControlledClock(),
+        jsonMapper = JsonMapper.builder().addModule(kotlinModule()).build(),
+    )
 
     override fun fetchUserEvents(users: Users): UserEvents {
         val jsonMapper = JsonMapper.builder()

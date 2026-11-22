@@ -44,11 +44,6 @@ openApiGenerate {
     )
 }
 
-// The catalog the frontend shares, which i18n-starter reads from the classpath
-tasks.processResources {
-    from(rootProject.layout.projectDirectory.dir("translations")) { into("translations") }
-}
-
 // Simplify configuration for local application launch
 // (use Spring dev profile and enforce project root folder to find local docker compose file)
 tasks.bootRun {

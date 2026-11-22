@@ -14,7 +14,6 @@ import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
-import java.util.Locale
 
 private const val LOGIN = "ada@drinkit.test"
 private val NOW = Instant.parse("2026-11-06T10:00:00Z")
@@ -36,7 +35,7 @@ internal class SignInCodeIssuerTest {
     @Test
     fun `keeps no value equal to the code it sends`() {
         // When
-        issuer.issue(LOGIN, Locale.FRENCH)
+        issuer.issue(LOGIN)
 
         // Then
         val stored = dsl.fetch(SIGN_IN_CODE).flatMap { row -> row.intoList().map { it.toString() } }
@@ -46,7 +45,7 @@ internal class SignInCodeIssuerTest {
     @Test
     fun `gives a code 10 minutes to live`() {
         // When
-        issuer.issue(LOGIN, Locale.FRENCH)
+        issuer.issue(LOGIN)
 
         // Then
         dsl.fetchSingle(SIGN_IN_CODE).expiresAt.toInstant() shouldBe NOW + Duration.ofMinutes(10)

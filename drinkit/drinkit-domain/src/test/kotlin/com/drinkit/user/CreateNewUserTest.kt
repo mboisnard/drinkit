@@ -8,6 +8,7 @@ import com.drinkit.user.UserCreationDecider.Decision.EventToPersist
 import com.drinkit.user.UserCreationDecider.Decision.ValidationFailed
 import com.drinkit.user.UserFixtures.Companion.VALID_EMAIL
 import com.drinkit.user.core.Email
+import com.drinkit.user.core.Preferences
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.Roles.Role.ROLE_REGISTRATION_IN_PROGRESS
 import com.drinkit.user.core.UserId
@@ -33,7 +34,7 @@ internal class CreateNewUserTest {
         val command = CreateNewUserCommand(
             email = VALID_EMAIL,
             author = userFixtures.givenAnUnloggedAuthor,
-            locale = Locale.FRANCE,
+            preferences = Preferences(language = Locale.FRENCH),
         )
 
         // When
@@ -47,13 +48,29 @@ internal class CreateNewUserTest {
     }
 
     @Test
+    fun `a new user keeps the language of its sign-up as its preference`() {
+        // Given
+        val command = CreateNewUserCommand(
+            email = VALID_EMAIL,
+            author = userFixtures.givenAnUnloggedAuthor,
+            preferences = Preferences(language = Locale.FRENCH),
+        )
+
+        // When
+        val result = createNewUser.invoke(command)
+
+        // Then
+        result.shouldBeInstanceOf<UserCreated>().user.preferences shouldBe Preferences(language = Locale.FRENCH)
+    }
+
+    @Test
     fun `can't create the user if his email is already used`() {
         // Given
         val email = VALID_EMAIL
         val command = CreateNewUserCommand(
             email = email,
             author = userFixtures.givenAnUnloggedAuthor,
-            locale = Locale.FRANCE,
+            preferences = Preferences(language = Locale.FRENCH),
         )
         userFixtures.givenAnInitializedUser(email = email)
         users.count() shouldBe 1
@@ -75,7 +92,7 @@ internal class CreateNewUserTest {
             val command = CreateNewUserCommand(
                 email = VALID_EMAIL,
                 author = userFixtures.givenAnUnloggedAuthor,
-                locale = Locale.FRANCE,
+                preferences = Preferences(language = Locale.FRENCH),
             )
 
             // When
@@ -96,7 +113,7 @@ internal class CreateNewUserTest {
             val command = CreateNewUserCommand(
                 email = Email("invalidEmail@"),
                 author = userFixtures.givenAnUnloggedAuthor,
-                locale = Locale.FRANCE,
+                preferences = Preferences(language = Locale.FRENCH),
             )
 
             // When
@@ -119,7 +136,7 @@ internal class CreateNewUserTest {
             val command = CreateNewUserCommand(
                 email = VALID_EMAIL,
                 author = userFixtures.givenAnUnloggedAuthor,
-                locale = Locale.FRANCE,
+                preferences = Preferences(language = Locale.FRENCH),
             )
 
             // When

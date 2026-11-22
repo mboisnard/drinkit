@@ -19,6 +19,7 @@ data class User(
     val lastConnection: OffsetDateTime?,
     val roles: Roles,
     val status: UserStatus,
+    val preferences: Preferences,
 ) {
     val enabled: Boolean = status != UserStatus.DELETED
 
@@ -60,6 +61,7 @@ data class User(
             lastConnection = null,
             roles = event.roles,
             status = PROFILE_COMPLETION_REQUIRED,
+            preferences = event.preferences,
         )
     }
 }

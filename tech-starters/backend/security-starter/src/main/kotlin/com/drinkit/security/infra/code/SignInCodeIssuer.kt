@@ -6,7 +6,6 @@ import com.drinkit.security.infra.hashOf
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.security.SecureRandom
 import java.time.Clock
-import java.util.Locale
 
 private const val CODE_DIGITS = 6
 private const val CODE_BOUND = 1_000_000
@@ -26,7 +25,7 @@ internal class SignInCodeIssuer(
     private val logger = KotlinLogging.logger {}
     private val random = SecureRandom()
 
-    fun issue(login: String, locale: Locale) {
+    fun issue(login: String) {
         val now = clock.instant()
         codes.deleteExpiredAt(now)
 
@@ -45,7 +44,7 @@ internal class SignInCodeIssuer(
         // Any failure of the application's sender, which the answer must not reveal
         @Suppress("TooGenericExceptionCaught")
         try {
-            sender.send(login, code, locale)
+            sender.send(login, code)
         } catch (exception: RuntimeException) {
             logger.warn { "Sign-in code not sent: ${exception.javaClass.simpleName}" }
         }

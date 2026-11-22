@@ -24,7 +24,7 @@ internal class SignInCodeApi(
             ?: throw ErrorResponseException(HttpStatus.BAD_REQUEST)
         limits.requestFor(login).orThrow()
 
-        issuer.issue(login, servletRequest.locale)
+        issuer.issue(login)
 
         return ServerResponse.noContent().build()
     }

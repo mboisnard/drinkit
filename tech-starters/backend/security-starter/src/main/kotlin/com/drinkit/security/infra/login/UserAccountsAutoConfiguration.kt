@@ -38,4 +38,8 @@ internal class UserAccountsAutoConfiguration {
         securityContextRepository,
         securityEventLogger,
     )
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun signInsToTheApplication(userAccounts: UserAccounts) = SignInsToTheApplication(userAccounts)
 }

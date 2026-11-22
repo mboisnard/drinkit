@@ -22,6 +22,8 @@
   "layout.pageTitle": "{page} · DrinkIt",
   "layout.signOut": "Se déconnecter",
   "layout.signOutFailed": "La déconnexion a échoué. Réessayez.",
+  "mail.signInCode.body": "Votre code est {code}. Il expire dans quelques minutes. Si vous n’avez pas demandé à vous connecter à DrinkIt, ignorez cet email.",
+  "mail.signInCode.subject": "Votre code de connexion à DrinkIt",
   "nuxt.error.backHome": "Retour à l’accueil",
   "observability.error.401": "Votre session a pris fin. Reconnectez-vous.",
   "observability.error.403": "Vous n’avez pas le droit de faire ceci.",

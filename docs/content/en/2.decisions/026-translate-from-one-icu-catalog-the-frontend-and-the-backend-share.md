@@ -53,9 +53,12 @@ in `locale`. `security-starter` takes the prefix off every page whose `auth` is 
 account's language wins at sign-in, and a visit without a session starts again from the URL: no cookie keeps a
 language. Each call to the backend names the language of the page in `Accept-Language`.
 
-**The backend reads the same files** for what it writes itself, the emails and the titles of a ProblemDetail, under
-prefixes no app declares, such as `mail.` and `problem.`. An error the user reads in the app comes back as a status,
-which the app translates.
+**The backend reads the same files** for the emails it writes, through its `i18n-starter` and ICU4J, and loads only
+the prefixes it declares, `mail.`, which no app declares. A notification carries keys, values and a language: the
+channel that sends it translates it, last. Its `CurrentLocale` gives the language of a request: the account's,
+which the session keeps from the sign-in, then the first language of `Accept-Language` the catalog holds, then
+English. A language the catalog lacks is never given. An error the user reads in the app comes back as a status, which
+the app translates: the title of a ProblemDetail stays Spring's English, since only a developer reads it.
 
 ## Consequences
 
@@ -68,7 +71,8 @@ which the app translates.
   a bump of one waits for the other.
 - vue-i18n marks a custom message compiler as experimental: a release that changes it changes `i18n-starter`.
 - A translation written by a language model is not proofread by a native speaker.
-- `locale` is `fr` for every account until the user projection carries the language of its account (#707).
+- A signed-in user gets the emails it asks for in the account's language, whatever the page. A language changed on
+  another device reaches a session at its next sign-in.
 
 ## Alternatives
 
@@ -86,6 +90,12 @@ which the app translates.
   language after their session expired is not worth a second source of the language. It offered that continuity.
 - **Each app and starter calls `@nuxtjs/i18n` itself.** Rejected because the error page of `nuxt-starter` must
   translate too, and each would load the catalog its own way. It offered one layer fewer.
+- **The account's language read from the database for each text.** Rejected because the session already holds
+  the account from its sign-in. It offered a change made on another device at once.
+- **A text translated before it is queued.** Rejected because every message on the queue would carry the whole text.
+  It offered a missing key found before the queue.
+- **The titles of a ProblemDetail from the catalog.** Rejected because the app shows its own text for each status,
+  and only a developer reads the title. It offered an API that answers in the reader's language.
 
 ## Sources
 

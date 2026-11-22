@@ -10,11 +10,19 @@ dependencies {
 
     implementation(project(":configuration-starter"))
     implementation(project(":event-sourcing-starter"))
+    implementation(project(":i18n-starter"))
     implementation(project(":mail-starter"))
     implementation(project(":webclient-starter"))
 
     testImplementation(testFixtures(project(":drinkit-domain")))
+    testImplementation(testFixtures(project(":i18n-starter")))
+    testImplementation(testFixtures(project(":mail-starter")))
     testImplementation(testFixtures(project(":messaging-starter")))
+}
+
+// The catalog the frontend shares, which i18n-starter reads from the classpath
+tasks.processResources {
+    from(rootProject.layout.projectDirectory.dir("translations")) { into("translations") }
 }
 
 jooq {

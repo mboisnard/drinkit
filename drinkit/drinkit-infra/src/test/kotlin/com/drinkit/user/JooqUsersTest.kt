@@ -10,9 +10,12 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.jooq.DSLContext
+import org.jooq.JSONB
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.dao.DataIntegrityViolationException
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 import java.time.OffsetDateTime
 
 @JooqIntegrationTest(schemas = [DrinkitApplication::class])
@@ -25,7 +28,11 @@ internal class JooqUsersTest : UsersTestContract() {
         this.dsl = dsl
     }
 
-    override fun fetchRepository(): Users = JooqUsers(dsl = dsl, clock = ControlledClock())
+    override fun fetchRepository(): Users = JooqUsers(
+        dsl = dsl,
+        clock = ControlledClock(),
+        jsonMapper = JsonMapper.builder().addModule(kotlinModule()).build(),
+    )
 
     @Test
     fun `refuses a role the application does not define, even next to a known one`() {
@@ -60,6 +67,7 @@ internal class JooqUsersTest : UsersTestContract() {
         .set(USER.STATUS, "ACTIVE")
         .set(USER.ENABLED, true)
         .set(USER.ROLES, arrayOf<String?>(*roles))
+        .set(USER.PREFERENCES, JSONB.jsonb("""{"language": "en"}"""))
         .set(USER.MODIFIED, OffsetDateTime.parse("2026-11-06T10:00:00Z"))
         .execute()
 }

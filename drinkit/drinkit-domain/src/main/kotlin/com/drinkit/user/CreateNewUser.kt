@@ -15,6 +15,7 @@ import com.drinkit.user.UserCreationDecider.Decision.ValidationFailed
 import com.drinkit.user.core.Author
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.Initialized
+import com.drinkit.user.core.Preferences
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.Roles.Role.ROLE_REGISTRATION_IN_PROGRESS
 import com.drinkit.user.core.User
@@ -26,10 +27,9 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.OffsetDateTime
-import java.util.Locale
 
 @Command
-data class CreateNewUserCommand(val author: Author, val email: Email, val locale: Locale)
+data class CreateNewUserCommand(val author: Author, val email: Email, val preferences: Preferences)
 
 @Service
 @Transactional
@@ -98,7 +98,7 @@ internal object UserCreationDecider {
                     author = command.author,
                     email = command.email,
                     roles = Roles(setOf(ROLE_REGISTRATION_IN_PROGRESS)),
-                    preferredLocale = command.locale,
+                    preferences = command.preferences,
                 ),
             )
         }
