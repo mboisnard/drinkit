@@ -82,7 +82,8 @@ from an import, which the lint and the type check enforce.
 secures every response, and the sign-in joins it later. The module sends a Content Security Policy with a new nonce
 on each response, and the other security headers, such as HSTS and `X-Content-Type-Options`. Its rate limiter, XSS
 validator and CORS handler stay off: the backend rate limits and checks its input, and the app answers its own origin
-only.
+only. A script or a style runs only from the app's origin or with the nonce, except the styles under `nuxi dev`,
+which allow `'unsafe-inline'`: Nuxt DevTools adds its own without a nonce.
 
 ## Consequences
 
@@ -96,6 +97,9 @@ only.
   strict Content Security Policy has to allow.
 - The documentation site extends Docus, which needs auto-imports: it keeps them, and only the lint checks its
   imports, for components.
+- A style that a script adds in the browser carries no nonce and is refused: the icons are drawn as SVG, and a
+  component that injects its CSS needs the nonce. In development the styles stay open, so only the UI tests, run on
+  the built app, catch such a style.
 - A page with a nonce is rendered for each request and sent with `Cache-Control: no-store`, so no shared cache keeps
   it.
 - A test of a page needs no list of mocks kept in step with Nuxt, but runs in the Nuxt environment, slower than in
@@ -114,6 +118,8 @@ only.
   a starter's dependencies would be declared nowhere. It offered no package to declare.
 - **The security headers in `nuxt-starter`.** Rejected because a starter holds one concern, and the backend keeps
   its headers in its `security-starter`. It offered one package fewer.
+- **The same strict styles in development.** Rejected because the panel of Nuxt DevTools then shows without its
+  styles. It offered one policy in every environment.
 - **A Nitro plugin of our own for the headers.** Rejected because adding the nonce to every script Nuxt renders is
   the hard part, and `nuxt-security` does it. It offered no dependency.
 - **The lint rules inside `nuxt-starter`.** Rejected because the app then listed the lint plugins among its
