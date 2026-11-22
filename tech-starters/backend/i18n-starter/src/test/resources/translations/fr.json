@@ -1,0 +1,5 @@
+{
+  "cellar.bottles": "{count, plural, =0 {aucune bouteille} one {# bouteille} other {# bouteilles}}",
+  "cellar.welcome": "Bienvenue dans {cellarName}",
+  "hidden.secret": "Pas chargé : l’application ne déclare pas le préfixe hidden"
+}

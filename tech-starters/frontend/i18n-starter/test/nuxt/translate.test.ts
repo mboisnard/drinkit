@@ -12,7 +12,7 @@ test('a message counts in the plural rules of English', () => {
   const t = useFixtureTranslate();
 
   // When & Then
-  expect([t('cellar.bottles', { count: 1 }), t('cellar.bottles', { count: 2 })]).toEqual(['1 bottle', '2 bottles']);
+  expect([0, 1, 2].map((count) => t('cellar.bottles', { count }))).toEqual(['0 bottles', '1 bottle', '2 bottles']);
 });
 
 test('a message counts in the plural rules of French, where 1 and 0 are singular', async () => {
@@ -21,7 +21,7 @@ test('a message counts in the plural rules of French, where 1 and 0 are singular
   const t = useFixtureTranslate();
 
   // When & Then
-  expect([t('cellar.bottles', { count: 0 }), t('cellar.bottles', { count: 1 })]).toEqual(['aucune bouteille', '1 bouteille']);
+  expect([0, 1, 2].map((count) => t('cellar.bottles', { count }))).toEqual(['aucune bouteille', '1 bouteille', '2 bouteilles']);
 });
 
 test('a message places a named value', () => {
