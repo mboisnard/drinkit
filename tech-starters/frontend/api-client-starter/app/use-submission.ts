@@ -2,11 +2,10 @@ import { ref } from 'vue';
 import type { Ref } from 'vue';
 import type { FetchContext } from 'ofetch';
 import { ProblemError } from './problem-error.ts';
-import { useApi } from './use-api.ts';
+import { isWrite, useApi } from './use-api.ts';
 import type { ApiOptions } from './use-api.ts';
 
 const IN_PROGRESS_RETRIES = 3;
-const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS', 'TRACE'];
 
 export interface Submission {
   pending: Ref<boolean>;
@@ -35,8 +34,8 @@ export function useSubmission(messageOf?: (problem: ProblemError) => string | un
     onRequest: async (context) => {
       await api.onRequest(context);
 
-      const method = (context.options.method ?? 'GET').toUpperCase();
-      if (!SAFE_METHODS.includes(method)) {
+      const method = context.options.method?.toUpperCase() ?? 'GET';
+      if (isWrite(method)) {
         const request = `${method} ${urlOf(context)}\n${bodyOf(context)}`;
         const key = keys.get(request) ?? crypto.randomUUID();
         keys.set(request, key);

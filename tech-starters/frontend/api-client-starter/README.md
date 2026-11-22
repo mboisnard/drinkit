@@ -74,7 +74,7 @@ restart it after a change of the contract.
 - **`ProblemError`**, from `@drinkit/api-client-starter/problem-error`, the error of a refused call: its `status`,
   and the ProblemDetail of the backend in `data`, which the error page of `nuxt-starter` shows. Each one also goes
   to the `drinkit:api:problem` hook.
-- **`useSubmission()`**, from `@drinkit/api-client-starter/submission`, the sending of a form, with its
+- **`useSubmission()`**, from `@drinkit/api-client-starter/use-submission`, the sending of a form, with its
   `Idempotency-Key`, as [below](#a-form-sent-once) explains.
 - **The relay**, the API's path on the app's origin, `/drinkit/**` for DrinkIt, which forwards the call of the browser with only the headers the
   API reads, the `Sec-Fetch-*` headers included, and streams its body. A path whose dot segments climb out of

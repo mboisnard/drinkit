@@ -3,6 +3,9 @@ import { http, HttpResponse } from 'msw';
 import type { RequestHandler } from 'msw';
 import { AUTH_ENDPOINTS } from '../shared/auth-endpoints.ts';
 
+/** The path under the API that writes the CSRF cookie, `apiClient.csrfPath` of the app. */
+export const CSRF_PATH = '/api/auth/csrf';
+
 export interface AuthBackendDoubleOptions<User extends { roles: readonly string[] }> {
   /** The path of the API, `apiClient.path` of the app, such as `/drinkit`. */
   apiPath: string;
@@ -62,7 +65,7 @@ export function authBackendDouble<User extends { roles: readonly string[] }>(
     signedInAs: (user) => [{ name: 'SESSION', value: openSession(user) }],
     userOf,
     handlers: [
-      http.get(api('/api/auth/csrf'), () => new HttpResponse(null, {
+      http.get(api(CSRF_PATH), () => new HttpResponse(null, {
         status: 204,
         headers: { 'set-cookie': cookie('XSRF-TOKEN', randomUUID(), { httpOnly: false }) },
       })),

@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { expect, test } from 'vitest';
 import { AUTH_ENDPOINTS } from '../shared/auth-endpoints.ts';
+import { CSRF_PATH } from './auth-backend-double.ts';
 
 export interface AuthBackendContractOptions {
   /** The URL of the API, such as `http://localhost:8080/drinkit`, read once the backend runs. */
@@ -19,7 +20,7 @@ type Call = (method: 'GET' | 'POST', path: string, body?: object) => Promise<Res
  */
 export function authBackendContract({ apiUrl, currentUserPath, codeOf }: AuthBackendContractOptions): void {
   async function signIn(call: Call, email: string): Promise<Response> {
-    await call('GET', '/api/auth/csrf');
+    await call('GET', CSRF_PATH);
     await call('POST', AUTH_ENDPOINTS.code, { email });
 
     return call('POST', AUTH_ENDPOINTS.codeSignIn, { email, code: await codeOf(email), rememberMe: false });
@@ -50,7 +51,7 @@ export function authBackendContract({ apiUrl, currentUserPath, codeOf }: AuthBac
     // Given
     const call = browser(apiUrl());
     const email = newEmail();
-    await call('GET', '/api/auth/csrf');
+    await call('GET', CSRF_PATH);
     await call('POST', AUTH_ENDPOINTS.code, { email });
     const wrongCode = (await codeOf(email)) === '000000' ? '111111' : '000000';
 

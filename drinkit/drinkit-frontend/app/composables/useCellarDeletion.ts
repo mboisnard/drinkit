@@ -1,5 +1,5 @@
-import { useSubmission } from '@drinkit/api-client-starter/submission';
-import type { Submission } from '@drinkit/api-client-starter/submission';
+import { useSubmission } from '@drinkit/api-client-starter/use-submission';
+import type { Submission } from '@drinkit/api-client-starter/use-submission';
 import { deleteCellar } from '#api';
 
 export interface CellarDeletion extends Omit<Submission, 'submit'> {

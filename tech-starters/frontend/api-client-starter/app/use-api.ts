@@ -39,12 +39,12 @@ export function useApi(): ApiOptions {
     baseUrl: apiPath,
     onRequest: async ({ options }) => {
       // The language of the page, not that of the browser: the URL decides it
-      const headers = { 'accept-language': language() };
+      const acceptLanguage = language();
       if (needsCsrfToken(options, new CookieJar(document.cookie), csrfPath)) {
-        await $fetch(csrfPath, { baseURL: apiPath, headers });
+        await $fetch(csrfPath, { baseURL: apiPath, headers: { 'accept-language': acceptLanguage } });
       }
       withCsrfToken(options, new CookieJar(document.cookie));
-      options.headers.set('accept-language', headers['accept-language']);
+      options.headers.set('accept-language', acceptLanguage);
     },
     onResponse: async ({ response }) => {
       await throwProblem(nuxtApp, response);
@@ -118,8 +118,9 @@ function cookieJarOf(event: H3Event): CookieJar {
   return context.apiCookieJar;
 }
 
-function isWrite(options: FetchContext['options']): boolean {
-  return !SAFE_METHODS.includes(options.method?.toUpperCase() ?? 'GET');
+/** Whether a call may change the backend's state: any method but GET, HEAD, OPTIONS and TRACE. */
+export function isWrite(method = 'GET'): boolean {
+  return !SAFE_METHODS.includes(method.toUpperCase());
 }
 
 // The __Host- cookie first: another site of the domain could plant the one without the prefix
@@ -130,12 +131,12 @@ function csrfTokenOf(jar: CookieJar): string | undefined {
 // A visitor's first write, or the first after a sign-out, has no token yet: the backend writes it on demand.
 // OWASP: ASVS 5.0 V3.5.1, CSRF Prevention Cheat Sheet (cookie-to-header token)
 function needsCsrfToken(options: FetchContext['options'], jar: CookieJar, csrfPath: string): boolean {
-  return Boolean(csrfPath) && isWrite(options) && !csrfTokenOf(jar);
+  return Boolean(csrfPath) && isWrite(options.method) && !csrfTokenOf(jar);
 }
 
 function withCsrfToken(options: FetchContext['options'], jar: CookieJar): void {
   const token = csrfTokenOf(jar);
-  if (token && isWrite(options)) {
+  if (token && isWrite(options.method)) {
     options.headers.set('x-xsrf-token', token);
   }
 }

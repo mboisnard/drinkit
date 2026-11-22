@@ -1,8 +1,8 @@
 import { ref } from 'vue';
 import type { Ref } from 'vue';
 import { navigateTo } from '#app';
-import { useSubmission } from '@drinkit/api-client-starter/submission';
-import type { Submission } from '@drinkit/api-client-starter/submission';
+import { useSubmission } from '@drinkit/api-client-starter/use-submission';
+import type { Submission } from '@drinkit/api-client-starter/use-submission';
 import { useCurrentUser } from '@drinkit/security-starter/use-current-user';
 import { completeUserInformation } from '#api';
 
