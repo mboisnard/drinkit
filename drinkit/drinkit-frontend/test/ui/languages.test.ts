@@ -111,3 +111,18 @@ test('a member reads the pages without a prefix in the language of their account
     .toStrictEqual({ cellars: { title: 'Mes caves', lang: 'fr-FR', alternates: 0 }, home: 'en-GB' });
   expect((await page.request.get('/fr/cellars')).status()).toBe(404);
 });
+
+test('a member who picks another language reads the pages without a prefix in it from then on', async ({ page, goto, context, fakeBackend, baseURL }) => {
+  // Given
+  await cellarBackend(fakeBackend).openSession(context, baseURL, { ...member(), locale: 'fr' });
+  await goto('/cellars', { waitUntil: 'hydration' });
+
+  // When
+  await page.getByLabel('Langue').selectOption('en');
+
+  // Then
+  await expect(page.getByRole('heading', { level: 1, name: 'My cellars' })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en-GB');
+  await goto('/cellars', { waitUntil: 'hydration' });
+  await expect(page.getByRole('heading', { level: 1, name: 'My cellars' })).toBeVisible();
+});
