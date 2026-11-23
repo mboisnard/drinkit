@@ -72,7 +72,7 @@ components:
       required: false
       description: |
         A key the client draws once per action, a UUID for instance, and sends again on each retry of that action: a
-        retry then gets the answer of the first request, and the action runs once. Kept 24 hours.
+        retry then gets the answer of the first request, with its traceId, and the action runs once. Kept 24 hours.
       schema:
         type: string
         minLength: 1
@@ -83,22 +83,23 @@ components:
     IdempotencyKeyInUse:
       description: |
         A request with this Idempotency-Key still runs: retry after the seconds of the Retry-After header. The body is
-        a problem detail of RFC 9457, as application/problem+json.
+        a problem detail of RFC 9457, as application/problem+json, with the traceId of the request.
 
     IdempotencyKeyReused:
       description: |
         This Idempotency-Key was sent with another request. The body is a problem detail of RFC 9457, as
-        application/problem+json.
+        application/problem+json, with the traceId of the request.
 
     IdempotentRequestTooLarge:
       description: |
         A request with an Idempotency-Key carries a body of at most 64 KB. The body is a problem detail of RFC 9457, as
-        application/problem+json.
+        application/problem+json, with the traceId of the request.
 
     TooManyRequests:
       description: |
         Too many calls for this email or from this IP address: retry after the seconds of the Retry-After header. The
-        body is a problem detail of RFC 9457, as application/problem+json, the same for any email.
+        body is a problem detail of RFC 9457, as application/problem+json, with the traceId of the request, the same
+        for any email.
 
     BadRequest:
       description: |

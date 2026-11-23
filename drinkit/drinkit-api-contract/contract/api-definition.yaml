@@ -99,6 +99,8 @@ paths:
         - session: []
           xsrfToken: []
       responses:
+        '400':
+          $ref: 'common.yaml#/components/responses/BadRequest'
         '401':
           $ref: 'common.yaml#/components/responses/Unauthorized'
         '403':
@@ -236,15 +238,17 @@ paths:
           $ref: 'common.yaml#/components/responses/Forbidden'
         '413':
           description: |
-            A file larger than its usage allows. The body is a problem detail of RFC 9457, as application/problem+json.
+            A file larger than its usage allows. The body is a problem detail of RFC 9457, as application/problem+json,
+            with the traceId of the request.
         '415':
           description: |
             A file whose bytes are not a type of its usage, or whose extension or declared type does not match its
-            bytes. The body is a problem detail of RFC 9457, as application/problem+json.
+            bytes. The body is a problem detail of RFC 9457, as application/problem+json, with the traceId of the
+            request.
         '429':
           description: |
             Too many uploads by this user: retry after the seconds of the Retry-After header. The body is a problem
-            detail of RFC 9457, as application/problem+json.
+            detail of RFC 9457, as application/problem+json, with the traceId of the request.
         '201':
           description: File stored, temporary until a business route keeps it
           content:
@@ -449,10 +453,16 @@ paths:
         - session: []
           xsrfToken: []
       responses:
+        '400':
+          $ref: 'common.yaml#/components/responses/BadRequest'
         '401':
           $ref: 'common.yaml#/components/responses/Unauthorized'
         '403':
           $ref: 'common.yaml#/components/responses/Forbidden'
+        '413':
+          description: |
+            A file larger than the upload limit. The body is a problem detail of RFC 9457, as application/problem+json,
+            with the traceId of the request.
         '200':
           description: Success
 
