@@ -99,11 +99,8 @@ internal class SecurityAutoConfiguration {
         sessionAuthenticationStrategy: SessionAuthenticationStrategy,
         securityContextRepository: SecurityContextRepository,
         properties: SecurityStarterProperties,
-        // Lazy: the chain is built before Spring MVC, and the tests of the rules build it without Spring MVC
-        @Lazy @Qualifier(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME) resolver: HandlerExceptionResolver,
+        errorResponses: SecurityErrorResponses,
     ): SecurityFilterChain {
-        val errorResponses = SecurityErrorResponses(resolver)
-
         protectAgainstCsrf(http, csrfTokenRepository, endpointRules)
         rememberMeServices.ifAvailable { services -> http.rememberMe { it.rememberMeServices(services) } }
 
@@ -170,6 +167,14 @@ internal class SecurityAutoConfiguration {
             }
         }
     }
+
+    // Also the RequestRejectedHandler that Spring Security gives the firewall of its FilterChainProxy
+    @Bean
+    @ConditionalOnMissingBean
+    fun securityErrorResponses(
+        // Lazy: the chain is built before Spring MVC, and the tests of the rules build it without Spring MVC
+        @Lazy @Qualifier(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME) resolver: HandlerExceptionResolver,
+    ): SecurityErrorResponses = SecurityErrorResponses(resolver)
 
     @Bean
     @ConditionalOnMissingBean
