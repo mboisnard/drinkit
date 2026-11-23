@@ -40,6 +40,22 @@ fun UserHistory.withPromotedAsAdmin(command: PromoteAsAdminCommand) = this.appen
     }
 }
 
+fun UserHistory.withPreferencesChanged(
+    command: ChangePreferencesCommand,
+    date: OffsetDateTime = OffsetDateTime.now(),
+) = this.appendRemainingEvent {
+    val decision = PreferencesChangeDecider.decide(
+        decision = UserDecision.from(it),
+        command = command,
+        date = date,
+    )
+
+    when (decision) {
+        is PreferencesChangeDecider.Decision.EventToPersist -> listOf(decision.event)
+        else -> emptyList()
+    }
+}
+
 fun UserHistory.withDeleted(command: DeleteUserCommand, date: OffsetDateTime = OffsetDateTime.now()) =
     this.appendRemainingEvent {
         val decision = UserDeletionDecider.decide(

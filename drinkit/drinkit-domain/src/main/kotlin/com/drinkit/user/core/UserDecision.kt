@@ -13,12 +13,14 @@ data class UserDecision(
     val email: Email,
     private var _sequenceId: SequenceId,
     private var _roles: Roles,
+    private var _preferences: Preferences,
     private var _profileCompleted: Boolean = false,
     private var _deletedAt: OffsetDateTime? = null,
 ) {
     val nextSequenceId get() = _sequenceId.next()
     val isProfileCompleted get() = _profileCompleted
     val isAdmin get() = _roles.contains(ROLE_ADMIN)
+    val preferences get() = _preferences
     val isDeleted get() = _deletedAt != null
     val deletedAt get() = _deletedAt
 
@@ -35,6 +37,11 @@ data class UserDecision(
 
     private fun apply(event: PromotedAsAdmin): UserDecision {
         _roles = _roles + ROLE_ADMIN
+        return applyDefault(event)
+    }
+
+    private fun apply(event: PreferencesChanged): UserDecision {
+        _preferences = event.preferences
         return applyDefault(event)
     }
 
@@ -61,6 +68,7 @@ data class UserDecision(
             )
                 .register<ProfileCompleted>(UserDecision::apply)
                 .register<PromotedAsAdmin>(UserDecision::apply)
+                .register<PreferencesChanged>(UserDecision::apply)
                 .register<Deleted>(UserDecision::apply)
                 .register<Reactivated>(UserDecision::apply)
 
@@ -72,6 +80,7 @@ data class UserDecision(
             email = event.email,
             _sequenceId = event.sequenceId,
             _roles = event.roles,
+            _preferences = event.preferences,
         )
     }
 }

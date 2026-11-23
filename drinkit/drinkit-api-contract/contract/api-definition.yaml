@@ -398,6 +398,35 @@ paths:
               schema:
                 $ref: 'usersResponse.yaml#/components/schemas/ConnectedUserInformation'
 
+  /api/user/me/locale:
+    put:
+      operationId: changeLocale
+      tags:
+        - user
+      summary: Change the language of the account
+      description: |
+        Shows the pages without a language prefix, and writes the emails, in this language from now on.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'usersParameters.yaml#/components/schemas/ChangeLocaleRequest'
+      security:
+        - session: []
+          xsrfToken: []
+      responses:
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
+        '400':
+          $ref: 'common.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: 'common.yaml#/components/responses/NotFound'
+        '204':
+          description: Language changed, or already the one of the account
+
   /api/search/upload:
     post:
       operationId: searchByPhotoUpload

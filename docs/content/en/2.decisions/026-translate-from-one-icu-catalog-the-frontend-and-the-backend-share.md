@@ -53,6 +53,11 @@ in `locale`. `security-starter` takes the prefix off every page whose `auth` is 
 account's language wins at sign-in, and a visit without a session starts again from the URL: no cookie keeps a
 language. Each call to the backend names the language of the page in `Accept-Language`.
 
+**A user changes the account's language from the signed-in layout**, through `PUT /api/user/me/locale`, among the
+languages the app offers. The operation keeps the intent, `ChooseLanguage`, and the `User` aggregate records
+`PreferencesChanged`, which carries every preference: what matters of a preference is its new value, so one event
+serves them all. The backend keeps the new language for the current session at once.
+
 **The backend reads the same files** for the emails it writes, through its `i18n-starter` and ICU4J, and loads only
 the prefixes it declares, `mail.`, which no app declares. A notification carries keys, values and a language: the
 channel that sends it translates it, last. Its `CurrentLocale` gives the language of a request: the account's,
@@ -72,7 +77,12 @@ the app translates: the title of a ProblemDetail stays Spring's English, since o
 - vue-i18n marks a custom message compiler as experimental: a release that changes it changes `i18n-starter`.
 - A translation written by a language model is not proofread by a native speaker.
 - A signed-in user gets the emails it asks for in the account's language, whatever the page. A language changed on
-  another device reaches a session at its next sign-in.
+  another device reaches the pages of a session at their next load of `GET /api/user/me`, and its emails at its next
+  sign-in.
+- A handler that must react to the change of one preference, rather than read its value, needs that preference in an
+  event of its own: `PreferencesChanged` only says that some preference changed.
+- A field added to `Preferences` comes with a default value, so that a `PreferencesChanged` stored before it still
+  reads.
 
 ## Alternatives
 
@@ -90,6 +100,11 @@ the app translates: the title of a ProblemDetail stays Spring's English, since o
   language after their session expired is not worth a second source of the language. It offered that continuity.
 - **Each app and starter calls `@nuxtjs/i18n` itself.** Rejected because the error page of `nuxt-starter` must
   translate too, and each would load the catalog its own way. It offered one layer fewer.
+- **One event per preference, such as `LanguageChanged`.** Rejected because nothing reacts to one preference
+  changing: each event would only copy a value into the projection. It offered the change named in the history.
+- **All the preferences sent in one `PUT` or `PATCH`.** Rejected because the frontend would have to know every
+  preference to change one, and a `PATCH` must tell an absent field from a null one. It offered one operation for
+  every preference.
 - **The account's language read from the database for each text.** Rejected because the session already holds
   the account from its sign-in. It offered a change made on another device at once.
 - **A text translated before it is queued.** Rejected because every message on the queue would carry the whole text.

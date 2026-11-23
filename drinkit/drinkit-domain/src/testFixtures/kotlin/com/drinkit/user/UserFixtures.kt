@@ -47,6 +47,11 @@ class UserFixtures(
         clock = controlledClock,
     )
 
+    val changePreferences = ChangePreferences(
+        userEvents = userEvents,
+        clock = controlledClock,
+    )
+
     val deleteUser = DeleteUser(
         userEvents = userEvents,
         clock = controlledClock,

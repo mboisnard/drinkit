@@ -38,6 +38,14 @@ data class PromotedAsAdmin(
     override val sequenceId: SequenceId,
 ) : UserEvent
 
+data class PreferencesChanged(
+    override val userId: UserId,
+    override val date: OffsetDateTime,
+    override val author: Author.Connected,
+    override val sequenceId: SequenceId,
+    val preferences: Preferences,
+) : UserEvent
+
 data class Deleted(
     override val userId: UserId,
     override val date: OffsetDateTime,
