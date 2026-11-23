@@ -73,6 +73,20 @@ internal class ProblemDetailsTest(private val mockMvc: MockMvc) {
         traceIdOf(response) shouldMatch TRACE_ID_FORMAT
     }
 
+    @Test
+    fun `answers an exception a servlet filter lets escape with a 500 problem that keeps the error message out`() {
+        // When
+        val response = mockMvc.get("/filter-failing")
+
+        // Then
+        response.andExpect {
+            status { isInternalServerError() }
+            content { contentType(MediaType.APPLICATION_PROBLEM_JSON) }
+        }
+        traceIdOf(response) shouldMatch TRACE_ID_FORMAT
+        response.andReturn().response.contentAsString shouldNotContain SECRET
+    }
+
     private fun traceIdOf(response: ResultActionsDsl): String =
         JsonPath.read(response.andReturn().response.contentAsString, "$.traceId")
 
@@ -100,10 +114,17 @@ internal class ProblemDetailsTest(private val mockMvc: MockMvc) {
     class RefusingFilter(private val resolver: HandlerExceptionResolver) : OncePerRequestFilter() {
 
         override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
-            if (request.requestURI == "/filtered") {
-                resolver.resolveException(request, response, null, ErrorResponseException(HttpStatus.UNAUTHORIZED))
-            } else {
-                chain.doFilter(request, response)
+            when (request.requestURI) {
+                "/filtered" -> resolver.resolveException(
+                    request,
+                    response,
+                    null,
+                    ErrorResponseException(HttpStatus.UNAUTHORIZED),
+                )
+
+                "/filter-failing" -> error(SECRET)
+
+                else -> chain.doFilter(request, response)
             }
         }
     }
