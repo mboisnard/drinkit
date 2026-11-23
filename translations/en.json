@@ -18,6 +18,7 @@
   "home.tagline": "Your wine and spirit cellars, in one place.",
   "home.title": "DrinkIt",
   "layout.home": "DrinkIt",
+  "layout.language": "Language",
   "layout.loading": "Loading the page",
   "layout.pageTitle": "{page} · DrinkIt",
   "layout.signOut": "Sign out",

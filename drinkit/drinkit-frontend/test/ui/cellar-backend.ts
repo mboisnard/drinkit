@@ -44,7 +44,7 @@ export interface CellarBackend extends AuthBackendDouble<User> {
 
 /**
  * The backend of DrinkIt for the UI tests: its sign-in, the cellars of a user and their deletion, the completion
- * of an account, and the feature flags.
+ * of an account, its language, and the feature flags.
  */
 export function cellarBackend(
   fakeBackend: FakeBackend,
@@ -90,6 +90,15 @@ export function cellarBackend(
       return HttpResponse.json({ cellars });
     }),
     http.delete('/drinkit/api/cellars/:cellarId', cellarDeletion.resolver),
+    http.put('/drinkit/api/user/me/locale', async ({ request }) => {
+      const user = auth.userOf(request);
+      if (!user) {
+        return problem(401, 'Unauthorized');
+      }
+      Object.assign(user, await request.json());
+
+      return new HttpResponse(null, { status: 204 });
+    }),
     http.post('/drinkit/api/registration/user/information', async ({ request }) => {
       const user = auth.userOf(request);
       if (!user) {
