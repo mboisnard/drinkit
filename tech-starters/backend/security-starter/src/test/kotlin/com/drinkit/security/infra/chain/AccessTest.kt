@@ -3,6 +3,8 @@ package com.drinkit.security.infra.chain
 import com.drinkit.security.ConnectedUser
 import com.drinkit.security.SecuredApplicationTest
 import com.drinkit.security.connectedAs
+import com.jayway.jsonpath.JsonPath
+import io.kotest.matchers.string.shouldNotContain
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
@@ -83,6 +85,21 @@ internal class AccessTest(private val mockMvc: MockMvc) {
             status { isUnauthorized() }
             jsonPath("$.status") { value(401) }
         }
+    }
+
+    @Test
+    fun `answers a path the firewall rejects with a 400 problem that holds the path only as its instance`() {
+        // When
+        val response = mockMvc.get("/api;jsessionid=x/cellars")
+
+        // Then
+        response.andExpect {
+            status { isBadRequest() }
+            content { contentType(MediaType.APPLICATION_PROBLEM_JSON) }
+            jsonPath("$.status") { value(400) }
+        }
+        val problem: Map<String, Any> = JsonPath.read(response.andReturn().response.contentAsString, "$")
+        (problem - "instance").toString() shouldNotContain "jsessionid"
     }
 
     @Test

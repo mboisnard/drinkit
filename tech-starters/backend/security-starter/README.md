@@ -142,8 +142,8 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
   that changes no state on the server, next to its access rule. Fetch Metadata still refuses it cross-site.
 - **Logs**: each log of a signed-in user's request carries `user.id`, as the
   [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/4.build-and-data/3.logging.md)
-  says. Each 401, 403 and 429 goes to Spring MVC's `handlerExceptionResolver`: with the observability starter, it
-  answers a problem detail carrying the `traceId` of the request.
+  says. Each 401, 403 and 429 goes to Spring MVC's `handlerExceptionResolver`, and so does the 400 of a path the
+  firewall rejects: with the observability starter, it answers a problem detail carrying the `traceId` of the request.
 - **Limits**: past a limit of the code requests per email or per IP address, or of the code tries per IP address,
   the endpoints answer 429 with `Retry-After`, and a limited code request sends no email. The
   [rate limit starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/rate-limit-starter/README.md)
