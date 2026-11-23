@@ -3,11 +3,7 @@ package com.drinkit.security.infra.events
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl
-import org.springframework.security.authentication.RememberMeAuthenticationToken
-import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent
-import org.springframework.security.authentication.event.AuthenticationSuccessEvent
 import org.springframework.security.authorization.event.AuthorizationDeniedEvent
-import org.springframework.security.core.authority.FactorGrantedAuthority
 
 /**
  * Event names of the OWASP Logging Vocabulary, such as `authn_login_fail`. A line names the user by id only, and holds
@@ -24,6 +20,10 @@ internal class SecurityEventLogger {
         logger.info { "authn_login_success:$userId,method=$method" }
     }
 
+    fun loginFailed() {
+        logger.info { "authn_login_fail" }
+    }
+
     fun rememberMeGraceUsed(userId: String) {
         logger.info { "authn_token_grace_used:$userId" }
     }
@@ -38,22 +38,6 @@ internal class SecurityEventLogger {
 
     fun sessionDeserializationFailed() {
         logger.info { "session_deserialization_fail" }
-    }
-
-    @EventListener
-    fun onLoginSuccess(event: AuthenticationSuccessEvent) {
-        val authentication = event.authentication
-        val method = when {
-            authentication is RememberMeAuthenticationToken -> "remember_me"
-            authentication.authorities.any { it.authority == FactorGrantedAuthority.OTT_AUTHORITY } -> "email_code"
-            else -> "other"
-        }
-        loginSucceeded(authentication.name, method)
-    }
-
-    @EventListener(AbstractAuthenticationFailureEvent::class)
-    fun onLoginFailure() {
-        logger.info { "authn_login_fail" }
     }
 
     @EventListener

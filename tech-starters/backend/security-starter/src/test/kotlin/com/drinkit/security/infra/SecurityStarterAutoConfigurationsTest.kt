@@ -14,7 +14,6 @@ import com.drinkit.security.endpointRules
 import com.drinkit.security.infra.chain.FetchMetadataFilter
 import com.drinkit.security.infra.chain.HealthAccessAutoConfiguration
 import com.drinkit.security.infra.chain.SecurityAutoConfiguration
-import com.drinkit.security.infra.code.EmailCodeSignInFilter
 import com.drinkit.security.infra.code.InMemorySignInCodes
 import com.drinkit.security.infra.code.JooqSignInCodes
 import com.drinkit.security.infra.code.SignInCodeAutoConfiguration
@@ -101,10 +100,8 @@ internal class SecurityStarterAutoConfigurationsTest {
     fun `secures the application with its own filter chain, sign-in by code, current user and sessions`() {
         runner.run { context ->
             // When & Then
-            context.getBean<SecurityFilterChain>().filters.map { it::class }.shouldContainAll(
-                EmailCodeSignInFilter::class,
-                FetchMetadataFilter::class,
-            )
+            context.getBean<SecurityFilterChain>().filters.map { it::class }.shouldContain(FetchMetadataFilter::class)
+            context.containsBean("signInCodeEndpoint") shouldBe true
             context.getBean<CurrentUser>().shouldBeInstanceOf<SpringCurrentUser>()
             context.getBean("springSessionConversionService").shouldBeInstanceOf<JsonSessionConverter>()
             context.getBean("securityStarterSessionRepository").shouldBeInstanceOf<JdbcSessionCustomizer>()

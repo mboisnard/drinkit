@@ -16,7 +16,10 @@ interface UserAccounts {
      */
     fun register(login: String): UserAccount?
 
-    /** Called in the request of each sign-in, by code or remembered, such as to keep the account's language. */
+    /**
+     * Called directly in the request of each sign-in, by code, remembered or [CurrentUser.signIn], such as to keep
+     * the account's language for the session.
+     */
     fun signedIn(id: String) = Unit
 }
 

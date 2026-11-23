@@ -5,6 +5,9 @@ import com.drinkit.security.CurrentVisitor
 import com.drinkit.security.SignInCodeSender
 import com.drinkit.security.UserAccounts
 import com.drinkit.security.infra.SecurityStarterProperties
+import com.drinkit.security.infra.events.SecurityEventLogger
+import com.drinkit.security.infra.login.NoPasswordSignIn
+import com.drinkit.security.infra.login.SignIns
 import org.jooq.DSLContext
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -17,13 +20,15 @@ import org.springframework.boot.jooq.autoconfigure.JooqAutoConfiguration
 import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
 import org.springframework.boot.session.jdbc.autoconfigure.JdbcSessionAutoConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.web.authentication.RememberMeServices
 import org.springframework.web.servlet.function.RouterFunction
 import org.springframework.web.servlet.function.RouterFunctions
 import org.springframework.web.servlet.function.ServerResponse
 import tools.jackson.databind.json.JsonMapper
 import java.time.Clock
 
-/** Registers before Spring Boot's in-memory user, which then backs off. */
+/** Registers before Spring Boot's in-memory user, which backs off before [NoPasswordSignIn]. */
 @AutoConfiguration(
     after = [JooqAutoConfiguration::class, JdbcSessionAutoConfiguration::class],
     before = [UserDetailsServiceAutoConfiguration::class],
@@ -49,8 +54,7 @@ internal class SignInCodeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun emailCodeAuthenticationProvider(codes: SignInCodes, accounts: UserAccounts, clock: Clock) =
-        EmailCodeAuthenticationProvider(codes, accounts, clock)
+    fun noPasswordSignIn(): AuthenticationProvider = NoPasswordSignIn()
 
     @Bean
     @ConditionalOnMissingBean
@@ -58,21 +62,37 @@ internal class SignInCodeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = ["signInCodeEndpoint"])
+    @Suppress("LongParameterList")
     fun signInCodeEndpoint(
         issuer: SignInCodeIssuer,
+        codes: SignInCodes,
+        accounts: UserAccounts,
+        signIns: SignIns,
+        rememberMe: ObjectProvider<RememberMeServices>,
         limits: SignInCodeLimits,
         visitor: CurrentVisitor,
+        events: SecurityEventLogger,
+        clock: Clock,
         jsonMapper: JsonMapper,
         properties: SecurityStarterProperties,
     ): RouterFunction<ServerResponse> {
         val api = SignInCodeApi(
             issuer,
+            codes,
+            accounts,
+            signIns,
+            rememberMe.ifAvailable,
             limits,
             visitor,
+            events,
+            clock,
             jsonMapper,
             properties.code.maxEmailLength,
         )
 
-        return RouterFunctions.route().POST(CODE_REQUEST_PATH, api::requestCode).build()
+        return RouterFunctions.route()
+            .POST(CODE_REQUEST_PATH, api::requestCode)
+            .POST(CODE_SIGN_IN_PATH, api::signIn)
+            .build()
     }
 }

@@ -8,6 +8,7 @@ import com.drinkit.security.TestAccounts
 import com.drinkit.security.keptXsrfCookie
 import io.kotest.matchers.collections.shouldNotBeIn
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
@@ -55,6 +56,18 @@ internal class CurrentUserTest(
         signIn.andReturn().response.keptXsrfCookie().shouldNotBeNull().value shouldNotBeIn
             listOf("", anonymousXsrf.value)
         browser.get("/api/cellars/me").andExpect { jsonPath("$.id") { value(account.id) } }
+    }
+
+    @Test
+    fun `tells the application of a sign-in as a user`() {
+        // Given
+        val account = testAccounts.user()
+
+        // When
+        browser.post("/api/public/sign-in-as/${account.id}")
+
+        // Then
+        accounts.signInsOf(account.id) shouldBe 1
     }
 
     @Test
