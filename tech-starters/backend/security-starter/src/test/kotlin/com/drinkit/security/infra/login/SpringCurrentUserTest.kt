@@ -19,9 +19,14 @@ internal class SpringCurrentUserTest : CurrentUserTestContract() {
     override val currentUser = SpringCurrentUser(
         holder,
         accounts,
-        NullAuthenticatedSessionStrategy(),
+        SignIns(
+            holder,
+            accounts,
+            NullAuthenticatedSessionStrategy(),
+            HttpSessionSecurityContextRepository(),
+            SecurityEventLogger(),
+        ),
         HttpSessionSecurityContextRepository(),
-        SecurityEventLogger(),
     )
 
     @BeforeEach

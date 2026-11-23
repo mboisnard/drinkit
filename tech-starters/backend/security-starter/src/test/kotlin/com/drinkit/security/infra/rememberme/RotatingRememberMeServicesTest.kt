@@ -9,6 +9,7 @@ import com.drinkit.security.generated.jooq.DrinkitSession
 import com.drinkit.security.generated.jooq.tables.references.REMEMBER_ME_TOKEN
 import com.drinkit.security.infra.SecurityStarterProperties
 import com.drinkit.security.infra.events.SecurityEventLogger
+import com.drinkit.security.infra.login.SignIns
 import com.drinkit.security.infra.login.UserAccountsUserDetailsService
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
@@ -19,6 +20,9 @@ import org.jooq.Query
 import org.junit.jupiter.api.Test
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -51,9 +55,16 @@ internal class RotatingRememberMeServicesTest {
         sessions.revoked.shouldBeEmpty()
     }
 
+    private val accounts = InMemoryUserAccounts("ada@drinkit.test" to UserAccount(USER_ID, setOf("ROLE_USER")))
+
     private fun servicesOn(dsl: DSLContext) = RotatingRememberMeServices(
-        users = UserAccountsUserDetailsService(
-            InMemoryUserAccounts("ada@drinkit.test" to UserAccount(USER_ID, setOf("ROLE_USER"))),
+        users = UserAccountsUserDetailsService(accounts),
+        signIns = SignIns(
+            SecurityContextHolder.getContextHolderStrategy(),
+            accounts,
+            NullAuthenticatedSessionStrategy(),
+            HttpSessionSecurityContextRepository(),
+            SecurityEventLogger(),
         ),
         rememberMeTokens = RememberMeTokens(dsl),
         sessions = sessions,

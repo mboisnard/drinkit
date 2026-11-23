@@ -3,17 +3,14 @@ package com.drinkit.security.infra.login
 import com.drinkit.security.ConnectedUser
 import com.drinkit.security.CurrentUser
 import com.drinkit.security.UserAccounts
-import com.drinkit.security.infra.events.SecurityEventLogger
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.CredentialsContainer
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolderStrategy
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy
 import org.springframework.security.web.context.SecurityContextRepository
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
@@ -21,16 +18,15 @@ import org.springframework.web.context.request.ServletRequestAttributes
 private const val FACTOR_PREFIX = "FACTOR_"
 
 /**
- * Signs in and reloads roles under a new session id, so that an id planted before the change is worthless.
+ * Signs in and reloads roles through [SignIns], under a new session id.
  *
  * OWASP: ASVS 5.0 V7.2.4, V8.3.2, Session Management Cheat Sheet (id renewal on privilege change).
  */
 internal class SpringCurrentUser(
     private val holder: SecurityContextHolderStrategy,
     private val accounts: UserAccounts,
-    private val sessionStrategy: SessionAuthenticationStrategy,
+    private val signIns: SignIns,
     private val contextRepository: SecurityContextRepository,
-    private val events: SecurityEventLogger,
 ) : CurrentUser {
 
     override fun get(): ConnectedUser = orNull() ?: throw AuthenticationCredentialsNotFoundException("Anonymous")
@@ -41,11 +37,12 @@ internal class SpringCurrentUser(
 
     override fun signIn(userId: String): ConnectedUser {
         val user = requireNotNull(accounts.findById(userId)) { "No account $userId to sign in" }.toUserDetails()
-        val connected = connect(UsernamePasswordAuthenticationToken.authenticated(user, null, user.authorities))
 
-        accounts.signedIn(connected.id)
-        events.loginSucceeded(connected.id, "sign_in")
-        return connected
+        return signIns.signIn(
+            UsernamePasswordAuthenticationToken.authenticated(user, null, user.authorities),
+            "sign_in",
+        )
+            .toConnectedUser()
     }
 
     override fun refresh(): ConnectedUser? {
@@ -53,7 +50,7 @@ internal class SpringCurrentUser(
 
         return when (val account = accounts.findById(current.name)) {
             null -> null.also { signOut(current) }
-            else -> connect(current.reloadedWith(account.toUserDetails()))
+            else -> signIns.connect(current.reloadedWith(account.toUserDetails())).toConnectedUser()
         }
     }
 
@@ -67,34 +64,15 @@ internal class SpringCurrentUser(
         }
         .build()
 
-    private fun connect(authentication: Authentication): ConnectedUser {
-        // Spring's ProviderManager erases the credentials of a sign-in, which signIn and refresh do not go through:
-        // without this, they would be stored in the session row.
-        (authentication as? CredentialsContainer)?.eraseCredentials()
-
-        val exchange = currentExchange()
-        sessionStrategy.onAuthentication(authentication, exchange.request, exchange.exchangeResponse)
-
-        val context = holder.createEmptyContext().also { it.authentication = authentication }
-        holder.context = context
-        contextRepository.saveContext(context, exchange.request, exchange.exchangeResponse)
-
-        return authentication.toConnectedUser()
-    }
-
     private fun signOut(authentication: Authentication) {
-        val exchange = currentExchange()
+        val exchange = RequestContextHolder.currentRequestAttributes() as ServletRequestAttributes
         SecurityContextLogoutHandler()
             .also {
                 it.setSecurityContextHolderStrategy(holder)
                 it.setSecurityContextRepository(contextRepository)
             }
-            .logout(exchange.request, exchange.exchangeResponse, authentication)
+            .logout(exchange.request, requireNotNull(exchange.response) { "No response" }, authentication)
     }
-
-    private fun currentExchange() = RequestContextHolder.currentRequestAttributes() as ServletRequestAttributes
-
-    private val ServletRequestAttributes.exchangeResponse get() = requireNotNull(response) { "No response" }
 
     private fun Authentication.toConnectedUser() = ConnectedUser(
         id = name,

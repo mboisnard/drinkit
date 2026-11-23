@@ -7,10 +7,6 @@ import com.drinkit.security.infra.SecurityStarterProperties
 import com.drinkit.security.infra.SecurityStarterProperties.Cookie.Companion.SAME_SITE
 import com.drinkit.security.infra.code.CODE_REQUEST_PATH
 import com.drinkit.security.infra.code.CODE_SIGN_IN_PATH
-import com.drinkit.security.infra.code.EmailCodeAuthenticationProvider
-import com.drinkit.security.infra.code.EmailCodeSignInConfigurer
-import com.drinkit.security.infra.code.EmailCodeSignInFilter
-import com.drinkit.security.infra.code.SignInCodeLimits
 import com.drinkit.security.infra.events.SecurityEventLogger
 import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.ObjectProvider
@@ -28,7 +24,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.security.authorization.AuthorizationEventPublisher
 import org.springframework.security.authorization.SpringAuthorizationEventPublisher
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -66,7 +61,6 @@ import org.springframework.web.servlet.HandlerExceptionResolver
 import org.springframework.web.servlet.function.RouterFunction
 import org.springframework.web.servlet.function.RouterFunctions
 import org.springframework.web.servlet.function.ServerResponse
-import tools.jackson.databind.json.JsonMapper
 
 private const val LOGOUT_PATH = "/api/auth/logout"
 private const val CSRF_PATH = "/api/auth/csrf"
@@ -101,26 +95,17 @@ internal class SecurityAutoConfiguration {
         http: HttpSecurity,
         endpointRules: ObjectProvider<EndpointRules>,
         rememberMeServices: ObjectProvider<RememberMeServices>,
-        emailCodeAuthenticationProvider: EmailCodeAuthenticationProvider,
-        signInCodeLimits: SignInCodeLimits,
-        visitor: CurrentVisitor,
         csrfTokenRepository: CsrfTokenRepository,
         sessionAuthenticationStrategy: SessionAuthenticationStrategy,
         securityContextRepository: SecurityContextRepository,
-        jsonMapper: JsonMapper,
         properties: SecurityStarterProperties,
         // Lazy: the chain is built before Spring MVC, and the tests of the rules build it without Spring MVC
         @Lazy @Qualifier(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME) resolver: HandlerExceptionResolver,
     ): SecurityFilterChain {
         val errorResponses = SecurityErrorResponses(resolver)
-        val signInFilter =
-            EmailCodeSignInFilter(jsonMapper, properties.code.maxEmailLength, signInCodeLimits, visitor, errorResponses)
 
         protectAgainstCsrf(http, csrfTokenRepository, endpointRules)
         rememberMeServices.ifAvailable { services -> http.rememberMe { it.rememberMeServices(services) } }
-        http.authenticationProvider(emailCodeAuthenticationProvider)
-        // Spring Boot also gives the provider bean to a parent manager, which would try a refused code a second time
-        http.getSharedObject(AuthenticationManagerBuilder::class.java).parentAuthenticationManager(null)
 
         http {
             securityContext { this.securityContextRepository = securityContextRepository }
@@ -131,7 +116,6 @@ internal class SecurityAutoConfiguration {
             }
             // An API never replays a refused request, and saving one would open a session for each anonymous caller
             requestCache { requestCache = NullRequestCache() }
-            with(EmailCodeSignInConfigurer(signInFilter, errorResponses))
             logout {
                 logoutUrl = LOGOUT_PATH
                 logoutSuccessHandler = HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)

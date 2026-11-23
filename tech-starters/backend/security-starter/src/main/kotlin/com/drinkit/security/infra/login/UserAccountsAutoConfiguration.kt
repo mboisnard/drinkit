@@ -25,21 +25,20 @@ internal class UserAccountsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun currentUser(
+    fun signIns(
         holder: SecurityContextHolderStrategy,
         userAccounts: UserAccounts,
         sessionAuthenticationStrategy: SessionAuthenticationStrategy,
         securityContextRepository: SecurityContextRepository,
         securityEventLogger: SecurityEventLogger,
-    ): CurrentUser = SpringCurrentUser(
-        holder,
-        userAccounts,
-        sessionAuthenticationStrategy,
-        securityContextRepository,
-        securityEventLogger,
-    )
+    ) = SignIns(holder, userAccounts, sessionAuthenticationStrategy, securityContextRepository, securityEventLogger)
 
     @Bean
     @ConditionalOnMissingBean
-    fun signInsToTheApplication(userAccounts: UserAccounts) = SignInsToTheApplication(userAccounts)
+    fun currentUser(
+        holder: SecurityContextHolderStrategy,
+        userAccounts: UserAccounts,
+        signIns: SignIns,
+        securityContextRepository: SecurityContextRepository,
+    ): CurrentUser = SpringCurrentUser(holder, userAccounts, signIns, securityContextRepository)
 }

@@ -4,6 +4,7 @@ import com.drinkit.security.Sessions
 import com.drinkit.security.infra.SecurityStarterProperties
 import com.drinkit.security.infra.events.SecurityEventLogger
 import com.drinkit.security.infra.hashOf
+import com.drinkit.security.infra.login.SignIns
 import com.drinkit.security.infra.login.UserAccountsUserDetailsService
 import com.drinkit.security.infra.matchesHash
 import com.drinkit.security.infra.randomToken
@@ -35,6 +36,7 @@ private const val NANOS_PER_MICRO = 1_000L
 @Suppress("LongParameterList")
 internal class RotatingRememberMeServices(
     private val users: UserAccountsUserDetailsService,
+    private val signIns: SignIns,
     private val rememberMeTokens: RememberMeTokens,
     private val sessions: Sessions,
     private val events: SecurityEventLogger,
@@ -90,7 +92,8 @@ internal class RotatingRememberMeServices(
             replay(series, presented, now)
         }
 
-        return users.loadUserById(series.userId)
+        // Spring's filter connects the session of a remembered sign-in itself
+        return users.loadUserById(series.userId).also { signIns.signedIn(it.username, "remember_me") }
     }
 
     override fun logout(request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication?) {

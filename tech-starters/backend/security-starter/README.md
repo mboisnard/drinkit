@@ -9,7 +9,7 @@ explain the choices behind the defaults.
 
 ```mermaid
 flowchart LR
-    Browser --> Chain["Filter chain of the starter<br/>sign-in by code, CSRF, headers, EndpointRules"]
+    Browser --> Chain["Filter chain and routes of the starter<br/>code request and sign-in, CSRF, headers, EndpointRules"]
     Chain --> Controller[Controller of the application]
     Controller --> Api["CurrentUser, SessionData, Sessions"]
     Chain -->|finds or registers the user| Port[UserAccounts adapter of the application]
@@ -66,13 +66,14 @@ dependencies {
 ```
 
 The application implements two ports, declares its access rules as `EndpointRules`, and gives the `Clock` the
-starter reads the time from. The starter calls the ports
-from its filters, outside any use case, so the adapters open their own transactions.
+starter reads the time from. The starter calls the ports directly, in the request, from its routes and filters and
+outside any use case, so the adapters open their own transactions. It never reaches the application through a Spring
+event.
 
 `UserAccounts` gives the accounts. A disabled or deleted account is not found, and roles are full authority names
 such as `ROLE_USER`. `register` gives the account of an email that a code has just proven, when `findByLogin` found
 none: a new account, or one the application brings back. Null refuses the sign-in. `signedIn` runs in the request of
-each sign-in, by code or remembered, such as to keep the account's language for the session.
+each sign-in, by code, remembered or `CurrentUser.signIn`, such as to keep the account's language for the session.
 
 ```kotlin
 @Component
@@ -206,6 +207,5 @@ val code = signInCodeSender.lastCodeOf("ada@drinkit.test")   // once POST /api/a
 ## Limits
 
 - The email code is the only sign-in yet: the passkeys, Google and Apple of ADR 011 come later.
-- Nothing limits the requests for a code per email or per address yet.
 - The starter refuses to start with `cookie.secure` set to `false` and a prefix left: a browser drops a `__Host-`
   cookie that is not `Secure`.

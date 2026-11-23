@@ -4,6 +4,7 @@ import com.drinkit.security.Sessions
 import com.drinkit.security.UserAccounts
 import com.drinkit.security.infra.SecurityStarterProperties
 import com.drinkit.security.infra.events.SecurityEventLogger
+import com.drinkit.security.infra.login.SignIns
 import com.drinkit.security.infra.login.UserAccountsUserDetailsService
 import org.jooq.DSLContext
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -39,6 +40,7 @@ internal class RememberMeAutoConfiguration {
     @Suppress("LongParameterList")
     fun rememberMeServices(
         userAccounts: UserAccounts,
+        signIns: SignIns,
         rememberMeTokens: RememberMeTokens,
         sessions: Sessions,
         events: SecurityEventLogger,
@@ -46,6 +48,7 @@ internal class RememberMeAutoConfiguration {
         properties: SecurityStarterProperties,
     ): RememberMeServices = RotatingRememberMeServices(
         UserAccountsUserDetailsService(userAccounts),
+        signIns,
         rememberMeTokens,
         sessions,
         events,
