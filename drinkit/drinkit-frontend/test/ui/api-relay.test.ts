@@ -1,3 +1,5 @@
+import { request as rawRequest } from 'node:http';
+import { buffer } from 'node:stream/consumers';
 import { http, HttpResponse } from 'msw';
 import { expect, test } from '@drinkit/test-starter/playwright';
 import { CURRENT_USER_PATH } from './cellar-backend.ts';
@@ -95,3 +97,42 @@ test('a body over 2 MB reaches the backend through the relay, which alone decide
   expect(answer.status()).toBe(201);
   expect(await answer.json()).toStrictEqual({ received: threeMegabytes.length });
 });
+
+test('a call the backend cannot answer gets a 502 problem from the relay', async ({ request, fakeBackend }) => {
+  // Given
+  fakeBackend.use(http.get('/drinkit/api/cellars', () => HttpResponse.error()));
+
+  // When
+  const answer = await request.get('/drinkit/api/cellars');
+
+  // Then
+  expect(answer.status()).toBe(502);
+  expect(answer.headers()['content-type']).toBe('application/problem+json');
+  expect(await answer.json()).toStrictEqual({ status: 502, title: 'Bad Gateway' });
+});
+
+test('a path that climbs out of the API gets a 404 problem from the relay', async ({ baseURL }) => {
+  // When
+  const answer = await getAsIs(baseURL ?? '', '/drinkit/api/%2e%2e/%2e%2e/actuator/env');
+
+  // Then
+  expect(answer.status).toBe(404);
+  expect(answer.contentType).toBe('application/problem+json');
+  expect(JSON.parse(answer.body)).toStrictEqual({ status: 404, title: 'Not Found' });
+});
+
+// A browser, as the request of Playwright, resolves the dot segments of a path before sending it
+interface RawAnswer { status?: number; contentType?: string; body: string }
+
+async function getAsIs(baseURL: string, path: string): Promise<RawAnswer> {
+  const { hostname, port } = new URL(baseURL);
+  const response = await new Promise<import('node:http').IncomingMessage>((resolve, reject) => {
+    rawRequest({ hostname, port, path }, resolve).on('error', reject).end();
+  });
+
+  return {
+    status: response.statusCode,
+    contentType: response.headers['content-type'],
+    body: (await buffer(response)).toString(),
+  };
+}

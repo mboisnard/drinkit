@@ -80,7 +80,8 @@ It gives:
   `Idempotency-Key`, as [below](#a-form-sent-once) explains.
 - **The relay**, the API's path on the app's origin, `/drinkit/**` for DrinkIt, which forwards the call of the browser with only the headers the
   API reads, the `Sec-Fetch-*` headers included, and streams its body. A path whose dot segments climb out of
-  the API's path gets a 404, so that no other path of the backend's origin is reachable from the app's.
+  the API's path gets a 404, so that no other path of the backend's origin is reachable from the app's, and a
+  backend that gives no answer a 502, both as problem details without a `traceId`.
 - **Only the cookies of the API** reach the backend, on both paths: `SESSION`, `XSRF-TOKEN`, `remember-me` and
   `visitor`, with or without their `__Host-` prefix.
 
