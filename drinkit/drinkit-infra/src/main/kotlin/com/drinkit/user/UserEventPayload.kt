@@ -64,32 +64,26 @@ internal fun UserEventRecord.toEvent(jsonMapper: JsonMapper): UserEvent {
             )
         }
 
-        PROMOTED_AS_ADMIN -> {
-            PromotedAsAdmin(
-                userId = commonFields.userId,
-                sequenceId = commonFields.sequenceId,
-                date = commonFields.date,
-                author = commonFields.connectedAuthor,
-            )
-        }
+        PROMOTED_AS_ADMIN -> PromotedAsAdmin(
+            userId = commonFields.userId,
+            sequenceId = commonFields.sequenceId,
+            date = commonFields.date,
+            author = commonFields.connectedAuthor,
+        )
 
-        DELETED -> {
-            Deleted(
-                userId = commonFields.userId,
-                sequenceId = commonFields.sequenceId,
-                date = commonFields.date,
-                author = commonFields.connectedAuthor,
-            )
-        }
+        DELETED -> Deleted(
+            userId = commonFields.userId,
+            sequenceId = commonFields.sequenceId,
+            date = commonFields.date,
+            author = commonFields.connectedAuthor,
+        )
 
-        REACTIVATED -> {
-            Reactivated(
-                userId = commonFields.userId,
-                sequenceId = commonFields.sequenceId,
-                date = commonFields.date,
-                author = commonFields.connectedAuthor,
-            )
-        }
+        REACTIVATED -> Reactivated(
+            userId = commonFields.userId,
+            sequenceId = commonFields.sequenceId,
+            date = commonFields.date,
+            author = commonFields.connectedAuthor,
+        )
     }
 }
 
