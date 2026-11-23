@@ -1,4 +1,4 @@
-package com.drinkit.webclient.infra
+package com.drinkit.http.client.infra
 
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication
 import org.springframework.core.env.MapPropertySource
 import org.springframework.core.env.StandardEnvironment
 
-internal class WebClientDefaultsEnvironmentPostProcessorTest {
+internal class HttpClientDefaultsEnvironmentPostProcessorTest {
 
     @Test
     fun `every HTTP client gets default timeouts`() {
@@ -30,7 +30,7 @@ internal class WebClientDefaultsEnvironmentPostProcessorTest {
     @Test
     fun `adds no default timeout when the starter is disabled`() {
         // When
-        val environment = withDefaults("starters.webclient.enabled" to "false")
+        val environment = withDefaults("starters.http-client.enabled" to "false")
 
         // Then
         environment.getProperty("spring.http.clients.connect-timeout") shouldBe null
@@ -39,7 +39,7 @@ internal class WebClientDefaultsEnvironmentPostProcessorTest {
     private fun withDefaults(vararg applicationProperties: Pair<String, String>): StandardEnvironment {
         val environment = StandardEnvironment()
         environment.propertySources.addFirst(MapPropertySource("application", mapOf(*applicationProperties)))
-        WebClientDefaultsEnvironmentPostProcessor().postProcessEnvironment(environment, SpringApplication())
+        HttpClientDefaultsEnvironmentPostProcessor().postProcessEnvironment(environment, SpringApplication())
         return environment
     }
 }

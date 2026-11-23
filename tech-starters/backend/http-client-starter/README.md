@@ -1,4 +1,4 @@
-# Web Client Starter
+# HTTP Client Starter
 
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
 for the HTTP clients that Spring Boot builds from an `@HttpExchange` interface. It gives every client default
@@ -32,7 +32,7 @@ sequenceDiagram
 
 A response, even a `503`, is never retried: only a request that got no answer is.
 
-A group whose API honours the `Idempotency-Key` header is listed in `starters.webclient.retry.idempotent-groups`. Its
+A group whose API honours the `Idempotency-Key` header is listed in `starters.http-client.retry.idempotent-groups`. Its
 `POST`, `PUT`, `PATCH` and `DELETE` that carry the header are retried too, and those sent while a request or an event
 is handled get a key derived from its own, through the
 [idempotency starter](https://github.com/mboisnard/drinkit/blob/master/tech-starters/backend/idempotency-starter/README.md):
@@ -44,7 +44,7 @@ A module declares the starter in its build file:
 
 ```kotlin
 dependencies {
-    implementation(project(":webclient-starter"))
+    implementation(project(":http-client-starter"))
 }
 ```
 
@@ -66,12 +66,12 @@ internal class RatesClients
 
 | Property | Default | Environment variable |
 |---|---|---|
-| `starters.webclient.enabled` | `true`, `false` removes the retries and the default timeouts | `STARTERS_WEBCLIENT_ENABLED` |
-| `starters.webclient.retry.max-retries` | `3`, the retries after the first attempt | `STARTERS_WEBCLIENT_RETRY_MAXRETRIES` |
-| `starters.webclient.retry.delay` | `100ms`, between two attempts | `STARTERS_WEBCLIENT_RETRY_DELAY` |
+| `starters.http-client.enabled` | `true`, `false` removes the retries and the default timeouts | `STARTERS_HTTPCLIENT_ENABLED` |
+| `starters.http-client.retry.max-retries` | `3`, the retries after the first attempt | `STARTERS_HTTPCLIENT_RETRY_MAXRETRIES` |
+| `starters.http-client.retry.delay` | `100ms`, between two attempts | `STARTERS_HTTPCLIENT_RETRY_DELAY` |
 | `spring.http.clients.connect-timeout` | `2s`, set by the starter, to connect | `SPRING_HTTP_CLIENTS_CONNECTTIMEOUT` |
 | `spring.http.clients.read-timeout` | `5s`, set by the starter, to read | `SPRING_HTTP_CLIENTS_READTIMEOUT` |
-| `starters.webclient.retry.idempotent-groups` | none, the groups whose API honours `Idempotency-Key` | `STARTERS_WEBCLIENT_RETRY_IDEMPOTENTGROUPS` |
+| `starters.http-client.retry.idempotent-groups` | none, the groups whose API honours `Idempotency-Key` | `STARTERS_HTTPCLIENT_RETRY_IDEMPOTENTGROUPS` |
 
 ## Tests
 

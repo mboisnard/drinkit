@@ -1,10 +1,10 @@
-package com.drinkit.webclient.infra
+package com.drinkit.http.client.infra
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.time.Duration
 
-@ConfigurationProperties(prefix = "starters.webclient")
-internal data class WebClientProperties(val enabled: Boolean = true, val retry: Retry = Retry()) {
+@ConfigurationProperties(prefix = "starters.http-client")
+internal data class HttpClientStarterProperties(val enabled: Boolean = true, val retry: Retry = Retry()) {
 
     data class Retry(
         val maxRetries: Long = 3,

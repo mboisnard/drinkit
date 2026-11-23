@@ -1,4 +1,4 @@
-package com.drinkit.webclient.infra
+package com.drinkit.http.client.infra
 
 import com.drinkit.idempotency.CurrentIdempotencyKey
 import io.kotest.assertions.throwables.shouldThrow
@@ -32,7 +32,7 @@ import org.springframework.web.service.registry.ImportHttpServices
 import java.io.IOException
 import java.net.URI
 
-internal class WebClientAutoConfigurationTest {
+internal class HttpClientStarterAutoConfigurationTest {
 
     private val runner = ApplicationContextRunner()
         .withConfiguration(
@@ -41,13 +41,13 @@ internal class WebClientAutoConfigurationTest {
                 HttpServiceClientPropertiesAutoConfiguration::class.java,
                 RestClientAutoConfiguration::class.java,
                 HttpServiceClientAutoConfiguration::class.java,
-                WebClientAutoConfiguration::class.java,
+                HttpClientStarterAutoConfiguration::class.java,
             ),
         )
         .withUserConfiguration(GreetingClients::class.java)
         .withPropertyValues(
             "spring.http.serviceclient.greeting.base-url=http://greeting.test",
-            "starters.webclient.retry.delay=0",
+            "starters.http-client.retry.delay=0",
         )
 
     @Test
@@ -90,7 +90,7 @@ internal class WebClientAutoConfigurationTest {
 
     @Test
     fun `once its retries are spent, a GET gives the caller every I-O failure, the last one first`() {
-        runner.withPropertyValues("starters.webclient.retry.max-retries=1")
+        runner.withPropertyValues("starters.http-client.retry.max-retries=1")
             .withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 10) })
             .run { context ->
                 // When
@@ -121,7 +121,7 @@ internal class WebClientAutoConfigurationTest {
 
     @Test
     fun `switched off, the starter retries nothing`() {
-        runner.withPropertyValues("starters.webclient.enabled=false")
+        runner.withPropertyValues("starters.http-client.enabled=false")
             .withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 1) })
             .run { context ->
                 // When
@@ -135,7 +135,9 @@ internal class WebClientAutoConfigurationTest {
     @Nested
     inner class `Calling a provider` {
 
-        private val idempotentRunner = runner.withPropertyValues("starters.webclient.retry.idempotent-groups=greeting")
+        private val idempotentRunner = runner.withPropertyValues(
+            "starters.http-client.retry.idempotent-groups=greeting",
+        )
 
         @Test
         fun `a provider call carrying a key is retried after a network failure`() {

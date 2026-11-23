@@ -132,8 +132,8 @@ a code, which issues a new code, sends a second email: a key built from the emai
 `CurrentIdempotencyKey` holds the key of the request or the event being handled, and `idempotency.key` of the MDC
 copies it into the logs.
 
-**A provider** whose API honours `Idempotency-Key` is listed in `starters.webclient.retry.idempotent-groups` of the
-web client starter: its `POST`, `PUT`, `PATCH` and `DELETE` then carry a key derived from the current one, and are
+**A provider** whose API honours `Idempotency-Key` is listed in `starters.http-client.retry.idempotent-groups` of the
+HTTP client starter: its `POST`, `PUT`, `PATCH` and `DELETE` then carry a key derived from the current one, and are
 retried on a network error.
 
 ## Configuration
