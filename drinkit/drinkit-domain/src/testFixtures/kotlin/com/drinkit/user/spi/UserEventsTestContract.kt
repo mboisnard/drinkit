@@ -1,18 +1,22 @@
 package com.drinkit.user.spi
 
 import com.drinkit.event.sourcing.transaction.DuplicateSequenceException
+import com.drinkit.user.ChangePreferencesCommand
 import com.drinkit.user.DeleteUserCommand
 import com.drinkit.user.ReactivateUserCommand
 import com.drinkit.user.UserFixtures
 import com.drinkit.user.core.Author
 import com.drinkit.user.core.BirthDate
+import com.drinkit.user.core.ChooseLanguage
 import com.drinkit.user.core.FirstName
 import com.drinkit.user.core.LastName
+import com.drinkit.user.core.Preferences
 import com.drinkit.user.core.ProfileCompleted
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.PromotedAsAdmin
 import com.drinkit.user.core.UserHistory
 import com.drinkit.user.withDeleted
+import com.drinkit.user.withPreferencesChanged
 import com.drinkit.user.withReactivated
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -21,6 +25,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldNotContain
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.util.Locale
 
 abstract class UserEventsTestContract {
 
@@ -63,6 +68,25 @@ abstract class UserEventsTestContract {
         // Then
         userEvents.findAllBy(history.initEvent.userId) shouldBe reactivated
         users.findEnabledBy(history.initEvent.userId).shouldNotBeNull()
+    }
+
+    @Test
+    fun `keeps the preferences a user changed`() {
+        // Given
+        val history = userFixtures.givenAUserHistory()
+        val author = Author.Connected(history.initEvent.userId)
+        val changed = history.withPreferencesChanged(
+            ChangePreferencesCommand(author, ChooseLanguage(Locale.ENGLISH)),
+            date = userFixtures.givenANewDate,
+        )
+
+        // When
+        (listOf(changed.initEvent) + changed.remainingEvents).forEach { userEvents.save(it) }
+
+        // Then
+        userEvents.findAllBy(history.initEvent.userId) shouldBe changed
+        users.findEnabledBy(history.initEvent.userId).shouldNotBeNull().preferences shouldBe
+            Preferences(language = Locale.ENGLISH)
     }
 
     @Test

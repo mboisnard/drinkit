@@ -5,6 +5,7 @@ import com.drinkit.generated.jooq.tables.records.UserEventRecord
 import com.drinkit.postgresql.JSONBToJacksonConverter
 import com.drinkit.user.UserEventPayloadType.DELETED
 import com.drinkit.user.UserEventPayloadType.INITIALIZED
+import com.drinkit.user.UserEventPayloadType.PREFERENCES_CHANGED
 import com.drinkit.user.UserEventPayloadType.PROFILE_COMPLETED
 import com.drinkit.user.UserEventPayloadType.PROMOTED_AS_ADMIN
 import com.drinkit.user.UserEventPayloadType.REACTIVATED
@@ -13,6 +14,7 @@ import com.drinkit.user.core.Deleted
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.Initialized
 import com.drinkit.user.core.Preferences
+import com.drinkit.user.core.PreferencesChanged
 import com.drinkit.user.core.ProfileCompleted
 import com.drinkit.user.core.ProfileInformation
 import com.drinkit.user.core.PromotedAsAdmin
@@ -29,6 +31,7 @@ internal fun UserEvent.toEventNameWithPayload(jsonMapper: JsonMapper): Pair<User
         is Initialized -> INITIALIZED to InitializedPayload.from(this)
         is ProfileCompleted -> PROFILE_COMPLETED to ProfileCompletedPayload.from(this)
         is PromotedAsAdmin -> PROMOTED_AS_ADMIN to NoPayload
+        is PreferencesChanged -> PREFERENCES_CHANGED to PreferencesChangedPayload.from(this)
         is Deleted -> DELETED to NoPayload
         is Reactivated -> REACTIVATED to NoPayload
     }
@@ -71,6 +74,17 @@ internal fun UserEventRecord.toEvent(jsonMapper: JsonMapper): UserEvent {
             author = commonFields.connectedAuthor,
         )
 
+        PREFERENCES_CHANGED -> {
+            val payload = JSONBToJacksonConverter(PreferencesChangedPayload::class.java, jsonMapper).from(payload)
+            PreferencesChanged(
+                userId = commonFields.userId,
+                sequenceId = commonFields.sequenceId,
+                date = commonFields.date,
+                author = commonFields.connectedAuthor,
+                preferences = payload.preferences,
+            )
+        }
+
         DELETED -> Deleted(
             userId = commonFields.userId,
             sequenceId = commonFields.sequenceId,
@@ -91,6 +105,7 @@ internal enum class UserEventPayloadType {
     INITIALIZED,
     PROFILE_COMPLETED,
     PROMOTED_AS_ADMIN,
+    PREFERENCES_CHANGED,
     DELETED,
     REACTIVATED,
 }
@@ -116,6 +131,15 @@ internal data class ProfileCompletedPayload(val profile: ProfileInformation) : U
     companion object {
         fun from(event: ProfileCompleted) = ProfileCompletedPayload(
             profile = event.profile,
+        )
+    }
+}
+
+internal data class PreferencesChangedPayload(val preferences: Preferences) : UserEventPayload {
+
+    companion object {
+        fun from(event: PreferencesChanged) = PreferencesChangedPayload(
+            preferences = event.preferences,
         )
     }
 }

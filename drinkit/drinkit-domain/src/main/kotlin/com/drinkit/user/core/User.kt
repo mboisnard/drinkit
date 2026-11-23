@@ -33,6 +33,10 @@ data class User(
         roles = roles + ROLE_ADMIN,
     )
 
+    private fun apply(event: PreferencesChanged) = this.copy(
+        preferences = event.preferences,
+    )
+
     private fun apply(_event: Deleted) = this.copy(
         status = UserStatus.DELETED,
     )
@@ -48,6 +52,7 @@ data class User(
             )
                 .register<ProfileCompleted>(User::apply)
                 .register<PromotedAsAdmin>(User::apply)
+                .register<PreferencesChanged>(User::apply)
                 .register<Deleted>(User::apply)
                 .register<Reactivated>(User::apply)
 

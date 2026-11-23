@@ -1,0 +1,20 @@
+openapi: 3.0.3
+info:
+  title: common components for user api
+  version: 1.0.0
+  x-fragment: true
+paths: {}
+components:
+  schemas:
+    ChangeLocaleRequest:
+      type: object
+      required:
+        - locale
+      properties:
+        locale:
+          type: string
+          description: The language the account chooses, as an ISO 639 code, among those the app offers
+          enum:
+            - en
+            - fr
+          example: en
