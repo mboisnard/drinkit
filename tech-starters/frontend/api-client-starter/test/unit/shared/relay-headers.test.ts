@@ -71,7 +71,7 @@ test('the fetch metadata of a browser request reach the backend, which refuses a
   expect(headers.get('sec-fetch-mode')).toBe('cors');
 });
 
-test('a call of the server render carries the cookies of the page but not its fetch metadata', () => {
+test('a call of the server render carries the cookies of the page but not its fetch metadata nor the browser\'s language', () => {
   // Given
   const page = new Headers({
     'accept': 'text/html',
@@ -85,7 +85,7 @@ test('a call of the server render carries the cookies of the page but not its fe
 
   // Then
   expect(headers.get('cookie')).toBe('remember-me=1');
-  expect(headers.get('accept-language')).toBe('fr');
+  expect(headers.has('accept-language')).toBe(false);
   expect(headers.has('sec-fetch-site')).toBe(false);
   expect(headers.has('accept')).toBe(false);
 });

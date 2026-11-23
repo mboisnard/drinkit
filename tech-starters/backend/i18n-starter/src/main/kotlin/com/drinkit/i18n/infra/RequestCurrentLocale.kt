@@ -17,8 +17,9 @@ internal class RequestCurrentLocale(private val translations: Translations) : Cu
         ?: firstLanguageOfTheRequestTheCatalogHolds()
         ?: SOURCE_LANGUAGE
 
+    // Not Spring's SessionLocaleResolver, which keeps a Locale: the session stores its values as JSON, and reads back
+    // only texts and the types it allows, so the language goes in as its tag
     override fun keepForTheSession(language: Locale) {
-        // A text: the session stores its values as JSON, and reads back only texts and the types it allows
         request().getSession(true).setAttribute(SESSION_LANGUAGE, language.toLanguageTag())
     }
 
