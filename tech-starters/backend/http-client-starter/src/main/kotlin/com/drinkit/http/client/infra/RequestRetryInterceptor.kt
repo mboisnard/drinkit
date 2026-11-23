@@ -1,4 +1,4 @@
-package com.drinkit.webclient.infra
+package com.drinkit.http.client.infra
 
 import com.drinkit.idempotency.CurrentIdempotencyKey
 import org.springframework.core.retry.RetryException
@@ -15,8 +15,10 @@ import org.springframework.http.client.ClientHttpResponse
  * of its group honours the `Idempotency-Key` header and the request carries one: its own, or one derived from the
  * key of the request or the event being handled, the same when they are replayed.
  */
-internal class RequestRetryInterceptor(retry: WebClientProperties.Retry, private val honoursIdempotencyKey: Boolean) :
-    ClientHttpRequestInterceptor {
+internal class RequestRetryInterceptor(
+    retry: HttpClientStarterProperties.Retry,
+    private val honoursIdempotencyKey: Boolean,
+) : ClientHttpRequestInterceptor {
 
     private val retryTemplate = RetryTemplate(
         RetryPolicy.builder()

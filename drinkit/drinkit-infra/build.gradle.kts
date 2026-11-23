@@ -12,7 +12,7 @@ dependencies {
     implementation(project(":event-sourcing-starter"))
     implementation(project(":i18n-starter"))
     implementation(project(":mail-starter"))
-    implementation(project(":webclient-starter"))
+    implementation(project(":http-client-starter"))
 
     testImplementation(testFixtures(project(":drinkit-domain")))
     testImplementation(testFixtures(project(":i18n-starter")))

@@ -1,2 +1,0 @@
-org.springframework.boot.EnvironmentPostProcessor=\
-com.drinkit.webclient.infra.WebClientDefaultsEnvironmentPostProcessor
