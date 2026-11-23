@@ -37,7 +37,8 @@ dependencies {
   `IllegalArgumentException` is a 400, and any other unexpected exception a 500 that keeps its message in the logs.
   A servlet filter refuses the same way: it hands an `ErrorResponseException` to the `handlerExceptionResolver` bean
   rather than writing a body. An advice of the application comes first, so one that catches `Exception` also takes
-  these refusals.
+  these refusals. An exception that a filter lets escape gets the same 500, rather than the page of Spring Boot's
+  `/error`, which has no `traceId`.
 
 ### OpenTelemetry
 
