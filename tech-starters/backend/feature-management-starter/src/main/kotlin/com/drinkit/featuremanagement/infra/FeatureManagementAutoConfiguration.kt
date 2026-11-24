@@ -3,6 +3,7 @@ package com.drinkit.featuremanagement.infra
 import com.drinkit.featuremanagement.Experiments
 import com.drinkit.featuremanagement.FeatureFlags
 import com.drinkit.featuremanagement.infra.flipt.fliptProvider
+import com.drinkit.featuremanagement.infra.openfeature.DefaultValueWarning
 import com.drinkit.featuremanagement.infra.openfeature.OpenFeatureExperiments
 import com.drinkit.featuremanagement.infra.openfeature.OpenFeatureFeatureFlags
 import dev.openfeature.sdk.NoOpProvider
@@ -25,6 +26,7 @@ internal class FeatureManagementAutoConfiguration {
     @ConditionalOnMissingBean
     fun openFeatureApi(properties: FeatureManagementProperties): OpenFeatureAPI =
         OpenFeatureAPI.createIsolated().apply {
+            addHooks(DefaultValueWarning())
             setProviderAndWait(
                 FLAGS_DOMAIN,
                 if (properties.enabled) fliptProvider(properties.flipt) else NoOpProvider(),
