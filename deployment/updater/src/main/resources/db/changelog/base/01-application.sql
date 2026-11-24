@@ -70,3 +70,12 @@ CREATE TABLE IF NOT EXISTS drinkit_application.exchange_rate
     modified          TIMESTAMP WITH TIME ZONE NOT NULL,
     PRIMARY KEY (source_currency, target_currency)
 );
+
+-- Grants
+
+-- The rows to applications, never the schema itself: ON ALL TABLES covers the tables above, the default privileges
+-- those a later file creates
+GRANT USAGE ON SCHEMA drinkit_application TO applications;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA drinkit_application TO applications;
+ALTER DEFAULT PRIVILEGES IN SCHEMA drinkit_application GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO applications;
+ALTER DEFAULT PRIVILEGES IN SCHEMA drinkit_application GRANT USAGE, SELECT ON SEQUENCES TO applications;

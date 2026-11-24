@@ -16,8 +16,8 @@ springdoc:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/drinkit
-    username: drinkit
-    password: admin
+    username: drinkit-backend
+    password: drinkit-pwd
   # The Mailpit of the compose file, which asks for no authentication and offers no STARTTLS
   mail:
     host: localhost

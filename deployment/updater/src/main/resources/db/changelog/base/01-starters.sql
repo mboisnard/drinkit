@@ -78,3 +78,12 @@ CREATE TABLE IF NOT EXISTS drinkit_starters.stored_file
 
 CREATE INDEX CONCURRENTLY IF NOT EXISTS stored_file_uploaded_at_idx
     ON drinkit_starters.stored_file (uploaded_at) WHERE status <> 'KEPT';
+
+-- Grants
+
+-- The rows to applications, never the schema itself: ON ALL TABLES covers the tables above, the default privileges
+-- those a later file creates
+GRANT USAGE ON SCHEMA drinkit_starters TO applications;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA drinkit_starters TO applications;
+ALTER DEFAULT PRIVILEGES IN SCHEMA drinkit_starters GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO applications;
+ALTER DEFAULT PRIVILEGES IN SCHEMA drinkit_starters GRANT USAGE, SELECT ON SEQUENCES TO applications;

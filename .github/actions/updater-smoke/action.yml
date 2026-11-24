@@ -1,5 +1,5 @@
 name: Smoke-test the updater image
-description: Runs an updater image against a new PostgreSQL of the local compose file, with the changelogs mounted and a read-only, unprivileged container. The first run applies them, the second must apply nothing, and a run without credentials must fail
+description: Runs an updater image against a new PostgreSQL of the local compose file, with the changelogs mounted and a read-only, unprivileged container. The first run applies them, the second must apply nothing but the roles, and a run without credentials must fail
 
 inputs:
   image:
@@ -13,7 +13,7 @@ runs:
       shell: bash
       run: docker compose --file deployment/local/compose.yml --project-name updater-smoke up --wait postgresql
 
-    - name: Apply the changelogs, then apply nothing
+    - name: Apply the changelogs, then apply nothing but the roles
       shell: bash
       env:
         IMAGE: ${{ inputs.image }}
@@ -25,11 +25,14 @@ runs:
             "$@" "$IMAGE"
         }
         credentials=(--env SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/drinkit
-          --env SPRING_DATASOURCE_USERNAME=drinkit --env SPRING_DATASOURCE_PASSWORD=admin)
+          --env SPRING_DATASOURCE_USERNAME=drinkit --env SPRING_DATASOURCE_PASSWORD=admin
+          --env DRINKIT_BACKEND_PASSWORD=drinkit-pwd)
         update "${credentials[@]}"
         second=$(update "${credentials[@]}") || { echo "$second"; exit 1; }
         echo "$second"
-        grep -q 'Database is up to date, no changesets to execute' <<< "$second"
+        # 00-roles.sql runs at every start, so that a new password reaches the role
+        again=$(grep 'ran successfully' <<< "$second" | grep -v '::00-roles::' || true)
+        [ -z "$again" ] || { echo "::error::a second run applied changesets again: $again"; exit 1; }
 
     # A deployment that forgets its credentials must stop, never reach a database through defaults in the image
     - name: Fail without credentials

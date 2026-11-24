@@ -6,7 +6,7 @@ The updater applies the database changes of DrinkIt to PostgreSQL, with Liquibas
 
 `UpdaterApplication` is a Spring Boot application that runs Liquibase once, then stops. Liquibase reads `src/main/resources/db/changelog/db.changelog-master.yml`, which runs the folders below, always in this order:
 
-- **`base/`**: the schema, such as schemas, tables and indexes. A file runs again whenever it changes, and only creates what is missing.
+- **`base/`**: the schema, such as roles, schemas, tables, indexes and grants. A file runs again whenever it changes, and only creates what is missing.
 - **`ddl/`**: the schema changes made after the base, one numbered file per change, run once.
 - **`dml/`**: the data changes, one numbered file per change, run once, after every `ddl/` file.
 
@@ -19,7 +19,7 @@ The `Dockerfile` of this folder builds it into an image, which master publishes 
 ## Run It
 
 - **Apply the changelogs**: `./gradlew :drinkit-backend:bootRun` starts `deployment/local/compose.yml`, which runs the published image with the `db/` folder of your checkout and `db.changelog-demo.yml`. A change to the updater's own code runs from an IDE as `UpdaterApplication` with the `dev` profile, whose `application-dev.yml` points at the same PostgreSQL. Without a profile, the updater has no database to connect to and stops.
-- **Run the image**: `./gradlew :updater:extractLayers`, then `docker build --file deployment/updater/Dockerfile --tag drinkit-updater deployment/updater/build/image` from the root. Run it with `--volume "$PWD/deployment/updater/src/main/resources/db:/workspace/db:ro"`, plus `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` and `SPRING_DATASOURCE_PASSWORD`: the image holds no default credentials. Against the PostgreSQL of compose, that is `--network local_default` and `jdbc:postgresql://postgresql:5432/drinkit`, with the `drinkit` role.
+- **Run the image**: `./gradlew :updater:extractLayers`, then `docker build --file deployment/updater/Dockerfile --tag drinkit-updater deployment/updater/build/image` from the root. Run it with `--volume "$PWD/deployment/updater/src/main/resources/db:/workspace/db:ro"`, plus `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD` and `DRINKIT_BACKEND_PASSWORD`, the password of the backend's role: the image holds no default credentials. Against the PostgreSQL of compose, that is `--network local_default` and `jdbc:postgresql://postgresql:5432/drinkit`, with the `drinkit` role.
 - **Check the changelogs**: `./gradlew :updater:check` checks them against the conventions, with Liquibase's own parser and with [Squawk](https://squawkhq.com/docs/rules), whose binary Gradle downloads.
 
 ## Read Next

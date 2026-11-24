@@ -101,7 +101,7 @@ internal class ChangelogConventionsTest {
     fun `every migration lets Liquibase split its statements`() {
         // When
         val unsplit = liquibaseMigrations.filter { migration ->
-            migration.sqlChanges.any { it.isSplitStatements == false }
+            migration.path != ROLES && migration.sqlChanges.any { it.isSplitStatements == false }
         }
 
         // Then
@@ -115,7 +115,9 @@ internal class ChangelogConventionsTest {
     @Test
     fun `no migration hides statements in a DO block`() {
         // When
-        val withDoBlock = liquibaseMigrations.filter { migration -> migration.statements.any { it.firstWord == "DO" } }
+        val withDoBlock = liquibaseMigrations.filter { migration ->
+            migration.path != ROLES && migration.statements.any { it.firstWord == "DO" }
+        }
 
         // Then
         withDoBlock shouldBreak rule(
@@ -129,7 +131,8 @@ internal class ChangelogConventionsTest {
     fun `every migration bounds its waits before its first change`() {
         // When
         val unbounded = liquibaseMigrations.filterNot { migration ->
-            migration.statements.takeWhile { it.setting != null }.map { it.setting }.containsAll(TIMEOUTS)
+            migration.path == ROLES ||
+                migration.statements.takeWhile { it.setting != null }.map { it.setting }.containsAll(TIMEOUTS)
         }
 
         // Then
@@ -187,7 +190,8 @@ internal class ChangelogConventionsTest {
     fun `every base migration only creates what is missing`() {
         // When
         val changing = baseMigrations.filter { migration ->
-            migration.statements.any { statement -> BASE_STATEMENTS.none { statement.startsWith(it) } }
+            migration.path != ROLES &&
+                migration.statements.any { statement -> BASE_STATEMENTS.none { statement.startsWith(it) } }
         }
 
         // Then
@@ -195,8 +199,8 @@ internal class ChangelogConventionsTest {
             "base-creates-only",
             why = "base/ runs again on existing databases, where each statement must change nothing " +
                 "and block no read or write",
-            fix = "keep to `SET`, `CREATE ... IF NOT EXISTS`, `CREATE INDEX CONCURRENTLY IF NOT EXISTS` and " +
-                "`COMMENT ON`, and write any other change in a ddl/ file",
+            fix = "keep to `SET`, `CREATE ... IF NOT EXISTS`, `CREATE INDEX CONCURRENTLY IF NOT EXISTS`, " +
+                "`COMMENT ON`, `GRANT` and `ALTER DEFAULT PRIVILEGES`, and write any other change in a ddl/ file",
         )
     }
 
@@ -339,6 +343,12 @@ internal class ChangelogConventionsTest {
 
     companion object {
         private const val MASTER_CHANGELOG = "db.changelog-master.yml"
+
+        // CREATE ROLE has no IF NOT EXISTS, so a DO block creates the roles, which Liquibase would cut at each
+        // semicolon: the file goes in one piece, which the rules that read statements cannot split, and Squawk reads
+        // it whole
+        private const val ROLES = "$BASE/00-roles.sql"
+
         private val FOLDERS = listOf(BASE, DDL, DML, DEMO)
         private val RUN_ONCE_FOLDERS = listOf(DDL, DML)
         private const val OUTSIDE_A_TRANSACTION = "-- Outside a transaction:"
@@ -354,6 +364,8 @@ internal class ChangelogConventionsTest {
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS",
             "CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS",
             "COMMENT ON",
+            "GRANT",
+            "ALTER DEFAULT PRIVILEGES",
         )
         private val DATA_CHANGES = listOf("INSERT", "UPDATE", "DELETE", "MERGE", "TRUNCATE", "COPY")
         private val DML_STATEMENTS = listOf("SET", "RESET", "INSERT", "UPDATE", "DELETE", "MERGE", "WITH", "SELECT")
