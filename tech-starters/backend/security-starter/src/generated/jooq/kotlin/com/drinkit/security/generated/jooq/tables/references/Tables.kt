@@ -13,21 +13,21 @@ import com.drinkit.security.generated.jooq.tables.SpringSessionAttributes
 
 
 /**
- * The table <code>drinkit_session.remember_me_token</code>.
+ * The table <code>drinkit_security.remember_me_token</code>.
  */
 val REMEMBER_ME_TOKEN: RememberMeToken = RememberMeToken.REMEMBER_ME_TOKEN
 
 /**
- * The table <code>drinkit_session.sign_in_code</code>.
+ * The table <code>drinkit_security.sign_in_code</code>.
  */
 val SIGN_IN_CODE: SignInCode = SignInCode.SIGN_IN_CODE
 
 /**
- * The table <code>drinkit_session.spring_session</code>.
+ * The table <code>drinkit_security.spring_session</code>.
  */
 val SPRING_SESSION: SpringSession = SpringSession.SPRING_SESSION
 
 /**
- * The table <code>drinkit_session.spring_session_attributes</code>.
+ * The table <code>drinkit_security.spring_session_attributes</code>.
  */
 val SPRING_SESSION_ATTRIBUTES: SpringSessionAttributes = SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES

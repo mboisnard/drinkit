@@ -6,7 +6,7 @@ import com.drinkit.rate.limit.RateLimitDecision.Allowed
 import com.drinkit.rate.limit.RateLimitDecision.Refused
 import com.drinkit.rate.limit.RateLimitRule
 import com.drinkit.rate.limit.RateLimiter
-import com.drinkit.rate.limit.generated.jooq.DrinkitApplication
+import com.drinkit.rate.limit.generated.jooq.DrinkitStarters
 import com.drinkit.rate.limit.inMemoryRateLimiter
 import com.drinkit.rate.limit.infra.gcra.GcraRateLimiter
 import com.drinkit.test.ControlledClock
@@ -29,7 +29,7 @@ import java.util.concurrent.Callable
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 internal class RateLimitAutoConfigurationTest {
 
     private val runner = ApplicationContextRunner()

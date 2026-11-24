@@ -10,7 +10,7 @@ import com.drinkit.security.SESSION_COOKIE
 import com.drinkit.security.SpySignInCodeSender
 import com.drinkit.security.TestAccounts
 import com.drinkit.security.XSRF_COOKIE
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import com.drinkit.test.ControlledClock
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainAll
@@ -37,7 +37,7 @@ import java.util.Base64
 // A Linux clock gives nanoseconds, which PostgreSQL rounds to microseconds: the tests run on such an instant everywhere
 private val NOW_WITH_NANOSECONDS = Instant.now().truncatedTo(ChronoUnit.SECONDS).plusNanos(999_999_600)
 
-@JooqIntegrationTest(schemas = [DrinkitSession::class])
+@JooqIntegrationTest(schemas = [DrinkitSecurity::class])
 @PostgresSessionsTest
 internal class RememberMeTest(
     private val mockMvc: MockMvc,
@@ -88,7 +88,7 @@ internal class RememberMeTest(
 
         // Then
         val (series, token) = decode(rememberMeCookie())
-        database.sql("SELECT token_hash, user_agent FROM drinkit_session.remember_me_token WHERE series = ?")
+        database.sql("SELECT token_hash, user_agent FROM drinkit_security.remember_me_token WHERE series = ?")
             .param(series).query { row, _ -> row.getString(1) to row.getString(2) }
             .single() shouldBe (token.sha256() to "Firefox")
     }
@@ -304,11 +304,11 @@ internal class RememberMeTest(
     private fun returningBrowser(cookie: Cookie = rememberMeCookie()) = CookieBrowser(mockMvc).apply { keep(cookie) }
 
     private fun seriesOf(userId: String) =
-        database.sql("SELECT series FROM drinkit_session.remember_me_token WHERE user_id = ?")
+        database.sql("SELECT series FROM drinkit_security.remember_me_token WHERE user_id = ?")
             .param(userId).query(String::class.java).list()
 
     private fun sessionsOf(userId: String) =
-        database.sql("SELECT session_id FROM drinkit_session.spring_session WHERE principal_name = ?")
+        database.sql("SELECT session_id FROM drinkit_security.spring_session WHERE principal_name = ?")
             .param(userId).query(String::class.java).list()
 
     private fun decode(cookie: Cookie): Pair<String, String> =

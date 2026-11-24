@@ -1,7 +1,7 @@
 package com.drinkit.security.infra.code
 
 import com.drinkit.postgresql.JooqIntegrationTest
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import com.drinkit.security.generated.jooq.tables.references.SIGN_IN_CODE
 import io.kotest.matchers.shouldBe
 import org.jooq.DSLContext
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.Duration
 
-@JooqIntegrationTest(schemas = [DrinkitSession::class])
+@JooqIntegrationTest(schemas = [DrinkitSecurity::class])
 internal class JooqSignInCodesTest : SignInCodesTestContract() {
 
     override lateinit var codes: SignInCodes

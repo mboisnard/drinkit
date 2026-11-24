@@ -5,7 +5,7 @@ import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.security.InMemoryUserAccounts
 import com.drinkit.security.Sessions
 import com.drinkit.security.UserAccount
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import com.drinkit.security.generated.jooq.tables.references.REMEMBER_ME_TOKEN
 import com.drinkit.security.infra.SecurityStarterProperties
 import com.drinkit.security.infra.events.SecurityEventLogger
@@ -33,7 +33,7 @@ private const val USER_ID = "64656d6f0000000000000001"
 private const val SERIES = "a-series"
 private const val TOKEN = "a-token"
 
-@JooqIntegrationTest(schemas = [DrinkitSession::class])
+@JooqIntegrationTest(schemas = [DrinkitSecurity::class])
 internal class RotatingRememberMeServicesTest {
 
     private val now = Instant.now().truncatedTo(ChronoUnit.MICROS)

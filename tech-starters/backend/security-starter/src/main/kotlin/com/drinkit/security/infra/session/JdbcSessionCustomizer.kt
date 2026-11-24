@@ -6,7 +6,7 @@ import org.springframework.session.SessionIdGenerator
 import org.springframework.session.config.SessionRepositoryCustomizer
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository
 
-private const val TABLE_NAME = "drinkit_session.spring_session"
+private const val TABLE_NAME = "drinkit_security.spring_session"
 
 // Spring Session writes an attribute as bytes: these queries, from the Spring Session JDBC reference documentation,
 // convert the bytes into the JSONB column of the table.

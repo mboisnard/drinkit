@@ -1,7 +1,7 @@
 package com.drinkit.security.infra.rememberme
 
 import com.drinkit.postgresql.JooqIntegrationTest
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.jooq.DSLContext
@@ -12,7 +12,7 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
-@JooqIntegrationTest(schemas = [DrinkitSession::class])
+@JooqIntegrationTest(schemas = [DrinkitSecurity::class])
 internal class RememberMeTokensTest {
 
     private lateinit var tokens: RememberMeTokens

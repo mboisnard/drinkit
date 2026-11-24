@@ -38,7 +38,7 @@ with no place to scope a key to its user.
 - **The entry point declares it.** `@Idempotent` goes on the controller method, the override of the interface
   generated from the contract, and `idempotent = true` on a `@PlatformEventHandler`. The business code never checks a
   key. Other code calls `Idempotency.once(scope, key) { … }`.
-- **One table.** `drinkit_application.idempotency_key` holds the scope, the hash of the key, the run that holds it,
+- **One table.** `drinkit_starters.idempotency_key` holds the scope, the hash of the key, the run that holds it,
   a lease, the fingerprint of the payload and the answer to replay. A key is taken in a transaction of its own
   before the action runs, freed when the action fails, and forgotten after 24 hours. The answer is recorded in the
   transaction open around the action, if any, as idempotency4j's `JOIN_TRANSACTION` mode does.

@@ -30,7 +30,7 @@ jooq {
             generator.apply {
                 database.apply {
                     includes = "spring_session|spring_session_attributes|remember_me_token|sign_in_code"
-                    inputSchema = "drinkit_session"
+                    inputSchema = "drinkit_security"
                 }
                 target.apply {
                     packageName = "com.drinkit.security.generated.jooq"

@@ -3,7 +3,7 @@ package com.drinkit.sse
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.security.ConnectedUser
 import com.drinkit.security.connectedAs
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import io.kotest.assertions.nondeterministic.eventually
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldStartWith
@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.get
 import java.util.Base64
 import kotlin.time.Duration.Companion.seconds
 
-@JooqIntegrationTest(schemas = [DrinkitSession::class])
+@JooqIntegrationTest(schemas = [DrinkitSecurity::class])
 @SpringBootTest(classes = [SseTestApplication::class])
 // The database of the class is dropped after it, so no other class can reuse the context that points at it
 @DirtiesContext

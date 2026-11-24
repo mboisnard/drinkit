@@ -4,7 +4,7 @@
 package com.drinkit.security.generated.jooq.tables
 
 
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import com.drinkit.security.generated.jooq.indexes.SIGN_IN_CODE_ATTEMPTS_RESET_AT_IDX
 import com.drinkit.security.generated.jooq.keys.SIGN_IN_CODE_PKEY
 import com.drinkit.security.generated.jooq.tables.records.SignInCodeRecord
@@ -51,7 +51,7 @@ open class SignInCode(
     where: Condition?
 ): TableImpl<SignInCodeRecord>(
     alias,
-    DrinkitSession.DRINKIT_SESSION,
+    if (aliased == null) DrinkitSecurity.DRINKIT_SECURITY else null,
     path,
     childPath,
     parentPath,
@@ -64,7 +64,7 @@ open class SignInCode(
     companion object {
 
         /**
-         * The reference instance of <code>drinkit_session.sign_in_code</code>
+         * The reference instance of <code>drinkit_security.sign_in_code</code>
          */
         val SIGN_IN_CODE: SignInCode = SignInCode()
     }
@@ -75,27 +75,27 @@ open class SignInCode(
     override fun getRecordType(): Class<SignInCodeRecord> = SignInCodeRecord::class.java
 
     /**
-     * The column <code>drinkit_session.sign_in_code.login</code>.
+     * The column <code>drinkit_security.sign_in_code.login</code>.
      */
     val LOGIN: TableField<SignInCodeRecord, String?> = createField(DSL.name("login"), SQLDataType.VARCHAR(320).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.sign_in_code.code_hash</code>.
+     * The column <code>drinkit_security.sign_in_code.code_hash</code>.
      */
     val CODE_HASH: TableField<SignInCodeRecord, String?> = createField(DSL.name("code_hash"), SQLDataType.VARCHAR(64).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.sign_in_code.expires_at</code>.
+     * The column <code>drinkit_security.sign_in_code.expires_at</code>.
      */
     val EXPIRES_AT: TableField<SignInCodeRecord, OffsetDateTime?> = createField(DSL.name("expires_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.sign_in_code.attempts_left</code>.
+     * The column <code>drinkit_security.sign_in_code.attempts_left</code>.
      */
     val ATTEMPTS_LEFT: TableField<SignInCodeRecord, Int?> = createField(DSL.name("attempts_left"), SQLDataType.INTEGER.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.sign_in_code.attempts_reset_at</code>.
+     * The column <code>drinkit_security.sign_in_code.attempts_reset_at</code>.
      */
     val ATTEMPTS_RESET_AT: TableField<SignInCodeRecord, OffsetDateTime?> = createField(DSL.name("attempts_reset_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
@@ -104,27 +104,27 @@ open class SignInCode(
     private constructor(alias: Name, aliased: Table<SignInCodeRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>drinkit_session.sign_in_code</code> table
+     * Create an aliased <code>drinkit_security.sign_in_code</code> table
      * reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>drinkit_session.sign_in_code</code> table
+     * Create an aliased <code>drinkit_security.sign_in_code</code> table
      * reference
      */
     constructor(alias: Name): this(alias, SIGN_IN_CODE)
 
     /**
-     * Create a <code>drinkit_session.sign_in_code</code> table reference
+     * Create a <code>drinkit_security.sign_in_code</code> table reference
      */
     constructor(): this(DSL.name("sign_in_code"), null)
-    override fun getSchema(): Schema? = if (aliased()) null else DrinkitSession.DRINKIT_SESSION
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitSecurity.DRINKIT_SECURITY
     override fun getIndexes(): List<Index> = listOf(SIGN_IN_CODE_ATTEMPTS_RESET_AT_IDX)
     override fun getPrimaryKey(): UniqueKey<SignInCodeRecord> = SIGN_IN_CODE_PKEY
     override fun `as`(alias: String): SignInCode = SignInCode(DSL.name(alias), this)
     override fun `as`(alias: Name): SignInCode = SignInCode(alias, this)
-    override fun `as`(alias: Table<*>): SignInCode = SignInCode(alias.qualifiedName, this)
+    override fun `as`(alias: Table<*>): SignInCode = SignInCode(alias.unqualifiedName, this)
 
     /**
      * Rename this table

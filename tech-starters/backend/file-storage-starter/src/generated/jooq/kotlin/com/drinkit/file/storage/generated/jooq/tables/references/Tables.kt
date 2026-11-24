@@ -10,6 +10,6 @@ import com.drinkit.file.storage.generated.jooq.tables.StoredFile
 
 
 /**
- * The table <code>drinkit_application.stored_file</code>.
+ * The table <code>drinkit_starters.stored_file</code>.
  */
 val STORED_FILE: StoredFile = StoredFile.STORED_FILE

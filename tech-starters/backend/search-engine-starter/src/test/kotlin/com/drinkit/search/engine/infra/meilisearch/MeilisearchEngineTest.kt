@@ -9,7 +9,7 @@ import com.drinkit.search.engine.SearchEngine
 import com.drinkit.search.engine.SearchEngineTestContract
 import com.drinkit.search.engine.SearchIndex
 import com.drinkit.search.engine.Wine
-import com.drinkit.search.engine.generated.jooq.DrinkitApplication
+import com.drinkit.search.engine.generated.jooq.DrinkitStarters
 import com.drinkit.search.engine.infra.Instances
 import com.drinkit.search.engine.infra.LostEvents
 import com.drinkit.search.engine.infra.declareIndex
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.getBean
 import java.util.UUID
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 @MeilisearchIntegrationTest
 internal class MeilisearchEngineTest : SearchEngineTestContract() {
 

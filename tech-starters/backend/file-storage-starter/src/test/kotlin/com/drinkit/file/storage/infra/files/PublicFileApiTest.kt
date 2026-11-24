@@ -2,7 +2,7 @@ package com.drinkit.file.storage.infra.files
 
 import com.drinkit.file.storage.FileId
 import com.drinkit.file.storage.FileResource
-import com.drinkit.file.storage.generated.jooq.DrinkitApplication
+import com.drinkit.file.storage.generated.jooq.DrinkitStarters
 import com.drinkit.file.storage.infra.files.FileStorageTestContext.Companion.ADA
 import com.drinkit.file.storage.infra.files.FileStorageTestContext.Companion.PRIVATE_USAGE
 import com.drinkit.file.storage.infra.files.FileStorageTestContext.Companion.PUBLIC_USAGE
@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.servlet.function.RouterFunctions
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 @SpringBootTest(classes = [FileStorageTestContext::class])
 // The database of the class is dropped after it, so no other class can reuse the context that points at it
 @DirtiesContext

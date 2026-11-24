@@ -2,7 +2,7 @@ package com.drinkit.idempotency.infra
 
 import com.drinkit.idempotency.Idempotency
 import com.drinkit.idempotency.IdempotentResult
-import com.drinkit.idempotency.generated.jooq.DrinkitApplication
+import com.drinkit.idempotency.generated.jooq.DrinkitStarters
 import com.drinkit.idempotency.inMemoryIdempotency
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.test.ControlledClock
@@ -23,7 +23,7 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 internal class IdempotencyAutoConfigurationTest {
 
     private val runner = ApplicationContextRunner()

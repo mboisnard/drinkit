@@ -4,7 +4,7 @@
 package com.drinkit.security.generated.jooq.tables
 
 
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import com.drinkit.security.generated.jooq.indexes.REMEMBER_ME_TOKEN_USER_ID_IDX
 import com.drinkit.security.generated.jooq.keys.REMEMBER_ME_TOKEN_PKEY
 import com.drinkit.security.generated.jooq.tables.records.RememberMeTokenRecord
@@ -51,7 +51,7 @@ open class RememberMeToken(
     where: Condition?
 ): TableImpl<RememberMeTokenRecord>(
     alias,
-    DrinkitSession.DRINKIT_SESSION,
+    if (aliased == null) DrinkitSecurity.DRINKIT_SECURITY else null,
     path,
     childPath,
     parentPath,
@@ -65,7 +65,7 @@ open class RememberMeToken(
 
         /**
          * The reference instance of
-         * <code>drinkit_session.remember_me_token</code>
+         * <code>drinkit_security.remember_me_token</code>
          */
         val REMEMBER_ME_TOKEN: RememberMeToken = RememberMeToken()
     }
@@ -76,38 +76,38 @@ open class RememberMeToken(
     override fun getRecordType(): Class<RememberMeTokenRecord> = RememberMeTokenRecord::class.java
 
     /**
-     * The column <code>drinkit_session.remember_me_token.series</code>.
+     * The column <code>drinkit_security.remember_me_token.series</code>.
      */
     val SERIES: TableField<RememberMeTokenRecord, String?> = createField(DSL.name("series"), SQLDataType.VARCHAR(64).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.remember_me_token.user_id</code>.
+     * The column <code>drinkit_security.remember_me_token.user_id</code>.
      */
     val USER_ID: TableField<RememberMeTokenRecord, String?> = createField(DSL.name("user_id"), SQLDataType.VARCHAR(100).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.remember_me_token.token_hash</code>.
+     * The column <code>drinkit_security.remember_me_token.token_hash</code>.
      */
     val TOKEN_HASH: TableField<RememberMeTokenRecord, String?> = createField(DSL.name("token_hash"), SQLDataType.VARCHAR(64).nullable(false), this, "")
 
     /**
      * The column
-     * <code>drinkit_session.remember_me_token.previous_token_hash</code>.
+     * <code>drinkit_security.remember_me_token.previous_token_hash</code>.
      */
     val PREVIOUS_TOKEN_HASH: TableField<RememberMeTokenRecord, String?> = createField(DSL.name("previous_token_hash"), SQLDataType.VARCHAR(64), this, "")
 
     /**
-     * The column <code>drinkit_session.remember_me_token.rotated_at</code>.
+     * The column <code>drinkit_security.remember_me_token.rotated_at</code>.
      */
     val ROTATED_AT: TableField<RememberMeTokenRecord, OffsetDateTime?> = createField(DSL.name("rotated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.remember_me_token.created_at</code>.
+     * The column <code>drinkit_security.remember_me_token.created_at</code>.
      */
     val CREATED_AT: TableField<RememberMeTokenRecord, OffsetDateTime?> = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.remember_me_token.user_agent</code>.
+     * The column <code>drinkit_security.remember_me_token.user_agent</code>.
      */
     val USER_AGENT: TableField<RememberMeTokenRecord, String?> = createField(DSL.name("user_agent"), SQLDataType.VARCHAR(256), this, "")
 
@@ -116,27 +116,27 @@ open class RememberMeToken(
     private constructor(alias: Name, aliased: Table<RememberMeTokenRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>drinkit_session.remember_me_token</code> table
+     * Create an aliased <code>drinkit_security.remember_me_token</code> table
      * reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>drinkit_session.remember_me_token</code> table
+     * Create an aliased <code>drinkit_security.remember_me_token</code> table
      * reference
      */
     constructor(alias: Name): this(alias, REMEMBER_ME_TOKEN)
 
     /**
-     * Create a <code>drinkit_session.remember_me_token</code> table reference
+     * Create a <code>drinkit_security.remember_me_token</code> table reference
      */
     constructor(): this(DSL.name("remember_me_token"), null)
-    override fun getSchema(): Schema? = if (aliased()) null else DrinkitSession.DRINKIT_SESSION
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitSecurity.DRINKIT_SECURITY
     override fun getIndexes(): List<Index> = listOf(REMEMBER_ME_TOKEN_USER_ID_IDX)
     override fun getPrimaryKey(): UniqueKey<RememberMeTokenRecord> = REMEMBER_ME_TOKEN_PKEY
     override fun `as`(alias: String): RememberMeToken = RememberMeToken(DSL.name(alias), this)
     override fun `as`(alias: Name): RememberMeToken = RememberMeToken(alias, this)
-    override fun `as`(alias: Table<*>): RememberMeToken = RememberMeToken(alias.qualifiedName, this)
+    override fun `as`(alias: Table<*>): RememberMeToken = RememberMeToken(alias.unqualifiedName, this)
 
     /**
      * Rename this table

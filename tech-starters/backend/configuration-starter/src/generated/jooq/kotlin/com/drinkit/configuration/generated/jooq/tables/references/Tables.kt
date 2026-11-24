@@ -10,6 +10,6 @@ import com.drinkit.configuration.generated.jooq.tables.Configuration
 
 
 /**
- * The table <code>drinkit_application.configuration</code>.
+ * The table <code>drinkit_starters.configuration</code>.
  */
 val CONFIGURATION: Configuration = Configuration.CONFIGURATION

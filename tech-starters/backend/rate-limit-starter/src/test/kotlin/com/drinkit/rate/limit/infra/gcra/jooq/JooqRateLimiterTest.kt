@@ -4,7 +4,7 @@ import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.rate.limit.RateLimit
 import com.drinkit.rate.limit.RateLimitRule
 import com.drinkit.rate.limit.RateLimiter
-import com.drinkit.rate.limit.generated.jooq.DrinkitApplication
+import com.drinkit.rate.limit.generated.jooq.DrinkitStarters
 import com.drinkit.rate.limit.generated.jooq.tables.references.RATE_LIMIT
 import com.drinkit.rate.limit.infra.RateLimiterTestContract
 import com.drinkit.rate.limit.infra.gcra.GcraRateLimiter
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.Duration
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 internal class JooqRateLimiterTest : RateLimiterTestContract() {
 
     private lateinit var dsl: DSLContext

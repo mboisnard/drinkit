@@ -9,7 +9,7 @@ fixed at startup stays a `@ConfigurationProperties` class, and a release to some
 flowchart LR
     Adapter[Adapter of the application] --> Configurations
     Configurations --> Cache["configurations cache, 10 minutes"]
-    Cache --> Table[("PostgreSQL<br/>drinkit_application.configuration")]
+    Cache --> Table[("PostgreSQL<br/>drinkit_starters.configuration")]
 ```
 
 ## Usage
@@ -44,7 +44,7 @@ configurations.reset(retryPolicy)                 // back to the default
 - **An operator changes a value by SQL** while no admin page exists:
 
 ```sql
-INSERT INTO drinkit_application.configuration (key, value, modified)
+INSERT INTO drinkit_starters.configuration (key, value, modified)
 VALUES ('partner-api.retry-policy', '{"maxAttempts": 5}', now())
 ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, modified = EXCLUDED.modified;
 ```

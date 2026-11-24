@@ -10,6 +10,6 @@ import com.drinkit.rate.limit.generated.jooq.tables.RateLimit
 
 
 /**
- * The table <code>drinkit_application.rate_limit</code>.
+ * The table <code>drinkit_starters.rate_limit</code>.
  */
 val RATE_LIMIT: RateLimit = RateLimit.RATE_LIMIT

@@ -17,7 +17,7 @@ jooq {
             generator.apply {
                 database.apply {
                     includes = "configuration"
-                    inputSchema = "drinkit_application"
+                    inputSchema = "drinkit_starters"
                 }
                 target.apply {
                     packageName = "com.drinkit.configuration.generated.jooq"

@@ -2,7 +2,7 @@ package com.drinkit.configuration.infra
 
 import com.drinkit.configuration.Configurations
 import com.drinkit.configuration.ConfigurationsTestContract
-import com.drinkit.configuration.generated.jooq.DrinkitApplication
+import com.drinkit.configuration.generated.jooq.DrinkitStarters
 import com.drinkit.configuration.generated.jooq.tables.references.CONFIGURATION
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.test.ControlledClock
@@ -19,7 +19,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension
 import tools.jackson.module.kotlin.jacksonMapperBuilder
 import java.time.Instant
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 @ExtendWith(OutputCaptureExtension::class)
 internal class JooqConfigurationsTest : ConfigurationsTestContract() {
 

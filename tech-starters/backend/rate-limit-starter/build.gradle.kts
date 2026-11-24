@@ -17,7 +17,7 @@ jooq {
             generator.apply {
                 database.apply {
                     includes = "rate_limit"
-                    inputSchema = "drinkit_application"
+                    inputSchema = "drinkit_starters"
                 }
                 target.apply {
                     packageName = "com.drinkit.rate.limit.generated.jooq"

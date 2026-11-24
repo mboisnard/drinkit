@@ -4,7 +4,7 @@
 package com.drinkit.rate.limit.generated.jooq.tables
 
 
-import com.drinkit.rate.limit.generated.jooq.DrinkitApplication
+import com.drinkit.rate.limit.generated.jooq.DrinkitStarters
 import com.drinkit.rate.limit.generated.jooq.indexes.RATE_LIMIT_THEORETICAL_ARRIVAL_IDX
 import com.drinkit.rate.limit.generated.jooq.keys.RATE_LIMIT_PKEY
 import com.drinkit.rate.limit.generated.jooq.tables.records.RateLimitRecord
@@ -51,7 +51,7 @@ open class RateLimit(
     where: Condition?
 ): TableImpl<RateLimitRecord>(
     alias,
-    DrinkitApplication.DRINKIT_APPLICATION,
+    if (aliased == null) DrinkitStarters.DRINKIT_STARTERS else null,
     path,
     childPath,
     parentPath,
@@ -64,7 +64,7 @@ open class RateLimit(
     companion object {
 
         /**
-         * The reference instance of <code>drinkit_application.rate_limit</code>
+         * The reference instance of <code>drinkit_starters.rate_limit</code>
          */
         val RATE_LIMIT: RateLimit = RateLimit()
     }
@@ -75,23 +75,22 @@ open class RateLimit(
     override fun getRecordType(): Class<RateLimitRecord> = RateLimitRecord::class.java
 
     /**
-     * The column <code>drinkit_application.rate_limit.rule</code>.
+     * The column <code>drinkit_starters.rate_limit.rule</code>.
      */
     val RULE: TableField<RateLimitRecord, String?> = createField(DSL.name("rule"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.rate_limit.key_hash</code>.
+     * The column <code>drinkit_starters.rate_limit.key_hash</code>.
      */
     val KEY_HASH: TableField<RateLimitRecord, String?> = createField(DSL.name("key_hash"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.rate_limit.period</code>.
+     * The column <code>drinkit_starters.rate_limit.period</code>.
      */
     val PERIOD: TableField<RateLimitRecord, String?> = createField(DSL.name("period"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column
-     * <code>drinkit_application.rate_limit.theoretical_arrival</code>.
+     * The column <code>drinkit_starters.rate_limit.theoretical_arrival</code>.
      */
     val THEORETICAL_ARRIVAL: TableField<RateLimitRecord, OffsetDateTime?> = createField(DSL.name("theoretical_arrival"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
@@ -100,27 +99,27 @@ open class RateLimit(
     private constructor(alias: Name, aliased: Table<RateLimitRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>drinkit_application.rate_limit</code> table
+     * Create an aliased <code>drinkit_starters.rate_limit</code> table
      * reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>drinkit_application.rate_limit</code> table
+     * Create an aliased <code>drinkit_starters.rate_limit</code> table
      * reference
      */
     constructor(alias: Name): this(alias, RATE_LIMIT)
 
     /**
-     * Create a <code>drinkit_application.rate_limit</code> table reference
+     * Create a <code>drinkit_starters.rate_limit</code> table reference
      */
     constructor(): this(DSL.name("rate_limit"), null)
-    override fun getSchema(): Schema? = if (aliased()) null else DrinkitApplication.DRINKIT_APPLICATION
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitStarters.DRINKIT_STARTERS
     override fun getIndexes(): List<Index> = listOf(RATE_LIMIT_THEORETICAL_ARRIVAL_IDX)
     override fun getPrimaryKey(): UniqueKey<RateLimitRecord> = RATE_LIMIT_PKEY
     override fun `as`(alias: String): RateLimit = RateLimit(DSL.name(alias), this)
     override fun `as`(alias: Name): RateLimit = RateLimit(alias, this)
-    override fun `as`(alias: Table<*>): RateLimit = RateLimit(alias.qualifiedName, this)
+    override fun `as`(alias: Table<*>): RateLimit = RateLimit(alias.unqualifiedName, this)
 
     /**
      * Rename this table

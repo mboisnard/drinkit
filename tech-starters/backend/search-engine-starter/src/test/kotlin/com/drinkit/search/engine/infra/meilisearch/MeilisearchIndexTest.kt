@@ -7,7 +7,7 @@ import com.drinkit.search.engine.SearchDocumentSource
 import com.drinkit.search.engine.SearchIndex
 import com.drinkit.search.engine.SearchIndexTestContract
 import com.drinkit.search.engine.Wine
-import com.drinkit.search.engine.generated.jooq.DrinkitApplication
+import com.drinkit.search.engine.generated.jooq.DrinkitStarters
 import com.drinkit.search.engine.infra.Instances
 import com.drinkit.search.engine.infra.declareIndex
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.context.ConfigurableApplicationContext
 import java.util.UUID
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 @MeilisearchIntegrationTest
 internal class MeilisearchIndexTest : SearchIndexTestContract() {
 

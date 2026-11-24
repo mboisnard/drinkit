@@ -17,7 +17,7 @@ private val parser = FormattedSqlChangeLogParser()
 
 internal class Migration(private val resource: Resource) {
 
-    // Such as base/01-initial-schema.sql
+    // Such as base/01-application.sql
     val path: String = resource.path.substringAfter("$CHANGELOG/")
 
     val fileName: String = path.substringAfterLast('/')

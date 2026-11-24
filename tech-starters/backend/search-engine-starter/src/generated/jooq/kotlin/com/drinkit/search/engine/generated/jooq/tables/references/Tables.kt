@@ -10,6 +10,6 @@ import com.drinkit.search.engine.generated.jooq.tables.SearchIndexRebuild
 
 
 /**
- * The table <code>drinkit_application.search_index_rebuild</code>.
+ * The table <code>drinkit_starters.search_index_rebuild</code>.
  */
 val SEARCH_INDEX_REBUILD: SearchIndexRebuild = SearchIndexRebuild.SEARCH_INDEX_REBUILD

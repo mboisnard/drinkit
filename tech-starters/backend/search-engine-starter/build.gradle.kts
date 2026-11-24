@@ -23,7 +23,7 @@ jooq {
             generator.apply {
                 database.apply {
                     includes = "search_index_rebuild"
-                    inputSchema = "drinkit_application"
+                    inputSchema = "drinkit_starters"
                 }
                 target.apply {
                     packageName = "com.drinkit.search.engine.generated.jooq"

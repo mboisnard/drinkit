@@ -1,7 +1,7 @@
 package com.drinkit.rate.limit.http
 
 import com.drinkit.postgresql.JooqIntegrationTest
-import com.drinkit.rate.limit.generated.jooq.DrinkitApplication
+import com.drinkit.rate.limit.generated.jooq.DrinkitStarters
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
@@ -11,7 +11,7 @@ import org.springframework.test.context.TestConstructor
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 @SpringBootTest(classes = [RateLimitTestApplication::class])
 // The database of the class is dropped after it, so no other class can reuse the context that points at it
 @DirtiesContext

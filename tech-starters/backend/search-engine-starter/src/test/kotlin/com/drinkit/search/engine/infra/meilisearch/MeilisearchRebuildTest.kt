@@ -11,7 +11,7 @@ import com.drinkit.search.engine.SearchIndex
 import com.drinkit.search.engine.SearchIndexes
 import com.drinkit.search.engine.Wine
 import com.drinkit.search.engine.awaitRebuilt
-import com.drinkit.search.engine.generated.jooq.DrinkitApplication
+import com.drinkit.search.engine.generated.jooq.DrinkitStarters
 import com.drinkit.search.engine.infra.Instances
 import com.drinkit.search.engine.infra.LostEvents
 import com.drinkit.search.engine.infra.declareIndex
@@ -31,7 +31,7 @@ import org.springframework.context.ConfigurableApplicationContext
 import java.time.Duration
 import java.util.UUID
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 @MeilisearchIntegrationTest
 internal class MeilisearchRebuildTest {
 
