@@ -2,7 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:best-practices",
-    "schedule:earlyMondays",
+    "schedule:weekends",
     ":timezone(Europe/Paris)",
     ":assignee(mboisnard)",
     "helpers:pinGitHubActionDigestsToSemver"
@@ -24,7 +24,7 @@
   "lockFileMaintenance": {
     "description": "Once a month, every lock is refreshed so that the transitive versions do not age, without the 7-day delay of the other updates. It merges itself once CI gate is green, and is rebased behind master: the ruleset merges only an up-to-date branch",
     "enabled": true,
-    "schedule": ["* 0-3 1 * *"],
+    "schedule": ["* * 1 * *"],
     "automerge": true,
     "rebaseWhen": "behind-base-branch"
   },
