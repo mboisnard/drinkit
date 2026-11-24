@@ -2,7 +2,6 @@ package com.drinkit.file.storage
 
 import org.springframework.core.io.Resource
 import java.net.URI
-import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -13,7 +12,7 @@ class InMemoryFileStorage : FileStorage {
 
     private val files = ConcurrentHashMap<FileId, File>()
 
-    fun upload(usage: String): FileId = FileId(UUID.randomUUID().toString()).also { files[it] = File(usage) }
+    fun upload(usage: String): FileId = FileId.create().also { files[it] = File(usage) }
 
     /** The object a file is kept on, or null when it is not kept. */
     fun resourceOf(id: FileId): FileResource? = files[id]?.resource

@@ -32,7 +32,6 @@ import java.nio.file.Files
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
-import java.util.UUID
 
 internal class FileStorageAutoConfigurationTest {
 
@@ -68,7 +67,7 @@ internal class FileStorageAutoConfigurationTest {
             ServerProperties::class.java,
             { ServerProperties().apply { servlet.contextPath = "/drinkit" } },
         )
-        val id = FileId(UUID.randomUUID().toString())
+        val id = FileId.create()
         val photo = StoredFile(id, "bottle-photo", "ada", "image/jpeg", 1, "photo.jpg", Instant.EPOCH)
 
         underDrinkit.run { context ->

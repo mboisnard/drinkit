@@ -76,7 +76,7 @@ internal abstract class FileStorageTestContract {
     @Test
     fun `an unknown file is not found`() {
         // Given
-        val unknown = FileId("not-a-file")
+        val unknown = FileId.create()
 
         // When & Then
         shouldThrow<FileNotFound> { inTransaction { storage.keep(unknown, USAGE, EVENT) } }

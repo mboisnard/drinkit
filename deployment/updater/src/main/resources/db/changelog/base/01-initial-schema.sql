@@ -127,7 +127,7 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS rate_limit_theoretical_arrival_idx
 
 CREATE TABLE IF NOT EXISTS drinkit_application.stored_file
 (
-    id            UUID                     PRIMARY KEY,
+    id            VARCHAR(26)              PRIMARY KEY,
     usage         TEXT                     NOT NULL,
     owner_id      TEXT                     NOT NULL,
     status        TEXT                     NOT NULL,

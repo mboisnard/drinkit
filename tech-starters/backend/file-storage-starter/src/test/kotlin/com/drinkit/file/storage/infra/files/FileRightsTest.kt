@@ -13,7 +13,6 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.time.Instant
-import java.util.UUID
 
 internal class FileRightsTest {
 
@@ -83,7 +82,7 @@ internal class FileRightsTest {
     }
 
     private fun keptOn(resource: FileResource, usage: String = PRIVATE_USAGE) = StoredFile(
-        id = FileId(UUID.randomUUID().toString()),
+        id = FileId.create(),
         usage = usage,
         ownerId = ADA,
         type = "image/jpeg",
