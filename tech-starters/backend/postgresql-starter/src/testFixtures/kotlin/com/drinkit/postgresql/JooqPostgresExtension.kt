@@ -33,7 +33,7 @@ import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 
 // Keep in sync with deployment/local/compose.yml
-private const val PG_IMAGE_NAME = "postgres:18.7"
+private const val PG_IMAGE_NAME = "postgres:19.0"
 private const val DB_NAME = "TEST_DB"
 
 class JooqPostgresExtension :

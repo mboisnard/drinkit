@@ -7,7 +7,7 @@ volumes:
 
 services:
   postgresql:
-    image: postgres:18.7@sha256:2ea8630df176ad090ec92136dee850397c5af8781e4bcf2e4162593691c61bbc
+    image: postgres:19.0@sha256:aaa10f7ba7328b4a221a6c3184d83eef885bd16bf1f6de864757863156b0a4d1
     ports:
       - "5432:5432"
     volumes:
@@ -56,7 +56,7 @@ services:
         condition: service_completed_successfully
 
   meilisearch:
-    image: getmeili/meilisearch:v1.56.2@sha256:9600db22be3fcbf3d506176d3a73dd70a65c5719d9aa1d2837355b75afb8f4fb
+    image: getmeili/meilisearch:v1.57.0@sha256:91bf09897482c17205c8faeca8daa8d57999fb9de20d862763cdfa92ba4ec790
     ports:
       - "7700:7700"
     volumes:
@@ -74,7 +74,7 @@ services:
       start_interval: 1s
 
   mailpit:
-    image: axllent/mailpit:v1.33.1@sha256:aef2aacc11f075ec0fb6874275ee4a421e688e11a96ebb296134d1735c7761ce
+    image: axllent/mailpit:v1.34.0@sha256:23a2ef85bc50853ab3093645d1d64679afd8887e89da5e48a88940c172591a4e
     ports:
       - "1025:1025"
       - "8025:8025"
@@ -96,7 +96,7 @@ services:
       - no-new-privileges:true
 
   flipt:
-    image: flipt/flipt:v2.14.1@sha256:fb8087a8819ae06a4ca84aaa7ab31bb4acb65006a38f4cc04c30fdf16e4e2630
+    image: flipt/flipt:v2.14.2@sha256:121830e237c3a0d2b875f73905944d6ff301fdd7881c5abdec5f24f5549537e8
     ports:
       - "8082:8080"
     volumes:
@@ -114,7 +114,7 @@ services:
   # llama.cpp backend before it listens. Neither compose nor the readiness check of Spring Boot waits for it, so the
   # application starts meanwhile: until it answers, ai-starter moves on to the next model
   localai:
-    image: localai/localai:v4.12.1@sha256:c8556c4f7b6dd9b76e915d515ab5cfe5a765d8ea8fd3f0cf563f9c690b48a7f4
+    image: localai/localai:v5.0.1@sha256:7240f75f2b7f00eeb4e77ff2921c25f77ab265b4e5888933e702e0c3b49d876d
     command: ["qwen3-vl-4b-instruct", "qwen3-embedding-0.6b"]
     ports:
       - "8083:8080"
@@ -127,5 +127,10 @@ services:
       org.springframework.boot.readiness-check.tcp.disable: true
     cap_drop:
       - ALL
+    # The entrypoint starts as root to hand the volumes over to uid 10001, then runs LocalAI as that user
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
     security_opt:
       - no-new-privileges:true
