@@ -16,6 +16,9 @@ services:
       POSTGRES_DB: drinkit
       POSTGRES_USER: drinkit
       POSTGRES_PASSWORD: admin
+    # Without it, Spring Boot connects the backend as POSTGRES_USER, the owner, whatever its datasource says
+    labels:
+      org.springframework.boot.ignore: true
     healthcheck:
       test: ["CMD", "pg_isready", "-h", "localhost", "-U", "drinkit", "-d", "drinkit"]
       interval: 2s
@@ -38,6 +41,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/drinkit
       SPRING_DATASOURCE_USERNAME: drinkit
       SPRING_DATASOURCE_PASSWORD: admin
+      DRINKIT_BACKEND_PASSWORD: drinkit-pwd
       SPRING_LIQUIBASE_CHANGE_LOG: classpath:db/changelog/db.changelog-demo.yml
     read_only: true
     tmpfs:

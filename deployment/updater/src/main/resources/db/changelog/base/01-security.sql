@@ -76,3 +76,12 @@ CREATE TABLE IF NOT EXISTS drinkit_security.sign_in_code
 
 CREATE INDEX CONCURRENTLY IF NOT EXISTS sign_in_code_attempts_reset_at_idx
     ON drinkit_security.sign_in_code (attempts_reset_at);
+
+-- Grants
+
+-- The rows to applications, never the schema itself: ON ALL TABLES covers the tables above, the default privileges
+-- those a later file creates
+GRANT USAGE ON SCHEMA drinkit_security TO applications;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA drinkit_security TO applications;
+ALTER DEFAULT PRIVILEGES IN SCHEMA drinkit_security GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO applications;
+ALTER DEFAULT PRIVILEGES IN SCHEMA drinkit_security GRANT USAGE, SELECT ON SEQUENCES TO applications;

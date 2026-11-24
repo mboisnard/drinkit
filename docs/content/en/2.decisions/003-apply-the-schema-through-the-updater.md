@@ -34,6 +34,10 @@ their reads and writes, and a newcomer should reach a signed-in account with a c
   running it again changes nothing and blocks nobody. `ddl/` holds the later schema changes and `dml/` the data
   changes, one numbered file per change, run once. Squawk, a PostgreSQL migration linter, and a convention test check
   every file in the build, so a statement that would lock a table fails before it is merged.
+- **Roles and grants with the schema.** `base/` creates the `applications` role, which holds the reads and writes of
+  every schema, and `drinkit-backend`, a member of it that the backend signs in with, its password given to the
+  updater by the environment. The updater keeps the owner's rights. A role per application, members of one role that
+  holds the rights, is PostgreSQL's pattern of groups and users.
 - **Demo data that stays local.** The demo account and its cellar come from a `demo/` changelog that only the local
   compose runs, after the changelog of every environment. Its password is public, so no deployment includes it.
 
@@ -58,6 +62,9 @@ The [database page](../1.engineering/4.build-and-data/2.database.md) gives the r
   PostgreSQL driver. It offered an image maintained by someone else.
 - **One numbered file per change, `base/` included.** Rejected because no file would show the whole schema any more.
   It offered Squawk a view of every statement.
+- **Roles from whoever runs the database, the changelogs granting only.** Rejected because a local database would
+  need a script of its own beside the changelogs, and each environment its own steps before the first updater run.
+  It offered changelogs that never touch a role.
 - **Demo data behind a Liquibase context.** Rejected because a deployment that forgets the filter creates the demo
   admin, whose password is public. It offered one changelog.
 

@@ -3,3 +3,5 @@ spring:
     url: jdbc:postgresql://localhost:5432/drinkit
     username: drinkit
     password: admin
+  liquibase.parameters:
+    "[DRINKIT_BACKEND_PASSWORD]": drinkit-pwd
