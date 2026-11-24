@@ -179,6 +179,7 @@ function typescriptRules(): Linter.RulesRecord {
     }],
     'import/no-default-export': 'error',
     '@typescript-eslint/consistent-type-imports': 'error',
+    '@typescript-eslint/no-unsafe-class-instance-assignment': 'error',
     'func-style': ['error', 'declaration'],
     '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
     '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
