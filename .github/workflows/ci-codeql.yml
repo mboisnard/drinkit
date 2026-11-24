@@ -36,7 +36,7 @@ jobs:
         run: ./gradlew help --no-daemon
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        uses: github/codeql-action/init@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
         with:
           languages: java-kotlin
           build-mode: manual
@@ -48,7 +48,7 @@ jobs:
         run: ./gradlew classes --no-daemon --no-build-cache
 
       - name: Analyse
-        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        uses: github/codeql-action/analyze@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
         with:
           category: codeql-security-analysis
 
@@ -69,7 +69,7 @@ jobs:
       # CodeQL reads the sources as they are, .vue files included: no install, no build, and so no code that
       # Nuxt generates. The tests stay out, their doubles answer what a real backend never would
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        uses: github/codeql-action/init@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
         with:
           languages: javascript-typescript
           build-mode: none
@@ -79,6 +79,6 @@ jobs:
               - '**/test/**'
 
       - name: Analyse
-        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        uses: github/codeql-action/analyze@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
         with:
           category: codeql-typescript
