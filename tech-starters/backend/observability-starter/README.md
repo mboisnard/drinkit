@@ -45,8 +45,10 @@ dependencies {
 Micrometer traces each request and puts its `traceId` and `spanId` in the logs. Nothing leaves the application until
 `starters.observability.opentelemetry.enabled=true`: Spring Boot then pushes the metrics and the traces over OTLP to
 a platform, such as OpenObserve, or to a collector. Switched off, the starter exports nothing, whatever that property.
-Logs stay on the console, and once `management.opentelemetry.logging.export.otlp.endpoint` is set, each one leaves
-over OTLP too, with the trace and the span it was written in, the logs of the start included.
+Logs stay on the console, and once `management.opentelemetry.otlp.endpoint` or
+`management.opentelemetry.logging.export.otlp.endpoint` is set, each one leaves over OTLP too, with the trace and the
+span it was written in, the logs of the start included. Metrics and spans follow the semantic conventions of
+OpenTelemetry, such as `http.server.request.duration`.
 
 To see them on your machine, start [OpenObserve](https://openobserve.ai/), then the backend with the
 `dev-observability` profile. It keeps every trace and puts the messages of each model call on its span, with a
@@ -92,9 +94,10 @@ already tell whether it answers.
 |---|---|---|
 | `starters.observability.enabled` | `true`, `false` leaves Actuator to the defaults of Spring Boot, and still exports nothing | `STARTERS_OBSERVABILITY_ENABLED` |
 | `starters.observability.opentelemetry.enabled` | `false`, `true` pushes the metrics and the traces over OTLP | `STARTERS_OBSERVABILITY_OPENTELEMETRY_ENABLED` |
-| `management.opentelemetry.tracing.export.otlp.endpoint` | None, required in production once the export is on | `MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT` |
+| `management.opentelemetry.otlp.endpoint` | None: the root of the three signals, each adding `/v1/traces`, `/v1/logs` or `/v1/metrics` | `MANAGEMENT_OPENTELEMETRY_OTLP_ENDPOINT` |
+| `management.opentelemetry.tracing.export.otlp.endpoint` | None, required in production once the export is on, unless the common endpoint is set | `MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT` |
 | `management.opentelemetry.logging.export.otlp.endpoint` | None: the logs stay on the console | `MANAGEMENT_OPENTELEMETRY_LOGGING_EXPORT_OTLP_ENDPOINT` |
-| `management.otlp.metrics.export.url` | `http://localhost:4318/v1/metrics`, set in production once the export is on | `MANAGEMENT_OTLP_METRICS_EXPORT_URL` |
+| `management.otlp.metrics.export.url` | The common endpoint, otherwise `http://localhost:4318/v1/metrics`, set in production once the export is on | `MANAGEMENT_OTLP_METRICS_EXPORT_URL` |
 | `management.opentelemetry.resource-attributes.deployment.environment` | None, set in production once the export is on | `MANAGEMENT_OPENTELEMETRY_RESOURCEATTRIBUTES_DEPLOYMENT_ENVIRONMENT` |
 
 Every `management.*` key of the application overrides the starter's.

@@ -35,7 +35,7 @@ internal class RecordingSseBuilder(
     override fun send(`object`: Any) = data(`object`)
 
     override fun data(`object`: Any) {
-        pending.append("data:").append(`object`).append('\n')
+        pending.append("data: ").append(`object`).append('\n')
         send()
     }
 

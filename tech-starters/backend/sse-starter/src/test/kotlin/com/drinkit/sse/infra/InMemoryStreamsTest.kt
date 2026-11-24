@@ -50,8 +50,8 @@ internal class InMemoryStreamsTest {
         streams.send(ADA, "event-1", "cellar-updated", """{"cellarId":"42"}""")
 
         // Then
-        firstTab.sent.last() shouldBe "id:event-1\nevent:cellar-updated\ndata:{\"cellarId\":\"42\"}\n\n"
-        secondTab.sent.last() shouldBe "id:event-1\nevent:cellar-updated\ndata:{\"cellarId\":\"42\"}\n\n"
+        firstTab.sent.last() shouldBe "id:event-1\nevent:cellar-updated\ndata: {\"cellarId\":\"42\"}\n\n"
+        secondTab.sent.last() shouldBe "id:event-1\nevent:cellar-updated\ndata: {\"cellarId\":\"42\"}\n\n"
     }
 
     @Test
@@ -159,5 +159,5 @@ internal class InMemoryStreamsTest {
 
     private fun openedTab(recipient: Recipient) = RecordingSseBuilder().also { streams.open(recipient, it) }
 
-    private fun opening(lastEventId: String) = "id:$lastEventId\nevent:init\ndata:{}\n\n"
+    private fun opening(lastEventId: String) = "id:$lastEventId\nevent:init\ndata: {}\n\n"
 }

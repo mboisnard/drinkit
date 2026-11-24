@@ -31,7 +31,10 @@ starters:
 
 server:
   port: ${PORT:8080}
-  forward-headers-strategy: native
+  request:
+    header:
+      forwarded:
+        strategy: web-server
   servlet:
     context-path: /drinkit
 

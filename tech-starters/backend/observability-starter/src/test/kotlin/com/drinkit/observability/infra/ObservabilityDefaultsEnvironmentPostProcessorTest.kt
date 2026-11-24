@@ -27,6 +27,15 @@ internal class ObservabilityDefaultsEnvironmentPostProcessorTest {
     }
 
     @Test
+    fun `names metrics and spans after the semantic conventions of OpenTelemetry`() {
+        // When
+        val environment = withDefaults()
+
+        // Then
+        environment.getProperty("management.observations.conventions") shouldBe "open-telemetry"
+    }
+
+    @Test
     fun `adds no default when the starter is disabled`() {
         // When
         val environment = withDefaults("starters.observability.enabled" to "false")

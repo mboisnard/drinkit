@@ -119,7 +119,7 @@ currentUser.get()                   // the connected user, or a 401 for an anony
 currentUser.signIn(userId)          // a user proven another way, with a new session id
 currentUser.refresh()               // after the user's roles changed
 currentVisitor.id()                 // the VisitorId of the browser behind the request, signed in or not
-currentVisitor.ipAddress()          // its IpAddress, read through the proxies of server.forward-headers-strategy
+currentVisitor.ipAddress()          // its IpAddress, read through the proxies of server.request.header.forwarded.strategy
 currentVisitor.ipAddress().host()   // what one host holds: the IPv4 address, or its whole IPv6 /64 network
 sessions.revokeAll(userId)          // signs another user out everywhere
 sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // computed once per session
