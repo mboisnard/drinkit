@@ -26,7 +26,7 @@ internal class FeatureManagementWebAutoConfigurationTest {
         .withBean(JsonMapper::class.java, { JsonMapper() })
         .withBean(CurrentUser::class.java, { InMemoryCurrentUser() })
         .withBean(CurrentVisitor::class.java, {
-            InMemoryCurrentVisitor("visitor-1")
+            InMemoryCurrentVisitor()
         })
 
     @Test

@@ -9,6 +9,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-session-jdbc")
     api("org.springframework.boot:spring-boot-starter-security")
+    api(project(":identifier-starter"))
     implementation(project(":rate-limit-starter"))
 
     compileOnly("org.springframework.boot:spring-boot-starter-actuator")

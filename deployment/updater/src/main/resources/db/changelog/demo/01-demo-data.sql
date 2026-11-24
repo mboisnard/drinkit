@@ -8,7 +8,7 @@ SET statement_timeout = '1min';
 INSERT INTO drinkit_application.user_event (user_id, sequence_id, event_name, date, author, payload)
 VALUES
     ('01kdvdna00e5mt007j31qpda6g', 0, 'INITIALIZED', '2026-01-01T00:00:00Z',
-     '{"type": "UNLOGGED", "visitorId": {"value": "64656d6f-0000-4000-8000-000000000001"}}',
+     '{"type": "UNLOGGED", "visitorId": "01kdvdn9w0e5mt007j31qpda6h"}',
      '{"email": {"value": "demo@drinkit.test"}, "roles": {"values": ["ROLE_REGISTRATION_IN_PROGRESS"]}, "preferences": {"language": "fr"}}'),
     ('01kdvdna00e5mt007j31qpda6g', 20, 'PROFILE_COMPLETED', '2026-01-01T00:02:00Z',
      '{"type": "CONNECTED", "userId": "01kdvdna00e5mt007j31qpda6g"}',

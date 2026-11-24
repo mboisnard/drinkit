@@ -1,13 +1,15 @@
 package com.drinkit.security.infra.chain
 
+import com.drinkit.identifier.isId
 import com.drinkit.security.SecuredApplicationTest
+import com.drinkit.security.VisitorId
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import jakarta.servlet.http.Cookie
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
-import java.util.UUID
 
 private const val VISITOR_COOKIE = "__Host-visitor"
 private const val THIRTY_DAYS = 30 * 24 * 60 * 60
@@ -23,6 +25,7 @@ internal class VisitorTest(private val mockMvc: MockMvc) {
         // Then
         val cookie = response.getCookie(VISITOR_COOKIE)!!
         response.contentAsString shouldBe cookie.value
+        cookie.value.isId() shouldBe true
         cookie.maxAge shouldBe THIRTY_DAYS
         cookie.isHttpOnly shouldBe true
     }
@@ -30,7 +33,7 @@ internal class VisitorTest(private val mockMvc: MockMvc) {
     @Test
     fun `keeps the visitor of its cookie, for 30 more days`() {
         // Given
-        val visitorId = UUID.randomUUID().toString()
+        val visitorId = VisitorId.create().value
 
         // When
         val response = mockMvc.get("/api/public/visitor") { cookie(Cookie(VISITOR_COOKIE, visitorId)) }
@@ -41,15 +44,15 @@ internal class VisitorTest(private val mockMvc: MockMvc) {
         response.getCookie(VISITOR_COOKIE)!!.maxAge shouldBe THIRTY_DAYS
     }
 
-    @Test
-    fun `replaces a cookie that holds no visitor id`() {
+    @ParameterizedTest
+    @ValueSource(strings = ["<script>", "6f1d2c3e-58a4-4b7e-9d0a-1c2b3d4e5f60"])
+    fun `replaces a cookie that holds no visitor id`(value: String) {
         // When
-        val response = mockMvc.get("/api/public/visitor") { cookie(Cookie(VISITOR_COOKIE, "<script>")) }
+        val response = mockMvc.get("/api/public/visitor") { cookie(Cookie(VISITOR_COOKIE, value)) }
             .andReturn().response
 
         // Then
-        response.contentAsString shouldNotBe "<script>"
-        UUID.fromString(response.contentAsString)
+        response.contentAsString.isId() shouldBe true
     }
 
     @Test

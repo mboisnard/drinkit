@@ -18,7 +18,6 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Locale
-import java.util.UUID
 
 class UserFixtures(val controlledClock: ControlledClock = ControlledClock()) {
     val users = InMemoryUsers()
@@ -60,7 +59,7 @@ class UserFixtures(val controlledClock: ControlledClock = ControlledClock()) {
     val givenAUserId: UserId get() = UserId.create()
     val givenANewDate: OffsetDateTime get() = OffsetDateTime.now(controlledClock).truncatedTo(ChronoUnit.MICROS)
 
-    val givenAnUnloggedAuthor: Unlogged get() = Unlogged(VisitorId(UUID.randomUUID().toString()))
+    val givenAnUnloggedAuthor: Unlogged get() = Unlogged(VisitorId.create())
     val givenAConnectedAuthor: Author.Connected get() = Author.Connected(givenAUserId)
 
     fun givenAnInitializedUser(
@@ -78,7 +77,7 @@ class UserFixtures(val controlledClock: ControlledClock = ControlledClock()) {
     fun givenAUserHistory(
         userId: UserId = givenAUserId,
         email: Email = VALID_EMAIL,
-        author: Author = Unlogged(VisitorId(UUID.randomUUID().toString())),
+        author: Author = Unlogged(VisitorId.create()),
         initEventModifier: (Initialized) -> Initialized = { it },
     ): UserHistory {
         val decision = UserCreationDecider.invoke(

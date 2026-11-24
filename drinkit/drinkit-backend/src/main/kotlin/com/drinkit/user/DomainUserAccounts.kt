@@ -59,7 +59,7 @@ internal class DomainUserAccounts(
 
     private fun create(email: Email): UserAccount? {
         val command = CreateNewUserCommand(
-            author = Author.Unlogged(VisitorId(currentVisitor.id())),
+            author = Author.Unlogged(VisitorId(currentVisitor.id().value)),
             email = email,
             preferences = Preferences(language = currentLocale.get()),
         )

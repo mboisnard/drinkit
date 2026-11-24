@@ -6,6 +6,7 @@ import com.drinkit.security.InMemoryCurrentUser
 import com.drinkit.security.InMemoryCurrentVisitor
 import com.drinkit.security.InMemoryUserAccounts
 import com.drinkit.security.UserAccount
+import com.drinkit.security.VisitorId
 import dev.openfeature.sdk.EvaluationContext
 import dev.openfeature.sdk.OpenFeatureAPI
 import dev.openfeature.sdk.providers.memory.Flag
@@ -15,9 +16,14 @@ import org.junit.jupiter.api.Test
 
 internal class RequestSubjectTest {
 
+    private val visitorId = VisitorId.create()
     private val accounts = InMemoryUserAccounts()
     private val currentUser = InMemoryCurrentUser(accounts)
-    private val subject = RequestSubject(currentUser, InMemoryCurrentVisitor("visitor-1"), { mapOf("plan" to "vip") })
+    private val subject = RequestSubject(
+        currentUser,
+        InMemoryCurrentVisitor(visitorId),
+        { mapOf("plan" to "vip") },
+    )
 
     @Test
     fun `opens a flag to admins and to a plan, from the roles and the attributes of the signed-in user`() {
@@ -46,7 +52,7 @@ internal class RequestSubjectTest {
         val evaluated = subject.get()
 
         // Then
-        evaluated shouldBe FlagSubject("visitor-1")
+        evaluated shouldBe FlagSubject(visitorId.value)
     }
 
     private fun flagsTargeting(vararg rules: Pair<String, (EvaluationContext) -> Boolean>) =
