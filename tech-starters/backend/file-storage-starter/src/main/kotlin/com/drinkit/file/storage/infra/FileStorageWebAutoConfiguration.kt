@@ -17,8 +17,8 @@ import com.drinkit.security.EndpointRules
 import com.drinkit.security.endpointRules
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpMethod
@@ -30,7 +30,7 @@ import org.springframework.web.servlet.function.ServerResponse
 @AutoConfiguration(after = [FileStorageAutoConfiguration::class])
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnBean(StoredFiles::class)
-@ConditionalOnProperty(prefix = "starters.file-storage", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.file-storage.enabled", matchIfMissing = true)
 internal class FileStorageWebAutoConfiguration {
 
     @Bean

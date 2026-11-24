@@ -3,23 +3,34 @@ package com.drinkit.messaging.infra.springevents
 import com.drinkit.idempotency.Idempotency
 import com.drinkit.messaging.PlatformEvent
 import com.drinkit.messaging.PlatformEventHandler
-import com.drinkit.messaging.infra.retry.Retry
 import com.drinkit.messaging.validate
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils
 import org.springframework.aop.scope.ScopedProxyUtils
 import org.springframework.aop.support.AopUtils
+import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.SmartInitializingSingleton
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.core.MethodIntrospector
 import org.springframework.core.annotation.AnnotatedElementUtils
 import org.springframework.core.annotation.AnnotationUtils
+import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler
+import org.springframework.util.backoff.BackOff
 import java.lang.reflect.Method
+import java.time.Duration
 
 // Runs once every bean exists, as Spring's own @EventListener processor: a handler's bean may depend on the publisher
 internal class PlatformEventHandlerProcessor(
     private val context: ConfigurableApplicationContext,
-    private val retry: Retry,
-) : SmartInitializingSingleton {
+    private val backOff: BackOff,
+) : SmartInitializingSingleton,
+    DisposableBean {
+
+    // Not a bean: a TaskScheduler bean would replace the one Spring Boot gives the application's @Scheduled methods
+    private val scheduler = SimpleAsyncTaskScheduler().apply {
+        setVirtualThreads(true)
+        setThreadNamePrefix("platform-event-")
+        setTaskTerminationTimeout(SHUTDOWN_WAIT.toMillis())
+    }
 
     override fun afterSingletonsInstantiated() {
         val listeners = context.beanFactory.getBeanNamesForType(Any::class.java)
@@ -77,11 +88,19 @@ internal class PlatformEventHandlerProcessor(
         return PlatformEventHandlerListener(
             handler,
             eventType,
-            firstAttempt = retry,
+            backOff = backOff,
             idempotency = idempotency,
             callHandler = { event ->
                 AopUtils.invokeJoinpointUsingReflection(context.getBean(beanName), invocable, arrayOf(event))
             },
+            schedule = { delay, task -> scheduler.schedule(task, scheduler.clock.instant().plus(delay)) },
         )
+    }
+
+    // A running handler ends before the application stops; a delivery still waiting is lost, as with no broker
+    override fun destroy() = scheduler.close()
+
+    private companion object {
+        val SHUTDOWN_WAIT: Duration = Duration.ofSeconds(30)
     }
 }

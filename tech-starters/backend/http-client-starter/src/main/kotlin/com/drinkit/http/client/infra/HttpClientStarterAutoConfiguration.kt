@@ -1,14 +1,14 @@
 package com.drinkit.http.client.infra
 
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer
 
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "starters.http-client", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.http-client.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(HttpClientStarterProperties::class)
 internal class HttpClientStarterAutoConfiguration {
 

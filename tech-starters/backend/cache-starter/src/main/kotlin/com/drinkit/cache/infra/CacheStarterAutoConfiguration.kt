@@ -5,8 +5,8 @@ import com.github.benmanes.caffeine.cache.Ticker
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration
 import org.springframework.boot.cache.autoconfigure.CacheManagerCustomizer
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Bean
 
 // Before Spring Boot's: its cache manager only exists once @EnableCaching is there
 @AutoConfiguration(before = [CacheAutoConfiguration::class])
-@ConditionalOnProperty(prefix = "starters.cache", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.cache.enabled", matchIfMissing = true)
 @EnableCaching
 @EnableConfigurationProperties(CacheStarterProperties::class)
 internal class CacheStarterAutoConfiguration {

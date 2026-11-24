@@ -17,6 +17,7 @@ import org.jooq.DSLContext
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -33,7 +34,7 @@ private const val GENERATED_KEY_BYTES = 32
 
 @AutoConfiguration(after = [JooqAutoConfiguration::class])
 @ConditionalOnBean(DSLContext::class)
-@ConditionalOnProperty(prefix = "starters.file-storage", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.file-storage.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(FileStorageProperties::class)
 internal class FileStorageAutoConfiguration {
 

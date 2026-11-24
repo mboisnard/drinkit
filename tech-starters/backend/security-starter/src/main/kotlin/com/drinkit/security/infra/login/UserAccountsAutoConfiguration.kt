@@ -4,8 +4,8 @@ import com.drinkit.security.CurrentUser
 import com.drinkit.security.UserAccounts
 import com.drinkit.security.infra.events.SecurityEventLogger
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.security.core.context.SecurityContextHolder
@@ -15,7 +15,7 @@ import org.springframework.security.web.context.SecurityContextRepository
 
 @AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnProperty(prefix = "starters.security", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.security.enabled", matchIfMissing = true)
 internal class UserAccountsAutoConfiguration {
 
     @Bean

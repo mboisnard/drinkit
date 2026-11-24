@@ -80,15 +80,15 @@ package com.drinkit.sms.infra
 
 import com.drinkit.sms.SmsSender
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
 @ConditionalOnClass(SomeVendorClient::class)
-@ConditionalOnProperty(prefix = "starters.sms", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.sms.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(SmsProperties::class)
 internal class SmsAutoConfiguration {
 
@@ -112,7 +112,7 @@ its own, listed in the same `.imports` file:
 ```kotlin
 @AutoConfiguration(after = [SmsAutoConfiguration::class])
 @ConditionalOnClass(HealthIndicator::class)
-@ConditionalOnProperty(prefix = "starters.sms", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.sms.enabled", matchIfMissing = true)
 internal class SmsHealthAutoConfiguration {
 
     @Bean

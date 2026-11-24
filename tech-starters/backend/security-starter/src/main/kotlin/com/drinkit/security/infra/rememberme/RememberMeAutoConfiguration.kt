@@ -9,8 +9,8 @@ import com.drinkit.security.infra.login.UserAccountsUserDetailsService
 import org.jooq.DSLContext
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -24,7 +24,7 @@ import java.time.Clock
 /** Needs the sessions in PostgreSQL: without them, there is no remember-me login. */
 @AutoConfiguration(after = [JooqAutoConfiguration::class, JdbcSessionAutoConfiguration::class])
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnProperty(prefix = "starters.security", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.security.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(SecurityStarterProperties::class)
 internal class RememberMeAutoConfiguration {
 

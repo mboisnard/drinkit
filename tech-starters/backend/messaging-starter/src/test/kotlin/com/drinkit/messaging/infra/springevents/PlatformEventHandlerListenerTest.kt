@@ -4,7 +4,6 @@ import com.drinkit.idempotency.CurrentIdempotencyKey
 import com.drinkit.idempotency.inMemoryIdempotency
 import com.drinkit.messaging.PlatformEvent
 import com.drinkit.messaging.PlatformEventHandler
-import com.drinkit.messaging.infra.retry.ExponentialBackoffRetry
 import com.drinkit.test.ControlledClock
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
@@ -20,6 +19,7 @@ import org.springframework.boot.logging.LoggingSystem
 import org.springframework.boot.test.system.CapturedOutput
 import org.springframework.boot.test.system.OutputCaptureExtension
 import org.springframework.context.PayloadApplicationEvent
+import org.springframework.util.backoff.ExponentialBackOff
 import java.time.Duration
 import java.time.Instant
 
@@ -235,7 +235,7 @@ internal class PlatformEventHandlerListenerTest {
             ),
             eventType = SomethingHappened::class.java,
             callHandler = handle,
-            firstAttempt = ExponentialBackoffRetry(initialDelay = Duration.ofSeconds(1)),
+            backOff = ExponentialBackOff(1_000, 2.0),
             idempotency = idempotency,
             schedule = on::schedule,
         )
@@ -250,7 +250,7 @@ internal class PlatformEventHandlerListenerTest {
             ),
             eventType = SomethingHappened::class.java,
             callHandler = handle,
-            firstAttempt = ExponentialBackoffRetry(initialDelay = Duration.ofSeconds(1)),
+            backOff = ExponentialBackOff(1_000, 2.0),
             schedule = scheduler::schedule,
         )
 

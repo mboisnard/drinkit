@@ -1,15 +1,15 @@
 package com.drinkit.retryable.infra
 
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.ApplicationListener
 import org.springframework.context.annotation.Bean
 import org.springframework.resilience.annotation.EnableResilientMethods
 import org.springframework.resilience.retry.MethodRetryEvent
 
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "starters.retryable", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.retryable.enabled", matchIfMissing = true)
 @EnableResilientMethods
 internal class RetryableAutoConfiguration {
 
