@@ -51,7 +51,7 @@ internal class ServerEventsStreamTest(private val mockMvc: MockMvc, private val 
         // Then
         runBlocking {
             eventually(2.seconds) {
-                stream.contentAsString shouldContain "event:price-changed\ndata:{\"bottleId\":\"7\"}\n\n"
+                stream.contentAsString shouldContain "event:price-changed\ndata: {\"bottleId\":\"7\"}\n\n"
             }
         }
     }
@@ -67,7 +67,7 @@ internal class ServerEventsStreamTest(private val mockMvc: MockMvc, private val 
         // Then
         runBlocking {
             eventually(2.seconds) {
-                stream.contentAsString shouldContain "event:cellar-updated\ndata:{\"cellarId\":\"42\"}\n\n"
+                stream.contentAsString shouldContain "event:cellar-updated\ndata: {\"cellarId\":\"42\"}\n\n"
             }
         }
     }

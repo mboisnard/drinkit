@@ -3,15 +3,15 @@
 jdk = "25"
 
 # Tool Versions
-squawk = "2.72.0"
+squawk = "2.73.0"
 
 # BOM Versions
-aws-sdk-dependencies = "2.57.12"
+aws-sdk-dependencies = "2.59.2"
 cucumber-dependencies = "8.1.0"
 opentelemetry-dependencies = "1.68.0"
 opentelemetry-instrumentation-dependencies = "2.34.0-alpha"
-spring-ai-dependencies = "2.0.2"
-spring-boot-dependencies = "4.1.2"
+spring-ai-dependencies = "2.1.0"
+spring-boot-dependencies = "4.2.0"
 
 # Runtime Versions
 bouncycastle = "1.87"
@@ -22,11 +22,11 @@ ksp = "2.3.14"
 meilisearch = "0.22.1"
 openfeature-sdk = "1.23.0"
 openfeature-flipt-provider = "0.1.4"
-springdoc-openapi = "3.2.0"
+springdoc-openapi = "3.2.1"
 tika = "4.2.0"
 
 # Test Versions
-approvaltests = "31.0.0"
+approvaltests = "32.2.0"
 rest-assured = "6.3.0"
 konture = "1.0.4"
 kotest = "6.2.7"

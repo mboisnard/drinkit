@@ -40,9 +40,9 @@ logs behind one property. Its OTLP export of metrics is on by default, towards `
   caller sends is ignored, so that no one on the internet chooses a `traceId` or forces a trace into the samples.
 - **Logs.** Plain text on a developer's machine, one JSON line per event in the Logstash format elsewhere. Each line
   carries `traceId`, `spanId` and, once signed in, `user.id`. Logs go to the console and, once the export is on and
-  `management.opentelemetry.logging.export.otlp.endpoint` is set, over OTLP too, with their trace and span, through
-  the Logback appender of OpenTelemetry, which Spring Boot does not install. The console stays, for a developer's
-  machine and for a platform that reads it.
+  `management.opentelemetry.otlp.endpoint` or `management.opentelemetry.logging.export.otlp.endpoint` is set, over
+  OTLP too, with their trace and span, through the Logback appender of OpenTelemetry, which Spring Boot does not
+  install. The console stays, for a developer's machine and for a platform that reads it.
 - **Errors.** Every error of the API, 4xx or 5xx, answers a problem detail of RFC 9457 that carries the `traceId` of
   the request, so that a client reads every error the same way and support finds its logs. An unexpected failure
   answers a 500 without its message, which only the logs hold, as OWASP's Error Handling Cheat Sheet advises. One

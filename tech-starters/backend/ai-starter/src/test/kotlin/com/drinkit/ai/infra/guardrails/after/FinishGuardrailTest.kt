@@ -19,6 +19,7 @@ internal class FinishGuardrailTest {
     @ParameterizedTest
     @CsvSource(
         "CONTENT_FILTER, content-filter, HIGH",
+        "SAFETY, content-filter, HIGH",
         "refusal, refusal, HIGH",
         "LENGTH, cut-short, LOW",
         "max_tokens, cut-short, LOW",
