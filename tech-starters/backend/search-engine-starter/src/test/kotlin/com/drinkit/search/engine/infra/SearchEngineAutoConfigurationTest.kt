@@ -9,7 +9,7 @@ import com.drinkit.search.engine.SearchIndex
 import com.drinkit.search.engine.SearchIndexes
 import com.drinkit.search.engine.Wine
 import com.drinkit.search.engine.declare
-import com.drinkit.search.engine.generated.jooq.DrinkitApplication
+import com.drinkit.search.engine.generated.jooq.DrinkitStarters
 import com.drinkit.search.engine.infra.meilisearch.MeilisearchEngine
 import com.drinkit.search.engine.infra.meilisearch.MeilisearchIndexes
 import com.meilisearch.sdk.Client
@@ -36,7 +36,7 @@ import org.springframework.core.env.Environment
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 @MeilisearchIntegrationTest
 internal class SearchEngineAutoConfigurationTest {
 

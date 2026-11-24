@@ -17,7 +17,7 @@ flowchart LR
     Client -- "Idempotency-Key" --> Endpoint["@Idempotent endpoint"]
     Endpoint -- "publishes, derived key" --> Handler["idempotent handler"]
     Handler -- "Idempotency-Key, derived" --> Provider[(Provider API)]
-    Endpoint & Handler --> Keys[("PostgreSQL<br/>drinkit_application.idempotency_key")]
+    Endpoint & Handler --> Keys[("PostgreSQL<br/>drinkit_starters.idempotency_key")]
 ```
 
 ## How it works

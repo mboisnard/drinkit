@@ -4,7 +4,7 @@ import com.drinkit.file.storage.FileId
 import com.drinkit.file.storage.FileNotFound
 import com.drinkit.file.storage.FileResource
 import com.drinkit.file.storage.FileStorageTestContract
-import com.drinkit.file.storage.generated.jooq.DrinkitApplication
+import com.drinkit.file.storage.generated.jooq.DrinkitStarters
 import com.drinkit.file.storage.infra.files.FileStorageTestContext.Companion.ADA
 import com.drinkit.file.storage.infra.files.FileStorageTestContext.Companion.GRACE
 import com.drinkit.file.storage.infra.files.FileStorageTestContext.Companion.PUBLIC_USAGE
@@ -33,7 +33,7 @@ import java.net.URI
 import java.nio.file.Path
 import kotlin.io.path.listDirectoryEntries
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 @SpringBootTest(classes = [FileStorageTestContext::class])
 // The database of the class is dropped after it, so no other class can reuse the context that points at it
 @DirtiesContext

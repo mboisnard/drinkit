@@ -5,7 +5,7 @@ import com.drinkit.cache.ControlledTicker
 import com.drinkit.configuration.Configurations
 import com.drinkit.configuration.InMemoryConfigurations
 import com.drinkit.configuration.configurationKey
-import com.drinkit.configuration.generated.jooq.DrinkitApplication
+import com.drinkit.configuration.generated.jooq.DrinkitStarters
 import com.drinkit.configuration.generated.jooq.tables.references.CONFIGURATION
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.test.ControlledClock
@@ -34,7 +34,7 @@ import tools.jackson.module.kotlin.jacksonMapperBuilder
 import java.time.Clock
 import java.time.Duration
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 internal class ConfigurationAutoConfigurationTest {
 
     private val runner = ApplicationContextRunner()

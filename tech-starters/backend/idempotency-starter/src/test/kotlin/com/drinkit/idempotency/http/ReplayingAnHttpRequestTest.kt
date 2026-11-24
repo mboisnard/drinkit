@@ -1,10 +1,10 @@
 package com.drinkit.idempotency.http
 
-import com.drinkit.idempotency.generated.jooq.DrinkitApplication
+import com.drinkit.idempotency.generated.jooq.DrinkitStarters
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.security.ConnectedUser
 import com.drinkit.security.connectedAs
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import com.drinkit.test.ControlledClock
 import com.drinkit.test.rootCause
 import io.kotest.matchers.collections.shouldContainExactly
@@ -26,7 +26,7 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
-@JooqIntegrationTest(schemas = [DrinkitSession::class, DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitSecurity::class, DrinkitStarters::class])
 @SpringBootTest(classes = [IdempotencyTestApplication::class])
 // The database of the class is dropped after it, so no other class can reuse the context that points at it
 @DirtiesContext

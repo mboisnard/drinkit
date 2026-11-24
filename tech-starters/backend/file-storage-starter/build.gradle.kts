@@ -32,7 +32,7 @@ jooq {
             generator.apply {
                 database.apply {
                     includes = "stored_file"
-                    inputSchema = "drinkit_application"
+                    inputSchema = "drinkit_starters"
                 }
                 target.apply {
                     packageName = "com.drinkit.file.storage.generated.jooq"

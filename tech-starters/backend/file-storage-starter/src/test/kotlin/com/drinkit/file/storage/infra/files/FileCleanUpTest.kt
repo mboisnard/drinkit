@@ -2,7 +2,7 @@ package com.drinkit.file.storage.infra.files
 
 import com.drinkit.file.storage.FileId
 import com.drinkit.file.storage.FileResource
-import com.drinkit.file.storage.generated.jooq.DrinkitApplication
+import com.drinkit.file.storage.generated.jooq.DrinkitStarters
 import com.drinkit.file.storage.infra.files.FileStorageTestContext.Companion.PRIVATE_USAGE
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.test.ControlledClock
@@ -19,7 +19,7 @@ import java.io.IOException
 import java.nio.file.Path
 import java.time.Duration
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 // Out of a web environment, no test runs in a request: the backend uploads, keeps and deletes the files
 @SpringBootTest(classes = [FileStorageTestContext::class], webEnvironment = SpringBootTest.WebEnvironment.NONE)
 // The database of the class is dropped after it, so no other class can reuse the context that points at it

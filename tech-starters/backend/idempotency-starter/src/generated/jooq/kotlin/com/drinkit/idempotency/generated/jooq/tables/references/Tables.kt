@@ -10,6 +10,6 @@ import com.drinkit.idempotency.generated.jooq.tables.IdempotencyKey
 
 
 /**
- * The table <code>drinkit_application.idempotency_key</code>.
+ * The table <code>drinkit_starters.idempotency_key</code>.
  */
 val IDEMPOTENCY_KEY: IdempotencyKey = IdempotencyKey.IDEMPOTENCY_KEY

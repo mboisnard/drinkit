@@ -20,7 +20,7 @@ jooq {
             generator.apply {
                 database.apply {
                     includes = "idempotency_key"
-                    inputSchema = "drinkit_application"
+                    inputSchema = "drinkit_starters"
                 }
                 target.apply {
                     packageName = "com.drinkit.idempotency.generated.jooq"

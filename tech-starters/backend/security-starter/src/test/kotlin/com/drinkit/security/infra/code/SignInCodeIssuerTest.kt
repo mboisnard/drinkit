@@ -2,7 +2,7 @@ package com.drinkit.security.infra.code
 
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.security.SpySignInCodeSender
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import com.drinkit.security.generated.jooq.tables.references.SIGN_IN_CODE
 import com.drinkit.security.infra.SecurityStarterProperties
 import io.kotest.matchers.collections.shouldNotContain
@@ -18,7 +18,7 @@ import java.time.ZoneOffset
 private const val LOGIN = "ada@drinkit.test"
 private val NOW = Instant.parse("2026-11-06T10:00:00Z")
 
-@JooqIntegrationTest(schemas = [DrinkitSession::class])
+@JooqIntegrationTest(schemas = [DrinkitSecurity::class])
 internal class SignInCodeIssuerTest {
 
     private val sender = SpySignInCodeSender()

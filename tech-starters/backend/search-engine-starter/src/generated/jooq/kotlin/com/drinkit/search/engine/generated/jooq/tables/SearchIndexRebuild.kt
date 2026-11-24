@@ -4,7 +4,7 @@
 package com.drinkit.search.engine.generated.jooq.tables
 
 
-import com.drinkit.search.engine.generated.jooq.DrinkitApplication
+import com.drinkit.search.engine.generated.jooq.DrinkitStarters
 import com.drinkit.search.engine.generated.jooq.keys.SEARCH_INDEX_REBUILD_PKEY
 import com.drinkit.search.engine.generated.jooq.tables.records.SearchIndexRebuildRecord
 
@@ -49,7 +49,7 @@ open class SearchIndexRebuild(
     where: Condition?
 ): TableImpl<SearchIndexRebuildRecord>(
     alias,
-    DrinkitApplication.DRINKIT_APPLICATION,
+    if (aliased == null) DrinkitStarters.DRINKIT_STARTERS else null,
     path,
     childPath,
     parentPath,
@@ -63,7 +63,7 @@ open class SearchIndexRebuild(
 
         /**
          * The reference instance of
-         * <code>drinkit_application.search_index_rebuild</code>
+         * <code>drinkit_starters.search_index_rebuild</code>
          */
         val SEARCH_INDEX_REBUILD: SearchIndexRebuild = SearchIndexRebuild()
     }
@@ -74,31 +74,29 @@ open class SearchIndexRebuild(
     override fun getRecordType(): Class<SearchIndexRebuildRecord> = SearchIndexRebuildRecord::class.java
 
     /**
-     * The column
-     * <code>drinkit_application.search_index_rebuild.index_name</code>.
+     * The column <code>drinkit_starters.search_index_rebuild.index_name</code>.
      */
     val INDEX_NAME: TableField<SearchIndexRebuildRecord, String?> = createField(DSL.name("index_name"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column
-     * <code>drinkit_application.search_index_rebuild.rebuild_id</code>.
+     * The column <code>drinkit_starters.search_index_rebuild.rebuild_id</code>.
      */
     val REBUILD_ID: TableField<SearchIndexRebuildRecord, UUID?> = createField(DSL.name("rebuild_id"), SQLDataType.UUID.nullable(false), this, "")
 
     /**
      * The column
-     * <code>drinkit_application.search_index_rebuild.total_batches</code>.
+     * <code>drinkit_starters.search_index_rebuild.total_batches</code>.
      */
     val TOTAL_BATCHES: TableField<SearchIndexRebuildRecord, Long?> = createField(DSL.name("total_batches"), SQLDataType.BIGINT.nullable(false), this, "")
 
     /**
      * The column
-     * <code>drinkit_application.search_index_rebuild.done_batches</code>.
+     * <code>drinkit_starters.search_index_rebuild.done_batches</code>.
      */
     val DONE_BATCHES: TableField<SearchIndexRebuildRecord, Array<Long?>?> = createField(DSL.name("done_batches"), SQLDataType.BIGINT.array().nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.search_index_rebuild.started</code>.
+     * The column <code>drinkit_starters.search_index_rebuild.started</code>.
      */
     val STARTED: TableField<SearchIndexRebuildRecord, OffsetDateTime?> = createField(DSL.name("started"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
@@ -107,27 +105,27 @@ open class SearchIndexRebuild(
     private constructor(alias: Name, aliased: Table<SearchIndexRebuildRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>drinkit_application.search_index_rebuild</code>
+     * Create an aliased <code>drinkit_starters.search_index_rebuild</code>
      * table reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>drinkit_application.search_index_rebuild</code>
+     * Create an aliased <code>drinkit_starters.search_index_rebuild</code>
      * table reference
      */
     constructor(alias: Name): this(alias, SEARCH_INDEX_REBUILD)
 
     /**
-     * Create a <code>drinkit_application.search_index_rebuild</code> table
+     * Create a <code>drinkit_starters.search_index_rebuild</code> table
      * reference
      */
     constructor(): this(DSL.name("search_index_rebuild"), null)
-    override fun getSchema(): Schema? = if (aliased()) null else DrinkitApplication.DRINKIT_APPLICATION
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitStarters.DRINKIT_STARTERS
     override fun getPrimaryKey(): UniqueKey<SearchIndexRebuildRecord> = SEARCH_INDEX_REBUILD_PKEY
     override fun `as`(alias: String): SearchIndexRebuild = SearchIndexRebuild(DSL.name(alias), this)
     override fun `as`(alias: Name): SearchIndexRebuild = SearchIndexRebuild(alias, this)
-    override fun `as`(alias: Table<*>): SearchIndexRebuild = SearchIndexRebuild(alias.qualifiedName, this)
+    override fun `as`(alias: Table<*>): SearchIndexRebuild = SearchIndexRebuild(alias.unqualifiedName, this)
 
     /**
      * Rename this table

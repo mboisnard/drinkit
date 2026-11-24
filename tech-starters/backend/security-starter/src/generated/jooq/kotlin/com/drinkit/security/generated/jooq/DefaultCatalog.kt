@@ -25,12 +25,12 @@ open class DefaultCatalog : CatalogImpl("") {
     }
 
     /**
-     * The schema <code>drinkit_session</code>.
+     * The schema <code>drinkit_security</code>.
      */
-    val DRINKIT_SESSION: DrinkitSession get(): DrinkitSession = DrinkitSession.DRINKIT_SESSION
+    val DRINKIT_SECURITY: DrinkitSecurity get(): DrinkitSecurity = DrinkitSecurity.DRINKIT_SECURITY
 
     override fun getSchemas(): List<Schema> = listOf(
-        DrinkitSession.DRINKIT_SESSION
+        DrinkitSecurity.DRINKIT_SECURITY
     )
 
     /**

@@ -14,7 +14,7 @@ flowchart LR
     Controller --> Api["CurrentUser, SessionData, Sessions"]
     Chain -->|finds or registers the user| Port[UserAccounts adapter of the application]
     Chain -->|hands the code| Sender[SignInCodeSender adapter of the application]
-    Chain --> DB[(PostgreSQL, drinkit_session)]
+    Chain --> DB[(PostgreSQL, drinkit_security)]
     Api --> DB
 ```
 
@@ -151,7 +151,7 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
   counts them, and an IPv6 address counts by its network of 64 bits. Without its `RateLimiter`, as with
   `starters.rate-limit.enabled=false`, nothing limits the codes but their wrong tries per email.
 - **Tables**: the [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md) creates
-  the `drinkit_session` tables of the sessions, the remember-me tokens and the sign-in codes. The sign-in by code needs
+  the `drinkit_security` tables of the sessions, the remember-me tokens and the sign-in codes. The sign-in by code needs
   PostgreSQL through jOOQ, for its codes and for the counts of its limits.
 - **Choices**: ADRs [011](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/011-sign-in-without-a-password.md),
   [012](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/012-keep-sessions-in-postgresql.md),

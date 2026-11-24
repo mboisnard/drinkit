@@ -4,7 +4,7 @@
 package com.drinkit.security.generated.jooq.tables
 
 
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import com.drinkit.security.generated.jooq.keys.SPRING_SESSION_ATTRIBUTES_PK
 import com.drinkit.security.generated.jooq.keys.SPRING_SESSION_ATTRIBUTES__SPRING_SESSION_ATTRIBUTES_FK
 import com.drinkit.security.generated.jooq.tables.SpringSession.SpringSessionPath
@@ -51,7 +51,7 @@ open class SpringSessionAttributes(
     where: Condition?
 ): TableImpl<SpringSessionAttributesRecord>(
     alias,
-    DrinkitSession.DRINKIT_SESSION,
+    if (aliased == null) DrinkitSecurity.DRINKIT_SECURITY else null,
     path,
     childPath,
     parentPath,
@@ -65,7 +65,7 @@ open class SpringSessionAttributes(
 
         /**
          * The reference instance of
-         * <code>drinkit_session.spring_session_attributes</code>
+         * <code>drinkit_security.spring_session_attributes</code>
          */
         val SPRING_SESSION_ATTRIBUTES: SpringSessionAttributes = SpringSessionAttributes()
     }
@@ -77,19 +77,19 @@ open class SpringSessionAttributes(
 
     /**
      * The column
-     * <code>drinkit_session.spring_session_attributes.session_primary_id</code>.
+     * <code>drinkit_security.spring_session_attributes.session_primary_id</code>.
      */
     val SESSION_PRIMARY_ID: TableField<SpringSessionAttributesRecord, String?> = createField(DSL.name("session_primary_id"), SQLDataType.CHAR(36).nullable(false), this, "")
 
     /**
      * The column
-     * <code>drinkit_session.spring_session_attributes.attribute_name</code>.
+     * <code>drinkit_security.spring_session_attributes.attribute_name</code>.
      */
     val ATTRIBUTE_NAME: TableField<SpringSessionAttributesRecord, String?> = createField(DSL.name("attribute_name"), SQLDataType.VARCHAR(200).nullable(false), this, "")
 
     /**
      * The column
-     * <code>drinkit_session.spring_session_attributes.attribute_bytes</code>.
+     * <code>drinkit_security.spring_session_attributes.attribute_bytes</code>.
      */
     val ATTRIBUTE_BYTES: TableField<SpringSessionAttributesRecord, JSONB?> = createField(DSL.name("attribute_bytes"), SQLDataType.JSONB.nullable(false), this, "")
 
@@ -98,19 +98,19 @@ open class SpringSessionAttributes(
     private constructor(alias: Name, aliased: Table<SpringSessionAttributesRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>drinkit_session.spring_session_attributes</code>
+     * Create an aliased <code>drinkit_security.spring_session_attributes</code>
      * table reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>drinkit_session.spring_session_attributes</code>
+     * Create an aliased <code>drinkit_security.spring_session_attributes</code>
      * table reference
      */
     constructor(alias: Name): this(alias, SPRING_SESSION_ATTRIBUTES)
 
     /**
-     * Create a <code>drinkit_session.spring_session_attributes</code> table
+     * Create a <code>drinkit_security.spring_session_attributes</code> table
      * reference
      */
     constructor(): this(DSL.name("spring_session_attributes"), null)
@@ -125,21 +125,21 @@ open class SpringSessionAttributes(
         private constructor(alias: Name, aliased: Table<SpringSessionAttributesRecord>): super(alias, aliased)
         override fun `as`(alias: String): SpringSessionAttributesPath = SpringSessionAttributesPath(DSL.name(alias), this)
         override fun `as`(alias: Name): SpringSessionAttributesPath = SpringSessionAttributesPath(alias, this)
-        override fun `as`(alias: Table<*>): SpringSessionAttributesPath = SpringSessionAttributesPath(alias.qualifiedName, this)
+        override fun `as`(alias: Table<*>): SpringSessionAttributesPath = SpringSessionAttributesPath(alias.unqualifiedName, this)
     }
-    override fun getSchema(): Schema? = if (aliased()) null else DrinkitSession.DRINKIT_SESSION
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitSecurity.DRINKIT_SECURITY
     override fun getPrimaryKey(): UniqueKey<SpringSessionAttributesRecord> = SPRING_SESSION_ATTRIBUTES_PK
     override fun getReferences(): List<ForeignKey<SpringSessionAttributesRecord, *>> = listOf(SPRING_SESSION_ATTRIBUTES__SPRING_SESSION_ATTRIBUTES_FK)
 
     /**
      * Get the implicit join path to the
-     * <code>drinkit_session.spring_session</code> table.
+     * <code>drinkit_security.spring_session</code> table.
      */
     fun springSession(): SpringSessionPath = springSession
     val springSession: SpringSessionPath by lazy { SpringSessionPath(this, SPRING_SESSION_ATTRIBUTES__SPRING_SESSION_ATTRIBUTES_FK, null) }
     override fun `as`(alias: String): SpringSessionAttributes = SpringSessionAttributes(DSL.name(alias), this)
     override fun `as`(alias: Name): SpringSessionAttributes = SpringSessionAttributes(alias, this)
-    override fun `as`(alias: Table<*>): SpringSessionAttributes = SpringSessionAttributes(alias.qualifiedName, this)
+    override fun `as`(alias: Table<*>): SpringSessionAttributes = SpringSessionAttributes(alias.unqualifiedName, this)
 
     /**
      * Rename this table

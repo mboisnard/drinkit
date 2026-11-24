@@ -4,7 +4,7 @@
 package com.drinkit.file.storage.generated.jooq.tables
 
 
-import com.drinkit.file.storage.generated.jooq.DrinkitApplication
+import com.drinkit.file.storage.generated.jooq.DrinkitStarters
 import com.drinkit.file.storage.generated.jooq.indexes.STORED_FILE_UPLOADED_AT_IDX
 import com.drinkit.file.storage.generated.jooq.keys.STORED_FILE_PKEY
 import com.drinkit.file.storage.generated.jooq.tables.records.StoredFileRecord
@@ -51,7 +51,7 @@ open class StoredFile(
     where: Condition?
 ): TableImpl<StoredFileRecord>(
     alias,
-    DrinkitApplication.DRINKIT_APPLICATION,
+    if (aliased == null) DrinkitStarters.DRINKIT_STARTERS else null,
     path,
     childPath,
     parentPath,
@@ -64,8 +64,7 @@ open class StoredFile(
     companion object {
 
         /**
-         * The reference instance of
-         * <code>drinkit_application.stored_file</code>
+         * The reference instance of <code>drinkit_starters.stored_file</code>
          */
         val STORED_FILE: StoredFile = StoredFile()
     }
@@ -76,52 +75,52 @@ open class StoredFile(
     override fun getRecordType(): Class<StoredFileRecord> = StoredFileRecord::class.java
 
     /**
-     * The column <code>drinkit_application.stored_file.id</code>.
+     * The column <code>drinkit_starters.stored_file.id</code>.
      */
     val ID: TableField<StoredFileRecord, String?> = createField(DSL.name("id"), SQLDataType.VARCHAR(26).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.stored_file.usage</code>.
+     * The column <code>drinkit_starters.stored_file.usage</code>.
      */
     val USAGE: TableField<StoredFileRecord, String?> = createField(DSL.name("usage"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.stored_file.owner_id</code>.
+     * The column <code>drinkit_starters.stored_file.owner_id</code>.
      */
     val OWNER_ID: TableField<StoredFileRecord, String?> = createField(DSL.name("owner_id"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.stored_file.status</code>.
+     * The column <code>drinkit_starters.stored_file.status</code>.
      */
     val STATUS: TableField<StoredFileRecord, String?> = createField(DSL.name("status"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.stored_file.content_type</code>.
+     * The column <code>drinkit_starters.stored_file.content_type</code>.
      */
     val CONTENT_TYPE: TableField<StoredFileRecord, String?> = createField(DSL.name("content_type"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.stored_file.size</code>.
+     * The column <code>drinkit_starters.stored_file.size</code>.
      */
     val SIZE: TableField<StoredFileRecord, Long?> = createField(DSL.name("size"), SQLDataType.BIGINT.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.stored_file.name</code>.
+     * The column <code>drinkit_starters.stored_file.name</code>.
      */
     val NAME: TableField<StoredFileRecord, String?> = createField(DSL.name("name"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.stored_file.uploaded_at</code>.
+     * The column <code>drinkit_starters.stored_file.uploaded_at</code>.
      */
     val UPLOADED_AT: TableField<StoredFileRecord, OffsetDateTime?> = createField(DSL.name("uploaded_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.stored_file.resource_type</code>.
+     * The column <code>drinkit_starters.stored_file.resource_type</code>.
      */
     val RESOURCE_TYPE: TableField<StoredFileRecord, String?> = createField(DSL.name("resource_type"), SQLDataType.CLOB, this, "")
 
     /**
-     * The column <code>drinkit_application.stored_file.resource_id</code>.
+     * The column <code>drinkit_starters.stored_file.resource_id</code>.
      */
     val RESOURCE_ID: TableField<StoredFileRecord, String?> = createField(DSL.name("resource_id"), SQLDataType.CLOB, this, "")
 
@@ -130,27 +129,27 @@ open class StoredFile(
     private constructor(alias: Name, aliased: Table<StoredFileRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>drinkit_application.stored_file</code> table
+     * Create an aliased <code>drinkit_starters.stored_file</code> table
      * reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>drinkit_application.stored_file</code> table
+     * Create an aliased <code>drinkit_starters.stored_file</code> table
      * reference
      */
     constructor(alias: Name): this(alias, STORED_FILE)
 
     /**
-     * Create a <code>drinkit_application.stored_file</code> table reference
+     * Create a <code>drinkit_starters.stored_file</code> table reference
      */
     constructor(): this(DSL.name("stored_file"), null)
-    override fun getSchema(): Schema? = if (aliased()) null else DrinkitApplication.DRINKIT_APPLICATION
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitStarters.DRINKIT_STARTERS
     override fun getIndexes(): List<Index> = listOf(STORED_FILE_UPLOADED_AT_IDX)
     override fun getPrimaryKey(): UniqueKey<StoredFileRecord> = STORED_FILE_PKEY
     override fun `as`(alias: String): StoredFile = StoredFile(DSL.name(alias), this)
     override fun `as`(alias: Name): StoredFile = StoredFile(alias, this)
-    override fun `as`(alias: Table<*>): StoredFile = StoredFile(alias.qualifiedName, this)
+    override fun `as`(alias: Table<*>): StoredFile = StoredFile(alias.unqualifiedName, this)
 
     /**
      * Rename this table

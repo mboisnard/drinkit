@@ -4,7 +4,7 @@
 package com.drinkit.security.generated.jooq.tables
 
 
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import com.drinkit.security.generated.jooq.indexes.SPRING_SESSION_EXPIRY_TIME_IDX
 import com.drinkit.security.generated.jooq.indexes.SPRING_SESSION_PRINCIPAL_NAME_IDX
 import com.drinkit.security.generated.jooq.indexes.SPRING_SESSION_SESSION_ID_IDX
@@ -54,7 +54,7 @@ open class SpringSession(
     where: Condition?
 ): TableImpl<SpringSessionRecord>(
     alias,
-    DrinkitSession.DRINKIT_SESSION,
+    if (aliased == null) DrinkitSecurity.DRINKIT_SECURITY else null,
     path,
     childPath,
     parentPath,
@@ -67,7 +67,8 @@ open class SpringSession(
     companion object {
 
         /**
-         * The reference instance of <code>drinkit_session.spring_session</code>
+         * The reference instance of
+         * <code>drinkit_security.spring_session</code>
          */
         val SPRING_SESSION: SpringSession = SpringSession()
     }
@@ -78,38 +79,38 @@ open class SpringSession(
     override fun getRecordType(): Class<SpringSessionRecord> = SpringSessionRecord::class.java
 
     /**
-     * The column <code>drinkit_session.spring_session.primary_id</code>.
+     * The column <code>drinkit_security.spring_session.primary_id</code>.
      */
     val PRIMARY_ID: TableField<SpringSessionRecord, String?> = createField(DSL.name("primary_id"), SQLDataType.CHAR(36).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.spring_session.session_id</code>.
+     * The column <code>drinkit_security.spring_session.session_id</code>.
      */
     val SESSION_ID: TableField<SpringSessionRecord, String?> = createField(DSL.name("session_id"), SQLDataType.VARCHAR(64).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.spring_session.creation_time</code>.
+     * The column <code>drinkit_security.spring_session.creation_time</code>.
      */
     val CREATION_TIME: TableField<SpringSessionRecord, Long?> = createField(DSL.name("creation_time"), SQLDataType.BIGINT.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.spring_session.last_access_time</code>.
+     * The column <code>drinkit_security.spring_session.last_access_time</code>.
      */
     val LAST_ACCESS_TIME: TableField<SpringSessionRecord, Long?> = createField(DSL.name("last_access_time"), SQLDataType.BIGINT.nullable(false), this, "")
 
     /**
      * The column
-     * <code>drinkit_session.spring_session.max_inactive_interval</code>.
+     * <code>drinkit_security.spring_session.max_inactive_interval</code>.
      */
     val MAX_INACTIVE_INTERVAL: TableField<SpringSessionRecord, Int?> = createField(DSL.name("max_inactive_interval"), SQLDataType.INTEGER.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.spring_session.expiry_time</code>.
+     * The column <code>drinkit_security.spring_session.expiry_time</code>.
      */
     val EXPIRY_TIME: TableField<SpringSessionRecord, Long?> = createField(DSL.name("expiry_time"), SQLDataType.BIGINT.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_session.spring_session.principal_name</code>.
+     * The column <code>drinkit_security.spring_session.principal_name</code>.
      */
     val PRINCIPAL_NAME: TableField<SpringSessionRecord, String?> = createField(DSL.name("principal_name"), SQLDataType.VARCHAR(100), this, "")
 
@@ -118,19 +119,19 @@ open class SpringSession(
     private constructor(alias: Name, aliased: Table<SpringSessionRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>drinkit_session.spring_session</code> table
+     * Create an aliased <code>drinkit_security.spring_session</code> table
      * reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>drinkit_session.spring_session</code> table
+     * Create an aliased <code>drinkit_security.spring_session</code> table
      * reference
      */
     constructor(alias: Name): this(alias, SPRING_SESSION)
 
     /**
-     * Create a <code>drinkit_session.spring_session</code> table reference
+     * Create a <code>drinkit_security.spring_session</code> table reference
      */
     constructor(): this(DSL.name("spring_session"), null)
 
@@ -144,9 +145,9 @@ open class SpringSession(
         private constructor(alias: Name, aliased: Table<SpringSessionRecord>): super(alias, aliased)
         override fun `as`(alias: String): SpringSessionPath = SpringSessionPath(DSL.name(alias), this)
         override fun `as`(alias: Name): SpringSessionPath = SpringSessionPath(alias, this)
-        override fun `as`(alias: Table<*>): SpringSessionPath = SpringSessionPath(alias.qualifiedName, this)
+        override fun `as`(alias: Table<*>): SpringSessionPath = SpringSessionPath(alias.unqualifiedName, this)
     }
-    override fun getSchema(): Schema? = if (aliased()) null else DrinkitSession.DRINKIT_SESSION
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitSecurity.DRINKIT_SECURITY
     override fun getIndexes(): List<Index> = listOf(SPRING_SESSION_EXPIRY_TIME_IDX, SPRING_SESSION_PRINCIPAL_NAME_IDX, SPRING_SESSION_SESSION_ID_IDX)
     override fun getPrimaryKey(): UniqueKey<SpringSessionRecord> = SPRING_SESSION_PKEY
 
@@ -154,7 +155,7 @@ open class SpringSession(
 
     /**
      * Get the implicit to-many join path to the
-     * <code>drinkit_session.spring_session_attributes</code> table
+     * <code>drinkit_security.spring_session_attributes</code> table
      */
     fun springSessionAttributes(): SpringSessionAttributesPath {
         if (!this::_springSessionAttributes.isInitialized)
@@ -167,7 +168,7 @@ open class SpringSession(
         get(): SpringSessionAttributesPath = springSessionAttributes()
     override fun `as`(alias: String): SpringSession = SpringSession(DSL.name(alias), this)
     override fun `as`(alias: Name): SpringSession = SpringSession(alias, this)
-    override fun `as`(alias: Table<*>): SpringSession = SpringSession(alias.qualifiedName, this)
+    override fun `as`(alias: Table<*>): SpringSession = SpringSession(alias.unqualifiedName, this)
 
     /**
      * Rename this table

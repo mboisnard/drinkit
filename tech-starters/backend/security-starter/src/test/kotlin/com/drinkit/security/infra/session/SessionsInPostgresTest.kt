@@ -9,7 +9,7 @@ import com.drinkit.security.SESSION_COOKIE
 import com.drinkit.security.Sessions
 import com.drinkit.security.SpySignInCodeSender
 import com.drinkit.security.TestAccounts
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldContainExactly
@@ -27,7 +27,7 @@ import org.springframework.transaction.support.TransactionTemplate
 import tools.jackson.databind.json.JsonMapper
 import java.time.Duration
 
-@JooqIntegrationTest(schemas = [DrinkitSession::class])
+@JooqIntegrationTest(schemas = [DrinkitSecurity::class])
 @PostgresSessionsTest
 internal class SessionsInPostgresTest(
     private val mockMvc: MockMvc,
@@ -118,8 +118,8 @@ internal class SessionsInPostgresTest(
         transactions.executeWithoutResult {
             database.sql(
                 """
-                UPDATE drinkit_session.spring_session_attributes SET attribute_bytes = '{"@class": "com.example.Gone"}'
-                WHERE session_primary_id IN (SELECT primary_id FROM drinkit_session.spring_session WHERE principal_name = ?)
+                UPDATE drinkit_security.spring_session_attributes SET attribute_bytes = '{"@class": "com.example.Gone"}'
+                WHERE session_primary_id IN (SELECT primary_id FROM drinkit_security.spring_session WHERE principal_name = ?)
                 """,
             ).param(account.id).update()
         }
@@ -204,19 +204,19 @@ internal class SessionsInPostgresTest(
     }
 
     private fun sessionIdsOf(userId: String) =
-        database.sql("SELECT session_id FROM drinkit_session.spring_session WHERE principal_name = ?")
+        database.sql("SELECT session_id FROM drinkit_security.spring_session WHERE principal_name = ?")
             .param(userId).query(String::class.java).list()
 
     private fun attributesOf(userId: String) = database.sql(
         """
-        SELECT attribute_bytes::text FROM drinkit_session.spring_session_attributes
-        WHERE session_primary_id IN (SELECT primary_id FROM drinkit_session.spring_session WHERE principal_name = ?)
+        SELECT attribute_bytes::text FROM drinkit_security.spring_session_attributes
+        WHERE session_primary_id IN (SELECT primary_id FROM drinkit_security.spring_session WHERE principal_name = ?)
         """,
     ).param(userId).query(String::class.java).list().map { JsonMapper.shared().readValue(it, Map::class.java) }
 
     private fun age(userId: String, age: Duration) = transactions.executeWithoutResult {
         database.sql(
-            "UPDATE drinkit_session.spring_session SET creation_time = creation_time - ? WHERE principal_name = ?",
+            "UPDATE drinkit_security.spring_session SET creation_time = creation_time - ? WHERE principal_name = ?",
         ).param(age.toMillis()).param(userId).update() shouldBe 1
     }
 }

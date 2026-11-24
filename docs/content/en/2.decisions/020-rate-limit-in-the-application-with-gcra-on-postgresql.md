@@ -36,7 +36,7 @@ the boundary: twice the limit passes across it, and a key that spent its limit e
 - **GCRA.** A limit of `N` per period frees one call every `period / N`. Each limit of a key keeps its theoretical
   arrival, the instant its next call would be due at that pace. A call passes while that instant stays within one
   period of now, and moves it one interval later, times the cost of the call. The burst is the limit.
-- **Computed in Kotlin, stored in PostgreSQL.** `drinkit_application.rate_limit` holds one row per rule, key hash
+- **Computed in Kotlin, stored in PostgreSQL.** `drinkit_starters.rate_limit` holds one row per rule, key hash
   and limit. A call locks its key with a transaction-scoped advisory lock, reads its rows, decides, and saves them
   in a transaction of its own, which then forgets a few rows whose arrival has passed.
 - **Two entry points.** `@RateLimited` on a method names a policy, a bean that holds the rule and computes the key

@@ -4,7 +4,7 @@
 package com.drinkit.idempotency.generated.jooq.tables
 
 
-import com.drinkit.idempotency.generated.jooq.DrinkitApplication
+import com.drinkit.idempotency.generated.jooq.DrinkitStarters
 import com.drinkit.idempotency.generated.jooq.indexes.IDEMPOTENCY_KEY_TAKEN_AT_IDX
 import com.drinkit.idempotency.generated.jooq.keys.IDEMPOTENCY_KEY_PKEY
 import com.drinkit.idempotency.generated.jooq.tables.records.IdempotencyKeyRecord
@@ -52,7 +52,7 @@ open class IdempotencyKey(
     where: Condition?
 ): TableImpl<IdempotencyKeyRecord>(
     alias,
-    DrinkitApplication.DRINKIT_APPLICATION,
+    if (aliased == null) DrinkitStarters.DRINKIT_STARTERS else null,
     path,
     childPath,
     parentPath,
@@ -66,7 +66,7 @@ open class IdempotencyKey(
 
         /**
          * The reference instance of
-         * <code>drinkit_application.idempotency_key</code>
+         * <code>drinkit_starters.idempotency_key</code>
          */
         val IDEMPOTENCY_KEY: IdempotencyKey = IdempotencyKey()
     }
@@ -77,42 +77,42 @@ open class IdempotencyKey(
     override fun getRecordType(): Class<IdempotencyKeyRecord> = IdempotencyKeyRecord::class.java
 
     /**
-     * The column <code>drinkit_application.idempotency_key.scope</code>.
+     * The column <code>drinkit_starters.idempotency_key.scope</code>.
      */
     val SCOPE: TableField<IdempotencyKeyRecord, String?> = createField(DSL.name("scope"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.idempotency_key.key_hash</code>.
+     * The column <code>drinkit_starters.idempotency_key.key_hash</code>.
      */
     val KEY_HASH: TableField<IdempotencyKeyRecord, String?> = createField(DSL.name("key_hash"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.idempotency_key.owner</code>.
+     * The column <code>drinkit_starters.idempotency_key.owner</code>.
      */
     val OWNER: TableField<IdempotencyKeyRecord, UUID?> = createField(DSL.name("owner"), SQLDataType.UUID.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.idempotency_key.fingerprint</code>.
+     * The column <code>drinkit_starters.idempotency_key.fingerprint</code>.
      */
     val FINGERPRINT: TableField<IdempotencyKeyRecord, String?> = createField(DSL.name("fingerprint"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.idempotency_key.taken_at</code>.
+     * The column <code>drinkit_starters.idempotency_key.taken_at</code>.
      */
     val TAKEN_AT: TableField<IdempotencyKeyRecord, OffsetDateTime?> = createField(DSL.name("taken_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.idempotency_key.lease_until</code>.
+     * The column <code>drinkit_starters.idempotency_key.lease_until</code>.
      */
     val LEASE_UNTIL: TableField<IdempotencyKeyRecord, OffsetDateTime?> = createField(DSL.name("lease_until"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.idempotency_key.completed_at</code>.
+     * The column <code>drinkit_starters.idempotency_key.completed_at</code>.
      */
     val COMPLETED_AT: TableField<IdempotencyKeyRecord, OffsetDateTime?> = createField(DSL.name("completed_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6), this, "")
 
     /**
-     * The column <code>drinkit_application.idempotency_key.outcome</code>.
+     * The column <code>drinkit_starters.idempotency_key.outcome</code>.
      */
     val OUTCOME: TableField<IdempotencyKeyRecord, ByteArray?> = createField(DSL.name("outcome"), SQLDataType.BLOB, this, "")
 
@@ -121,27 +121,27 @@ open class IdempotencyKey(
     private constructor(alias: Name, aliased: Table<IdempotencyKeyRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>drinkit_application.idempotency_key</code> table
+     * Create an aliased <code>drinkit_starters.idempotency_key</code> table
      * reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>drinkit_application.idempotency_key</code> table
+     * Create an aliased <code>drinkit_starters.idempotency_key</code> table
      * reference
      */
     constructor(alias: Name): this(alias, IDEMPOTENCY_KEY)
 
     /**
-     * Create a <code>drinkit_application.idempotency_key</code> table reference
+     * Create a <code>drinkit_starters.idempotency_key</code> table reference
      */
     constructor(): this(DSL.name("idempotency_key"), null)
-    override fun getSchema(): Schema? = if (aliased()) null else DrinkitApplication.DRINKIT_APPLICATION
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitStarters.DRINKIT_STARTERS
     override fun getIndexes(): List<Index> = listOf(IDEMPOTENCY_KEY_TAKEN_AT_IDX)
     override fun getPrimaryKey(): UniqueKey<IdempotencyKeyRecord> = IDEMPOTENCY_KEY_PKEY
     override fun `as`(alias: String): IdempotencyKey = IdempotencyKey(DSL.name(alias), this)
     override fun `as`(alias: Name): IdempotencyKey = IdempotencyKey(alias, this)
-    override fun `as`(alias: Table<*>): IdempotencyKey = IdempotencyKey(alias.qualifiedName, this)
+    override fun `as`(alias: Table<*>): IdempotencyKey = IdempotencyKey(alias.unqualifiedName, this)
 
     /**
      * Rename this table

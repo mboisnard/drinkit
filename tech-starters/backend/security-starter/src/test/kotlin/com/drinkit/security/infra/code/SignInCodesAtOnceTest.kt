@@ -2,7 +2,7 @@ package com.drinkit.security.infra.code
 
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.security.PostgresSessionsTest
-import com.drinkit.security.generated.jooq.DrinkitSession
+import com.drinkit.security.generated.jooq.DrinkitSecurity
 import com.drinkit.security.infra.hashOf
 import com.drinkit.test.ControlledClock
 import io.kotest.matchers.shouldBe
@@ -15,7 +15,7 @@ private const val LOGIN = "ada@drinkit.test"
 private const val CODE = "042137"
 private const val REQUESTS = 8
 
-@JooqIntegrationTest(schemas = [DrinkitSession::class])
+@JooqIntegrationTest(schemas = [DrinkitSecurity::class])
 @PostgresSessionsTest
 internal class SignInCodesAtOnceTest(private val codes: SignInCodes, private val clock: ControlledClock) {
 

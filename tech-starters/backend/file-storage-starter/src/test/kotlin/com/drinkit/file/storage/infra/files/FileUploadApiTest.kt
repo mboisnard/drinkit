@@ -1,6 +1,6 @@
 package com.drinkit.file.storage.infra.files
 
-import com.drinkit.file.storage.generated.jooq.DrinkitApplication
+import com.drinkit.file.storage.generated.jooq.DrinkitStarters
 import com.drinkit.file.storage.infra.files.FileStorageTestContext.Companion.ADA
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.rate.limit.RateLimit
@@ -22,7 +22,7 @@ import java.nio.file.Path
 import java.time.Duration
 import kotlin.io.path.listDirectoryEntries
 
-@JooqIntegrationTest(schemas = [DrinkitApplication::class])
+@JooqIntegrationTest(schemas = [DrinkitStarters::class])
 @SpringBootTest(classes = [FileStorageTestContext::class])
 // The database of the class is dropped after it, so no other class can reuse the context that points at it
 @DirtiesContext

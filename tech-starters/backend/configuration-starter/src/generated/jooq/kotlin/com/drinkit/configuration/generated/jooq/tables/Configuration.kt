@@ -4,7 +4,7 @@
 package com.drinkit.configuration.generated.jooq.tables
 
 
-import com.drinkit.configuration.generated.jooq.DrinkitApplication
+import com.drinkit.configuration.generated.jooq.DrinkitStarters
 import com.drinkit.configuration.generated.jooq.keys.CONFIGURATION_PKEY
 import com.drinkit.configuration.generated.jooq.tables.records.ConfigurationRecord
 
@@ -49,7 +49,7 @@ open class Configuration(
     where: Condition?
 ): TableImpl<ConfigurationRecord>(
     alias,
-    DrinkitApplication.DRINKIT_APPLICATION,
+    if (aliased == null) DrinkitStarters.DRINKIT_STARTERS else null,
     path,
     childPath,
     parentPath,
@@ -62,8 +62,7 @@ open class Configuration(
     companion object {
 
         /**
-         * The reference instance of
-         * <code>drinkit_application.configuration</code>
+         * The reference instance of <code>drinkit_starters.configuration</code>
          */
         val CONFIGURATION: Configuration = Configuration()
     }
@@ -74,17 +73,17 @@ open class Configuration(
     override fun getRecordType(): Class<ConfigurationRecord> = ConfigurationRecord::class.java
 
     /**
-     * The column <code>drinkit_application.configuration.key</code>.
+     * The column <code>drinkit_starters.configuration.key</code>.
      */
     val KEY: TableField<ConfigurationRecord, String?> = createField(DSL.name("key"), SQLDataType.VARCHAR(255).nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.configuration.value</code>.
+     * The column <code>drinkit_starters.configuration.value</code>.
      */
     val VALUE: TableField<ConfigurationRecord, JSONB?> = createField(DSL.name("value"), SQLDataType.JSONB.nullable(false), this, "")
 
     /**
-     * The column <code>drinkit_application.configuration.modified</code>.
+     * The column <code>drinkit_starters.configuration.modified</code>.
      */
     val MODIFIED: TableField<ConfigurationRecord, OffsetDateTime?> = createField(DSL.name("modified"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "")
 
@@ -93,26 +92,26 @@ open class Configuration(
     private constructor(alias: Name, aliased: Table<ConfigurationRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
 
     /**
-     * Create an aliased <code>drinkit_application.configuration</code> table
+     * Create an aliased <code>drinkit_starters.configuration</code> table
      * reference
      */
     constructor(alias: String): this(DSL.name(alias))
 
     /**
-     * Create an aliased <code>drinkit_application.configuration</code> table
+     * Create an aliased <code>drinkit_starters.configuration</code> table
      * reference
      */
     constructor(alias: Name): this(alias, CONFIGURATION)
 
     /**
-     * Create a <code>drinkit_application.configuration</code> table reference
+     * Create a <code>drinkit_starters.configuration</code> table reference
      */
     constructor(): this(DSL.name("configuration"), null)
-    override fun getSchema(): Schema? = if (aliased()) null else DrinkitApplication.DRINKIT_APPLICATION
+    override fun getSchema(): Schema? = if (aliased()) null else DrinkitStarters.DRINKIT_STARTERS
     override fun getPrimaryKey(): UniqueKey<ConfigurationRecord> = CONFIGURATION_PKEY
     override fun `as`(alias: String): Configuration = Configuration(DSL.name(alias), this)
     override fun `as`(alias: Name): Configuration = Configuration(alias, this)
-    override fun `as`(alias: Table<*>): Configuration = Configuration(alias.qualifiedName, this)
+    override fun `as`(alias: Table<*>): Configuration = Configuration(alias.unqualifiedName, this)
 
     /**
      * Rename this table
