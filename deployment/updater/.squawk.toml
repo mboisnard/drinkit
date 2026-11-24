@@ -3,7 +3,7 @@
 # On a Squawk upgrade, read its changelog and put each new rule in one of the two lists: a misspelled name fails.
 # Not listed: require-timeout-settings and prefer-timestamptz, aliases of rules below.
 
-pg_version = "18.0"
+pg_version = "19.0"
 
 # Schema migrations run outside a transaction, data migrations inside one, as ChangelogConventionsTest checks. With
 # this one setting, Squawk accepts a BEGIN and COMMIT pair in a data file, which would cut that transaction

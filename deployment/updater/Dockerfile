@@ -1,6 +1,6 @@
 # The layers that `./gradlew :updater:extractLayers` writes to build/image, the build context. With only COPY,
 # an amd64 runner builds the arm64 image without emulation
-FROM gcr.io/distroless/java25-debian13:nonroot@sha256:1c4ced761d17961c900cba60c33c8c3c46edbdadaa9d5ef9806eb5a6824fd406
+FROM gcr.io/distroless/java25-debian13:nonroot@sha256:59bbb349c9752fc57b75744b41b1614c9dabe8bb4869523aabd5a4288f6c09a0
 COPY --link dependencies/ /app/
 COPY --link snapshot-dependencies/ /app/
 COPY --link application/ /app/
