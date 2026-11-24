@@ -4,6 +4,7 @@ import com.drinkit.generated.jooq.DrinkitApplication
 import com.drinkit.generated.jooq.tables.references.USER
 import com.drinkit.postgresql.JooqIntegrationTest
 import com.drinkit.test.ControlledClock
+import com.drinkit.user.core.UserId
 import com.drinkit.user.spi.Users
 import com.drinkit.user.spi.UsersTestContract
 import io.kotest.assertions.throwables.shouldThrow
@@ -62,7 +63,7 @@ internal class JooqUsersTest : UsersTestContract() {
     }
 
     private fun insertAUserWithRoles(vararg roles: String) = dsl.insertInto(USER)
-        .set(USER.ID, "000000000000000000000001")
+        .set(USER.ID, UserId.create().value)
         .set(USER.EMAIL, "jane.doe@example.com")
         .set(USER.STATUS, "ACTIVE")
         .set(USER.ENABLED, true)

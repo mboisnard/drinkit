@@ -58,7 +58,6 @@ internal class TestConventionsArchitectureTest {
                 "fixtures: write it, and extend it from the in-memory double's test and the adapter's test"
             suppress {
                 classFqName("com.drinkit.notification.spi.NotificationSender", FOLLOW_UP)
-                classFqName("com.drinkit.common.GenerateId", FOLLOW_UP)
                 classFqName("com.drinkit.money.forex.spi.ExchangeRateProvider", FOLLOW_UP)
                 classFqName("com.drinkit.cellar.spi.Cellars", FOLLOW_UP)
                 classFqName("com.drinkit.bottle.spi.Bottles", FOLLOW_UP)

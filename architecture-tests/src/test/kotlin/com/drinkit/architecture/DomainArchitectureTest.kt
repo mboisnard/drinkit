@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test
 private val DOMAIN_STARTERS = setOf(
     ":documentation-starter",
     ":event-sourcing-starter",
+    ":identifier-starter",
     ":kotlin-starter",
     ":messaging-starter",
     ":retryable-starter",
@@ -143,11 +144,11 @@ internal class DomainArchitectureTest {
     }
 
     @Test
-    fun `the domain reads no system clock and draws no identifier or random value itself`() {
+    fun `the domain reads no system clock, draws no random value and draws identifiers only through their create`() {
         rule("domain.time-and-ids-from-providers") {
-            description = "Tests control time, identifiers and randomness only when they are injected: call " +
-                "now(clock) and GenerateId, never Clock.system*(), now(), currentTimeMillis(), UUID.randomUUID() or " +
-                "Random"
+            description = "Tests control time and randomness only when they are injected, and every identifier " +
+                "has one format: call now(clock) and the create() of an identifier class, never Clock.system*(), " +
+                "now(), currentTimeMillis(), UUID.randomUUID(), a Uuid generator or Random"
             suppress {
                 file("*/com/drinkit/user/core/ProfileInformation.kt", FOLLOW_UP)
             }
@@ -166,6 +167,14 @@ internal class DomainArchitectureTest {
                         .filter { it.callsNowWithoutClock() }
                         .forEach { violations += "${file.declaration.name} calls ${it.rawExpression}() with no clock" }
                 }
+                andShould().satisfy { file, violations ->
+                    file.declaration.usages
+                        .filter { it.drawsAUuid() }
+                        .forEach {
+                            violations +=
+                                "${file.declaration.name} draws a Uuid instead of creating an identifier"
+                        }
+                }
             }
         }.check()
     }
@@ -175,9 +184,6 @@ internal class DomainArchitectureTest {
         rule("domain.ports-are-interfaces-in-spi") {
             description = "A port is an interface in the spi package of its context, or of common: move it there, or " +
                 "out of spi when it is not a port"
-            suppress {
-                classFqName("com.drinkit.common.GenerateId", FOLLOW_UP)
-            }
             classes {
                 that().inModule(DOMAINS)
                 that().inPackage("..spi..")

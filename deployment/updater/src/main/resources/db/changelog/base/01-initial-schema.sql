@@ -12,8 +12,8 @@ CREATE SCHEMA IF NOT EXISTS drinkit_application;
 
 CREATE TABLE IF NOT EXISTS drinkit_application.cellar
 (
-    id                    VARCHAR(24)              NOT NULL PRIMARY KEY,
-    owner_id              VARCHAR(24)              NOT NULL,
+    id                    VARCHAR(26)              NOT NULL PRIMARY KEY,
+    owner_id              VARCHAR(26)              NOT NULL,
     name                  VARCHAR(100)             NOT NULL,
     location              JSONB                    NOT NULL,
     rooms                 JSONB                    NOT NULL,
@@ -27,7 +27,7 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS cellar_owner_id_idx
 
 CREATE TABLE IF NOT EXISTS drinkit_application.user_event
 (
-    user_id        VARCHAR(24)              NOT NULL,
+    user_id        VARCHAR(26)              NOT NULL,
     sequence_id    BIGINT                   NOT NULL,
     event_name     VARCHAR(50)              NOT NULL,
     date           TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS drinkit_application.user_event
 
 CREATE TABLE IF NOT EXISTS drinkit_application.user
 (
-    id             VARCHAR(24)              NOT NULL PRIMARY KEY,
+    id             VARCHAR(26)              NOT NULL PRIMARY KEY,
     firstname      VARCHAR(100),
     lastname       VARCHAR(100),
     birthdate      DATE,

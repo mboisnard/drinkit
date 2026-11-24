@@ -1,14 +1,17 @@
 package com.drinkit.bottle.core
 
-import com.drinkit.common.AbstractId
 import com.drinkit.common.Percentage
 import com.drinkit.documentation.clean.architecture.CoreDomain
+import com.drinkit.identifier.AbstractId
+import com.drinkit.identifier.IdFactory
 import com.drinkit.kotlin.addUnless
 import com.drinkit.kotlin.containsNoInvisibleCharacter
 import java.math.BigDecimal
 import java.time.Year
 
-data class BottleId(override val value: String) : AbstractId(value)
+class BottleId(value: String) : AbstractId(value) {
+    companion object : IdFactory<BottleId>(::BottleId)
+}
 
 data class Vintage(val value: Year)
 

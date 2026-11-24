@@ -27,7 +27,6 @@ dependencies {
         api(libs.bouncycastle.bcpkix)
         api(libs.bouncycastle.bcprov)
         api(libs.bouncycastle.bcutil)
-        api(libs.bson)
         api(libs.icu4j)
         api(libs.jooq)
         api(libs.jooq.kotlin)

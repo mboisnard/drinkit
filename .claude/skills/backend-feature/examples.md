@@ -25,12 +25,11 @@ A query: `FindExchangeRate`.
 
 ## Ports and their doubles
 
-- A port of one context: `Cellars`, `UserEvents`. A port several contexts share: `GenerateId`. A port of a
-  generic context the others call: `NotificationSender`.
+- A port of one context: `Cellars`, `UserEvents`. A port of a generic context the others call:
+  `NotificationSender`.
 - A contract test: `ExchangeRatesTestContract` in the domain test fixtures, run by `InMemoryExchangeRatesTest`
   against the in-memory double and by `JooqExchangeRatesTest` against PostgreSQL.
-- The wiring of doubles and use cases: `UserFixtures`, which also wires `ControlledClock` from `test-starter`
-  and `FakeGenerateId`.
+- The wiring of doubles and use cases: `UserFixtures`, which also wires `ControlledClock` from `test-starter`.
 
 ## Adapters
 

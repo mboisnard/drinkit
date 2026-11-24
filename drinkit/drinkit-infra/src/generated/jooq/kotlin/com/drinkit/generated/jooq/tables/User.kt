@@ -81,7 +81,7 @@ open class User(
     /**
      * The column <code>drinkit_application.user.id</code>.
      */
-    val ID: TableField<UserRecord, String?> = createField(DSL.name("id"), SQLDataType.VARCHAR(24).nullable(false), this, "")
+    val ID: TableField<UserRecord, String?> = createField(DSL.name("id"), SQLDataType.VARCHAR(26).nullable(false), this, "")
 
     /**
      * The column <code>drinkit_application.user.firstname</code>.

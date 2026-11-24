@@ -15,7 +15,6 @@ spring-boot-dependencies = "4.1.2"
 
 # Runtime Versions
 bouncycastle = "1.87"
-bson = "5.14.0"
 icu4j = "79.1"
 jooq = "3.21.10"
 kotlin-logging = "8.0.7"
@@ -51,7 +50,6 @@ squawk = { module = "sbdchd:squawk", version.ref = "squawk" }
 bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
 bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
 bouncycastle-bcutil = { module = "org.bouncycastle:bcutil-jdk18on", version.ref = "bouncycastle" }
-bson = { module = "org.mongodb:bson", version.ref = "bson" }
 icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 jooq-kotlin = { module = "org.jooq:jooq-kotlin", version.ref = "jooq" }

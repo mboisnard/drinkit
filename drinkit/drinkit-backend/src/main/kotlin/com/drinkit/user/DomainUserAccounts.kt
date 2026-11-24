@@ -30,11 +30,13 @@ internal class DomainUserAccounts(
         ?.toAccount()
 
     @Transactional(readOnly = true)
-    override fun findById(id: String): UserAccount? = users.findEnabledBy(UserId(id))?.toAccount()
+    override fun findById(id: String): UserAccount? = UserId.parseOrNull(id)?.let(users::findEnabledBy)?.toAccount()
 
     @Transactional(readOnly = true)
     override fun signedIn(id: String) {
-        users.findEnabledBy(UserId(id))?.let { currentLocale.keepForTheSession(it.preferences.language) }
+        val user = UserId.parseOrNull(id)?.let(users::findEnabledBy) ?: return
+
+        currentLocale.keepForTheSession(user.preferences.language)
     }
 
     @Transactional

@@ -1,20 +1,18 @@
 package com.drinkit.cellar.core
 
-import com.drinkit.common.AbstractId
 import com.drinkit.common.CityLocation
 import com.drinkit.common.Constants.MAX_CELLAR_NAME_LENGTH
 import com.drinkit.common.Constants.MAX_CELLAR_ROOM_LENGTH
-import com.drinkit.common.isId
 import com.drinkit.documentation.clean.architecture.CoreDomain
+import com.drinkit.identifier.AbstractId
+import com.drinkit.identifier.IdFactory
 import com.drinkit.kotlin.addUnless
 import com.drinkit.kotlin.containsNoInvisibleCharacter
 import com.drinkit.kotlin.hasLengthBetween
 import com.drinkit.user.core.UserId
 
-data class CellarId(override val value: String) : AbstractId(value) {
-    init {
-        require(value.isId())
-    }
+class CellarId(value: String) : AbstractId(value) {
+    companion object : IdFactory<CellarId>(::CellarId)
 }
 
 data class CellarName(val value: String) {

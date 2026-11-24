@@ -1,5 +1,8 @@
 package com.drinkit.user.core
 
-import com.drinkit.common.AbstractId
+import com.drinkit.identifier.AbstractId
+import com.drinkit.identifier.IdFactory
 
-data class UserId(override val value: String) : AbstractId(value)
+class UserId(value: String) : AbstractId(value) {
+    companion object : IdFactory<UserId>(::UserId)
+}

@@ -5,8 +5,6 @@ import java.time.LocalDate
 
 object Constants {
 
-    val ID_REGEX = Regex("[\\da-fA-F]{24}")
-
     const val MIN_FIRSTNAME_LENGTH = 2
     const val MAX_FIRSTNAME_LENGTH = 100
     const val MIN_LASTNAME_LENGTH = 2
@@ -28,5 +26,3 @@ object Constants {
     const val MAX_CELLAR_NAME_LENGTH = 100
     const val MAX_CELLAR_ROOM_LENGTH = 100
 }
-
-fun String.isId(): Boolean = Constants.ID_REGEX.matches(this)

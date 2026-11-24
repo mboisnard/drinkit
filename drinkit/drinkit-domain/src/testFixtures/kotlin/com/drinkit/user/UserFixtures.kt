@@ -1,6 +1,5 @@
 package com.drinkit.user
 
-import com.drinkit.common.FakeGenerateId
 import com.drinkit.common.VisitorId
 import com.drinkit.faker
 import com.drinkit.test.ControlledClock
@@ -21,17 +20,13 @@ import java.time.temporal.ChronoUnit
 import java.util.Locale
 import java.util.UUID
 
-class UserFixtures(
-    val generateId: FakeGenerateId = FakeGenerateId(),
-    val controlledClock: ControlledClock = ControlledClock(),
-) {
+class UserFixtures(val controlledClock: ControlledClock = ControlledClock()) {
     val users = InMemoryUsers()
     val userEvents = InMemoryUserEvents(users)
 
     val createNewUser = CreateNewUser(
         userEvents = userEvents,
         users = users,
-        generateId = generateId,
         clock = controlledClock,
     )
 
@@ -62,7 +57,7 @@ class UserFixtures(
         clock = controlledClock,
     )
 
-    val givenAUserId: UserId get() = generateId.invoke(UserId::class)
+    val givenAUserId: UserId get() = UserId.create()
     val givenANewDate: OffsetDateTime get() = OffsetDateTime.now(controlledClock).truncatedTo(ChronoUnit.MICROS)
 
     val givenAnUnloggedAuthor: Unlogged get() = Unlogged(VisitorId(UUID.randomUUID().toString()))

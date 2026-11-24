@@ -118,6 +118,9 @@ internal fun SourceUsage.callsNowWithoutClock() =
     kind == UsageKind.CALL && targetFqName.matches(Regex("""java\.time\.\w+\.now""")) &&
         File(filePath).readText().substring(sourceStartOffset, sourceEndOffset) == "now()"
 
+internal fun SourceUsage.drawsAUuid() =
+    kind == UsageKind.CALL && targetFqName.matches(Regex("""kotlin\.uuid\.Uuid\.(Companion\.)?(random|generateV\w+)"""))
+
 // Konture lacks a selection of classes by the annotations of their functions: an HTTP client declares its requests
 // with @GetExchange, @PostExchange or another @*Exchange
 internal fun ClassDeclaration.isHttpClient() =

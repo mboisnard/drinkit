@@ -6,8 +6,6 @@ plugins {
 dependencies {
     implementation(project(":drinkit-domain"))
 
-    implementation(libs.bson)
-
     implementation(project(":configuration-starter"))
     implementation(project(":event-sourcing-starter"))
     implementation(project(":i18n-starter"))

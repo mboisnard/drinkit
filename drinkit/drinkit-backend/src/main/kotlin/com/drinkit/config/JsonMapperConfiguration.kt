@@ -16,7 +16,6 @@ internal class JsonMapperConfiguration {
         JsonMapperBuilderCustomizer { builder ->
             builder
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .addModule(AbstractIdJacksonModule())
                 .addModule(kotlinModule { configure(KotlinFeature.NullIsSameAsDefault, true) })
                 // Custom modules contributed by other configurations (mixins)
                 .addModules(jacksonModules)

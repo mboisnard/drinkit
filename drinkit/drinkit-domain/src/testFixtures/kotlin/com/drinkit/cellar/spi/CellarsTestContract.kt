@@ -21,15 +21,15 @@ abstract class CellarsTestContract {
 
     @Test
     fun `finds the cellars of their owner`() {
-        val ownCellars = listOf(cellarOf(OWNER, id = 1), cellarOf(OWNER, id = 2))
-        (ownCellars + cellarOf(NEIGHBOUR, id = 3)).forEach { repository.create(it) }
+        val ownCellars = listOf(cellarOf(OWNER, number = 1), cellarOf(OWNER, number = 2))
+        (ownCellars + cellarOf(NEIGHBOUR, number = 3)).forEach { repository.create(it) }
 
         repository.findAllByOwnerId(OWNER).toList() shouldContainExactlyInAnyOrder ownCellars
     }
 
-    private fun cellarOf(owner: UserId, id: Int) = Cellar(
-        id = CellarId(hexId(id)),
-        name = CellarName("Cave $id"),
+    private fun cellarOf(owner: UserId, number: Int) = Cellar(
+        id = CellarId.create(),
+        name = CellarName("Cave $number"),
         location = CityLocation(
             "Bordeaux",
             Country("FR", "France"),
@@ -40,9 +40,7 @@ abstract class CellarsTestContract {
     )
 
     private companion object {
-        val OWNER = UserId(hexId(101))
-        val NEIGHBOUR = UserId(hexId(102))
-
-        fun hexId(value: Int) = value.toString(radix = 16).padStart(length = 24, padChar = '0')
+        val OWNER = UserId.create()
+        val NEIGHBOUR = UserId.create()
     }
 }
