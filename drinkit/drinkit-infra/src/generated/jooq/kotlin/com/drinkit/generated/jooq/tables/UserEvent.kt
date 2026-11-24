@@ -75,7 +75,7 @@ open class UserEvent(
     /**
      * The column <code>drinkit_application.user_event.user_id</code>.
      */
-    val USER_ID: TableField<UserEventRecord, String?> = createField(DSL.name("user_id"), SQLDataType.VARCHAR(24).nullable(false), this, "")
+    val USER_ID: TableField<UserEventRecord, String?> = createField(DSL.name("user_id"), SQLDataType.VARCHAR(26).nullable(false), this, "")
 
     /**
      * The column <code>drinkit_application.user_event.sequence_id</code>.

@@ -1,6 +1,5 @@
 package com.drinkit.user
 
-import com.drinkit.common.GenerateId
 import com.drinkit.documentation.clean.architecture.Usecase
 import com.drinkit.documentation.cqrs.Command
 import com.drinkit.documentation.fcis.FunctionalCore
@@ -35,12 +34,7 @@ data class CreateNewUserCommand(val author: Author, val email: Email, val prefer
 @Transactional
 @Usecase
 @ImperativeShell
-class CreateNewUser(
-    private val userEvents: UserEvents,
-    private val users: Users,
-    private val generateId: GenerateId,
-    private val clock: Clock,
-) {
+class CreateNewUser(private val userEvents: UserEvents, private val users: Users, private val clock: Clock) {
     sealed interface Result {
         data class UserCreated(val user: User) : Result
         object UserAlreadyExists : Result
@@ -53,7 +47,7 @@ class CreateNewUser(
         val decision = UserCreationDecider.invoke(
             command = command,
             emailFoundInDatabase = users.exists(command.email),
-            newUserId = generateId.invoke(UserId::class),
+            newUserId = UserId.create(),
             date = OffsetDateTime.now(clock),
         )
 

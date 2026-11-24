@@ -47,8 +47,10 @@ Several properties of one value go in one `should { }` block, so a failure shows
 
 ## Time and identifiers
 
-`ControlledClock` and `FakeGenerateId` come with the fixtures. Fix the clock for a test that compares dates,
-`controlledClock.fix(instant)`, and move it with `add(Duration.ofMinutes(16))` to cross an expiry.
+`ControlledClock` comes with the fixtures. Fix the clock for a test that compares dates,
+`controlledClock.fix(instant)`, and move it with `add(Duration.ofMinutes(16))` to cross an expiry. A new identifier
+comes from its class, `UserId.create()`; a test that needs a fixed one writes a real one, such as
+`UserId("01kdvdna00e5mt007j31qpda6g")`.
 
 ## A port without its contract
 

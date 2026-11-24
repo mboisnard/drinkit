@@ -78,12 +78,12 @@ open class Cellar(
     /**
      * The column <code>drinkit_application.cellar.id</code>.
      */
-    val ID: TableField<CellarRecord, String?> = createField(DSL.name("id"), SQLDataType.VARCHAR(24).nullable(false), this, "")
+    val ID: TableField<CellarRecord, String?> = createField(DSL.name("id"), SQLDataType.VARCHAR(26).nullable(false), this, "")
 
     /**
      * The column <code>drinkit_application.cellar.owner_id</code>.
      */
-    val OWNER_ID: TableField<CellarRecord, String?> = createField(DSL.name("owner_id"), SQLDataType.VARCHAR(24).nullable(false), this, "")
+    val OWNER_ID: TableField<CellarRecord, String?> = createField(DSL.name("owner_id"), SQLDataType.VARCHAR(26).nullable(false), this, "")
 
     /**
      * The column <code>drinkit_application.cellar.name</code>.

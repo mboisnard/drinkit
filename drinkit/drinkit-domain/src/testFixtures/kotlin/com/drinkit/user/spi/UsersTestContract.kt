@@ -3,7 +3,6 @@ package com.drinkit.user.spi
 import com.drinkit.user.UserFixtures
 import com.drinkit.user.core.Email
 import com.drinkit.user.core.User
-import com.drinkit.user.core.UserId
 import com.drinkit.user.core.UserStatus
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -48,7 +47,7 @@ abstract class UsersTestContract {
     @Test
     fun `should be null when user is not found by his id`() {
         // Given
-        val userId = userFixtures.generateId.invoke(UserId::class)
+        val userId = userFixtures.givenAUserId
 
         // When
         val user = repository.findEnabledBy(userId)

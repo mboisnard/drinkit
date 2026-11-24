@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    api(project(":identifier-starter"))
     implementation(project(":event-sourcing-starter"))
     implementation(project(":messaging-starter"))
 

@@ -22,8 +22,8 @@ internal class DeleteCellarTest {
     private val cellars = cellarFixtures.cellars
     private val deleteCellar = cellarFixtures.deleteCellar
 
-    private val owner = UserId("64656d6f0000000000000001")
-    private val otherUser = UserId("64656d6f0000000000000002")
+    private val owner = UserId.create()
+    private val otherUser = UserId.create()
 
     @Test
     fun `deletes a cellar of its owner`() {
@@ -41,7 +41,7 @@ internal class DeleteCellarTest {
     @Test
     fun `finds no unknown cellar to delete`() {
         // Given
-        val unknown = CellarId("64656d6f00000000000000ff")
+        val unknown = CellarId.create()
 
         // When
         val result = deleteCellar.invoke(unknown, Author.Connected(owner))
@@ -65,7 +65,7 @@ internal class DeleteCellarTest {
 
     private fun givenACellarOf(userId: UserId): CellarId {
         val cellar = Cellar(
-            id = CellarId("64656d6f0000000000000010"),
+            id = CellarId.create(),
             name = CellarName("Cave du sous-sol"),
             location = CityLocation(
                 "Lyon",

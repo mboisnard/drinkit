@@ -56,12 +56,12 @@ components:
     CellarId:
       type: string
       format: cellar-id
-      example: 659ee3164b1d53340c4f7608
+      example: 01m86hnx20e6hbrkaydxr834n3
 
     UserId:
       type: string
       format: user-id
-      example: 659ee3164b1d53340c4f7608
+      example: 01kdvdna00e5mt007j31qpda6g
 
   # No content: the security filters write these bodies, and a content type here would join the produces of each
   # generated mapping, refusing a request that accepts application/json only

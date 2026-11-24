@@ -11,7 +11,6 @@ import com.drinkit.user.core.Email
 import com.drinkit.user.core.Preferences
 import com.drinkit.user.core.Roles
 import com.drinkit.user.core.Roles.Role.ROLE_REGISTRATION_IN_PROGRESS
-import com.drinkit.user.core.UserId
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -24,7 +23,6 @@ internal class CreateNewUserTest {
 
     private val userFixtures = UserFixtures()
     private val createNewUser = userFixtures.createNewUser
-    private val generateId = userFixtures.generateId
     private val users = userFixtures.users
     private val userEvents = userFixtures.userEvents
 
@@ -99,7 +97,7 @@ internal class CreateNewUserTest {
             val decision = UserCreationDecider.invoke(
                 command = command,
                 emailFoundInDatabase = true,
-                newUserId = generateId.invoke(UserId::class),
+                newUserId = userFixtures.givenAUserId,
                 date = userFixtures.givenANewDate,
             )
 
@@ -120,7 +118,7 @@ internal class CreateNewUserTest {
             val decision = UserCreationDecider.invoke(
                 command = command,
                 emailFoundInDatabase = false,
-                newUserId = generateId.invoke(UserId::class),
+                newUserId = userFixtures.givenAUserId,
                 date = userFixtures.givenANewDate,
             )
 
@@ -131,7 +129,7 @@ internal class CreateNewUserTest {
         @Test
         fun `initialized user will start with registration_in_progress role`() {
             // Given
-            val newUserId = generateId.invoke(UserId::class)
+            val newUserId = userFixtures.givenAUserId
             val date = userFixtures.givenANewDate
             val command = CreateNewUserCommand(
                 email = VALID_EMAIL,
