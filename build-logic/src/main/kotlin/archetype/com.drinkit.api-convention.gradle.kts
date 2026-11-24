@@ -20,6 +20,7 @@ dependencies {
 
     implementation(project(":kotlin-starter"))
     implementation(project(":observability-starter"))
+    implementation(project(":spring-starter"))
 }
 
 // Create a `build-info.properties` file in resource folder, info available in Actuator

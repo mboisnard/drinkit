@@ -1,0 +1,2 @@
+com.drinkit.spring.infra.ClockAutoConfiguration
+com.drinkit.spring.infra.JsonMapperAutoConfiguration
