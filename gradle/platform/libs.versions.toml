@@ -3,7 +3,7 @@
 jdk = "25"
 
 # Tool Versions
-squawk = "2.73.0"
+squawk = "2.74.0"
 
 # BOM Versions
 aws-sdk-dependencies = "2.59.2"
