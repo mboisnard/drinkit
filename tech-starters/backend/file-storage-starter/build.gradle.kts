@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-autoconfigure")
+    api(project(":identifier-starter"))
     api("org.springframework.boot:spring-boot-starter-webmvc")
     implementation(project(":security-starter"))
     implementation(project(":rate-limit-starter"))

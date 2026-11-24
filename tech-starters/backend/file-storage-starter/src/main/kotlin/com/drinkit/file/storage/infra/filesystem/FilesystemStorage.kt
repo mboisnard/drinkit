@@ -15,7 +15,6 @@ import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.util.Base64
-import java.util.UUID
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -65,10 +64,10 @@ internal class FilesystemStorage(
 
     /** Null when the signature is wrong, the URL expired or the file is gone. */
     fun open(file: SignedFile): Path? {
-        val id = runCatching { UUID.fromString(file.id) }.getOrNull() ?: return null
-        val expected = sign(id.toString(), file.type, file.name, file.expires)
+        val id = FileId.parseOrNull(file.id)?.value ?: return null
+        val expected = sign(id, file.type, file.name, file.expires)
         val valid = MessageDigest.isEqual(expected.toByteArray(), file.signature.toByteArray())
-        val path = directory.resolve(id.toString())
+        val path = directory.resolve(id)
 
         return path.takeIf { valid && clock.instant() < Instant.ofEpochSecond(file.expires) && Files.exists(it) }
     }

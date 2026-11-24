@@ -52,6 +52,20 @@ internal class SignedFileApiTest {
     }
 
     @Test
+    fun `a URL whose id is no file id answers 403`() {
+        // Given
+        val photo = aPhoto()
+        storage.put(photo, content())
+        val url = storage.urlOf(photo, TTL).toString()
+
+        // When
+        val changed = URI.create(url.replace(photo.id.value, "not-a-file-id"))
+
+        // Then
+        mockMvc.get(changed).andExpect { status { isForbidden() } }
+    }
+
+    @Test
     fun `a file is served with headers that stop a browser from running it`() {
         // Given
         val photo = aPhoto()

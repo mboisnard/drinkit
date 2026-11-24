@@ -14,7 +14,6 @@ import org.jooq.DSLContext
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
-import java.util.UUID
 
 private enum class FileStatus { TEMPORARY, KEPT, DELETED }
 
@@ -23,7 +22,7 @@ internal class JooqStoredFileMetadata(private val dsl: DSLContext) : StoredFileM
 
     override fun add(file: StoredFile) {
         dsl.insertInto(STORED_FILE)
-            .set(STORED_FILE.ID, file.id.uuid())
+            .set(STORED_FILE.ID, file.id.value)
             .set(STORED_FILE.USAGE, file.usage)
             .set(STORED_FILE.OWNER_ID, file.ownerId)
             .set(STORED_FILE.STATUS, TEMPORARY.name)
@@ -34,33 +33,26 @@ internal class JooqStoredFileMetadata(private val dsl: DSLContext) : StoredFileM
             .execute()
     }
 
-    override fun keep(id: FileId, ownerId: String, usage: String, resource: FileResource): Boolean {
-        val uuid = id.uuid() ?: return false
-
-        return dsl.update(STORED_FILE)
+    override fun keep(id: FileId, ownerId: String, usage: String, resource: FileResource): Boolean =
+        dsl.update(STORED_FILE)
             .set(STORED_FILE.STATUS, KEPT.name)
             .set(STORED_FILE.RESOURCE_TYPE, resource.type)
             .set(STORED_FILE.RESOURCE_ID, resource.id)
             .where(
-                STORED_FILE.ID.eq(uuid),
+                STORED_FILE.ID.eq(id.value),
                 STORED_FILE.OWNER_ID.eq(ownerId),
                 STORED_FILE.USAGE.eq(usage),
                 STORED_FILE.STATUS.eq(TEMPORARY.name),
             )
             .execute() == 1
-    }
 
-    override fun markDeleted(id: FileId): Boolean {
-        val uuid = id.uuid() ?: return false
-
-        return dsl.update(STORED_FILE)
-            .set(STORED_FILE.STATUS, DELETED.name)
-            .where(STORED_FILE.ID.eq(uuid), STORED_FILE.STATUS.eq(KEPT.name))
-            .execute() == 1
-    }
+    override fun markDeleted(id: FileId): Boolean = dsl.update(STORED_FILE)
+        .set(STORED_FILE.STATUS, DELETED.name)
+        .where(STORED_FILE.ID.eq(id.value), STORED_FILE.STATUS.eq(KEPT.name))
+        .execute() == 1
 
     override fun findKept(ids: Collection<FileId>): List<StoredFile> = dsl.selectFrom(STORED_FILE)
-        .where(STORED_FILE.ID.`in`(ids.mapNotNull { it.uuid() }), STORED_FILE.STATUS.eq(KEPT.name))
+        .where(STORED_FILE.ID.`in`(ids.map { it.value }), STORED_FILE.STATUS.eq(KEPT.name))
         .fetch { it.toStoredFile() }
 
     // SKIP LOCKED leaves the rows another cleanup took, so that two cleanups never wait on each other
@@ -73,17 +65,14 @@ internal class JooqStoredFileMetadata(private val dsl: DSLContext) : StoredFileM
         .skipLocked()
         .fetch(STORED_FILE.ID)
         .filterNotNull()
-        .map { FileId(it.toString()) }
+        .map { FileId(it) }
 
     override fun removeAll(ids: List<FileId>) {
-        dsl.deleteFrom(STORED_FILE).where(STORED_FILE.ID.`in`(ids.mapNotNull { it.uuid() })).execute()
+        dsl.deleteFrom(STORED_FILE).where(STORED_FILE.ID.`in`(ids.map { it.value })).execute()
     }
 
-    // An id the client made up is no UUID, and so no file
-    private fun FileId.uuid(): UUID? = runCatching { UUID.fromString(value) }.getOrNull()
-
     private fun StoredFileRecord.toStoredFile() = StoredFile(
-        id = FileId(id.toString()),
+        id = FileId(id),
         usage = usage,
         ownerId = ownerId,
         type = contentType,

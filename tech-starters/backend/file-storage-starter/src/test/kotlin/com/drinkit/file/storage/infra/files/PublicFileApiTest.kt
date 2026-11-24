@@ -79,6 +79,15 @@ internal class PublicFileApiTest(
         response.andExpect { status { isNotFound() } }
     }
 
+    @Test
+    fun `a path that is no file id is not found`() {
+        // When
+        val response = mockMvc.get("/files/public/not-a-file-id")
+
+        // Then
+        response.andExpect { status { isNotFound() } }
+    }
+
     private fun kept(usage: String): FileId {
         user.signIn(ADA)
         val id = uploads.upload(usage, "photo.jpg", "image/jpeg", JPEG.size.toLong(), ByteArrayResource(JPEG))

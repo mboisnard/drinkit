@@ -16,11 +16,10 @@ import org.springframework.web.context.request.RequestContextHolder
 import java.net.URI
 import java.time.Clock
 import java.time.Duration
-import java.util.UUID
 
 private const val CLEANED_PER_RUN = 100
 
-// User ids are UUIDs, so this owner never matches a user's file
+// Not of the identifier starter's format, so this owner never matches a user's file
 internal const val BACKEND = "system"
 
 // On the class, so that kotlin-spring opens it for its proxy
@@ -92,7 +91,7 @@ internal class FileUploads(
     fun upload(usage: String, name: String, declaredType: String?, size: Long, content: InputStreamSource): FileId {
         val accepted = rules.accept(usage, name, declaredType, size, content)
         val file = StoredFile(
-            id = FileId(UUID.randomUUID().toString()),
+            id = FileId.create(),
             usage = usage,
             ownerId = checkNotNull(currentUser.actorId()) { "Only a signed-in user or the backend stores a file" },
             type = accepted.type,

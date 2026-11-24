@@ -28,6 +28,7 @@ components:
       properties:
         id:
           type: string
-          format: uuid
+          pattern: '^[0-7][0-9a-hjkmnp-tv-z]{25}$'
+          example: 01m86hnx20e6hbrkaydxr834n3
           description: |
             The id to send to the business route that keeps the file. A file not kept within 24 hours is deleted.

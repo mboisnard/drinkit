@@ -1,6 +1,8 @@
 package com.drinkit.file.storage
 
 import com.drinkit.documentation.tech.starter.TechStarterTool
+import com.drinkit.identifier.AbstractId
+import com.drinkit.identifier.IdFactory
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.web.ErrorResponseException
@@ -42,7 +44,10 @@ interface FileStorage {
     fun urlsOf(ids: Collection<FileId>): Map<FileId, URI>
 }
 
-data class FileId(val value: String)
+@TechStarterTool
+class FileId(value: String) : AbstractId(value) {
+    companion object : IdFactory<FileId>(::FileId)
+}
 
 data class FileResource(val type: String, val id: String)
 

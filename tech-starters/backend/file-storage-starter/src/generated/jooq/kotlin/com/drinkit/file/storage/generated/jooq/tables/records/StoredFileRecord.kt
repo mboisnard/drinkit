@@ -7,7 +7,6 @@ package com.drinkit.file.storage.generated.jooq.tables.records
 import com.drinkit.file.storage.generated.jooq.tables.StoredFile
 
 import java.time.OffsetDateTime
-import java.util.UUID
 
 import org.jooq.Record1
 import org.jooq.impl.UpdatableRecordImpl
@@ -19,9 +18,9 @@ import org.jooq.impl.UpdatableRecordImpl
 @Suppress("warnings")
 open class StoredFileRecord private constructor() : UpdatableRecordImpl<StoredFileRecord>(StoredFile.STORED_FILE) {
 
-    open var id: UUID
+    open var id: String
         set(value): Unit = set(0, value)
-        get(): UUID = get(0) as UUID
+        get(): String = get(0) as String
 
     open var usage: String
         set(value): Unit = set(1, value)
@@ -63,12 +62,12 @@ open class StoredFileRecord private constructor() : UpdatableRecordImpl<StoredFi
     // Primary key information
     // -------------------------------------------------------------------------
 
-    override fun key(): Record1<UUID?> = super.key() as Record1<UUID?>
+    override fun key(): Record1<String?> = super.key() as Record1<String?>
 
     /**
      * Create a detached, initialised StoredFileRecord
      */
-    constructor(id: UUID, usage: String, ownerId: String, status: String, contentType: String, size: Long, name: String, uploadedAt: OffsetDateTime, resourceType: String? = null, resourceId: String? = null): this() {
+    constructor(id: String, usage: String, ownerId: String, status: String, contentType: String, size: Long, name: String, uploadedAt: OffsetDateTime, resourceType: String? = null, resourceId: String? = null): this() {
         this.id = id
         this.usage = usage
         this.ownerId = ownerId

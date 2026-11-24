@@ -55,7 +55,8 @@ internal class FileUploadApi(
 internal class PublicFileApi(private val files: StoredFiles, private val storage: Storage) {
 
     fun serve(request: ServerRequest): ServerResponse {
-        val file = files.findPublic(FileId(request.pathVariable("id"))) ?: throw FileNotFound()
+        val id = FileId.parseOrNull(request.pathVariable("id")) ?: throw FileNotFound()
+        val file = files.findPublic(id) ?: throw FileNotFound()
 
         return servedFile(file.type, file.name, PUBLIC_CACHE)
             .contentLength(file.size)

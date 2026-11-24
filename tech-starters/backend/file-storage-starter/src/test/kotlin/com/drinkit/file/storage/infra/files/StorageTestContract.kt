@@ -8,7 +8,6 @@ import org.springframework.core.io.ByteArrayResource
 import java.net.URI
 import java.time.Duration
 import java.time.Instant
-import java.util.UUID
 
 internal abstract class StorageTestContract {
 
@@ -58,7 +57,7 @@ internal abstract class StorageTestContract {
     @Test
     fun `deleting a missing file is not an error`() {
         // Given
-        val missing = FileId(UUID.randomUUID().toString())
+        val missing = FileId.create()
 
         // When
         storage.delete(listOf(missing))
@@ -71,7 +70,7 @@ internal abstract class StorageTestContract {
         val TTL: Duration = Duration.ofMinutes(5)
         val BYTES = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 0xFF.toByte(), 0xE0.toByte(), 1, 2, 3)
 
-        fun aPhoto(id: FileId = FileId(UUID.randomUUID().toString())) =
+        fun aPhoto(id: FileId = FileId.create()) =
             StoredFile(id, "bottle-photo", "ada", "image/jpeg", BYTES.size.toLong(), "photo.jpg", Instant.EPOCH)
 
         fun content() = ByteArrayResource(BYTES)

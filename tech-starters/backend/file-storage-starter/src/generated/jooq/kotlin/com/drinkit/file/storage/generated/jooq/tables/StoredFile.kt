@@ -10,7 +10,6 @@ import com.drinkit.file.storage.generated.jooq.keys.STORED_FILE_PKEY
 import com.drinkit.file.storage.generated.jooq.tables.records.StoredFileRecord
 
 import java.time.OffsetDateTime
-import java.util.UUID
 
 import kotlin.collections.Collection
 import kotlin.collections.List
@@ -79,7 +78,7 @@ open class StoredFile(
     /**
      * The column <code>drinkit_application.stored_file.id</code>.
      */
-    val ID: TableField<StoredFileRecord, UUID?> = createField(DSL.name("id"), SQLDataType.UUID.nullable(false), this, "")
+    val ID: TableField<StoredFileRecord, String?> = createField(DSL.name("id"), SQLDataType.VARCHAR(26).nullable(false), this, "")
 
     /**
      * The column <code>drinkit_application.stored_file.usage</code>.
