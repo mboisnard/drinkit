@@ -47,7 +47,7 @@ internal class HttpClientStarterAutoConfigurationTest {
         .withUserConfiguration(GreetingClients::class.java)
         .withPropertyValues(
             "spring.http.serviceclient.greeting.base-url=http://greeting.test",
-            "starters.http-client.retry.delay=0",
+            "starters.http-client.retry.policy.delay=0",
         )
 
     @Test
@@ -90,7 +90,7 @@ internal class HttpClientStarterAutoConfigurationTest {
 
     @Test
     fun `once its retries are spent, a GET gives the caller every I-O failure, the last one first`() {
-        runner.withPropertyValues("starters.http-client.retry.max-retries=1")
+        runner.withPropertyValues("starters.http-client.retry.policy.max-retries=1")
             .withBean(FlakyServer::class.java, { FlakyServer(failuresBeforeSuccess = 10) })
             .run { context ->
                 // When

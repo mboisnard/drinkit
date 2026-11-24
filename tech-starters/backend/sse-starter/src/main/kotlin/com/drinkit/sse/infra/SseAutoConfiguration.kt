@@ -5,8 +5,8 @@ import com.drinkit.messaging.PlatformEventPublisher
 import com.drinkit.sse.ServerEvents
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -24,7 +24,7 @@ internal const val SERVER_EVENTS_PATH = "/sse/event-stream"
 
 @AutoConfiguration(after = [JacksonAutoConfiguration::class, CacheAutoConfiguration::class])
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnProperty(prefix = "starters.sse", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.sse.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(SseProperties::class)
 internal class SseAutoConfiguration {
 

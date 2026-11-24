@@ -139,7 +139,8 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 - **Visitor**: each request gets its visitor, a `VisitorId` of `identifier-starter` that a `visitor` cookie keeps for 30 days after the last
   visit, also logged as `visitor.id`. A visitor is a browser, not a person: two people on one browser share it.
 - **Requests without CSRF token**: `endpointRules(csrfFree = listOf(matcher)) { … }` frees from the token a request
-  that changes no state on the server, next to its access rule. Fetch Metadata still refuses it cross-site.
+  that changes no state on the server, next to its access rule. A matcher is built by
+  `PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/public/evaluate")`. Fetch Metadata still refuses it cross-site.
 - **Logs**: each log of a signed-in user's request carries `user.id`, as the
   [logging page](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/4.build-and-data/3.logging.md)
   says. Each 401, 403 and 429 goes to Spring MVC's `handlerExceptionResolver`, and so does the 400 of a path the

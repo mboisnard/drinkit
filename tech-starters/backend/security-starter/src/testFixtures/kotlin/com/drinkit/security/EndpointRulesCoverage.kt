@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.AutoConfigurations
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.context.annotation.ImportCandidates
+import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider
 import org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation
@@ -58,7 +59,12 @@ class EndpointRulesCoverage(
 
     private fun securityChain() = startersRules().fold(
         WebApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration::class.java))
+            .withConfiguration(
+                AutoConfigurations.of(
+                    SecurityAutoConfiguration::class.java,
+                    ServletWebSecurityAutoConfiguration::class.java,
+                ),
+            )
             .withBean(JsonMapper::class.java, { JsonMapper() }),
     ) { runner, starter -> runner.withConfiguration(AutoConfigurations.of(starter)) }
 

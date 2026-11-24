@@ -13,8 +13,8 @@ import com.meilisearch.sdk.Config
 import org.jooq.DSLContext
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.jooq.autoconfigure.JooqAutoConfiguration
 import org.springframework.context.annotation.Bean
@@ -25,7 +25,7 @@ import java.time.Clock
 
 @AutoConfiguration(after = [JooqAutoConfiguration::class])
 @ConditionalOnBean(DSLContext::class)
-@ConditionalOnProperty(prefix = "starters.search-engine", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.search-engine.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(SearchEngineProperties::class)
 internal class SearchEngineAutoConfiguration {
 

@@ -12,8 +12,8 @@ import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration
@@ -26,7 +26,6 @@ import org.springframework.security.authorization.AuthorizationEventPublisher
 import org.springframework.security.authorization.SpringAuthorizationEventPublisher
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.SecurityFilterChain
@@ -78,9 +77,8 @@ private const val MANAGEMENT_WEB_SECURITY =
     beforeName = [MANAGEMENT_WEB_SECURITY],
 )
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnProperty(prefix = "starters.security", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.security.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(SecurityStarterProperties::class)
-@EnableWebSecurity
 @EnableMethodSecurity
 internal class SecurityAutoConfiguration {
 

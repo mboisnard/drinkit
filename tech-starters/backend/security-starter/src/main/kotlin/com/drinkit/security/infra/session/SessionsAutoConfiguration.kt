@@ -9,8 +9,8 @@ import com.drinkit.security.infra.rememberme.RememberMeTokens
 import org.jooq.DSLContext
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -27,7 +27,7 @@ import tools.jackson.databind.json.JsonMapper
 
 @AutoConfiguration(after = [JooqAutoConfiguration::class, JdbcSessionAutoConfiguration::class])
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnProperty(prefix = "starters.security", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.security.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(SecurityStarterProperties::class)
 internal class SessionsAutoConfiguration {
 

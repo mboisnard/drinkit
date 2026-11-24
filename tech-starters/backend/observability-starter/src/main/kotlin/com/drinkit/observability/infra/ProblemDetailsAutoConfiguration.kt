@@ -2,9 +2,9 @@ package com.drinkit.observability.infra
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration
@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @AutoConfiguration(before = [WebMvcAutoConfiguration::class])
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(ResponseEntityExceptionHandler::class)
-@ConditionalOnProperty("starters.observability.enabled", matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.observability.enabled", matchIfMissing = true)
 internal class ProblemDetailsAutoConfiguration {
 
     // No @Order: the advices of the application come first, ahead of this catch-all

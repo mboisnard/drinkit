@@ -67,8 +67,11 @@ internal class RatesClients
 | Property | Default | Environment variable |
 |---|---|---|
 | `starters.http-client.enabled` | `true`, `false` removes the retries and the default timeouts | `STARTERS_HTTPCLIENT_ENABLED` |
-| `starters.http-client.retry.max-retries` | `3`, the retries after the first attempt | `STARTERS_HTTPCLIENT_RETRY_MAXRETRIES` |
-| `starters.http-client.retry.delay` | `100ms`, between two attempts | `STARTERS_HTTPCLIENT_RETRY_DELAY` |
+| `starters.http-client.retry.policy.max-retries` | `3`, the retries after the first attempt | `STARTERS_HTTPCLIENT_RETRY_POLICY_MAXRETRIES` |
+| `starters.http-client.retry.policy.delay` | `1s`, before the first retry | `STARTERS_HTTPCLIENT_RETRY_POLICY_DELAY` |
+| `starters.http-client.retry.policy.multiplier` | `1`, applied to the delay at each retry | `STARTERS_HTTPCLIENT_RETRY_POLICY_MULTIPLIER` |
+| `starters.http-client.retry.policy.max-delay` | none, the longest delay | `STARTERS_HTTPCLIENT_RETRY_POLICY_MAXDELAY` |
+| `starters.http-client.retry.policy.jitter` | none, a random part added to each delay | `STARTERS_HTTPCLIENT_RETRY_POLICY_JITTER` |
 | `spring.http.clients.connect-timeout` | `2s`, set by the starter, to connect | `SPRING_HTTP_CLIENTS_CONNECTTIMEOUT` |
 | `spring.http.clients.read-timeout` | `5s`, set by the starter, to read | `SPRING_HTTP_CLIENTS_READTIMEOUT` |
 | `starters.http-client.retry.idempotent-groups` | none, the groups whose API honours `Idempotency-Key` | `STARTERS_HTTPCLIENT_RETRY_IDEMPOTENTGROUPS` |

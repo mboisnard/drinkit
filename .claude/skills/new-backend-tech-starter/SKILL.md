@@ -20,7 +20,7 @@ module layout, the build file and the code shapes are in [examples.md](examples.
       does all the wiring. `src/main` holds no `@Service`, `@Component`, `@Repository` or `@Configuration`
       stereotype, and no Spring profile.
 - [ ] Every bean is `@ConditionalOnMissingBean`, by name when its type is generic or shared, and
-      `starters.<name>.enabled=false` switches the starter off.
+      `starters.<name>.enabled=false`, read by `@ConditionalOnBooleanProperty`, switches the starter off.
 - [ ] Properties live under `starters.<name>.*`, constructor-bound in Kotlin, with a default only where it suits
       any application, and the README gives each one's environment variable.
 - [ ] `testFixtures` ship a hand-written double of each public interface that consumers' tests use.
@@ -101,7 +101,8 @@ The auto-configuration and the properties are named `<Name>AutoConfiguration` an
 Properties go under `starters.<name>.*`, never under `spring.*`, `server.*` or `management.*`. The environment
 variable is the property uppercased, with `.` turned into `_` and hyphens removed:
 `starters.feature-management.flipt.url` is `STARTERS_FEATUREMANAGEMENT_FLIPT_URL`. A starter whose only property is
-`enabled` reads it in `@ConditionalOnProperty` with no properties class, and its README documents it.
+`enabled` reads it in `@ConditionalOnBooleanProperty` with no properties class, and its README documents it. A
+property that chooses between values, such as a provider, stays in `@ConditionalOnProperty` with `havingValue`.
 
 A value that belongs to one application, such as the URL of a service, a path, a name, a prefix or a table, is a
 property, never a constant, even while one application uses the starter. Its default suits any application, or it

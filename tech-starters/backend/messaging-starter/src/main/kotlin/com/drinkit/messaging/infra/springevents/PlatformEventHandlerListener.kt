@@ -6,26 +6,27 @@ import com.drinkit.idempotency.IdempotentResult
 import com.drinkit.kotlin.sha256
 import com.drinkit.messaging.PlatformEvent
 import com.drinkit.messaging.PlatformEventHandler
-import com.drinkit.messaging.infra.retry.Retry
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationListener
 import org.springframework.context.PayloadApplicationEvent
 import org.springframework.expression.spel.standard.SpelExpressionParser
 import org.springframework.expression.spel.support.SimpleEvaluationContext
+import org.springframework.util.backoff.BackOff
+import org.springframework.util.backoff.BackOffExecution
 import java.time.Duration
 
 /**
- * Calls one handler with the events of its type, on a virtual thread, after its delay, and again on failure up to
+ * Calls one handler with the events of its type, on the scheduler, after its delay, and again on failure up to
  * its attempts. An idempotent handler runs once per key of its event, however many times the event is delivered.
  */
 internal class PlatformEventHandlerListener(
     val handler: PlatformEventHandler,
     private val eventType: Class<*>,
     private val callHandler: (PlatformEvent<*>) -> Unit,
-    private val firstAttempt: Retry,
+    private val backOff: BackOff,
     // Null for a handler that is not idempotent
     private val idempotency: Idempotency? = null,
-    private val schedule: (Duration, () -> Unit) -> Unit = ::onVirtualThread,
+    private val schedule: (Duration, () -> Unit) -> Unit,
 ) : ApplicationListener<PayloadApplicationEvent<*>> {
 
     private val logger = KotlinLogging.logger { }
@@ -36,18 +37,18 @@ internal class PlatformEventHandlerListener(
     override fun onApplicationEvent(springEvent: PayloadApplicationEvent<*>) {
         val delivery = springEvent.payload
         if (delivery is Delivery && eventType.isInstance(delivery.event)) {
-            deliver(delivery, firstAttempt, after = Duration.ofMillis(handler.delay))
+            deliver(delivery, attempt = 1, backOff.start(), after = Duration.ofMillis(handler.delay))
         }
     }
 
-    private fun deliver(delivery: Delivery, retry: Retry, after: Duration) {
+    private fun deliver(delivery: Delivery, attempt: Int, waits: BackOffExecution, after: Duration) {
         schedule(after) {
             runCatching { handle(delivery) }
                 // Not an attempt: it comes back once the other run ends, or once its lease does if it crashed
-                .onSuccess { stillRunningFor -> stillRunningFor?.let { deliver(delivery, retry, after = it) } }
+                .onSuccess { stillRunningFor -> stillRunningFor?.let { deliver(delivery, attempt, waits, after = it) } }
                 .onFailure { failure ->
-                    logger.debug(failure) { "Attempt ${retry.attempt} of handler ${handler.name} failed" }
-                    retryOrGiveUp(delivery, retry, failure.javaClass.simpleName)
+                    logger.debug(failure) { "Attempt $attempt of handler ${handler.name} failed" }
+                    retryOrGiveUp(delivery, attempt, waits, failure.javaClass.simpleName)
                 }
         }
     }
@@ -81,27 +82,15 @@ internal class PlatformEventHandlerListener(
         return key.toString()
     }
 
-    private fun retryOrGiveUp(delivery: Delivery, retry: Retry, failure: String) {
-        if (retry.attempt >= handler.maxAttempts) {
+    private fun retryOrGiveUp(delivery: Delivery, attempt: Int, waits: BackOffExecution, failure: String) {
+        if (attempt >= handler.maxAttempts) {
             logger.error {
-                "Handler ${handler.name} gave up after ${retry.attempt} attempts, the last one failed with $failure"
+                "Handler ${handler.name} gave up after $attempt attempts, the last one failed with $failure"
             }
         } else {
-            logger.warn {
-                "Attempt ${retry.attempt} of handler ${handler.name} failed with $failure, " +
-                    "next one in ${retry.waitBeforeNext}"
-            }
-            deliver(delivery, retry.next(), after = retry.waitBeforeNext)
+            val wait = Duration.ofMillis(waits.nextBackOff())
+            logger.warn { "Attempt $attempt of handler ${handler.name} failed with $failure, next one in $wait" }
+            deliver(delivery, attempt + 1, waits, after = wait)
         }
     }
-}
-
-// A factory, unlike a Thread.Builder, can be shared by the threads that publish at once
-private val virtualThreads = Thread.ofVirtual().name("platform-event-", 0).factory()
-
-private fun onVirtualThread(delay: Duration, task: () -> Unit) {
-    virtualThreads.newThread {
-        Thread.sleep(delay)
-        task()
-    }.start()
 }

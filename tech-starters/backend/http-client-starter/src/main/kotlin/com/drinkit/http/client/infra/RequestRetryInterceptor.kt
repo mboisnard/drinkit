@@ -2,7 +2,6 @@ package com.drinkit.http.client.infra
 
 import com.drinkit.idempotency.CurrentIdempotencyKey
 import org.springframework.core.retry.RetryException
-import org.springframework.core.retry.RetryPolicy
 import org.springframework.core.retry.RetryTemplate
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpRequest
@@ -20,12 +19,7 @@ internal class RequestRetryInterceptor(
     private val honoursIdempotencyKey: Boolean,
 ) : ClientHttpRequestInterceptor {
 
-    private val retryTemplate = RetryTemplate(
-        RetryPolicy.builder()
-            .maxRetries(retry.maxRetries)
-            .delay(retry.delay)
-            .build(),
-    )
+    private val retryTemplate = RetryTemplate(retry.policy.createRetryPolicy())
 
     override fun intercept(
         request: HttpRequest,

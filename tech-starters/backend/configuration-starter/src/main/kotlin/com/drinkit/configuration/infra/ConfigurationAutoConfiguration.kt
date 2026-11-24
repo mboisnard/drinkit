@@ -5,8 +5,8 @@ import com.drinkit.configuration.Configurations
 import org.jooq.DSLContext
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.jooq.autoconfigure.JooqAutoConfiguration
 import org.springframework.context.annotation.Bean
 import tools.jackson.databind.json.JsonMapper
@@ -17,7 +17,7 @@ private const val CACHE_TTL_MINUTES = 10L
 
 @AutoConfiguration(after = [JooqAutoConfiguration::class])
 @ConditionalOnBean(DSLContext::class)
-@ConditionalOnProperty(prefix = "starters.configuration", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.configuration.enabled", matchIfMissing = true)
 internal class ConfigurationAutoConfiguration {
 
     @Bean

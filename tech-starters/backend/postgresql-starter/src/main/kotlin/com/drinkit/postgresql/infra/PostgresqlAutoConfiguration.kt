@@ -4,8 +4,8 @@ import org.jooq.ExecuteListenerProvider
 import org.jooq.SQLDialect
 import org.jooq.impl.DefaultExecuteListenerProvider
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
@@ -15,7 +15,7 @@ import org.springframework.dao.support.PersistenceExceptionTranslator
 import javax.sql.DataSource
 
 @AutoConfiguration(after = [DataSourceAutoConfiguration::class])
-@ConditionalOnProperty(prefix = "starters.postgresql", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.postgresql.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(PostgresqlProperties::class)
 internal class PostgresqlAutoConfiguration {
 

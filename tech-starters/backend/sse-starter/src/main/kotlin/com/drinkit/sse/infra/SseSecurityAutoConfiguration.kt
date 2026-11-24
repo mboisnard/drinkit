@@ -3,9 +3,9 @@ package com.drinkit.sse.infra
 import com.drinkit.security.EndpointRules
 import com.drinkit.security.endpointRules
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpMethod
@@ -14,7 +14,7 @@ import org.springframework.http.HttpMethod
 @AutoConfiguration(after = [SseAutoConfiguration::class])
 @ConditionalOnClass(EndpointRules::class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnProperty(prefix = "starters.sse", name = ["enabled"], matchIfMissing = true)
+@ConditionalOnBooleanProperty("starters.sse.enabled", matchIfMissing = true)
 internal class SseSecurityAutoConfiguration {
 
     @Bean

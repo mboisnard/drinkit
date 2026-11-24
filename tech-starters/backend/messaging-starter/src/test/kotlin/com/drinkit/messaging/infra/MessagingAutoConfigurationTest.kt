@@ -2,9 +2,6 @@ package com.drinkit.messaging.infra
 
 import com.drinkit.messaging.PlatformEventPublisher
 import com.drinkit.messaging.SpyPlatformEventPublisher
-import com.drinkit.messaging.infra.retry.ExponentialBackoffRetry
-import com.drinkit.messaging.infra.retry.FixedDelayRetry
-import com.drinkit.messaging.infra.retry.Retry
 import com.drinkit.messaging.infra.springevents.PlatformEventHandlerProcessor
 import com.drinkit.messaging.infra.springevents.SpringEventsPublisher
 import io.kotest.matchers.shouldBe
@@ -33,23 +30,6 @@ internal class MessagingAutoConfigurationTest {
             .run { context ->
                 // When & Then
                 context.getBean<PlatformEventPublisher>().shouldBeInstanceOf<SpyPlatformEventPublisher>()
-            }
-    }
-
-    @Test
-    fun `retries with an exponential backoff by default`() {
-        runner.run { context ->
-            // When & Then
-            context.getBean<Retry>().shouldBeInstanceOf<ExponentialBackoffRetry>()
-        }
-    }
-
-    @Test
-    fun `retries with a fixed delay when the exponential backoff is switched off`() {
-        runner.withPropertyValues("starters.messaging.retry.exponential-backoff=false")
-            .run { context ->
-                // When & Then
-                context.getBean<Retry>().shouldBeInstanceOf<FixedDelayRetry>()
             }
     }
 
