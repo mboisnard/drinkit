@@ -61,7 +61,7 @@ internal class SecurityTestApplication {
 internal class TestController(private val currentUser: CurrentUser, private val currentVisitor: CurrentVisitor) {
 
     @GetMapping("/api/public/visitor")
-    fun visitor() = currentVisitor.id()
+    fun visitor() = currentVisitor.id().value
 
     @GetMapping("/api/public/visitor/ip-address")
     fun visitorIpAddress() = currentVisitor.ipAddress().value

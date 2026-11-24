@@ -114,7 +114,7 @@ internal class IdempotencyFilter(
         "$method $requestURI?${queryString.orEmpty()}\n${body.decodeToString()}".sha256()
     }
 
-    private fun caller() = currentUser.orNull()?.let { "user:${it.id}" } ?: "visitor:${currentVisitor.id()}"
+    private fun caller() = currentUser.orNull()?.let { "user:${it.id}" } ?: "visitor:${currentVisitor.id().value}"
 
     private fun refuse(
         request: HttpServletRequest,

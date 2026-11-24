@@ -12,7 +12,7 @@ internal class RequestSubject(
 ) {
 
     fun get(): FlagSubject {
-        val user = currentUser.orNull() ?: return FlagSubject(currentVisitor.id())
+        val user = currentUser.orNull() ?: return FlagSubject(currentVisitor.id().value)
         return FlagSubject(user.id, user.roles.associateWith { "true" } + attributes.of(user))
     }
 }

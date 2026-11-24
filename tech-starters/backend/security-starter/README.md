@@ -118,7 +118,7 @@ A controller reads and changes the connected user:
 currentUser.get()                   // the connected user, or a 401 for an anonymous caller
 currentUser.signIn(userId)          // a user proven another way, with a new session id
 currentUser.refresh()               // after the user's roles changed
-currentVisitor.id()                 // the browser behind the request, signed in or not
+currentVisitor.id()                 // the VisitorId of the browser behind the request, signed in or not
 currentVisitor.ipAddress()          // its IpAddress, read through the proxies of server.forward-headers-strategy
 currentVisitor.ipAddress().host()   // what one host holds: the IPv4 address, or its whole IPv6 /64 network
 sessions.revokeAll(userId)          // signs another user out everywhere
@@ -136,7 +136,7 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
   `healthAccessRules`. The other actuator endpoints follow the rules of the application.
 - **Session data**: the first write of `SessionData` opens the session, even for a visitor who has not signed in,
   and the sign-in keeps what it holds. A read or a removal opens none.
-- **Visitor**: each request gets its visitor, a random id that a `visitor` cookie keeps for 30 days after the last
+- **Visitor**: each request gets its visitor, a `VisitorId` of `identifier-starter` that a `visitor` cookie keeps for 30 days after the last
   visit, also logged as `visitor.id`. A visitor is a browser, not a person: two people on one browser share it.
 - **Requests without CSRF token**: `endpointRules(csrfFree = listOf(matcher)) { … }` frees from the token a request
   that changes no state on the server, next to its access rule. Fetch Metadata still refuses it cross-site.

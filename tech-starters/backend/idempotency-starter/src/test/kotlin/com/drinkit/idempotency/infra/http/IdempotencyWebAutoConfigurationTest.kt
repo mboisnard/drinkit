@@ -25,7 +25,7 @@ internal class IdempotencyWebAutoConfigurationTest {
         .withBean("requestMappingHandlerMapping", RequestMappingHandlerMapping::class.java)
         .withBean(CurrentUser::class.java, { InMemoryCurrentUser() })
         .withBean(CurrentVisitor::class.java, {
-            InMemoryCurrentVisitor("visitor")
+            InMemoryCurrentVisitor()
         })
 
     private val withIdempotency = runner.withBean(Idempotency::class.java, { inMemoryIdempotency() })

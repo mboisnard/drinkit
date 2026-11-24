@@ -2,6 +2,7 @@ package com.drinkit.security.infra.chain
 
 import com.drinkit.security.CurrentVisitor
 import com.drinkit.security.IpAddress
+import com.drinkit.security.VisitorId
 import com.drinkit.security.infra.SecurityStarterProperties
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -12,7 +13,6 @@ import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.filter.OncePerRequestFilter
 import java.time.Duration
-import java.util.UUID
 
 internal const val VISITOR_ID_LOG_KEY = "visitor.id"
 
@@ -23,22 +23,20 @@ internal class VisitorFilter(private val cookies: SecurityStarterProperties.Cook
     OncePerRequestFilter() {
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
-        val visitorId = request.cookies?.firstOrNull { it.name == cookies.visitor }?.value?.takeIf(::isUuid)
-            ?: UUID.randomUUID().toString()
+        val visitorId = request.cookies?.firstOrNull { it.name == cookies.visitor }?.value?.let(VisitorId::parseOrNull)
+            ?: VisitorId.create()
 
         request.setAttribute(VISITOR_ID_ATTRIBUTE, visitorId)
-        response.addCookie(cookies.forSite(cookies.visitor, visitorId, validity.toSeconds().toInt()))
+        response.addCookie(cookies.forSite(cookies.visitor, visitorId.value, validity.toSeconds().toInt()))
 
-        MDC.putCloseable(VISITOR_ID_LOG_KEY, visitorId).use { chain.doFilter(request, response) }
+        MDC.putCloseable(VISITOR_ID_LOG_KEY, visitorId.value).use { chain.doFilter(request, response) }
     }
-
-    private fun isUuid(value: String) = runCatching { UUID.fromString(value) }.isSuccess
 }
 
 internal class RequestCurrentVisitor : CurrentVisitor {
 
-    override fun id(): String = RequestContextHolder.currentRequestAttributes()
-        .getAttribute(VISITOR_ID_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST) as String
+    override fun id(): VisitorId = RequestContextHolder.currentRequestAttributes()
+        .getAttribute(VISITOR_ID_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST) as VisitorId
 
     override fun ipAddress() =
         IpAddress((RequestContextHolder.currentRequestAttributes() as ServletRequestAttributes).request.remoteAddr)
