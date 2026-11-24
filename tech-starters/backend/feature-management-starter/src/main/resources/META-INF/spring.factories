@@ -1,0 +1,2 @@
+org.springframework.boot.EnvironmentPostProcessor=\
+com.drinkit.featuremanagement.infra.flipt.FliptLoggingEnvironmentPostProcessor

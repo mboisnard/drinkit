@@ -64,7 +64,8 @@ fun subjectAttributes() = SubjectAttributes { user -> mapOf("plan" to plans.of(u
 ```
 
 - **A flag Flipt does not know**, or a Flipt that does not answer, gives the default of the call, `false` unless
-  given.
+  given, and a one-line warning with Flipt's answer. The stack trace that `FliptProvider` logs comes back with
+  `logging.level.dev.openfeature.contrib.providers.flipt.FliptProvider=error`.
 - **Without a subject**, a flag is evaluated for the signed-in user of the request, with their roles, such as
   `ROLE_ADMIN=true`, and the `SubjectAttributes` of the application, or for the visitor, by id alone. Flipt segments
   target these attributes. Outside a request, the call names its `FlagSubject`.
