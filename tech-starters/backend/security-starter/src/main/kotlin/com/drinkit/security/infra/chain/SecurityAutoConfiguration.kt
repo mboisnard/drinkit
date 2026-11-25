@@ -8,6 +8,8 @@ import com.drinkit.security.infra.SecurityStarterProperties.Cookie.Companion.SAM
 import com.drinkit.security.infra.code.CODE_REQUEST_PATH
 import com.drinkit.security.infra.code.CODE_SIGN_IN_PATH
 import com.drinkit.security.infra.events.SecurityEventLogger
+import com.drinkit.security.infra.passkey.PasskeySignIn
+import com.drinkit.security.infra.passkey.passkeyRules
 import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.beans.factory.annotation.Qualifier
@@ -93,6 +95,7 @@ internal class SecurityAutoConfiguration {
         http: HttpSecurity,
         endpointRules: ObjectProvider<EndpointRules>,
         rememberMeServices: ObjectProvider<RememberMeServices>,
+        passkeys: ObjectProvider<PasskeySignIn>,
         csrfTokenRepository: CsrfTokenRepository,
         sessionAuthenticationStrategy: SessionAuthenticationStrategy,
         securityContextRepository: SecurityContextRepository,
@@ -101,6 +104,7 @@ internal class SecurityAutoConfiguration {
     ): SecurityFilterChain {
         protectAgainstCsrf(http, csrfTokenRepository, endpointRules)
         rememberMeServices.ifAvailable { services -> http.rememberMe { it.rememberMeServices(services) } }
+        passkeys.ifAvailable { it.configure(http) }
 
         http {
             securityContext { this.securityContextRepository = securityContextRepository }
@@ -144,6 +148,7 @@ internal class SecurityAutoConfiguration {
                 authorize(HttpMethod.POST, CODE_SIGN_IN_PATH, permitAll)
                 authorize(HttpMethod.POST, LOGOUT_PATH, permitAll)
                 authorize(HttpMethod.GET, CSRF_PATH, permitAll)
+                if (properties.passkey.enabled) passkeyRules()
                 endpointRules.orderedStream().forEach { it.declare(this) }
                 authorize(anyRequest, UnruledEndpoint)
             }

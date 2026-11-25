@@ -1,8 +1,8 @@
 # Security Starter
 
 A [tech starter](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/1.engineering/2.architecture/6.tech-starters.md)
-that secures a Spring MVC application serving a single-page front end: sign-in with a code sent by email, sign-out,
-remember-me, a session kept in PostgreSQL, CSRF, the security headers and the access rules of the endpoints. Every
+that secures a Spring MVC application serving a single-page front end: sign-in with a code sent by email or with a
+passkey, sign-out, remember-me, a session kept in PostgreSQL, CSRF, the security headers and the access rules of the endpoints. Every
 endpoint is refused until the application gives it a rule. The
 [security principles](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/3.reference/2.security/1.principles.md)
 explain the choices behind the defaults.
@@ -55,6 +55,98 @@ flowchart LR
     Method -- "allowed, or no annotation" --> Controller
 ```
 
+## Passkeys
+
+A signed-in user adds passkeys to their account, then signs in with one in place of a code, lists them and removes
+them. The starter takes Spring Security's passkey support as it is: its URLs, its tables and its checks of the W3C
+WebAuthn specification.
+
+A passkey is a key pair. The server keeps the public key. The authenticator keeps the private key: a phone, a laptop,
+a security key or a password manager that syncs it. It uses the key only once it has verified the user with a
+fingerprint, a face or a PIN, which the specification calls user verification. The browser ties each passkey to the
+domain of the site, the relying party id or rp id, and adds the origin of the page to what the authenticator signs.
+A phishing site can then neither use a passkey nor relay its answer.
+
+Spring keeps a user entity per account: its name is the account id, and its random user handle is what a passkey
+stores in place of any account id. A signed-in user creates a passkey:
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Auth as Authenticator
+    participant Browser
+    participant App as Nuxt app
+    participant Starter as Security starter
+    participant DB as PostgreSQL
+    User->>App: add a passkey
+    App->>Starter: POST /webauthn/register/options
+    Starter->>DB: user entity of the account, with a random user handle, created once
+    Starter-->>App: rp id, user handle and login, challenge, passkeys already there
+    Note over Starter: the session keeps these WebAuthn options until the answer
+    App->>Browser: navigator.credentials.create(options)
+    Browser->>Auth: new key pair for the rp id and the user handle
+    Auth->>User: fingerprint, face or PIN
+    Auth-->>Browser: public key, signed over the origin and the challenge
+    Browser-->>App: the new credential
+    App->>Starter: POST /webauthn/register {credential, label}
+    Starter->>Starter: check the challenge, the origin, the rp id and the verified user
+    Starter->>DB: public key, signature counter and label in user_credentials
+    Starter-->>App: 200
+```
+
+Then signs in with it from the email field, without typing anything:
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Auth as Authenticator
+    participant Browser
+    participant App as Nuxt app
+    participant Starter as Security starter
+    participant DB as PostgreSQL
+    App->>Starter: POST /webauthn/authenticate/options, when the sign-in page shows
+    Starter-->>App: challenge and rp id, no passkey named
+    Note over Starter: the session keeps these WebAuthn options until the answer
+    App->>Browser: navigator.credentials.get(options), offered in the autofill
+    User->>Browser: picks a passkey in the autofill of the email field
+    Browser->>Auth: sign the challenge for the rp id
+    Auth->>User: fingerprint, face or PIN
+    Auth-->>Browser: signature and user handle
+    Browser-->>App: the signed credential
+    App->>Starter: POST /login/webauthn
+    Starter->>DB: the passkey and its user entity
+    Starter->>Starter: check the signature, the challenge, the origin, the rp id, the verified user and the counter
+    Note over Starter: a counter that goes back reveals a cloned key
+    Starter->>DB: new counter and last use
+    Starter-->>App: 200, a new session id and XSRF token, as after a code
+```
+
+`Passkeys.ofCurrentUser()` lists the passkeys of the user, for the application to expose in its own API, and
+`DELETE /webauthn/register/{id}` removes one of them. No `Passkeys` bean exists while passkeys are off.
+What the starter adds to Spring, and why:
+
+| What | Why |
+|---|---|
+| jOOQ repositories in place of Spring's JDBC ones, same columns and encodings | The tables live in `drinkit_security`, which Spring's SQL does not name |
+| A `Webauthn4JRelyingPartyOperations` bean, whose options name the user by login and require user verification | The starter names a user by account id, which a passkey manager would show. Without verification, a passkey is only something the user has |
+| A `UserDetailsService` that loads by account id, given to the chain only | Spring requires one, and the name of a user entity is the account id. As a bean, it would let other sign-ins load users by id |
+| The session strategy, context repository and handlers of the starter on Spring's sign-in filter | A passkey sign-in renews the session id and XSRF token and calls `UserAccounts.signedIn`, as the other sign-ins do |
+| Deserializers for the options in the JSON session | Spring keeps the options in the session but writes them only for the browser, as it expects Java serialization |
+| The rules of the passkey URLs in the chain | The chain refuses any URL without a rule |
+| `Passkeys`, which lists the passkeys of the signed-in user | Spring lists them only in an HTML page, turned off. The application decides whether its API lists them |
+| A log line when a passkey is added or removed | Spring logs neither |
+| `RefusedPasskeyFilter`, which answers 400 to a passkey refused at creation | Spring's registration filter lets the verification error out, which the server answers 500 |
+
+Where the starter departs from the defaults:
+
+- **User verification is required**, where the specification prefers it. Phones and laptops always verify, only a
+  security key without PIN is refused.
+- **Spring's filters answer with a bare status**: 400 for creation options asked by a visitor, 401 for a refused
+  sign-in, 403 for the passkey of another user. A passkey refused at creation, such as one from another origin, is
+  answered 400 too.
+- **The sign-in page opens a session** for its visitor, which keeps the challenge until the sign-in. Nothing limits
+  these sessions per IP address yet, so a script could fill the session table until they expire.
+
 ## Usage
 
 A module declares the starter in its build file:
@@ -70,8 +162,8 @@ starter reads the time from. The starter calls the ports directly, in the reques
 outside any use case, so the adapters open their own transactions. It never reaches the application through a Spring
 event.
 
-`UserAccounts` gives the accounts. A disabled or deleted account is not found, and roles are full authority names
-such as `ROLE_USER`. `register` gives the account of an email that a code has just proven, when `findByLogin` found
+`UserAccounts` gives the accounts. A disabled or deleted account is not found, its login is what a passkey manager
+shows, and roles are full authority names such as `ROLE_USER`. `register` gives the account of an email that a code has just proven, when `findByLogin` found
 none: a new account, or one the application brings back. Null refuses the sign-in. `signedIn` runs in the request of
 each sign-in, by code, remembered or `CurrentUser.signIn`, such as to keep the account's language for the session.
 
@@ -127,7 +219,7 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 
 - **Endpoints**: the starter serves `POST /api/auth/code`, which takes `{email}`, `POST /api/auth/code/sign-in`,
   which takes `{email, code, rememberMe}`, `POST /api/auth/logout` and `GET /api/auth/csrf`. The email is trimmed
-  and lower-cased.
+  and lower-cased. With a database, it serves the passkey URLs of [Passkeys](#passkeys).
   [Calling the API](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/3.reference/2.security/2.calling-the-api.md)
   shows how a front end or Postman uses them.
 - **Health**: with Spring Boot Actuator, anyone reads `/actuator/health`, even under a rule of the application that
@@ -151,8 +243,10 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
   counts them, and an IPv6 address counts by its network of 64 bits. Without its `RateLimiter`, as with
   `starters.rate-limit.enabled=false`, nothing limits the codes but their wrong tries per email.
 - **Tables**: the [updater](https://github.com/mboisnard/drinkit/blob/master/deployment/updater/README.md) creates
-  the `drinkit_security` tables of the sessions, the remember-me tokens and the sign-in codes. The sign-in by code needs
-  PostgreSQL through jOOQ, for its codes and for the counts of its limits.
+  the `drinkit_security` tables of the sessions, the remember-me tokens, the sign-in codes and the passkeys. The sign-in
+  by code needs PostgreSQL through jOOQ, for its codes and for the counts of its limits. Without a jOOQ `DSLContext`,
+  passkeys are offered only when the application gives Spring's `PublicKeyCredentialUserEntityRepository` and
+  `UserCredentialRepository`.
 - **Choices**: ADRs [011](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/011-sign-in-without-a-password.md),
   [012](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/012-keep-sessions-in-postgresql.md),
   [013](https://github.com/mboisnard/drinkit/blob/master/docs/content/en/2.decisions/013-remember-me-with-a-rotating-hashed-token.md)
@@ -174,6 +268,10 @@ sessionData.getOrPut(PREFERENCES) { preferencesOf(currentUser.get().id) }   // c
 | `starters.security.cookie.prefix` | `__Host-`, empty over plain http | `STARTERS_SECURITY_COOKIE_PREFIX` |
 | `starters.security.cookie.secure` | `true`, `false` over plain http | `STARTERS_SECURITY_COOKIE_SECURE` |
 | `starters.security.visitor.validity` | `30d` after the last visit | `STARTERS_SECURITY_VISITOR_VALIDITY` |
+| `starters.security.passkey.enabled` | `true`: the application starts only with `rp-id` and `allowed-origins`; `false` offers no passkey and needs neither | `STARTERS_SECURITY_PASSKEY_ENABLED` |
+| `starters.security.passkey.rp-id` | none, required with passkeys: the domain of the site, such as `drinkit.app` | `STARTERS_SECURITY_PASSKEY_RPID` |
+| `starters.security.passkey.rp-name` | the rp id | `STARTERS_SECURITY_PASSKEY_RPNAME` |
+| `starters.security.passkey.allowed-origins` | none, required with passkeys: the origins of the pages, such as `https://drinkit.app` | `STARTERS_SECURITY_PASSKEY_ALLOWEDORIGINS` |
 
 ## Tests
 
@@ -190,6 +288,9 @@ From `testFixtures(project(":security-starter"))`:
 - `SpySignInCodeSender` keeps the last code sent to each login, for the test to sign in with, and `failFor(login)`
   makes the sending throw, as an unreachable mail server would. `SignInCodeSenderTestContract` is the contract the
   application's sender runs.
+- A test without PostgreSQL that signs in with passkeys gives the starter Spring's
+  `MapPublicKeyCredentialUserEntityRepository` and `MapUserCredentialRepository`. One with a database and no use for
+  passkeys sets `starters.security.passkey.enabled=false`, or gives the relying party.
 - A test that needs the limits without PostgreSQL gives the starter a `RateLimiter`, such as
   `inMemoryRateLimiter(clock)` from `testFixtures(project(":rate-limit-starter"))`.
 - `EndpointRulesCoverage(rules, apiPackage).unruledEndpoints()` lists the operations of the API contract that no rule
@@ -200,13 +301,30 @@ From `testFixtures(project(":security-starter"))`:
   class.
 
 ```kotlin
-val accounts = InMemoryUserAccounts("ada@drinkit.test" to UserAccount("ada-id", setOf("ROLE_USER")))
+val accounts = InMemoryUserAccounts(UserAccount("ada-id", "ada@drinkit.test", setOf("ROLE_USER")))
 accounts.refuseRegistrationOf("blocked@drinkit.test")        // its sign-in gets the 401 of a refusal
 val code = signInCodeSender.lastCodeOf("ada@drinkit.test")   // once POST /api/auth/code asked for it
 ```
 
 ## Limits
 
-- The email code is the only sign-in yet: the passkeys, Google and Apple of ADR 011 come later.
+- Google and Apple, the other sign-ins of ADR 011, come later.
+- A passkey sign-in remembers no login: the session ends with its timeouts, after which the next sign-in is one
+  gesture again.
 - The starter refuses to start with `cookie.secure` set to `false` and a prefix left: a browser drops a `__Host-`
   cookie that is not `Secure`.
+
+## Sources
+
+- [Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/), W3C: registration (7.1), assertion (7.2), user
+  handle (14.6.1), signature counter (6.1.1)
+- [Credential Management Level 1](https://www.w3.org/TR/credential-management-1/), W3C: the conditional mediation of
+  the autofill
+- [Passkeys](https://docs.spring.io/spring-security/reference/servlet/authentication/passkeys.html), Spring Security
+- [Passkeys developer resources](https://passkeys.dev/), FIDO Alliance and W3C
+- [Application Security Verification Standard 5.0](https://owasp.org/www-project-application-security-verification-standard/),
+  OWASP: phishing-resistant factor (6.3.3), removal of a factor (6.5.6), security logs (16.3.1)
+- [Logging Vocabulary Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Vocabulary_Cheat_Sheet.html),
+  OWASP: `authn_token_created`, `authn_token_revoked`
+- [Digital Identity Guidelines, Authentication](https://pages.nist.gov/800-63-4/sp800-63b.html), NIST SP 800-63B-4:
+  phishing resistance (3.2.5) and syncable authenticators (Appendix B)

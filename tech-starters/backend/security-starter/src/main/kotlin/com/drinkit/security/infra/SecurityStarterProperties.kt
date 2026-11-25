@@ -12,7 +12,10 @@ private const val CODE_ATTEMPTS_HOURS = 1L
 private const val EMAIL_MAX_LENGTH = 320
 private const val VISITOR_DAYS = 30L
 
-/** OWASP: ASVS 5.0 V3.3, V7.3.1, V7.3.2, Session Management Cheat Sheet (cookie attributes, timeouts). */
+/**
+ * OWASP: ASVS 5.0 V3.3, V7.3.1, V7.3.2, Session Management Cheat Sheet (cookie attributes, timeouts). W3C WebAuthn
+ * Level 3, 5.4.2 (relying party) and 13.4.9 (origin and rp id).
+ */
 @ConfigurationProperties(prefix = "starters.security")
 internal data class SecurityStarterProperties(
     val enabled: Boolean = true,
@@ -21,6 +24,7 @@ internal data class SecurityStarterProperties(
     val code: Code = Code(),
     val cookie: Cookie = Cookie(),
     val visitor: Visitor = Visitor(),
+    val passkey: Passkey = Passkey(),
 ) {
     data class Session(
         val idleTimeout: Duration = Duration.ofMinutes(IDLE_MINUTES),
@@ -30,6 +34,28 @@ internal data class SecurityStarterProperties(
     data class RememberMe(val validity: Duration = Duration.ofDays(REMEMBER_ME_DAYS))
 
     data class Visitor(val validity: Duration = Duration.ofDays(VISITOR_DAYS))
+
+    /**
+     * The relying party a browser checks each passkey against: [rpId] is the domain of the site, such as
+     * `drinkit.app`, and [allowedOrigins] the origins of the pages that create passkeys and sign in with them.
+     */
+    data class Passkey(
+        val enabled: Boolean = true,
+        val rpId: String = "",
+        val rpName: String = rpId,
+        val allowedOrigins: Set<String> = emptySet(),
+    ) {
+        // Checked once passkeys have their tables: an application without a database has none to configure
+        fun requireRelyingParty() {
+            require(rpId.isNotBlank()) {
+                "starters.security.passkey.rp-id is required while passkeys are enabled, such as drinkit.app"
+            }
+            require(allowedOrigins.isNotEmpty()) {
+                "starters.security.passkey.allowed-origins is required while passkeys are enabled, such as " +
+                    "https://drinkit.app"
+            }
+        }
+    }
 
     data class Code(
         val validity: Duration = Duration.ofMinutes(CODE_MINUTES),

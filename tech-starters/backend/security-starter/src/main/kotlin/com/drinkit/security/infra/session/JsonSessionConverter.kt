@@ -6,6 +6,7 @@ import org.springframework.core.convert.converter.GenericConverter
 import org.springframework.core.convert.converter.GenericConverter.ConvertiblePair
 import org.springframework.core.convert.support.GenericConversionService
 import org.springframework.security.jackson.SecurityJacksonModules
+import org.springframework.security.web.webauthn.jackson.WebauthnJacksonModule
 import tools.jackson.core.JacksonException
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator
@@ -19,12 +20,21 @@ import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator
 internal class JsonSessionConverter(classLoader: ClassLoader, private val events: SecurityEventLogger) :
     GenericConversionService() {
 
-    private val jsonMapper = JsonMapper.builder()
-        .addModules(SecurityJacksonModules.getModules(classLoader, BasicPolymorphicTypeValidator.builder()))
-        .build()
+    // Spring Security leaves its passkey module out of SecurityJacksonModules: it is added with the types it allows
+    private val jsonMapper = WebauthnJacksonModule().let { passkeys ->
+        val types = PasskeyOptionsJson.allowIn(BasicPolymorphicTypeValidator.builder())
+            .also(passkeys::configurePolymorphicTypeValidator)
+
+        JsonMapper.builder()
+            .addModules(SecurityJacksonModules.getModules(classLoader, types))
+            .addModules(passkeys, PasskeyOptionsJson.module)
+            .build()
+    }
 
     init {
-        addConverter(Any::class.java, ByteArray::class.java) { jsonMapper.writeValueAsBytes(it) }
+        addConverter(Any::class.java, ByteArray::class.java) {
+            if (PasskeyOptionsJson.isOptions(it)) PasskeyOptionsJson.write(it) else jsonMapper.writeValueAsBytes(it)
+        }
         // A GenericConverter, since a plain Converter may not return null, which an unreadable attribute becomes
         addConverter(
             object : GenericConverter {

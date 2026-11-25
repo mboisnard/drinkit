@@ -9,6 +9,8 @@ import com.drinkit.security.generated.jooq.tables.RememberMeToken
 import com.drinkit.security.generated.jooq.tables.SignInCode
 import com.drinkit.security.generated.jooq.tables.SpringSession
 import com.drinkit.security.generated.jooq.tables.SpringSessionAttributes
+import com.drinkit.security.generated.jooq.tables.UserCredentials
+import com.drinkit.security.generated.jooq.tables.UserEntities
 
 
 
@@ -31,3 +33,13 @@ val SPRING_SESSION: SpringSession = SpringSession.SPRING_SESSION
  * The table <code>drinkit_security.spring_session_attributes</code>.
  */
 val SPRING_SESSION_ATTRIBUTES: SpringSessionAttributes = SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES
+
+/**
+ * The table <code>drinkit_security.user_credentials</code>.
+ */
+val USER_CREDENTIALS: UserCredentials = UserCredentials.USER_CREDENTIALS
+
+/**
+ * The table <code>drinkit_security.user_entities</code>.
+ */
+val USER_ENTITIES: UserEntities = UserEntities.USER_ENTITIES

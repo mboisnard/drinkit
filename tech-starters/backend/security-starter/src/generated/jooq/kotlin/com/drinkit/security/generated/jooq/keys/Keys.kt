@@ -9,10 +9,14 @@ import com.drinkit.security.generated.jooq.tables.RememberMeToken
 import com.drinkit.security.generated.jooq.tables.SignInCode
 import com.drinkit.security.generated.jooq.tables.SpringSession
 import com.drinkit.security.generated.jooq.tables.SpringSessionAttributes
+import com.drinkit.security.generated.jooq.tables.UserCredentials
+import com.drinkit.security.generated.jooq.tables.UserEntities
 import com.drinkit.security.generated.jooq.tables.records.RememberMeTokenRecord
 import com.drinkit.security.generated.jooq.tables.records.SignInCodeRecord
 import com.drinkit.security.generated.jooq.tables.records.SpringSessionAttributesRecord
 import com.drinkit.security.generated.jooq.tables.records.SpringSessionRecord
+import com.drinkit.security.generated.jooq.tables.records.UserCredentialsRecord
+import com.drinkit.security.generated.jooq.tables.records.UserEntitiesRecord
 
 import org.jooq.ForeignKey
 import org.jooq.UniqueKey
@@ -30,6 +34,8 @@ val REMEMBER_ME_TOKEN_PKEY: UniqueKey<RememberMeTokenRecord> = Internal.createUn
 val SIGN_IN_CODE_PKEY: UniqueKey<SignInCodeRecord> = Internal.createUniqueKey(SignInCode.SIGN_IN_CODE, DSL.name("sign_in_code_pkey"), arrayOf(SignInCode.SIGN_IN_CODE.LOGIN), true)
 val SPRING_SESSION_PKEY: UniqueKey<SpringSessionRecord> = Internal.createUniqueKey(SpringSession.SPRING_SESSION, DSL.name("spring_session_pkey"), arrayOf(SpringSession.SPRING_SESSION.PRIMARY_ID), true)
 val SPRING_SESSION_ATTRIBUTES_PK: UniqueKey<SpringSessionAttributesRecord> = Internal.createUniqueKey(SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES, DSL.name("spring_session_attributes_pk"), arrayOf(SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES.SESSION_PRIMARY_ID, SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES.ATTRIBUTE_NAME), true)
+val USER_CREDENTIALS_PKEY: UniqueKey<UserCredentialsRecord> = Internal.createUniqueKey(UserCredentials.USER_CREDENTIALS, DSL.name("user_credentials_pkey"), arrayOf(UserCredentials.USER_CREDENTIALS.CREDENTIAL_ID), true)
+val USER_ENTITIES_PKEY: UniqueKey<UserEntitiesRecord> = Internal.createUniqueKey(UserEntities.USER_ENTITIES, DSL.name("user_entities_pkey"), arrayOf(UserEntities.USER_ENTITIES.ID), true)
 
 // -------------------------------------------------------------------------
 // FOREIGN KEY definitions

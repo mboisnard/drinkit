@@ -9,6 +9,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-session-jdbc")
     api("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.security:spring-security-webauthn")
     api(project(":identifier-starter"))
     implementation(project(":rate-limit-starter"))
 
@@ -22,6 +23,7 @@ dependencies {
     testImplementation(testFixtures(project(":rate-limit-starter")))
     testImplementation("org.springframework.boot:spring-boot-webmvc-test")
     testImplementation("tools.jackson.module:jackson-module-kotlin")
+    testImplementation("com.webauthn4j:webauthn4j-test")
 }
 
 jooq {
@@ -29,7 +31,14 @@ jooq {
         configuration.apply {
             generator.apply {
                 database.apply {
-                    includes = "spring_session|spring_session_attributes|remember_me_token|sign_in_code"
+                    includes = listOf(
+                        "spring_session",
+                        "spring_session_attributes",
+                        "remember_me_token",
+                        "sign_in_code",
+                        "user_entities",
+                        "user_credentials",
+                    ).joinToString("|")
                     inputSchema = "drinkit_security"
                 }
                 target.apply {

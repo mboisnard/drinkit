@@ -31,7 +31,7 @@ internal class DomainUserAccountsTest : UserAccountsTestContract() {
 
     override fun givenAnAccount(login: String): UserAccount {
         val user = userFixtures.givenAnInitializedUser(email = Email(login))
-        return UserAccount(id = user.id.value, roles = setOf("ROLE_REGISTRATION_IN_PROGRESS"))
+        return UserAccount(id = user.id.value, login = login, roles = setOf("ROLE_REGISTRATION_IN_PROGRESS"))
     }
 
     @Test

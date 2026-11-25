@@ -21,7 +21,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner
 internal class TokenBudgetAutoConfigurationTest {
 
     private val currentUser = InMemoryCurrentUser(
-        InMemoryUserAccounts("jeanne@example.com" to UserAccount("jeanne", setOf("ROLE_USER"))),
+        InMemoryUserAccounts(UserAccount("jeanne", "jeanne@example.com", setOf("ROLE_USER"))),
     ).apply { signIn("jeanne") }
 
     private val server = FakeModelServer().apply { answers("qwen3-vl-4b", ANSWER) }

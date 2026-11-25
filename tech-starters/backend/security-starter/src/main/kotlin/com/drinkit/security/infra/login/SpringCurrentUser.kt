@@ -55,9 +55,9 @@ internal class SpringCurrentUser(
     }
 
     // Rebuilt from the current authentication, so that it stays remembered or not and keeps the FACTOR_ authorities
-    // its sign-in proved: only the roles change
+    // its sign-in proved: only the roles change. A passkey sign-in keeps its user entity, which it refuses to replace
     private fun Authentication.reloadedWith(user: UserDetails) = toBuilder()
-        .principal(user)
+        .apply { if (principal is UserDetails) principal(user) }
         .authorities { authorities ->
             authorities.removeIf { !it.isFactor() }
             authorities.addAll(user.authorities)

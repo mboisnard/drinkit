@@ -42,5 +42,6 @@ dependencies {
         api(libs.kotest.assertions.core)
         api(libs.kotlin.faker)
         api(libs.testcontainers.meilisearch)
+        api(libs.webauthn4j.test)
     }
 }

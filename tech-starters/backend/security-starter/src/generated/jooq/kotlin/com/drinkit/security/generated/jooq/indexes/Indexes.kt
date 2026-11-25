@@ -8,6 +8,8 @@ package com.drinkit.security.generated.jooq.indexes
 import com.drinkit.security.generated.jooq.tables.RememberMeToken
 import com.drinkit.security.generated.jooq.tables.SignInCode
 import com.drinkit.security.generated.jooq.tables.SpringSession
+import com.drinkit.security.generated.jooq.tables.UserCredentials
+import com.drinkit.security.generated.jooq.tables.UserEntities
 
 import org.jooq.Index
 import org.jooq.impl.DSL
@@ -24,3 +26,5 @@ val SIGN_IN_CODE_ATTEMPTS_RESET_AT_IDX: Index = Internal.createIndex(DSL.name("s
 val SPRING_SESSION_EXPIRY_TIME_IDX: Index = Internal.createIndex(DSL.name("spring_session_expiry_time_idx"), SpringSession.SPRING_SESSION, arrayOf(SpringSession.SPRING_SESSION.EXPIRY_TIME), false)
 val SPRING_SESSION_PRINCIPAL_NAME_IDX: Index = Internal.createIndex(DSL.name("spring_session_principal_name_idx"), SpringSession.SPRING_SESSION, arrayOf(SpringSession.SPRING_SESSION.PRINCIPAL_NAME), false)
 val SPRING_SESSION_SESSION_ID_IDX: Index = Internal.createIndex(DSL.name("spring_session_session_id_idx"), SpringSession.SPRING_SESSION, arrayOf(SpringSession.SPRING_SESSION.SESSION_ID), true)
+val USER_CREDENTIALS_USER_ENTITY_USER_ID_IDX: Index = Internal.createIndex(DSL.name("user_credentials_user_entity_user_id_idx"), UserCredentials.USER_CREDENTIALS, arrayOf(UserCredentials.USER_CREDENTIALS.USER_ENTITY_USER_ID), false)
+val USER_ENTITIES_NAME_IDX: Index = Internal.createIndex(DSL.name("user_entities_name_idx"), UserEntities.USER_ENTITIES, arrayOf(UserEntities.USER_ENTITIES.NAME), true)

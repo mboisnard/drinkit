@@ -72,5 +72,5 @@ internal class DomainUserAccounts(
         }
     }
 
-    private fun User.toAccount() = UserAccount(id = id.value, roles = roles.allAsString())
+    private fun User.toAccount() = UserAccount(id = id.value, login = email.value, roles = roles.allAsString())
 }

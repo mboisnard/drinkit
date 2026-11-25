@@ -4,6 +4,9 @@ import com.drinkit.security.CurrentUser
 import com.drinkit.security.EndpointRules
 import com.drinkit.security.InMemoryCurrentUser
 import com.drinkit.security.InMemoryUserAccounts
+import com.drinkit.security.PASSKEY_ORIGIN
+import com.drinkit.security.PASSKEY_RP_ID
+import com.drinkit.security.Passkeys
 import com.drinkit.security.SessionData
 import com.drinkit.security.SessionKey
 import com.drinkit.security.Sessions
@@ -20,6 +23,9 @@ import com.drinkit.security.infra.code.SignInCodeAutoConfiguration
 import com.drinkit.security.infra.code.SignInCodes
 import com.drinkit.security.infra.login.SpringCurrentUser
 import com.drinkit.security.infra.login.UserAccountsAutoConfiguration
+import com.drinkit.security.infra.passkey.JooqUserCredentials
+import com.drinkit.security.infra.passkey.PasskeyAutoConfiguration
+import com.drinkit.security.infra.passkey.SpringPasskeys
 import com.drinkit.security.infra.rememberme.RememberMeAutoConfiguration
 import com.drinkit.security.infra.rememberme.RememberMeTokens
 import com.drinkit.security.infra.rememberme.RotatingRememberMeServices
@@ -33,6 +39,7 @@ import com.drinkit.test.rootCause
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -64,6 +71,10 @@ import org.springframework.security.web.authentication.RememberMeServices
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter
 import org.springframework.security.web.csrf.CsrfTokenRepository
 import org.springframework.security.web.util.matcher.AnyRequestMatcher
+import org.springframework.security.web.webauthn.authentication.WebAuthnAuthenticationFilter
+import org.springframework.security.web.webauthn.management.UserCredentialRepository
+import org.springframework.security.web.webauthn.management.WebAuthnRelyingPartyOperations
+import org.springframework.security.web.webauthn.registration.DefaultWebAuthnRegistrationPageGeneratingFilter
 import org.springframework.session.FindByIndexNameSessionRepository
 import org.springframework.transaction.PlatformTransactionManager
 import java.time.Clock
@@ -86,7 +97,12 @@ internal class SecurityStarterAutoConfigurationsTest {
                 RememberMeAutoConfiguration::class.java,
                 UserAccountsAutoConfiguration::class.java,
                 SignInCodeAutoConfiguration::class.java,
+                PasskeyAutoConfiguration::class.java,
             ),
+        )
+        .withPropertyValues(
+            "starters.security.passkey.rp-id=$PASSKEY_RP_ID",
+            "starters.security.passkey.allowed-origins=$PASSKEY_ORIGIN",
         )
         .withBean(UserAccounts::class.java, { InMemoryUserAccounts() })
         .withBean(SignInCodeSender::class.java, { SpySignInCodeSender() })
@@ -221,6 +237,83 @@ internal class SecurityStarterAutoConfigurationsTest {
             context.containsBean("securityStarterSessionRepository") shouldBe false
             context.getBeanNamesForType(Sessions::class.java).toList().shouldBeEmpty()
             context.getBeanNamesForType(RememberMeServices::class.java).toList().shouldBeEmpty()
+        }
+    }
+
+    @Test
+    fun `signs in with passkeys at the URLs of Spring Security, without its registration page`() {
+        withSessionsInDatabase.run { context ->
+            // When
+            val filters = context.getBean<SecurityFilterChain>().filters.map { it::class }
+
+            // Then
+            filters shouldContain WebAuthnAuthenticationFilter::class
+            filters shouldNotContain DefaultWebAuthnRegistrationPageGeneratingFilter::class
+            context.getBean<UserCredentialRepository>().shouldBeInstanceOf<JooqUserCredentials>()
+            context.getBean<Passkeys>().shouldBeInstanceOf<SpringPasskeys>()
+        }
+    }
+
+    @Test
+    fun `offers no passkey without a database to keep them`() {
+        runner.run { context ->
+            // When & Then
+            context.getBeanNamesForType(WebAuthnRelyingPartyOperations::class.java).toList().shouldBeEmpty()
+            context.getBean<SecurityFilterChain>().filters.map { it::class } shouldNotContain
+                WebAuthnAuthenticationFilter::class
+        }
+    }
+
+    @Test
+    fun `starts without a relying party when passkeys are disabled`() {
+        // Given
+        val disabled = withSessionsInDatabase.withPropertyValues(
+            "starters.security.passkey.enabled=false",
+            "starters.security.passkey.rp-id=",
+            "starters.security.passkey.allowed-origins=",
+        )
+
+        disabled.run { context ->
+            // When & Then
+            context.startupFailure shouldBe null
+        }
+    }
+
+    @Test
+    fun `offers no passkey when they are disabled`() {
+        // Given
+        val disabled = withSessionsInDatabase.withPropertyValues("starters.security.passkey.enabled=false")
+
+        disabled.run { context ->
+            // When & Then
+            context.getBeanNamesForType(WebAuthnRelyingPartyOperations::class.java).toList().shouldBeEmpty()
+            context.getBeanNamesForType(Passkeys::class.java).toList().shouldBeEmpty()
+            context.getBean<SecurityFilterChain>().filters.map { it::class } shouldNotContain
+                WebAuthnAuthenticationFilter::class
+        }
+    }
+
+    @Test
+    fun `refuses passkeys without the domain they belong to`() {
+        // Given
+        val withoutRpId = withSessionsInDatabase.withPropertyValues("starters.security.passkey.rp-id=")
+
+        withoutRpId.run { context ->
+            // When & Then
+            context.startupFailure?.rootCause()?.message.orEmpty() shouldContain
+                "starters.security.passkey.rp-id is required while passkeys are enabled"
+        }
+    }
+
+    @Test
+    fun `refuses passkeys without the origins of their pages`() {
+        // Given
+        val withoutOrigins = withSessionsInDatabase.withPropertyValues("starters.security.passkey.allowed-origins=")
+
+        withoutOrigins.run { context ->
+            // When & Then
+            context.startupFailure?.rootCause()?.message.orEmpty() shouldContain
+                "starters.security.passkey.allowed-origins is required while passkeys are enabled"
         }
     }
 

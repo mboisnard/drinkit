@@ -37,8 +37,8 @@ internal class FileStorageTestContext {
 
     @Bean
     fun currentUser(): InMemoryCurrentUser {
-        val users = listOf(ADA, GRACE).map { "$it@example.com" to UserAccount(it, setOf("ROLE_USER")) }
-        val admin = "$ADMIN@example.com" to UserAccount(ADMIN, setOf("ROLE_USER", "ROLE_ADMIN"))
+        val users = listOf(ADA, GRACE).map { UserAccount(it, "$it@example.com", setOf("ROLE_USER")) }
+        val admin = UserAccount(ADMIN, "$ADMIN@example.com", setOf("ROLE_USER", "ROLE_ADMIN"))
 
         return InMemoryCurrentUser(InMemoryUserAccounts(*users.toTypedArray(), admin))
     }

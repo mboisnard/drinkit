@@ -24,6 +24,14 @@ internal class SecurityEventLogger {
         logger.info { "authn_login_fail" }
     }
 
+    fun passkeyCreated(userId: String) {
+        logger.info { "authn_token_created:$userId,type=passkey" }
+    }
+
+    fun passkeyRevoked(userId: String) {
+        logger.info { "authn_token_revoked:$userId,type=passkey" }
+    }
+
     fun rememberMeGraceUsed(userId: String) {
         logger.info { "authn_token_grace_used:$userId" }
     }

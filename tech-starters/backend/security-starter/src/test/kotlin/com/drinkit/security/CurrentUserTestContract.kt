@@ -23,7 +23,7 @@ internal abstract class CurrentUserTestContract {
     @Test
     fun `a user signs in with the roles of its account`() {
         // Given
-        accounts.save("ada@drinkit.com", UserAccount("ada", setOf("ROLE_USER")))
+        accounts.save(UserAccount("ada", "ada@drinkit.com", setOf("ROLE_USER")))
 
         // When
         val signedIn = currentUser.signIn("ada")
@@ -45,9 +45,9 @@ internal abstract class CurrentUserTestContract {
     @Test
     fun `a refresh reloads the roles of the account`() {
         // Given
-        accounts.save("ada@drinkit.com", UserAccount("ada", setOf("ROLE_USER")))
+        accounts.save(UserAccount("ada", "ada@drinkit.com", setOf("ROLE_USER")))
         currentUser.signIn("ada")
-        accounts.save("ada@drinkit.com", UserAccount("ada", setOf("ROLE_USER", "ROLE_ADMIN")))
+        accounts.save(UserAccount("ada", "ada@drinkit.com", setOf("ROLE_USER", "ROLE_ADMIN")))
 
         // When
         val refreshed = currentUser.refresh()
@@ -60,7 +60,7 @@ internal abstract class CurrentUserTestContract {
     @Test
     fun `a refresh signs out a user whose account is gone`() {
         // Given
-        accounts.save("ada@drinkit.com", UserAccount("ada", setOf("ROLE_USER")))
+        accounts.save(UserAccount("ada", "ada@drinkit.com", setOf("ROLE_USER")))
         currentUser.signIn("ada")
         accounts.remove("ada")
 
