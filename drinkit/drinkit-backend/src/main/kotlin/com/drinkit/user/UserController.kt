@@ -3,17 +3,21 @@ package com.drinkit.user
 import com.drinkit.api.generated.api.UserApi
 import com.drinkit.api.generated.model.ChangeLocaleRequest
 import com.drinkit.api.generated.model.ConnectedUserInformation
+import com.drinkit.api.generated.model.Passkey
 import com.drinkit.api.generated.model.Role
 import com.drinkit.i18n.CurrentLocale
 import com.drinkit.security.CurrentUser
+import com.drinkit.security.Passkeys
 import com.drinkit.user.core.ChooseLanguage
 import com.drinkit.user.core.User
 import com.drinkit.user.spi.Users
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.time.ZoneOffset
 import java.util.Locale
 
 @RestController
@@ -22,6 +26,7 @@ internal class UserController(
     private val changePreferences: ChangePreferences,
     private val currentUser: CurrentUser,
     private val currentLocale: CurrentLocale,
+    private val passkeys: ObjectProvider<Passkeys>,
 ) : UserApi {
 
     @Transactional(readOnly = true)
@@ -50,6 +55,23 @@ internal class UserController(
         }
 
         throw ResponseStatusException(refusal)
+    }
+
+    // No Passkeys bean while the security starter's passkeys are off: the user then has none to list
+    @Transactional(readOnly = true)
+    override fun listPasskeys(): ResponseEntity<List<Passkey>> {
+        val listed = passkeys.ifAvailable?.ofCurrentUser().orEmpty()
+
+        return ResponseEntity.ok(
+            listed.map {
+                Passkey(
+                    it.id,
+                    it.label,
+                    it.created.atOffset(ZoneOffset.UTC),
+                    it.lastUsed.atOffset(ZoneOffset.UTC),
+                )
+            },
+        )
     }
 
     private fun User.toInformation() = ConnectedUserInformation(
