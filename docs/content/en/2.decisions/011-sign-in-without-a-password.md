@@ -44,7 +44,9 @@ flowchart TB
 ```
 
 - **Passkey first.** A returning user signs in with a fingerprint or a face, and a browser without passkeys shows the
-  rest of the screen unchanged.
+  rest of the screen unchanged. The passkeys are Spring Security's, at its URLs and in its tables, on the W3C
+  WebAuthn specification: the authenticator must verify the user, and the browser offers them in the autofill of the
+  email field.
 - **Google and Apple.** An account is found by the provider's id, then by an email the provider marks as verified.
 - **A code sent by email.** Six digits, single use, valid for minutes, refused after a few wrong tries and stored as
   a hash. The same answer comes back for any email, so the screen reveals no account.
@@ -62,6 +64,9 @@ of [ADR 012](./012-keep-sessions-in-postgresql.md).
 - A sign-in without a passkey, Google or Apple waits for an email: a deployment needs an email provider that delivers
   within seconds, and a mail outage stops those sign-ins.
 - A code can be phished in real time like a password. Only a passkey resists phishing, which is why it comes first.
+- A security key without a PIN creates no passkey, since the authenticator must verify the user.
+- The session stays in JSON, as [ADR 012](./012-keep-sessions-in-postgresql.md) chose, so the starter reads back the
+  options of a passkey that Spring Security keeps in it.
 - The code endpoint is public and sends emails, so it needs limits per email and per address, and a captcha.
 - Apple needs a public domain over HTTPS and a developer account.
 - A professional used to a password kept in a password manager loses that habit. Their demand would reopen the
@@ -75,6 +80,9 @@ of [ADR 012](./012-keep-sessions-in-postgresql.md).
   page relays both. It offered two factors.
 - **Passkeys alone.** Rejected because an old browser or a lost device still needs the email, so the code exists
   anyway. It offered phishing resistance at every sign-in.
+- **A passkey whose user verification is only preferred**, the default of the specification. Rejected because a
+  passkey that skips it is only something the user has, not a strong factor of its own. It offered security keys
+  without a PIN.
 - **A link sent by email instead of a code.** Rejected because the mail app opens it in another browser than the one
   that asked. It offered one click.
 
@@ -82,5 +90,7 @@ of [ADR 012](./012-keep-sessions-in-postgresql.md).
 
 - [Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html), OWASP
 - [Passkeys](https://fidoalliance.org/passkeys/), FIDO Alliance
+- [Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/), W3C
+- [Passkeys](https://docs.spring.io/spring-security/reference/servlet/authentication/passkeys.html), Spring Security
 - [Passkeys: A Shattered Dream](https://fy.blackhats.net.au/blog/2024-04-26-passkeys-a-shattered-dream/), William
   Brown, on what passkeys still get wrong
