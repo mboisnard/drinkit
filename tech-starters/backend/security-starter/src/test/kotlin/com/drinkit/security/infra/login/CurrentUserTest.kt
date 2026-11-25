@@ -90,7 +90,7 @@ internal class CurrentUserTest(
         val sessionId = browser.session.id
         val xsrf = browser.fetchXsrfCookie()
         val admin = accounts.findById(account.id).shouldNotBeNull().copy(roles = setOf("ROLE_USER", "ROLE_ADMIN"))
-        accounts.save(account.login, admin)
+        accounts.save(admin)
 
         // When
         val refresh = browser.post("/api/cellars/refresh", xsrf).andExpect { status { isOk() } }

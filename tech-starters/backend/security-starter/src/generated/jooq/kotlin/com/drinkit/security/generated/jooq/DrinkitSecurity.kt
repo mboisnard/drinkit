@@ -8,6 +8,8 @@ import com.drinkit.security.generated.jooq.tables.RememberMeToken
 import com.drinkit.security.generated.jooq.tables.SignInCode
 import com.drinkit.security.generated.jooq.tables.SpringSession
 import com.drinkit.security.generated.jooq.tables.SpringSessionAttributes
+import com.drinkit.security.generated.jooq.tables.UserCredentials
+import com.drinkit.security.generated.jooq.tables.UserEntities
 
 import kotlin.collections.List
 
@@ -50,12 +52,24 @@ open class DrinkitSecurity : SchemaImpl(DSL.name("drinkit_security"), DefaultCat
      */
     val SPRING_SESSION_ATTRIBUTES: SpringSessionAttributes get() = SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES
 
+    /**
+     * The table <code>drinkit_security.user_credentials</code>.
+     */
+    val USER_CREDENTIALS: UserCredentials get() = UserCredentials.USER_CREDENTIALS
+
+    /**
+     * The table <code>drinkit_security.user_entities</code>.
+     */
+    val USER_ENTITIES: UserEntities get() = UserEntities.USER_ENTITIES
+
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
         RememberMeToken.REMEMBER_ME_TOKEN,
         SignInCode.SIGN_IN_CODE,
         SpringSession.SPRING_SESSION,
-        SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES
+        SpringSessionAttributes.SPRING_SESSION_ATTRIBUTES,
+        UserCredentials.USER_CREDENTIALS,
+        UserEntities.USER_ENTITIES
     )
 }

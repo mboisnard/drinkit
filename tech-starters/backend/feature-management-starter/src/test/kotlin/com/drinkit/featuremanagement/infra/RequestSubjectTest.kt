@@ -36,7 +36,7 @@ internal class RequestSubjectTest {
             subject::get,
         )
 
-        accounts.save("ada@drinkit.com", UserAccount("ada", setOf("ROLE_USER", "ROLE_ADMIN")))
+        accounts.save(UserAccount("ada", "ada@drinkit.com", setOf("ROLE_USER", "ROLE_ADMIN")))
         currentUser.signIn("ada")
 
         // When

@@ -11,16 +11,21 @@ import org.springframework.context.annotation.Bean
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.mock.web.MockHttpSession
+import org.springframework.security.web.webauthn.management.MapPublicKeyCredentialUserEntityRepository
+import org.springframework.security.web.webauthn.management.MapUserCredentialRepository
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActionsDsl
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
 const val XSRF_COOKIE = "__Host-XSRF-TOKEN"
+const val PASSKEY_RP_ID = "drinkit.test"
+const val PASSKEY_ORIGIN = "https://drinkit.test"
 
 private const val IN_MEMORY_SESSIONS = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration"
 
@@ -32,6 +37,8 @@ private const val IN_MEMORY_SESSIONS = "org.springframework.boot.jdbc.autoconfig
         "spring.autoconfigure.exclude=$IN_MEMORY_SESSIONS",
         "starters.postgresql.enabled=false",
         "starters.security.code.max-email-length=100",
+        "starters.security.passkey.rp-id=$PASSKEY_RP_ID",
+        "starters.security.passkey.allowed-origins=$PASSKEY_ORIGIN",
     ],
 )
 @AutoConfigureMockMvc
@@ -39,12 +46,18 @@ private const val IN_MEMORY_SESSIONS = "org.springframework.boot.jdbc.autoconfig
 @ExtendWith(OutputCaptureExtension::class)
 internal annotation class SecuredApplicationTest
 
-// Without PostgreSQL, the test gives the codes the starter would keep there, as PostgresSessionsTest does not
+// Without PostgreSQL, the test gives the codes and passkeys the starter would keep there: PostgresSessionsTest does not
 @TestConfiguration(proxyBeanMethods = false)
 internal class InMemoryCodes {
 
     @Bean
     fun signInCodes() = InMemorySignInCodes()
+
+    @Bean
+    fun userEntities() = MapPublicKeyCredentialUserEntityRepository()
+
+    @Bean
+    fun userCredentials() = MapUserCredentialRepository()
 }
 
 /**
@@ -96,6 +109,12 @@ internal class Browser(
         dsl()
     }
 
+    fun delete(path: String, xsrf: Cookie = fetchXsrfCookie()): ResultActionsDsl = mockMvc.delete(path) {
+        withSession()
+        cookie(xsrf)
+        header("X-XSRF-TOKEN", xsrf.value)
+    }
+
     fun post(
         path: String,
         xsrf: Cookie = fetchXsrfCookie(),
@@ -127,7 +146,7 @@ internal class TestAccounts(private val accounts: InMemoryUserAccounts) {
     fun user(roles: Set<String> = setOf("ROLE_USER"), login: String? = null): TestAccount {
         val id = UUID.randomUUID().toString()
         val account = TestAccount(id, login ?: "$id@drinkit.test")
-        accounts.save(account.login, UserAccount(id, roles))
+        accounts.save(UserAccount(id, account.login, roles))
         return account
     }
 }

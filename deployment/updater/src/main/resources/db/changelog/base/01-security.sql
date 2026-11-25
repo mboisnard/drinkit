@@ -77,6 +77,41 @@ CREATE TABLE IF NOT EXISTS drinkit_security.sign_in_code
 CREATE INDEX CONCURRENTLY IF NOT EXISTS sign_in_code_attempts_reset_at_idx
     ON drinkit_security.sign_in_code (attempts_reset_at);
 
+-- Passkeys: the tables of Spring Security's WebAuthn support as its user-entities-schema.sql and
+-- user-credentials-schema-postgres.sql ship them, but for times with their time zone. A user entity names the
+-- account by its id, and holds the random user handle of its passkeys; ids are in base64url
+
+CREATE TABLE IF NOT EXISTS drinkit_security.user_entities
+(
+    id           VARCHAR(1000) NOT NULL PRIMARY KEY,
+    name         VARCHAR(100)  NOT NULL,
+    display_name VARCHAR(200)
+);
+
+CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS user_entities_name_idx
+    ON drinkit_security.user_entities (name);
+
+CREATE TABLE IF NOT EXISTS drinkit_security.user_credentials
+(
+    credential_id                VARCHAR(1000)            NOT NULL PRIMARY KEY,
+    user_entity_user_id          VARCHAR(1000)            NOT NULL,
+    public_key                   BYTEA                    NOT NULL,
+    signature_count              BIGINT,
+    uv_initialized               BOOLEAN,
+    backup_eligible              BOOLEAN                  NOT NULL,
+    authenticator_transports     VARCHAR(1000),
+    public_key_credential_type   VARCHAR(100),
+    backup_state                 BOOLEAN                  NOT NULL,
+    attestation_object           BYTEA,
+    attestation_client_data_json BYTEA,
+    created                      TIMESTAMP WITH TIME ZONE,
+    last_used                    TIMESTAMP WITH TIME ZONE,
+    label                        VARCHAR(1000)            NOT NULL
+);
+
+CREATE INDEX CONCURRENTLY IF NOT EXISTS user_credentials_user_entity_user_id_idx
+    ON drinkit_security.user_credentials (user_entity_user_id);
+
 -- Grants
 
 -- The rows to applications, never the schema itself: ON ALL TABLES covers the tables above, the default privileges

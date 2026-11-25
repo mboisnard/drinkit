@@ -23,8 +23,8 @@ internal class TokenBudgetAdvisorTest {
 
     private val model = FakeChatModel()
     private val accounts = InMemoryUserAccounts(
-        "jeanne@example.com" to UserAccount("jeanne", setOf("ROLE_USER")),
-        "paul@example.com" to UserAccount("paul", setOf("ROLE_USER")),
+        UserAccount("jeanne", "jeanne@example.com", setOf("ROLE_USER")),
+        UserAccount("paul", "paul@example.com", setOf("ROLE_USER")),
     )
     private val currentUser = InMemoryCurrentUser(accounts)
     private val rateLimiter = inMemoryRateLimiter(Clock.fixed(Instant.parse("2026-11-12T10:00:00Z"), UTC))

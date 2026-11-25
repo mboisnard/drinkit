@@ -27,7 +27,8 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 @JooqIntegrationTest(schemas = [DrinkitSecurity::class, DrinkitStarters::class])
-@SpringBootTest(classes = [IdempotencyTestApplication::class])
+// Passkeys need a relying party, which this test has no use for
+@SpringBootTest(classes = [IdempotencyTestApplication::class], properties = ["starters.security.passkey.enabled=false"])
 // The database of the class is dropped after it, so no other class can reuse the context that points at it
 @DirtiesContext
 @AutoConfigureMockMvc

@@ -34,6 +34,10 @@ starters:
     cookie:
       prefix: ""
       secure: false
+    # The Nuxt app in development, whose pages create passkeys and sign in with them
+    passkey:
+      rp-id: localhost
+      allowed-origins: http://localhost:3000
   search-engine:
     meilisearch:
       api-key: masterKey

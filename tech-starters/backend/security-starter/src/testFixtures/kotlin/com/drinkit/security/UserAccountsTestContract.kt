@@ -47,6 +47,18 @@ abstract class UserAccountsTestContract {
     }
 
     @Test
+    fun `gives the account the login it is found by`() {
+        // Given
+        givenAnAccount(LOGIN)
+
+        // When
+        val found = accounts.findByLogin(LOGIN)
+
+        // Then
+        found.shouldNotBeNull().login shouldBe LOGIN
+    }
+
+    @Test
     fun `finds by login the account it registers for an unknown login`() {
         // When
         val registered = accounts.register(NEW_LOGIN)

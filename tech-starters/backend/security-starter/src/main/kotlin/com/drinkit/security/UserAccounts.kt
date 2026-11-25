@@ -23,6 +23,6 @@ interface UserAccounts {
     fun signedIn(id: String) = Unit
 }
 
-/** [roles] are full authority names, such as `ROLE_USER`. */
+/** [login] is what the user signs in with, such as an email. [roles] are full authority names, such as `ROLE_USER`. */
 @TechStarterTool
-data class UserAccount(val id: String, val roles: Set<String>)
+data class UserAccount(val id: String, val login: String, val roles: Set<String>)

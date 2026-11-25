@@ -20,7 +20,8 @@ import java.util.Base64
 import kotlin.time.Duration.Companion.seconds
 
 @JooqIntegrationTest(schemas = [DrinkitSecurity::class])
-@SpringBootTest(classes = [SseTestApplication::class])
+// Passkeys need a relying party, which this test has no use for
+@SpringBootTest(classes = [SseTestApplication::class], properties = ["starters.security.passkey.enabled=false"])
 // The database of the class is dropped after it, so no other class can reuse the context that points at it
 @DirtiesContext
 @AutoConfigureMockMvc

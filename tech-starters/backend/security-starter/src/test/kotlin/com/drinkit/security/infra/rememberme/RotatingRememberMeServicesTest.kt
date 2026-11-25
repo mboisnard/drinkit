@@ -55,7 +55,7 @@ internal class RotatingRememberMeServicesTest {
         sessions.revoked.shouldBeEmpty()
     }
 
-    private val accounts = InMemoryUserAccounts("ada@drinkit.test" to UserAccount(USER_ID, setOf("ROLE_USER")))
+    private val accounts = InMemoryUserAccounts(UserAccount(USER_ID, "ada@drinkit.test", setOf("ROLE_USER")))
 
     private fun servicesOn(dsl: DSLContext) = RotatingRememberMeServices(
         users = UserAccountsUserDetailsService(accounts),

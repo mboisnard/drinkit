@@ -10,6 +10,7 @@ import com.drinkit.security.Sessions
 import com.drinkit.security.SpySignInCodeSender
 import com.drinkit.security.TestAccounts
 import com.drinkit.security.generated.jooq.DrinkitSecurity
+import com.drinkit.security.infra.passkey.TestAuthenticator
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldContainExactly
@@ -21,7 +22,9 @@ import io.kotest.matchers.string.shouldNotContain
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.system.CapturedOutput
 import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.jdbc.core.simple.JdbcClient
+import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.transaction.support.TransactionTemplate
 import tools.jackson.databind.json.JsonMapper
@@ -53,6 +56,24 @@ internal class SessionsInPostgresTest(
         browser.get("/api/cellars/me").andExpect { jsonPath("$.id") { value(account.id) } }
         attributesOf(account.id).map { it["@class"] } shouldContainExactly
             listOf("org.springframework.security.core.context.SecurityContextImpl")
+    }
+
+    @Test
+    fun `keeps the options of a passkey in JSON, from the options to the answer of the authenticator`() {
+        // Given
+        val account = testAccounts.user()
+        val authenticator = TestAuthenticator()
+        browser.signIn(account.login, codes)
+        val registration = authenticator.create(browser.optionsOf("/webauthn/register/options"))
+        browser.post("/webauthn/register") { asJson(registration) }.andExpect { status { isOk() } }
+        val anonymous = CookieBrowser(mockMvc)
+
+        // When
+        val assertion = authenticator.get(anonymous.optionsOf("/webauthn/authenticate/options"))
+        anonymous.post("/login/webauthn") { asJson(assertion) }.andExpect { status { isOk() } }
+
+        // Then
+        anonymous.get("/api/cellars/me").andExpect { jsonPath("$.id") { value(account.id) } }
     }
 
     @Test
@@ -218,5 +239,13 @@ internal class SessionsInPostgresTest(
         database.sql(
             "UPDATE drinkit_security.spring_session SET creation_time = creation_time - ? WHERE principal_name = ?",
         ).param(age.toMillis()).param(userId).update() shouldBe 1
+    }
+
+    private fun CookieBrowser.optionsOf(path: String) =
+        post(path).andExpect { status { isOk() } }.andReturn().response.contentAsString
+
+    private fun MockHttpServletRequestDsl.asJson(body: String) {
+        contentType = MediaType.APPLICATION_JSON
+        content = body
     }
 }

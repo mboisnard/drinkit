@@ -23,7 +23,13 @@ const val REMEMBER_ME_COOKIE = "__Host-remember-me"
  * meta-annotation.
  */
 @Target(AnnotationTarget.CLASS)
-@SpringBootTest(classes = [SecurityTestApplication::class])
+@SpringBootTest(
+    classes = [SecurityTestApplication::class],
+    properties = [
+        "starters.security.passkey.rp-id=$PASSKEY_RP_ID",
+        "starters.security.passkey.allowed-origins=$PASSKEY_ORIGIN",
+    ],
+)
 // The database of each test class is dropped after it, so no other class can reuse the context that points at it
 @DirtiesContext
 @AutoConfigureMockMvc
