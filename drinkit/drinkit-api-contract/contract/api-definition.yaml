@@ -210,6 +210,139 @@ paths:
         '204':
           description: XSRF-TOKEN cookie set
 
+  /webauthn/register/options:
+    post:
+      operationId: startPasskeyCreation
+      tags:
+        - auth
+      summary: Get the options of a new passkey
+      description: |
+        Served by Spring Security's passkey support, in the security starter. The options of WebAuthn's
+        navigator.credentials.create() for the signed-in user, whose challenge the session keeps until the passkey is
+        saved. The passkey must be discoverable and verify the user. Answers 400, not 401, to a visitor who is not
+        signed in.
+      security:
+        - xsrfToken: []
+      responses:
+        '400':
+          description: The caller is not signed in
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
+        '200':
+          description: The options, to read with PublicKeyCredential.parseCreationOptionsFromJSON()
+          content:
+            application/json:
+              schema:
+                $ref: 'authParameters.yaml#/components/schemas/PasskeyCreationOptions'
+
+  /webauthn/register:
+    post:
+      operationId: savePasskey
+      tags:
+        - auth
+      summary: Save a new passkey
+      description: |
+        Served by Spring Security's passkey support, in the security starter. Checks the new passkey against the
+        options the session keeps, then saves it under its label.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'authParameters.yaml#/components/schemas/PasskeyRegistration'
+      security:
+        - xsrfToken: []
+      responses:
+        '400':
+          description: No options in the session, a body that is not a passkey, or a passkey refused, such as one from another origin
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
+        '200':
+          description: Passkey saved
+          content:
+            application/json:
+              schema:
+                $ref: 'authParameters.yaml#/components/schemas/PasskeySaved'
+
+  /webauthn/register/{passkeyId}:
+    delete:
+      operationId: removePasskey
+      tags:
+        - auth
+      summary: Remove a passkey of the user
+      description: |
+        Served by Spring Security's passkey support, in the security starter. The passkey signs in no more. The
+        authenticator keeps it until the user removes it there, or the page tells it with the Signal API.
+      parameters:
+        - name: passkeyId
+          in: path
+          required: true
+          schema:
+            $ref: 'authParameters.yaml#/components/schemas/PasskeyId'
+      security:
+        - xsrfToken: []
+      responses:
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
+        '403':
+          description: The passkey belongs to another user, or the XSRF token is missing
+        '204':
+          description: Passkey removed
+
+  /webauthn/authenticate/options:
+    post:
+      operationId: startPasskeySignIn
+      tags:
+        - auth
+      summary: Get the options of a passkey sign-in
+      description: |
+        Served by Spring Security's passkey support, in the security starter. The options of WebAuthn's
+        navigator.credentials.get(), without any allowed passkey, so that the browser offers the passkeys of the site
+        in the autofill of the email field. The session keeps their challenge until the sign-in.
+      security:
+        - xsrfToken: []
+      responses:
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
+        '200':
+          description: The options, to read with PublicKeyCredential.parseRequestOptionsFromJSON()
+          content:
+            application/json:
+              schema:
+                $ref: 'authParameters.yaml#/components/schemas/PasskeyRequestOptions'
+
+  /login/webauthn:
+    post:
+      operationId: signInWithPasskey
+      tags:
+        - auth
+      summary: Sign in with a passkey
+      description: |
+        Served by Spring Security's passkey support, in the security starter. Checks the answer of the authenticator
+        against the options the session keeps, then signs in the account of the passkey, as a sign-in by code does:
+        a new session cookie, and a new XSRF-TOKEN cookie in the same response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'authParameters.yaml#/components/schemas/PasskeyAssertion'
+      security:
+        - xsrfToken: []
+      responses:
+        '401':
+          description: Unknown or removed passkey, wrong origin or challenge, or a user the authenticator did not verify
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
+        '200':
+          description: User signed in
+          content:
+            application/json:
+              schema:
+                $ref: 'authParameters.yaml#/components/schemas/PasskeySignedIn'
+
   /api/files:
     post:
       operationId: uploadFile
@@ -430,6 +563,29 @@ paths:
           $ref: 'common.yaml#/components/responses/NotFound'
         '204':
           description: Language changed, or already the one of the account
+
+  /api/user/me/passkeys:
+    get:
+      operationId: listPasskeys
+      tags:
+        - user
+      summary: List the passkeys of the user
+      description: |
+        The passkeys of the signed-in user, oldest first, each with the id that removes it. None while passkeys are
+        off.
+      responses:
+        '401':
+          $ref: 'common.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: 'common.yaml#/components/responses/Forbidden'
+        '200':
+          description: The passkeys of the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'authParameters.yaml#/components/schemas/Passkey'
 
   /api/search/upload:
     post:

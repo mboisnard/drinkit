@@ -38,3 +38,83 @@ components:
       maxLength: 100
       pattern: '[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+'
       example: john.doe@gmail.com
+
+    PasskeyId:
+      type: string
+      description: The id of the passkey, in base64url
+      maxLength: 1000
+      pattern: '^[A-Za-z0-9_-]+$'
+
+    Passkey:
+      type: object
+      required:
+        - id
+        - label
+        - created
+        - lastUsed
+      properties:
+        id:
+          $ref: '#/components/schemas/PasskeyId'
+        label:
+          type: string
+          example: Ada's phone
+        created:
+          type: string
+          format: date-time
+        lastUsed:
+          type: string
+          format: date-time
+
+    PasskeyCreationOptions:
+      type: object
+      additionalProperties: true
+      description: PublicKeyCredentialCreationOptionsJSON of W3C WebAuthn Level 3, 5.1.8
+
+    PasskeyRequestOptions:
+      type: object
+      additionalProperties: true
+      description: PublicKeyCredentialRequestOptionsJSON of W3C WebAuthn Level 3, 5.1.9
+
+    PasskeyRegistration:
+      type: object
+      required:
+        - publicKey
+      properties:
+        publicKey:
+          type: object
+          required:
+            - credential
+            - label
+          properties:
+            credential:
+              type: object
+              additionalProperties: true
+              description: The new PublicKeyCredential, as its toJSON() gives it, W3C WebAuthn Level 3, 5.1
+            label:
+              type: string
+              minLength: 1
+              maxLength: 1000
+              example: Ada's phone
+
+    PasskeySaved:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+
+    PasskeyAssertion:
+      type: object
+      additionalProperties: true
+      description: The PublicKeyCredential of the sign-in, as its toJSON() gives it, W3C WebAuthn Level 3, 5.1
+
+    PasskeySignedIn:
+      type: object
+      required:
+        - authenticated
+      properties:
+        authenticated:
+          type: boolean
+        redirectUrl:
+          type: string
