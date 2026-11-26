@@ -5,12 +5,6 @@ import io.github.baole.konture.rule
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 
-// A jOOQ table import names its table, its record or its reference: ...tables.User, tables.records.UserRecord,
-// tables.references.USER
-private val TABLE_IMPORT = Regex("""\.generated\.jooq\.tables\.(?:records\.|references\.)?(\w+)""")
-
-private fun String.firstWord() = substringBefore('_').split(Regex("(?<=[a-z])(?=[A-Z])")).first().lowercase()
-
 internal class TechStartersArchitectureTest {
 
     @Test
@@ -26,18 +20,17 @@ internal class TechStartersArchitectureTest {
     }
 
     @Test
-    fun `a tech starter reads no table of a bounded context`() {
+    fun `a tech starter reads no table of an application`() {
+        check(applicationSchemas.isNotEmpty()) { "No jOOQ schema found in the applications: the rule checks nothing" }
+
         rule("starters.read-no-business-table") {
-            description = "A starter that reads a table of a context, such as USER, ties itself to the schema of one " +
-                "application: ask the application for the data through a port"
-            val contextNames = contexts.filterNot { it.endsWith(".common") }.map { it.substringAfterLast('.') }
-            files {
-                that().inModules(STARTERS)
-                should().satisfy { file, violations ->
-                    file.declaration.imports
-                        .mapNotNull { TABLE_IMPORT.find(it)?.groupValues?.get(1) }
-                        .filter { it.firstWord() in contextNames }
-                        .forEach { violations += "${file.declaration.name} reads $it of a bounded context" }
+            description = "A starter that reads a table of an application's schema, such as drinkit_application, " +
+                "ties itself to that application: ask the application for the data through a port"
+            modules {
+                that().haveNamePath(STARTERS)
+                should().satisfy { starter, violations ->
+                    (jooqSchemasOf(starter.projectDir) intersect applicationSchemas)
+                        .forEach { violations += "${starter.path} generates jOOQ classes of the schema $it" }
                 }
             }
         }.check()

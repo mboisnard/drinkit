@@ -96,6 +96,17 @@ private val moduleOfFile: Map<String, String> by lazy {
     modules.flatMap { module -> module.files.map { it.filePath to module.path } }.toMap()
 }
 
+// Konture lacks the code that jOOQ generates under src/generated/jooq, next to src/main. jOOQ names a class after each
+// schema it reads, DrinkitApplication for drinkit_application, beside DefaultCatalog
+internal fun jooqSchemasOf(projectDir: String): Set<String> = File(projectDir, "src/generated/jooq").walk()
+    .filter { it.extension == "kt" && it.parentFile.name == "jooq" && it.nameWithoutExtension != "DefaultCatalog" }
+    .map { it.nameWithoutExtension }
+    .toSet()
+
+internal val applicationSchemas: Set<String> by lazy {
+    modules.filter { it.path in APPLICATIONS }.flatMap { jooqSchemasOf(it.projectDir) }.toSet()
+}
+
 // Konture lacks a link from a class to its module
 internal fun ClassDeclaration.module() = moduleOfFile.getValue(filePath)
 
