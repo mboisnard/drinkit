@@ -94,7 +94,7 @@ sequenceDiagram
     Starter-->>App: 200
 ```
 
-Then signs in with it from the email field, without typing anything:
+Then signs in with it, without typing anything:
 
 ```mermaid
 sequenceDiagram
@@ -104,11 +104,12 @@ sequenceDiagram
     participant App as Nuxt app
     participant Starter as Security starter
     participant DB as PostgreSQL
-    App->>Starter: POST /webauthn/authenticate/options, when the sign-in page shows
+    User->>App: sign in with a passkey
+    App->>Starter: POST /webauthn/authenticate/options
     Starter-->>App: challenge and rp id, no passkey named
     Note over Starter: the session keeps these WebAuthn options until the answer
-    App->>Browser: navigator.credentials.get(options), offered in the autofill
-    User->>Browser: picks a passkey in the autofill of the email field
+    App->>Browser: navigator.credentials.get(options)
+    User->>Browser: picks a passkey in the browser's dialog
     Browser->>Auth: sign the challenge for the rp id
     Auth->>User: fingerprint, face or PIN
     Auth-->>Browser: signature and user handle
@@ -318,8 +319,6 @@ val code = signInCodeSender.lastCodeOf("ada@drinkit.test")   // once POST /api/a
 
 - [Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/), W3C: registration (7.1), assertion (7.2), user
   handle (14.6.1), signature counter (6.1.1)
-- [Credential Management Level 1](https://www.w3.org/TR/credential-management-1/), W3C: the conditional mediation of
-  the autofill
 - [Passkeys](https://docs.spring.io/spring-security/reference/servlet/authentication/passkeys.html), Spring Security
 - [Passkeys developer resources](https://passkeys.dev/), FIDO Alliance and W3C
 - [Application Security Verification Standard 5.0](https://owasp.org/www-project-application-security-verification-standard/),
