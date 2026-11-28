@@ -10,6 +10,7 @@
     "./types": "./app/types.ts",
     "./use-current-user": "./app/use-current-user.ts",
     "./use-email-code-sign-in": "./app/use-email-code-sign-in.ts",
+    "./use-passkeys": "./app/use-passkeys.ts",
     "./safe-redirect": "./shared/safe-redirect.ts",
     "./testing": "./testing/index.ts"
   },

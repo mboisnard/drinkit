@@ -18,6 +18,14 @@ export interface AuthBackend {
   /** Opens the session. A refused code throws the `ProblemError` of the backend. */
   signInWithCode: (emailCode: EmailCode) => Promise<void>;
   signOut: () => Promise<void>;
+  /** The options of a new passkey for the signed-in user, whose challenge the session keeps. */
+  passkeyCreationOptions: () => Promise<PublicKeyCredentialCreationOptionsJSON>;
+  /** Saves the new passkey under its label. A refused passkey throws the `ProblemError` of a 400. */
+  createPasskey: (credential: RegistrationResponseJSON, label: string) => Promise<void>;
+  /** The options of a passkey sign-in, which name no passkey, so that the browser offers them all. */
+  passkeySignInOptions: () => Promise<PublicKeyCredentialRequestOptionsJSON>;
+  /** Opens the session. A refused passkey throws the `ProblemError` of a 401. */
+  signInWithPasskey: (credential: AuthenticationResponseJSON) => Promise<void>;
 }
 
 /**
@@ -37,5 +45,9 @@ export function useAuthBackend(): AuthBackend {
     requestCode: (email) => send('POST', AUTH_ENDPOINTS.code, { email }),
     signInWithCode: (emailCode) => send('POST', AUTH_ENDPOINTS.codeSignIn, emailCode),
     signOut: () => send('POST', AUTH_ENDPOINTS.signOut),
+    passkeyCreationOptions: () => send('POST', AUTH_ENDPOINTS.passkeyCreationOptions),
+    createPasskey: (credential, label) => send('POST', AUTH_ENDPOINTS.passkeyCreation, { publicKey: { credential, label } }),
+    passkeySignInOptions: () => send('POST', AUTH_ENDPOINTS.passkeySignInOptions),
+    signInWithPasskey: (credential) => send('POST', AUTH_ENDPOINTS.passkeySignIn, credential),
   };
 }

@@ -19,11 +19,12 @@ flowchart LR
   MW -- "a role missing" --> Other["forbiddenRedirects, or a 403"]
   MW -- "no answer from the backend" --> Down["a 503: auth.unavailable"]
   SignIn -- "useEmailCodeSignIn" --> Done["completeSignIn<br/><small>user read, drinkit:signed-in,<br/>return URL on this origin</small>"]
+  SignIn -- "usePasskeys, from a button" --> Done
   Done --> Page
   Page -- "signOut, or a 401" --> Out["user forgotten, drinkit:signed-out,<br/>data of the pages cleared"]
 ```
 
-A new way of signing in, a passkey or Google, is a composable of its own that ends with the shared step of
+A new way of signing in, such as Google, is a composable of its own, as the passkeys are, that ends with the shared step of
 `app/complete-sign-in.ts`: the state, the middleware and the pages stay as they are.
 
 The files that hold a rule of OWASP ASVS name it, and the
@@ -77,6 +78,12 @@ It gives:
   first page, whose payload hands it to the browser.
 - **`useEmailCodeSignIn()`**, from `./use-email-code-sign-in`: `requestCode(email)`, then
   `signIn({ email, code, rememberMe })`, which throws the `ProblemError` of a refused code.
+- **`usePasskeys()`**, from `./use-passkeys`: `supported()`, false in a browser without WebAuthn or its JSON forms,
+  where the app keeps to the code. `signIn()`, on a click, opens the browser's dialog of the passkeys of the site and
+  signs in with the one picked, or with none when the user closes it. A refused passkey, such as one the user removed, throws the
+  `ProblemError` of its 401 and is told unknown to the authenticator through the Signal API, where the browser has it.
+  `create(label)`, on a click, creates a passkey of the signed-in user. The app lists them through an endpoint of its own
+  API, and removes one with `DELETE /webauthn/register/{id}` through its client.
 - **The access of a page**, `definePageMeta({ auth })`: `'public'`, `'signed-in'` or a role, typed by the app's
   roles. A page without it fails the type check, as the build lists it into `.nuxt/auth/pages-without-auth.ts`, and
   is treated as `'signed-in'` at run time. Write it as a literal: the build does not read a constant.
@@ -119,7 +126,8 @@ who opens `/cellars` signs in at `/fr/sign-in`. The sign-out clears the state of
 keeps the locales of `@nuxtjs/i18n`.
 
 The sign-in protocol is the backend `security-starter`'s, under the path of the API: `/api/auth/code`,
-`/api/auth/code/sign-in` and `/api/auth/logout`.
+`/api/auth/code/sign-in` and `/api/auth/logout`, and Spring Security's `/webauthn/register/options`,
+`/webauthn/register`, `/webauthn/authenticate/options` and `/login/webauthn` for the passkeys.
 
 ## Tests
 
@@ -132,7 +140,11 @@ fakeBackend.use(...auth.handlers);
 auth.lastCodeOf('camille@drinkit.dev');         // the code the user reads in their mailbox
 auth.signedInAs(user);                          // the cookies of an open session, for context.addCookies
 auth.userOf(request);                           // the user of a request, for the app's own handlers
+auth.passkeysOf(request);                       // their passkeys, for the app's endpoint that lists them
 ```
+
+The double knows a passkey by its id alone and checks no signature: the UI tests create and use one with Chromium's
+virtual authenticator, through a CDP session, on `localhost`, since a browser refuses an IP address as relying party.
 
 `authBackendContract` holds what the app relies on in that protocol. The tests of the starter run it on the double,
 and it runs on the real backend with the code read in Mailpit, before a change of the protocol.
