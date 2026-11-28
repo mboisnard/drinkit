@@ -6,7 +6,7 @@ jdk = "25"
 squawk = "2.73.0"
 
 # BOM Versions
-aws-sdk-dependencies = "2.59.2"
+aws-sdk-dependencies = "2.59.7"
 cucumber-dependencies = "8.1.0"
 opentelemetry-dependencies = "1.68.0"
 opentelemetry-instrumentation-dependencies = "2.34.0-alpha"
