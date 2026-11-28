@@ -189,8 +189,8 @@ catalogs:
       specifier: 0.99.0
       version: 0.99.0
     '@iconify-json/lucide':
-      specifier: 1.2.156
-      version: 1.2.156
+      specifier: 1.2.157
+      version: 1.2.157
     '@nuxt/content':
       specifier: 3.16.2
       version: 3.16.2
@@ -489,7 +489,7 @@ importers:
         version: link:../../tech-starters/frontend/utils-starter
       '@iconify-json/lucide':
         specifier: 'catalog:'
-        version: 1.2.156
+        version: 1.2.157
       '@nuxt/ui':
         specifier: 'catalog:'
         version: 4.12.2(780c79776706a00e920da77d99aa4ab1)
@@ -2016,8 +2016,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@iconify-json/lucide@1.2.156':
-    resolution: {integrity: sha512-IOB3g2X+cmpoEPcjEbGfpDWPPzXioeDW2gnYgaNxYSaVEHyM4fQqP2uz29cdRQJbQwo5CTQ8D9NJnATeCQKatQ==}
+  '@iconify-json/lucide@1.2.157':
+    resolution: {integrity: sha512-hFOoLrhzbDkDfWdLhrEWHTyUXUkBxV5jrY00XgtI6zDKrwh5jANu0BLXb6xfCS/FeQ6A/9XDvEk4aJovNbOslg==}
 
   '@iconify-json/simple-icons@1.2.103':
     resolution: {integrity: sha512-FMn+aVTsqQdYOwf5reCXXtfWapb+4ijI6WrU8ej1spWXWfA+d41TBXcKagHFwiHZyqt7kP7F04AiG1dYj2R06w==}
@@ -10380,7 +10380,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@iconify-json/lucide@1.2.156':
+  '@iconify-json/lucide@1.2.157':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -15211,7 +15211,7 @@ snapshots:
       '@ai-sdk/mcp': 2.0.99(zod@4.6.7)
       '@ai-sdk/vue': 4.0.173(@vue/test-utils@2.6.0(@vue/compiler-dom@3.5.45)(@vue/server-renderer@3.5.45)(vue@3.5.45(typescript@6.0.3)))(vue@3.5.45(typescript@6.0.3))(zod@4.6.7)
       '@comark/vue': 0.7.0(shiki@4.6.0)(vue@3.5.45(typescript@6.0.3))
-      '@iconify-json/lucide': 1.2.156
+      '@iconify-json/lucide': 1.2.157
       '@iconify-json/simple-icons': 1.2.103
       '@iconify-json/vscode-icons': 1.2.99
       '@nuxt/content': 3.16.2(@nuxt/schema@4.6.4)(@oxc-project/types@0.156.0)(better-sqlite3@12.11.1)(confbox@0.2.4)(dotenv@17.4.2)(esbuild@0.28.2)(giget@3.3.1)(magic-string@1.4.5)(magicast@0.5.5)(mlly@1.8.2)(oxc-parser@0.151.0)(rolldown@1.2.19)(rollup@4.68.5)(supports-color@10.2.2)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))

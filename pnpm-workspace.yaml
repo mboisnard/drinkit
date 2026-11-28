@@ -29,7 +29,7 @@ catalog:
   '@formatjs/icu-messageformat-parser': 3.5.23
   # 0.x: each minor may break, so its release notes come with every bump
   '@hey-api/openapi-ts': 0.99.0
-  '@iconify-json/lucide': 1.2.156
+  '@iconify-json/lucide': 1.2.157
   '@nuxt/content': 3.16.2
   '@nuxt/eslint-config': 1.17.0
   '@nuxt/test-utils': 4.4.0
