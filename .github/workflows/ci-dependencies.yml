@@ -47,7 +47,7 @@ jobs:
           fail-on-scopes: runtime, development
           # Advisories with no fix in the build tools of the documentation site, which ships static files only.
           # Remove each one once Docus or Nuxt Content moves past it
-          allow-ghsas: GHSA-mrhx-c7xc-m3w5, GHSA-g3hv-75wg-m249, GHSA-3g3m-2fjr-6pw4, GHSA-g7r4-m6w7-qqqr, GHSA-238p-pmpm-9mq7
+          allow-ghsas: GHSA-mrhx-c7xc-m3w5, GHSA-g3hv-75wg-m249, GHSA-3g3m-2fjr-6pw4
           # The base commit's snapshot comes from its own master run, which may still be going
           retry-on-snapshot-warnings: true
           retry-on-snapshot-warnings-timeout: 300
