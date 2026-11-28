@@ -54,7 +54,7 @@ catalog:
   eslint-plugin-playwright: 2.12.2
   h3: 1.15.11
   happy-dom: 21.0.4
-  intl-messageformat: 12.1.5
+  intl-messageformat: 12.2.0
   js-yaml: 4.3.2
   msw: 3.0.6
   nitropack: 2.13.6
