@@ -16,7 +16,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-private const val RUSTFS_IMAGE_NAME = "rustfs/rustfs:1.0.4"
+private const val RUSTFS_IMAGE_NAME = "rustfs/rustfs:1.0.7"
 private const val S3_PORT = 9000
 
 internal class S3StorageTest : StorageTestContract() {
@@ -50,6 +50,8 @@ internal class S3StorageTest : StorageTestContract() {
             .withExposedPorts(S3_PORT)
             .withEnv("RUSTFS_ACCESS_KEY", "drinkit")
             .withEnv("RUSTFS_SECRET_KEY", "drinkit-secret")
+            // The SDK sends its region as the location of a new bucket, which RustFS must serve
+            .withEnv("RUSTFS_REGION", "auto")
             .waitingFor(Wait.forHttp("/health").forStatusCode(HTTP_OK))
             .apply { start() }
 
