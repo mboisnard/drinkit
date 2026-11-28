@@ -9,7 +9,7 @@ volumes:
 
 services:
   postgresql:
-    image: postgres:19.0@sha256:aaa10f7ba7328b4a221a6c3184d83eef885bd16bf1f6de864757863156b0a4d1
+    image: postgres:19.0@sha256:4ea94de574c17f0372722806c949757050fbb1cd7648410fe45d6bba275cc00e
     ports:
       - "5432:5432"
     volumes:
@@ -62,7 +62,7 @@ services:
         condition: service_completed_successfully
 
   meilisearch:
-    image: getmeili/meilisearch:v1.57.0@sha256:91bf09897482c17205c8faeca8daa8d57999fb9de20d862763cdfa92ba4ec790
+    image: getmeili/meilisearch:v1.58.0@sha256:cee0d2e31191594ff8e1651eb144aabd95b389a0bc3532327ecfb9ed91dffe7e
     ports:
       - "7700:7700"
     volumes:
