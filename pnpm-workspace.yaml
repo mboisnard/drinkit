@@ -30,7 +30,7 @@ catalog:
   # 0.x: each minor may break, so its release notes come with every bump
   '@hey-api/openapi-ts': 0.99.0
   '@iconify-json/lucide': 1.2.156
-  '@nuxt/content': 3.16.2
+  '@nuxt/content': 3.17.0
   '@nuxt/eslint-config': 1.17.0
   '@nuxt/test-utils': 4.4.0
   '@nuxt/ui': 4.12.2
