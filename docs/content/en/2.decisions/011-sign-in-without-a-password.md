@@ -33,8 +33,8 @@ One screen serves both sign-up and sign-in, with no choice to make between them:
 
 ```mermaid
 flowchart TB
-  screen["Sign-in screen<br/>email field, Google and Apple buttons"]
-  screen -- "the browser offers a passkey" --> passkey[Passkey]
+  screen["Sign-in screen<br/>email field, passkey, Google and Apple buttons"]
+  screen -- "the passkey button" --> passkey[Passkey]
   screen --> provider[Google or Apple]
   screen -- "an email typed" --> code["Six-digit code<br/>sent by email"]
   passkey --> session([Session])
@@ -45,8 +45,9 @@ flowchart TB
 
 - **Passkey first.** A returning user signs in with a fingerprint or a face, and a browser without passkeys shows the
   rest of the screen unchanged. The passkeys are Spring Security's, at its URLs and in its tables, on the W3C
-  WebAuthn specification: the authenticator must verify the user, and the browser offers them in the autofill of the
-  email field.
+  WebAuthn specification: the authenticator must verify the user. A "Sign in with a passkey" button opens the
+  browser's dialog of the passkeys, rather than their autofill in the email field, where a user sees neither when nor
+  how the sign-in starts.
 - **Google and Apple.** An account is found by the provider's id, then by an email the provider marks as verified.
 - **A code sent by email.** Six digits, single use, valid for minutes, refused after a few wrong tries and stored as
   a hash. The same answer comes back for any email, so the screen reveals no account.

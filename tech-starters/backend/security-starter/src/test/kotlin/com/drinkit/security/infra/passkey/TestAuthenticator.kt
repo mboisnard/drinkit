@@ -106,7 +106,7 @@ internal fun Browser.savePasskey(creation: String): ResultActionsDsl = post("/we
     content = creation
 }
 
-/** Signs in with a passkey of [authenticator], without any email, as from the autofill of the email field. */
+/** Signs in with a passkey of [authenticator], without any email, as from the passkey button of the sign-in page. */
 internal fun Browser.signInWithPasskey(
     authenticator: TestAuthenticator,
     verifiesUser: Boolean = true,

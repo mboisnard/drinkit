@@ -42,7 +42,7 @@ export default defineNuxtConfig({
   },
   i18nCatalog: {
     catalog: '../../translations',
-    prefixes: ['home', 'signIn', 'registration', 'cellars', 'layout', 'error'],
+    prefixes: ['home', 'signIn', 'registration', 'cellars', 'passkeys', 'layout', 'error'],
   },
   // Icons drawn as SVG: in CSS mode, one shown after hydration injects a style without a nonce, which the CSP refuses
   icon: { mode: 'svg' },

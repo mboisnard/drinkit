@@ -74,6 +74,19 @@ export function authBackendContract({ apiUrl, currentUserPath, codeOf }: AuthBac
     expect((await call('GET', currentUserPath)).status).toBe(401);
   });
 
+  test('a passkey the backend does not know is refused with a 401', async () => {
+    // Given
+    const call = browser(apiUrl());
+    await call('GET', CSRF_PATH);
+    await call('POST', AUTH_ENDPOINTS.passkeySignInOptions);
+
+    // When
+    const response = await call('POST', AUTH_ENDPOINTS.passkeySignIn, unknownPasskey());
+
+    // Then
+    expect(response.status).toBe(401);
+  });
+
   test('a write without the CSRF token is refused', async () => {
     // When
     const response = await browser(apiUrl())('POST', AUTH_ENDPOINTS.code, { email: newEmail() });
@@ -81,6 +94,20 @@ export function authBackendContract({ apiUrl, currentUserPath, codeOf }: AuthBac
     // Then
     expect(response.status).toBe(403);
   });
+}
+
+// Well formed, so that only the passkey is refused, not the body
+function unknownPasskey(): object {
+  const id = Buffer.from(randomUUID()).toString('base64url');
+  const bytes = Buffer.from('unknown').toString('base64url');
+
+  return {
+    id,
+    rawId: id,
+    type: 'public-key',
+    response: { authenticatorData: bytes, clientDataJSON: bytes, signature: bytes, userHandle: bytes },
+    clientExtensionResults: {},
+  };
 }
 
 function newEmail(): string {

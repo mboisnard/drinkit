@@ -19,6 +19,14 @@
       >
         {{ t('signIn.sendCode') }}
       </button>
+      <button
+        v-if="canUsePasskey"
+        type="button"
+        :disabled="pending"
+        @click="signInWithPasskey"
+      >
+        {{ t('signIn.withPasskey') }}
+      </button>
     </form>
     <form
       v-else
@@ -68,5 +76,7 @@
   const { t } = useTranslate();
   useSeoMeta({ title: () => t('signIn.title') });
 
-  const { email, code, rememberMe, codeSent, pending, problem, sendCode, signIn } = useSignInForm();
+  const {
+    canUsePasskey, email, code, rememberMe, codeSent, pending, problem, sendCode, signIn, signInWithPasskey,
+  } = useSignInForm();
 </script>

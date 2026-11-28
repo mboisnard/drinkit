@@ -5,6 +5,9 @@
         {{ t('layout.home') }}
       </NuxtLinkLocale>
       <span v-if="user?.firstname">{{ user.firstname }}</span>
+      <NuxtLink to="/passkeys">
+        {{ t('layout.passkeys') }}
+      </NuxtLink>
       <label>
         {{ t('layout.language') }}
         <select
@@ -39,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-  import { NuxtLinkLocale } from '#components';
+  import { NuxtLink, NuxtLinkLocale } from '#components';
   import { useTranslate } from '@drinkit/i18n-starter/translate';
   import { withErrorMessage } from '@drinkit/observability-starter/error-message';
   import { useCurrentUser } from '@drinkit/security-starter/use-current-user';
