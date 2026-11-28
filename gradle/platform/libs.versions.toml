@@ -33,7 +33,7 @@ kotest = "6.2.7"
 kotlin-faker = "1.16.2"
 testcontainers-meilisearch = "2.0.0"
 # The webauthn4j-core version that spring-security-webauthn pulls
-webauthn4j = "0.31.11.RELEASE"
+webauthn4j = "0.32.0.RELEASE"
 
 
 [libraries]
