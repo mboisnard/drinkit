@@ -299,8 +299,8 @@ paths:
       summary: Get the options of a passkey sign-in
       description: |
         Served by Spring Security's passkey support, in the security starter. The options of WebAuthn's
-        navigator.credentials.get(), without any allowed passkey, so that the browser offers the passkeys of the site
-        in the autofill of the email field. The session keeps their challenge until the sign-in.
+        navigator.credentials.get(), without any allowed passkey, so that the browser offers every passkey of the site
+        without an email typed. The session keeps their challenge until the sign-in.
       security:
         - xsrfToken: []
       responses:
