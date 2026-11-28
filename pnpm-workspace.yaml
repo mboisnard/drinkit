@@ -33,7 +33,7 @@ catalog:
   '@nuxt/content': 3.16.2
   '@nuxt/eslint-config': 1.17.0
   '@nuxt/test-utils': 4.4.0
-  '@nuxt/ui': 4.12.2
+  '@nuxt/ui': 4.13.0
   '@nuxtjs/i18n': 10.6.0
   '@playwright/test': 1.65.1
   '@stylistic/stylelint-config': 6.1.0
